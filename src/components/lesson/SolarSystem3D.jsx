@@ -8,10 +8,10 @@ const PLANETS = [
   { name: 'Venus', radius: 5.2, size: 0.68, period: 0.62, rotationHours: -5832.5, inclination: 3.4, startAngle: 2.62, base: '#d39a4c', stripe: '#f7d483' },
   { name: 'Earth', radius: 6.5, size: 0.72, period: 1.0, rotationHours: 23.9, inclination: 0, startAngle: 2.15, base: '#2d77c8', stripe: '#31ad72', spot: '#8ad78c' },
   { name: 'Mars', radius: 7.8, size: 0.54, period: 1.88, rotationHours: 24.6, inclination: 1.9, startAngle: 0.98, base: '#bd4d2d', stripe: '#ec8a58' },
-  { name: 'Jupiter', radius: 10.2, size: 1.48, period: 11.86, rotationHours: 9.9, inclination: 1.3, startAngle: 0.46, base: '#c99970', stripe: '#f4dfbd', spot: '#b64e34' },
-  { name: 'Saturn', radius: 12.7, size: 1.24, period: 29.45, rotationHours: 10.7, inclination: 2.5, startAngle: -0.15, base: '#dfc07c', stripe: '#ffe5a8', rings: true },
-  { name: 'Uranus', radius: 15.0, size: 0.96, period: 84.0, rotationHours: -17.2, inclination: 0.8, startAngle: -0.32, base: '#82d7e5', stripe: '#d0f7fa' },
-  { name: 'Neptune', radius: 17.1, size: 0.94, period: 164.8, rotationHours: 16.1, inclination: 1.8, startAngle: -0.72, base: '#3472d0', stripe: '#78a8ff' }
+  { name: 'Jupiter', radius: 10.2, size: 1.48, period: 11.86, rotationHours: 9.9, inclination: 1.3, startAngle: 0.45, base: '#c99970', stripe: '#f4dfbd', spot: '#b64e34' },
+  { name: 'Saturn', radius: 12.7, size: 1.24, period: 29.45, rotationHours: 10.7, inclination: 2.5, startAngle: 0.12, base: '#dfc07c', stripe: '#ffe5a8', rings: true },
+  { name: 'Uranus', radius: 15.0, size: 0.96, period: 84.0, rotationHours: -17.2, inclination: 0.8, startAngle: 0.05, base: '#82d7e5', stripe: '#d0f7fa' },
+  { name: 'Neptune', radius: 17.1, size: 0.94, period: 164.8, rotationHours: 16.1, inclination: 1.8, startAngle: 0, base: '#3472d0', stripe: '#78a8ff' }
 ];
 
 const ALL_BODIES = [
