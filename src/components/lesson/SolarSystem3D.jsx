@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { Pause, Play, RotateCcw, Tags } from 'lucide-react';
+import { Hand, Pause, Play, RotateCcw, Tags } from 'lucide-react';
 
 const PLANETS = [
   { name: 'Mercury', radius: 4.0, size: 0.34, period: 0.24, rotationHours: 1407.6, inclination: 7.0, base: '#8f8a80', stripe: '#b5afa4' },
@@ -119,6 +119,7 @@ export default function SolarSystem3D() {
   const [speed, setSpeed] = useState(1);
   const [showLabels, setShowLabels] = useState(true);
   const [selectedName, setSelectedName] = useState('Earth');
+  const [interactionEnabled, setInteractionEnabled] = useState(() => typeof window === 'undefined' ? true : !window.matchMedia('(pointer: coarse)').matches);
   const [webGLAvailable, setWebGLAvailable] = useState(true);
 
   useEffect(() => {
@@ -128,6 +129,11 @@ export default function SolarSystem3D() {
   useEffect(() => {
     speedRef.current = speed;
   }, [speed]);
+
+  useEffect(() => {
+    if (controlsRef.current) controlsRef.current.enabled = interactionEnabled;
+    if (rendererRef.current) rendererRef.current.domElement.style.touchAction = interactionEnabled ? 'none' : 'pan-y';
+  }, [interactionEnabled]);
 
   useEffect(() => {
     labelsRef.current = showLabels;
@@ -166,7 +172,7 @@ export default function SolarSystem3D() {
     renderer.domElement.style.display = 'block';
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
-    renderer.domElement.style.touchAction = 'none';
+    renderer.domElement.style.touchAction = interactionEnabled ? 'none' : 'pan-y';
     mount.prepend(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -181,6 +187,7 @@ export default function SolarSystem3D() {
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
+    controls.enabled = interactionEnabled;
     controls.dampingFactor = 0.075;
     controls.minDistance = 13;
     controls.maxDistance = 58;
@@ -448,7 +455,16 @@ export default function SolarSystem3D() {
             </span>
           ))}
         </div>
-        <div className="pointer-events-none absolute bottom-3 left-3 z-20 rounded-md border border-white/10 bg-[#071326]/85 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200">
+        <button
+          type="button"
+          onClick={() => setInteractionEnabled(value => !value)}
+          className="absolute right-3 top-3 z-30 inline-flex min-h-10 items-center gap-2 rounded-md border border-white/20 bg-[#071326]/90 px-3 text-xs font-bold text-white shadow-md hover:bg-[#102443] focus:outline-none focus:ring-2 focus:ring-orange-400"
+          aria-pressed={interactionEnabled}
+        >
+          <Hand className="h-4 w-4" />
+          {interactionEnabled ? 'Allow page scroll' : 'Explore 3D'}
+        </button>
+        <div className="pointer-events-none absolute bottom-3 left-3 z-20 max-w-[75%] rounded-md border border-white/10 bg-[#071326]/85 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200">
           Sizes, distances and time are compressed — model not to scale
         </div>
       </div>
