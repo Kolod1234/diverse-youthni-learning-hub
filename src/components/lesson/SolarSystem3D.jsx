@@ -37,7 +37,74 @@ const ALL_BODIES = [
   }))
 ];
 
-function createPlanetTexture({ base, stripe, spot }) {
+function createEarthTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 256;
+  const context = canvas.getContext('2d');
+
+  const ocean = context.createLinearGradient(0, 0, 0, canvas.height);
+  ocean.addColorStop(0, '#1f5f9f');
+  ocean.addColorStop(0.48, '#1677bb');
+  ocean.addColorStop(1, '#0b477f');
+  context.fillStyle = ocean;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  const drawLand = (points, fill) => {
+    context.beginPath();
+    context.moveTo(points[0][0], points[0][1]);
+    points.slice(1).forEach(([x, y]) => context.lineTo(x, y));
+    context.closePath();
+    context.fillStyle = fill;
+    context.fill();
+    context.strokeStyle = 'rgba(214,235,175,0.55)';
+    context.lineWidth = 2;
+    context.stroke();
+  };
+
+  drawLand([[18,58],[48,39],[91,33],[126,48],[143,69],[122,84],[101,82],[82,103],[57,99],[45,78],[19,73]], '#4f9b55');
+  drawLand([[112,102],[137,111],[151,137],[145,164],[132,190],[116,215],[106,190],[108,161],[96,139]], '#54a45a');
+  drawLand([[192,31],[214,27],[224,43],[211,57],[194,49]], '#89b96b');
+  drawLand([[237,55],[276,42],[322,43],[356,54],[400,48],[451,68],[471,91],[444,105],[413,95],[389,111],[351,100],[329,84],[294,88],[274,76],[249,78]], '#5ca35d');
+  drawLand([[267,87],[300,91],[319,118],[312,151],[292,184],[271,169],[258,139],[251,111]], '#629e4d');
+  drawLand([[413,151],[444,142],[469,156],[463,178],[438,189],[412,176]], '#6aaa61');
+  drawLand([[488,90],[511,84],[511,126],[494,119]], '#519553');
+
+  context.globalAlpha = 0.34;
+  context.fillStyle = '#d1b466';
+  context.beginPath();
+  context.ellipse(289, 117, 18, 10, 0.25, 0, Math.PI * 2);
+  context.fill();
+  context.beginPath();
+  context.ellipse(377, 74, 30, 7, 0.08, 0, Math.PI * 2);
+  context.fill();
+
+  context.globalAlpha = 0.55;
+  context.strokeStyle = '#ffffff';
+  context.lineWidth = 5;
+  context.lineCap = 'round';
+  [[34,42,118,45],[82,124,160,130],[221,69,304,64],[329,115,422,119],[371,173,467,166]].forEach(([x1,y1,x2,y2]) => {
+    context.beginPath();
+    context.moveTo(x1,y1);
+    context.bezierCurveTo((x1+x2)/2,y1-12,(x1+x2)/2,y2+12,x2,y2);
+    context.stroke();
+  });
+
+  context.globalAlpha = 0.78;
+  context.fillStyle = '#f5fbff';
+  context.fillRect(0, 0, canvas.width, 9);
+  context.fillRect(0, canvas.height - 10, canvas.width, 10);
+
+  context.globalAlpha = 1;
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.anisotropy = 8;
+  return texture;
+}
+
+function createPlanetTexture({ name, base, stripe, spot }) {
+  if (name === 'Earth') return createEarthTexture();
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 128;
@@ -262,6 +329,49 @@ export default function SolarSystem3D() {
     );
     scene.add(stars);
 
+    const asteroidGroup = new THREE.Group();
+    asteroidGroup.rotation.z = THREE.MathUtils.degToRad(1.7);
+    const asteroidGeometry = new THREE.IcosahedronGeometry(0.075, 0);
+    const asteroidMaterial = new THREE.MeshStandardMaterial({
+      color: 0xb3a28f,
+      roughness: 1,
+      metalness: 0.02,
+      vertexColors: true
+    });
+    const asteroidCount = 220;
+    const asteroidMesh = new THREE.InstancedMesh(asteroidGeometry, asteroidMaterial, asteroidCount);
+    const asteroidDummy = new THREE.Object3D();
+    const asteroidColour = new THREE.Color();
+    let asteroidSeed = 841;
+    const asteroidRandom = () => {
+      asteroidSeed = (asteroidSeed * 1664525 + 1013904223) % 4294967296;
+      return asteroidSeed / 4294967296;
+    };
+    for (let index = 0; index < asteroidCount; index += 1) {
+      const angle = asteroidRandom() * Math.PI * 2;
+      const radius = 8.55 + (asteroidRandom() * 1.05);
+      const size = 0.52 + (asteroidRandom() * 1.15);
+      asteroidDummy.position.set(
+        Math.cos(angle) * radius,
+        (asteroidRandom() - 0.5) * 0.34,
+        Math.sin(angle) * radius
+      );
+      asteroidDummy.rotation.set(
+        asteroidRandom() * Math.PI,
+        asteroidRandom() * Math.PI,
+        asteroidRandom() * Math.PI
+      );
+      asteroidDummy.scale.set(size, size * (0.72 + asteroidRandom() * 0.5), size);
+      asteroidDummy.updateMatrix();
+      asteroidMesh.setMatrixAt(index, asteroidDummy.matrix);
+      asteroidColour.setHSL(0.075, 0.12, 0.42 + asteroidRandom() * 0.24);
+      asteroidMesh.setColorAt(index, asteroidColour);
+    }
+    asteroidMesh.instanceMatrix.needsUpdate = true;
+    if (asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true;
+    asteroidGroup.add(asteroidMesh);
+    scene.add(asteroidGroup);
+
     const sceneBodies = [{ name: 'Sun', mesh: sun, angle: 0, config: null }];
     PLANETS.forEach(planet => {
       scene.add(createOrbit(planet.radius, planet.inclination));
@@ -393,6 +503,7 @@ export default function SolarSystem3D() {
           const rotationRate = Math.min(1.3, 14 / Math.abs(body.config.rotationHours));
           body.mesh.rotation.y += delta * speedRef.current * rotationRate * spinDirection;
         });
+        asteroidGroup.rotation.y += delta * speedRef.current * 0.21;
       }
       controls.update();
       placeLabels();
