@@ -4,14 +4,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Hand, Pause, Play, RotateCcw, Tags } from 'lucide-react';
 
 const PLANETS = [
-  { name: 'Mercury', radius: 4.0, size: 0.34, period: 0.24, rotationHours: 1407.6, inclination: 7.0, base: '#8f8a80', stripe: '#b5afa4' },
-  { name: 'Venus', radius: 5.2, size: 0.52, period: 0.62, rotationHours: -5832.5, inclination: 3.4, base: '#c99145', stripe: '#f0c56d' },
-  { name: 'Earth', radius: 6.5, size: 0.56, period: 1.0, rotationHours: 23.9, inclination: 0, base: '#2563a8', stripe: '#2f9e68', spot: '#63b96f' },
-  { name: 'Mars', radius: 7.8, size: 0.43, period: 1.88, rotationHours: 24.6, inclination: 1.9, base: '#a94427', stripe: '#d47748' },
-  { name: 'Jupiter', radius: 10.2, size: 1.12, period: 11.86, rotationHours: 9.9, inclination: 1.3, base: '#b88a62', stripe: '#ead1a8', spot: '#9f4932' },
-  { name: 'Saturn', radius: 12.7, size: 0.96, period: 29.45, rotationHours: 10.7, inclination: 2.5, base: '#d0b276', stripe: '#f2d79c', rings: true },
-  { name: 'Uranus', radius: 15.0, size: 0.73, period: 84.0, rotationHours: -17.2, inclination: 0.8, base: '#77c7d4', stripe: '#bcebf0' },
-  { name: 'Neptune', radius: 17.1, size: 0.70, period: 164.8, rotationHours: 16.1, inclination: 1.8, base: '#2d5fb3', stripe: '#5b89dd' }
+  { name: 'Mercury', radius: 4.0, size: 0.44, period: 0.24, rotationHours: 1407.6, inclination: 7.0, startAngle: 3.15, base: '#9d978e', stripe: '#d0c9bd' },
+  { name: 'Venus', radius: 5.2, size: 0.68, period: 0.62, rotationHours: -5832.5, inclination: 3.4, startAngle: 2.62, base: '#d39a4c', stripe: '#f7d483' },
+  { name: 'Earth', radius: 6.5, size: 0.72, period: 1.0, rotationHours: 23.9, inclination: 0, startAngle: 2.15, base: '#2d77c8', stripe: '#31ad72', spot: '#8ad78c' },
+  { name: 'Mars', radius: 7.8, size: 0.54, period: 1.88, rotationHours: 24.6, inclination: 1.9, startAngle: 0.98, base: '#bd4d2d', stripe: '#ec8a58' },
+  { name: 'Jupiter', radius: 10.2, size: 1.48, period: 11.86, rotationHours: 9.9, inclination: 1.3, startAngle: 0.46, base: '#c99970', stripe: '#f4dfbd', spot: '#b64e34' },
+  { name: 'Saturn', radius: 12.7, size: 1.24, period: 29.45, rotationHours: 10.7, inclination: 2.5, startAngle: -0.15, base: '#dfc07c', stripe: '#ffe5a8', rings: true },
+  { name: 'Uranus', radius: 15.0, size: 0.96, period: 84.0, rotationHours: -17.2, inclination: 0.8, startAngle: -0.32, base: '#82d7e5', stripe: '#d0f7fa' },
+  { name: 'Neptune', radius: 17.1, size: 0.94, period: 164.8, rotationHours: 16.1, inclination: 1.8, startAngle: -0.72, base: '#3472d0', stripe: '#78a8ff' }
 ];
 
 const ALL_BODIES = [
@@ -45,10 +45,18 @@ function createPlanetTexture({ base, stripe, spot }) {
   context.fillStyle = base;
   context.fillRect(0, 0, canvas.width, canvas.height);
 
-  context.globalAlpha = 0.55;
+  const highlight = context.createLinearGradient(0, 0, canvas.width, 0);
+  highlight.addColorStop(0, 'rgba(0,0,0,0.20)');
+  highlight.addColorStop(0.42, 'rgba(255,255,255,0.20)');
+  highlight.addColorStop(0.72, 'rgba(255,255,255,0.07)');
+  highlight.addColorStop(1, 'rgba(0,0,0,0.16)');
+  context.fillStyle = highlight;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  context.globalAlpha = 0.64;
   context.fillStyle = stripe;
-  for (let y = 10; y < canvas.height; y += 22) {
-    context.fillRect(0, y, canvas.width, 7 + (y % 3));
+  for (let y = 9; y < canvas.height; y += 21) {
+    context.fillRect(0, y, canvas.width, 6 + (y % 4));
   }
 
   if (spot) {
@@ -59,10 +67,10 @@ function createPlanetTexture({ base, stripe, spot }) {
     context.fill();
   }
 
-  context.globalAlpha = 0.16;
-  for (let x = 0; x < canvas.width; x += 16) {
-    context.fillStyle = x % 32 === 0 ? '#ffffff' : '#000000';
-    context.fillRect(x, 0, 5, canvas.height);
+  context.globalAlpha = 0.08;
+  for (let x = 0; x < canvas.width; x += 20) {
+    context.fillStyle = '#ffffff';
+    context.fillRect(x, 0, 3, canvas.height);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -84,7 +92,7 @@ function createOrbit(radius, inclinationDegrees) {
   }
   return new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color: 0x50678e, transparent: true, opacity: 0.48 })
+    new THREE.LineBasicMaterial({ color: 0x7895c7, transparent: true, opacity: 0.66 })
   );
 }
 
@@ -115,7 +123,7 @@ export default function SolarSystem3D() {
   const labelsRef = useRef(true);
   const sceneBodiesRef = useRef([]);
   const animationRef = useRef(null);
-  const [running, setRunning] = useState(true);
+  const [running, setRunning] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [showLabels, setShowLabels] = useState(true);
   const [selectedName, setSelectedName] = useState('Earth');
@@ -165,6 +173,8 @@ export default function SolarSystem3D() {
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.38;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.domElement.setAttribute('aria-label', 'Interactive three-dimensional Solar System model');
@@ -177,11 +187,11 @@ export default function SolarSystem3D() {
     rendererRef.current = renderer;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x030a19);
-    scene.fog = new THREE.FogExp2(0x030a19, 0.013);
+    scene.background = new THREE.Color(0x071832);
+    scene.fog = new THREE.FogExp2(0x071832, 0.0045);
 
-    const camera = new THREE.PerspectiveCamera(43, 1, 0.1, 140);
-    camera.position.set(0, 22, 36);
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 140);
+    camera.position.set(0, 31, 26);
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
@@ -190,31 +200,54 @@ export default function SolarSystem3D() {
     controls.enabled = interactionEnabled;
     controls.dampingFactor = 0.075;
     controls.minDistance = 13;
-    controls.maxDistance = 58;
-    controls.maxPolarAngle = Math.PI * 0.49;
+    controls.maxDistance = 54;
+    controls.minPolarAngle = Math.PI * 0.16;
+    controls.maxPolarAngle = Math.PI * 0.44;
     controls.target.set(0, 0, 0);
     controlsRef.current = controls;
 
-    scene.add(new THREE.AmbientLight(0x8aa4d6, 0.44));
-    const sunlight = new THREE.PointLight(0xfff0bf, 5.5, 70, 1.25);
+    scene.add(new THREE.AmbientLight(0xa9c5ff, 1.25));
+    scene.add(new THREE.HemisphereLight(0xd9e9ff, 0x17213b, 1.75));
+    const sunlight = new THREE.PointLight(0xfff0c2, 430, 85, 1.55);
     sunlight.position.set(0, 0, 0);
     sunlight.castShadow = true;
     scene.add(sunlight);
+    const cameraFill = new THREE.DirectionalLight(0xdce9ff, 1.15);
+    cameraFill.position.set(-8, 18, 22);
+    scene.add(cameraFill);
 
-    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffb11b });
-    const sun = new THREE.Mesh(new THREE.SphereGeometry(1.85, 48, 32), sunMaterial);
+    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffb21f });
+    const sun = new THREE.Mesh(new THREE.SphereGeometry(2.15, 64, 40), sunMaterial);
     sun.userData.bodyName = 'Sun';
     scene.add(sun);
 
-    const sunGlow = new THREE.Mesh(
-      new THREE.SphereGeometry(2.16, 40, 24),
-      new THREE.MeshBasicMaterial({ color: 0xff8a00, transparent: true, opacity: 0.18, side: THREE.BackSide })
-    );
+    const glowCanvas = document.createElement('canvas');
+    glowCanvas.width = 256;
+    glowCanvas.height = 256;
+    const glowContext = glowCanvas.getContext('2d');
+    const glowGradient = glowContext.createRadialGradient(128, 128, 28, 128, 128, 126);
+    glowGradient.addColorStop(0, 'rgba(255,244,174,0.95)');
+    glowGradient.addColorStop(0.22, 'rgba(255,177,31,0.72)');
+    glowGradient.addColorStop(0.55, 'rgba(255,116,0,0.22)');
+    glowGradient.addColorStop(1, 'rgba(255,82,0,0)');
+    glowContext.fillStyle = glowGradient;
+    glowContext.fillRect(0, 0, 256, 256);
+    const glowTexture = new THREE.CanvasTexture(glowCanvas);
+    glowTexture.colorSpace = THREE.SRGBColorSpace;
+    const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTexture,
+      color: 0xffae32,
+      transparent: true,
+      opacity: 0.92,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    }));
+    sunGlow.scale.set(8.4, 8.4, 1);
     scene.add(sunGlow);
 
     const starGeometry = new THREE.BufferGeometry();
-    const starPositions = new Float32Array(900 * 3);
-    for (let index = 0; index < 900; index += 1) {
+    const starPositions = new Float32Array(1500 * 3);
+    for (let index = 0; index < 1500; index += 1) {
       const radius = 30 + Math.random() * 45;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos((Math.random() * 2) - 1);
@@ -225,19 +258,22 @@ export default function SolarSystem3D() {
     starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
     const stars = new THREE.Points(
       starGeometry,
-      new THREE.PointsMaterial({ color: 0xb9d7ff, size: 0.09, transparent: true, opacity: 0.85 })
+      new THREE.PointsMaterial({ color: 0xd6e7ff, size: 0.105, transparent: true, opacity: 0.96 })
     );
     scene.add(stars);
 
     const sceneBodies = [{ name: 'Sun', mesh: sun, angle: 0, config: null }];
-    PLANETS.forEach((planet, index) => {
+    PLANETS.forEach(planet => {
       scene.add(createOrbit(planet.radius, planet.inclination));
 
       const texture = createPlanetTexture(planet);
       const material = new THREE.MeshStandardMaterial({
         map: texture,
-        roughness: 0.82,
-        metalness: 0.02
+        color: 0xffffff,
+        emissive: new THREE.Color(planet.base),
+        emissiveIntensity: 0.24,
+        roughness: 0.72,
+        metalness: 0.01
       });
       const mesh = new THREE.Mesh(new THREE.SphereGeometry(planet.size, 38, 26), material);
       mesh.castShadow = true;
@@ -258,12 +294,18 @@ export default function SolarSystem3D() {
         mesh.add(rings);
       }
 
+      const inclination = THREE.MathUtils.degToRad(planet.inclination);
+      mesh.position.set(
+        Math.cos(planet.startAngle) * planet.radius,
+        Math.sin(planet.startAngle) * planet.radius * Math.sin(inclination),
+        Math.sin(planet.startAngle) * planet.radius * Math.cos(inclination)
+      );
       scene.add(mesh);
       sceneBodies.push({
         name: planet.name,
         mesh,
         config: planet,
-        angle: (index / PLANETS.length) * Math.PI * 2
+        angle: planet.startAngle
       });
     });
     sceneBodiesRef.current = sceneBodies;
@@ -403,7 +445,7 @@ export default function SolarSystem3D() {
     const camera = cameraRef.current;
     const controls = controlsRef.current;
     if (!camera || !controls) return;
-    camera.position.set(0, 22, 36);
+    camera.position.set(0, 31, 26);
     controls.target.set(0, 0, 0);
     controls.update();
   };
@@ -429,7 +471,7 @@ export default function SolarSystem3D() {
 
       <div
         ref={mountRef}
-        className="relative isolate w-full overflow-hidden rounded-xl border border-slate-700 bg-[#030a19] shadow-lg focus-within:ring-2 focus-within:ring-orange-500"
+        className="relative isolate w-full overflow-hidden rounded-xl border border-[#244370] bg-[#071832] shadow-lg focus-within:ring-2 focus-within:ring-orange-500"
         tabIndex={0}
         onKeyDown={event => {
           if (event.key === 'ArrowRight') selectRelativeBody(1);
