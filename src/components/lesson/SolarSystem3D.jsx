@@ -191,7 +191,7 @@ export default function SolarSystem3D() {
     scene.fog = new THREE.FogExp2(0x071832, 0.0045);
 
     const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 140);
-    camera.position.set(0, 23, 35);
+    camera.position.set(0, 16, 25);
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
@@ -445,7 +445,7 @@ export default function SolarSystem3D() {
     const camera = cameraRef.current;
     const controls = controlsRef.current;
     if (!camera || !controls) return;
-    camera.position.set(0, 23, 35);
+    camera.position.set(0, 16, 25);
     controls.target.set(0, 0, 0);
     controls.update();
   };
