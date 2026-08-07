@@ -261,6 +261,12 @@ export default function EnhancedLessonPlayer({
   const pageProgress = hasPages ? ((currentContentSlide + 1) / contentSlides.length) * 100 : 100;
   const estimatedMinutes = lesson.duration_minutes || Math.max(2, contentSlides.length * 2);
   const currentPageKey = lesson.id + ':' + currentContentSlide;
+  const animatedStemContent = /mathematics|maths|physics|chemistry/i.test([
+    course?.title,
+    course?.subject,
+    course?.category,
+    lesson?.subject
+  ].filter(Boolean).join(' '));
   const isBookmarked = bookmarks.includes(currentPageKey);
   const topicQuizQuestions = interactiveContent?.quizQuestions || [];
   const canOpenTopicQuiz = isLastPage && hasPages && !topicQuizCompleted;
@@ -570,13 +576,13 @@ export default function EnhancedLessonPlayer({
             ) : hasPages && activeContentSlide ? (
                 <motion.article
                   key={currentPageKey}
-                  className="mx-auto w-full max-w-[920px] rounded-xl border border-slate-200 bg-[#fbfcfe] px-5 py-7 text-[#13233b] shadow-[0_8px_30px_rgba(15,23,42,0.08)] sm:px-10 sm:py-10 lg:px-14 lg:py-12"
+                  className={'mx-auto w-full max-w-[920px] rounded-xl border border-slate-200 bg-[#fbfcfe] px-5 py-7 text-[#13233b] shadow-[0_8px_30px_rgba(15,23,42,0.08)] sm:px-10 sm:py-10 lg:px-14 lg:py-12' + (animatedStemContent ? ' lesson-page-stagger' : '')}
                   initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={shouldReduceMotion ? undefined : { opacity: 0, y: -10 }}
                   transition={{ duration: shouldReduceMotion ? 0 : 0.22, ease: 'easeOut' }}
                 >
-                <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5">
+                <div className="lesson-page-meta mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-600">
                       Page {currentContentSlide + 1} of {contentSlides.length} <span className="mx-1.5 text-slate-300">•</span> {lesson.section || 'Lesson'}
@@ -595,8 +601,8 @@ export default function EnhancedLessonPlayer({
                     <span className="hidden sm:inline">{isBookmarked ? 'Saved' : 'Bookmark'}</span>
                   </button>
                 </div>
-                <h2 className="mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
-                  <div className={richContentClasses} dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }} />
+                <h2 className="lesson-page-title mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
+                  <div className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')} dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }} />
                   {activeContentSlide.content?.includes('data-interactive="solar-system-3d"') && (
                     <React.Suspense fallback={<div className="mt-6 min-h-[420px] animate-pulse rounded-xl bg-slate-100" aria-label="Loading interactive Solar System" />}>
                       <SolarSystem3D />
