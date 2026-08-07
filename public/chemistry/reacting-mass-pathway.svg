@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="700" viewBox="0 0 1400 700" role="img" aria-labelledby="title desc">
+  <title id="title">Reacting mass calculation pathway</title>
+  <desc id="desc">Four numbered stages: balance the equation, convert known mass to moles, use the coefficient ratio, then convert required moles to mass.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#334155"/></marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/></filter>
+  </defs>
+  <rect width="1400" height="700" rx="28" fill="#f8fafc"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#0f172a">
+    <g filter="url(#shadow)"><rect x="50" y="170" width="285" height="300" rx="26" fill="#fff7ed" stroke="#f97316" stroke-width="4"/></g>
+    <circle cx="100" cy="220" r="30" fill="#f97316"/><text x="100" y="231" text-anchor="middle" font-size="30" font-weight="700" fill="white">1</text>
+    <text x="192" y="290" text-anchor="middle" font-size="30" font-weight="700">Balance</text><text x="192" y="335" text-anchor="middle" font-size="25">the symbol</text><text x="192" y="372" text-anchor="middle" font-size="25">equation</text>
+    <path d="M350 320 H390" stroke="#334155" stroke-width="7" marker-end="url(#arrow)"/>
+    <g filter="url(#shadow)"><rect x="405" y="170" width="285" height="300" rx="26" fill="#eff6ff" stroke="#2563eb" stroke-width="4"/></g>
+    <circle cx="455" cy="220" r="30" fill="#2563eb"/><text x="455" y="231" text-anchor="middle" font-size="30" font-weight="700" fill="white">2</text>
+    <text x="548" y="285" text-anchor="middle" font-size="29" font-weight="700">Known mass</text><text x="548" y="335" text-anchor="middle" font-size="25">moles = mass</text><text x="548" y="372" text-anchor="middle" font-size="25">&#x00F7; M<tspan baseline-shift="sub" font-size="18">r</tspan></text>
+    <path d="M705 320 H745" stroke="#334155" stroke-width="7" marker-end="url(#arrow)"/>
+    <g filter="url(#shadow)"><rect x="760" y="170" width="285" height="300" rx="26" fill="#f5f3ff" stroke="#7c3aed" stroke-width="4"/></g>
+    <circle cx="810" cy="220" r="30" fill="#7c3aed"/><text x="810" y="231" text-anchor="middle" font-size="30" font-weight="700" fill="white">3</text>
+    <text x="902" y="285" text-anchor="middle" font-size="29" font-weight="700">Mole ratio</text><text x="902" y="335" text-anchor="middle" font-size="25">use the balanced</text><text x="902" y="372" text-anchor="middle" font-size="25">coefficients</text>
+    <path d="M1060 320 H1100" stroke="#334155" stroke-width="7" marker-end="url(#arrow)"/>
+    <g filter="url(#shadow)"><rect x="1115" y="170" width="235" height="300" rx="26" fill="#ecfdf5" stroke="#0f766e" stroke-width="4"/></g>
+    <circle cx="1165" cy="220" r="30" fill="#0f766e"/><text x="1165" y="231" text-anchor="middle" font-size="30" font-weight="700" fill="white">4</text>
+    <text x="1232" y="285" text-anchor="middle" font-size="29" font-weight="700">Required</text><text x="1232" y="330" text-anchor="middle" font-size="25">mass = moles</text><text x="1232" y="367" text-anchor="middle" font-size="25">&#x00D7; M<tspan baseline-shift="sub" font-size="18">r</tspan></text>
+    <text x="700" y="555" text-anchor="middle" font-size="28" font-weight="700">Keep full calculator values until the final answer.</text>
+    <text x="700" y="605" text-anchor="middle" font-size="25" fill="#475569">Write units at every stage and check that the final unit answers the task.</text>
+  </g>
+</svg>
