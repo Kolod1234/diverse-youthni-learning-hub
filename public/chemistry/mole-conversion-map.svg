@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Converting between mass and amount in moles</title>
+  <desc id="desc">A conversion map showing that mass divided by molar mass gives moles, and moles multiplied by molar mass gives mass.</desc>
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/></marker>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#0f766e"/></marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/></filter>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="#f8fafc"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#0f172a">
+    <rect x="90" y="185" width="330" height="210" rx="28" fill="#eff6ff" stroke="#2563eb" stroke-width="4" filter="url(#shadow)"/>
+    <text x="255" y="260" text-anchor="middle" font-size="38" font-weight="700">mass</text>
+    <text x="255" y="315" text-anchor="middle" font-size="32">m</text>
+    <text x="255" y="360" text-anchor="middle" font-size="24" fill="#475569">grams, g</text>
+    <rect x="780" y="185" width="330" height="210" rx="28" fill="#ecfdf5" stroke="#0f766e" stroke-width="4" filter="url(#shadow)"/>
+    <text x="945" y="260" text-anchor="middle" font-size="38" font-weight="700">amount</text>
+    <text x="945" y="315" text-anchor="middle" font-size="32">n</text>
+    <text x="945" y="360" text-anchor="middle" font-size="24" fill="#475569">moles, mol</text>
+    <path d="M435 245 H765" fill="none" stroke="#2563eb" stroke-width="7" marker-end="url(#arrowBlue)"/>
+    <text x="600" y="195" text-anchor="middle" font-size="29" font-weight="700" fill="#1d4ed8">divide by M<tspan baseline-shift="sub" font-size="20">r</tspan></text>
+    <path d="M765 340 H435" fill="none" stroke="#0f766e" stroke-width="7" marker-end="url(#arrowTeal)"/>
+    <text x="600" y="405" text-anchor="middle" font-size="29" font-weight="700" fill="#0f766e">multiply by M<tspan baseline-shift="sub" font-size="20">r</tspan></text>
+    <text x="600" y="500" text-anchor="middle" font-size="30" font-weight="700">n = m &#x00F7; M<tspan baseline-shift="sub" font-size="21">r</tspan></text>
+    <text x="600" y="550" text-anchor="middle" font-size="30" font-weight="700">m = n &#x00D7; M<tspan baseline-shift="sub" font-size="21">r</tspan></text>
+  </g>
+</svg>
