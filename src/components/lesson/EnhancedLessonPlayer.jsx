@@ -21,6 +21,7 @@ import TopicQuizModal from '@/components/lesson/TopicQuizModal';
 
 const SolarSystem3D = React.lazy(() => import('@/components/lesson/SolarSystem3D'));
 const CrystalLattice3D = React.lazy(() => import('@/components/lesson/CrystalLattice3D'));
+const AmmoniaFountainLive = React.lazy(() => import('@/components/lesson/AmmoniaFountainLive'));
 
 export default function EnhancedLessonPlayer({
   lesson,
@@ -611,6 +612,11 @@ export default function EnhancedLessonPlayer({
                   {activeContentSlide.content?.includes('data-interactive="crystal-lattice-3d"') && (
                     <React.Suspense fallback={<div className="mt-6 min-h-[420px] animate-pulse rounded-xl bg-slate-100" aria-label="Loading interactive crystal structure" />}>
                       <CrystalLattice3D model={activeContentSlide.content.includes('data-model="graphite"') ? 'graphite' : 'diamond'} />
+                    </React.Suspense>
+                  )}
+                  {activeContentSlide.content?.includes('data-interactive="ammonia-fountain-live"') && (
+                    <React.Suspense fallback={<div className="mt-6 min-h-[420px] animate-pulse rounded-xl bg-slate-100" aria-label="Loading live ammonia fountain" />}>
+                      <AmmoniaFountainLive />
                     </React.Suspense>
                   )}
                 </motion.article>
