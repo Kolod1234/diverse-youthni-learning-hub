@@ -13,7 +13,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const GAS_PARTICLES = Array.from({ length: 30 }, (_, index) => ({
   angle: (index * 2.399963) % (Math.PI * 2),
-  radius: 54 + ((index * 47) % 210),
+  radius: 48 + ((index * 47) % 165),
   speed: 0.42 + (index % 7) * 0.055,
   phase: index * 0.71,
   delay: (index % 10) * 0.16
@@ -214,7 +214,7 @@ function drawFountain(ctx, time, fountainProgress) {
     if (age < 0 || age > 2.35) return;
     const spread = drop.side * 34;
     const x = 550 + spread * age + Math.sin(index * 1.9) * 8 * age;
-    const y = 486 - 255 * age + 112 * age * age;
+    const y = 486 - 430 * age + 160 * age * age;
     const alpha = clamp(Math.min(age / 0.16, (2.35 - age) / 0.25));
     ctx.globalAlpha = alpha;
     ctx.fillStyle = age < 0.28 ? '#38b8d7' : '#e8328a';
@@ -358,7 +358,7 @@ export default function AmmoniaFountainLive() {
           <div className="flex items-center gap-2" role="group" aria-label="Fountain controls">
             <button
               type="button"
-              onClick={() => setPlaying(value => !value)}
+              onClick={() => elapsed >= DURATION ? replay() : setPlaying(value => !value)}
               className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-bold text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
               aria-label={playing ? 'Pause ammonia fountain' : 'Play ammonia fountain'}
             >
