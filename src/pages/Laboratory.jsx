@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   AlertTriangle, ArrowLeft, BookOpenCheck, Check, ChevronRight,
-  FlaskConical, HelpCircle, Info, Maximize2, RotateCcw, ShieldCheck,
+  FlaskConical, Gauge, HelpCircle, Info, Maximize2, RotateCcw, ShieldCheck,
   Sparkles, Users, Volume2, X
 } from 'lucide-react';
 
