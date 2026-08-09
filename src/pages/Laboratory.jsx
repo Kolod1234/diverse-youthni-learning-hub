@@ -116,96 +116,106 @@ function LabRoomPreview() {
 }
 
 function Lobby({ onStart }) {
-  const [subject, setSubject] = useState('All');
+  const [subject, setSubject] = useState('Chemistry');
   const filtered = subject === 'All' ? practicals : practicals.filter(item => item.subject === subject);
 
   return (
-    <div className="vl-shell vl-lobby">
-      <header className="vl-topbar">
+    <div className="vl-shell vl-dashboard">
+      <aside className="vl-side">
         <Link to="/" className="vl-brand" aria-label="Back to learning hub">
           <span className="vl-brand__mark"><FlaskConical size={24} /></span>
-          <span><strong>Diverse Youth</strong><small>Virtual Laboratory</small></span>
+          <span><strong>Diverse Youth</strong><small>Learning Hub</small></span>
         </Link>
-        <div className="vl-topbar__actions">
-          <button className="vl-icon-button" title="Sound settings"><Volume2 size={19} /></button>
-          <button className="vl-ghost-button"><Users size={18} /> Team mode <span>Coming soon</span></button>
-        </div>
-      </header>
+        <nav aria-label="Laboratory navigation">
+          <Link to="/"><span>⌂</span> Dashboard</Link>
+          <button className="active"><FlaskConical size={19} /> Virtual Laboratory</button>
+          <button><Gauge size={19} /> My Results</button>
+          <button><BookOpenCheck size={19} /> Study Resources</button>
+          <button><Users size={19} /> Team Sessions <i>soon</i></button>
+          <button><HelpCircle size={19} /> Help Centre</button>
+        </nav>
+        <div className="vl-side__safety"><ShieldCheck size={22} /><div><strong>Safety first</strong><small>Read the briefing before every practical.</small></div></div>
+      </aside>
 
-      <main>
-        <section className="vl-hero">
-          <div className="vl-hero__copy">
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-              <p className="vl-eyebrow"><Sparkles size={16} /> Learn by doing</p>
-              <h1>Your laboratory.<br /><span>Your experiment.</span></h1>
-              <p className="vl-lead">
-                Practise essential scientific skills in a safe, responsive laboratory.
-                Make decisions, use equipment and see the consequences in real time.
-              </p>
-              <div className="vl-hero__actions">
-                <button className="vl-primary-button" onClick={onStart}>
-                  Enter the laboratory <ChevronRight size={19} />
-                </button>
-                <a href="#practicals" className="vl-secondary-button">Browse practicals</a>
-              </div>
-              <div className="vl-trust-row">
-                <span><Check size={15} /> Guided mode</span>
-                <span><Check size={15} /> Scientifically checked</span>
-                <span><Check size={15} /> Touch friendly</span>
-              </div>
-            </motion.div>
+      <main className="vl-dashboard__main">
+        <header className="vl-dashboard__header">
+          <div>
+            <p className="vl-eyebrow"><Sparkles size={15} /> Learn by doing</p>
+            <h1>Virtual Laboratory</h1>
+            <p>Practise science safely through interactive experiments.</p>
           </div>
-          <motion.div
-            className="vl-hero__visual"
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.55 }}
-          >
-            <LabRoomPreview />
-          </motion.div>
+          <div className="vl-dashboard__tools">
+            <button className="vl-icon-button" title="Sound settings"><Volume2 size={19} /></button>
+            <button className="vl-ghost-button"><Users size={18} /> Team mode <span>Coming soon</span></button>
+          </div>
+        </header>
+
+        <section className="vl-progress-card">
+          <div className="vl-progress-card__heading"><div><Gauge size={22} /><strong>Your progress</strong></div><span>Level 1</span></div>
+          <div className="vl-stat-row">
+            <div><strong>0</strong><small>Practicals completed</small></div>
+            <div><strong>0 min</strong><small>Total time</small></div>
+            <div><strong>—</strong><small>Average score</small></div>
+            <div><strong>1</strong><small>Practical available</small></div>
+          </div>
+          <div className="vl-dashboard-progress"><span style={{ width: '8%' }} /></div>
+          <small>Complete your first practical to begin building laboratory confidence.</small>
         </section>
 
-        <section className="vl-practicals" id="practicals">
-          <div className="vl-section-heading">
-            <div>
-              <p className="vl-eyebrow">Practical library</p>
-              <h2>Choose an investigation</h2>
+        <div className="vl-dashboard-grid">
+          <section className="vl-practical-library" id="practicals">
+            <div className="vl-section-heading">
+              <div><p className="vl-eyebrow">Practical library</p><h2>Choose an investigation</h2></div>
+              <div className="vl-filters" role="group" aria-label="Filter by subject">
+                {['Chemistry', 'Physics', 'Biology', 'All'].map(item => (
+                  <button key={item} className={subject === item ? 'active' : ''} onClick={() => setSubject(item)}>{item}</button>
+                ))}
+              </div>
             </div>
-            <div className="vl-filters" role="group" aria-label="Filter by subject">
-              {['All', 'Chemistry', 'Physics', 'Biology'].map(item => (
-                <button key={item} className={subject === item ? 'active' : ''} onClick={() => setSubject(item)}>{item}</button>
+            <div className="vl-card-grid">
+              {filtered.map((item, index) => (
+                <motion.article
+                  key={item.title}
+                  className={`vl-practical-card ${item.status !== 'ready' ? 'is-planned' : ''}`}
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.06 }}
+                  style={{ '--accent': item.accent }}
+                >
+                  <div className="vl-practical-card__visual">
+                    <div className="vl-mini-flask"><span /></div>
+                    <span className="vl-subject-pill">{item.subject}</span>
+                  </div>
+                  <div className="vl-practical-card__body">
+                    <div className="vl-card-meta"><span>{item.level}</span><span>{item.duration}</span></div>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                    <div className="vl-difficulty"><Gauge size={14} /> Difficulty: <strong>{item.status === 'ready' ? 'Medium' : 'To be confirmed'}</strong></div>
+                    {item.status === 'ready' ? (
+                      <button className="vl-card-start" onClick={onStart}>Start practical <ChevronRight size={17} /></button>
+                    ) : (
+                      <button className="vl-card-start" disabled>In development</button>
+                    )}
+                  </div>
+                </motion.article>
               ))}
             </div>
-          </div>
-          <div className="vl-card-grid">
-            {filtered.map((item, index) => (
-              <motion.article
-                key={item.title}
-                className={`vl-practical-card ${item.status !== 'ready' ? 'is-planned' : ''}`}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.06 }}
-                style={{ '--accent': item.accent }}
-              >
-                <div className="vl-practical-card__visual">
-                  <div className="vl-mini-flask"><span /></div>
-                  <span className="vl-subject-pill">{item.subject}</span>
-                </div>
-                <div className="vl-practical-card__body">
-                  <div className="vl-card-meta"><span>{item.level}</span><span>{item.duration}</span></div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  {item.status === 'ready' ? (
-                    <button onClick={onStart}>Start practical <ChevronRight size={17} /></button>
-                  ) : (
-                    <button disabled>In development</button>
-                  )}
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        </section>
+          </section>
+
+          <aside className="vl-dashboard__rail">
+            <section className="vl-rail-card">
+              <div className="vl-rail-card__title"><Gauge size={19} /><strong>Recently attempted</strong></div>
+              <div className="vl-empty-state"><FlaskConical size={31} /><strong>No attempts yet</strong><span>Your saved practicals will appear here.</span></div>
+            </section>
+            <section className="vl-rail-card vl-assigned">
+              <div className="vl-rail-card__title"><BookOpenCheck size={19} /><strong>Recommended first</strong></div>
+              <h3>Acid–base titration</h3>
+              <p>Learn accurate volumetric technique and obtain concordant results.</p>
+              <button className="vl-primary-button" onClick={onStart}>Start practical</button>
+            </section>
+            <section className="vl-dashboard-room"><LabRoomPreview /></section>
+          </aside>
+        </div>
       </main>
     </div>
   );
