@@ -526,6 +526,7 @@ function Experiment({ onExit }) {
     const updated = [...runs, run];
     setRuns(updated);
     setDelivered(0);
+    if (updated.length === 1) setStep(5);
     if (updated.length >= 4) setStep(6);
   };
 
