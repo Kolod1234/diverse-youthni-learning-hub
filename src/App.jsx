@@ -8,6 +8,7 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import CreationHub from './pages/CreationHub';
+import Laboratory from './pages/Laboratory';
 import ProjectGallery from './pages/ProjectGallery';
 import ProjectDetail from './pages/ProjectDetail';
 import AdminProjectSubmissions from './pages/AdminProjectSubmissions';
@@ -70,6 +71,7 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/creation-hub" element={<LayoutWrapper currentPageName="CreationHub"><CreationHub /></LayoutWrapper>} />
+      <Route path="/laboratory" element={<LayoutWrapper currentPageName="Laboratory"><Laboratory /></LayoutWrapper>} />
       <Route path="/project-gallery" element={<LayoutWrapper currentPageName="ProjectGallery"><ProjectGallery /></LayoutWrapper>} />
       <Route path="/project/:id" element={<LayoutWrapper currentPageName="ProjectDetail"><ProjectDetail /></LayoutWrapper>} />
       <Route path="/admin-project-submissions" element={<LayoutWrapper currentPageName="AdminProjectSubmissions"><AdminProjectSubmissions /></LayoutWrapper>} />
