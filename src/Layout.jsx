@@ -453,9 +453,9 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
                   <ListItemText primary="Youth Work (OCN)" />
                 </MenuItem>
-                <MenuItem component={Link} to="/creation-hub" onClick={() => setMoreMenuAnchor(null)}>
+                <MenuItem component={Link} to="/laboratory" onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
-                  <ListItemText primary="Creation Hub 🚀" />
+                  <ListItemText primary="Virtual Laboratory 🧪" />
                 </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('CCEAPastPapers')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
@@ -821,9 +821,9 @@ function LayoutContent({ children, currentPageName }) {
                         <ListItemText primary="Strands of Ideas" />
                       </ListItemButton>
                     )}
-                    <ListItemButton component={Link} to="/creation-hub" onClick={() => setMobileMenuOpen(false)}>
+                    <ListItemButton component={Link} to="/laboratory" onClick={() => setMobileMenuOpen(false)}>
                       <ListItemIcon><Sparkles size={20} /></ListItemIcon>
-                      <ListItemText primary="Creation Hub 🚀" />
+                      <ListItemText primary="Virtual Laboratory 🧪" />
                     </ListItemButton>
 
                     {isCoordinator && !isTutorOrAdmin && (
