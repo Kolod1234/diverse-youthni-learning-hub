@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Button, Chip, Container, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Beaker, Check, ChevronRight, FlaskConical, Gauge, ShieldCheck } from 'lucide-react';
+import { Check, ChevronRight, FlaskConical, Gauge, ShieldCheck } from 'lucide-react';
 
 const features = [
   { icon: FlaskConical, title: 'Operate the equipment', text: 'Prepare glassware, control a burette and judge an endpoint yourself.' },
