@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  AlertTriangle, ArrowLeft, Beaker, BookOpenCheck, Check, ChevronRight,
-  FlaskConical, Gauge, HelpCircle, Info, Maximize2, RotateCcw, ShieldCheck,
+  AlertTriangle, ArrowLeft, BookOpenCheck, Check, ChevronRight,
+  FlaskConical, HelpCircle, Info, Maximize2, RotateCcw, ShieldCheck,
   Sparkles, Users, Volume2, X
 } from 'lucide-react';
 
