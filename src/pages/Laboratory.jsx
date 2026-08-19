@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -6,6 +6,10 @@ import {
   FlaskConical, Gauge, HelpCircle, Info, Maximize2, RotateCcw, ShieldCheck,
   Sparkles, Users, Volume2, X
 } from 'lucide-react';
+
+// The 3-D laboratory pulls in three.js and React Three Fiber, so it is split
+// into its own chunk and only fetched when a student actually opens it.
+const TitrationLab3D = lazy(() => import('@/components/lab3d/TitrationLab'));
 
 const navy = '#081a2d';
 const cyan = '#25c6da';
@@ -115,7 +119,7 @@ function LabRoomPreview() {
   );
 }
 
-function Lobby({ onStart }) {
+function Lobby({ onStart, onStart3D }) {
   const [subject, setSubject] = useState('Chemistry');
   const filtered = subject === 'All' ? practicals : practicals.filter(item => item.subject === subject);
 
@@ -192,7 +196,14 @@ function Lobby({ onStart }) {
                     <p>{item.description}</p>
                     <div className="vl-difficulty"><Gauge size={14} /> Difficulty: <strong>{item.status === 'ready' ? 'Medium' : 'To be confirmed'}</strong></div>
                     {item.status === 'ready' ? (
-                      <button className="vl-card-start" onClick={onStart}>Start practical <ChevronRight size={17} /></button>
+                      <>
+                        <button className="vl-card-start vl-card-start--3d" onClick={onStart3D}>
+                          Enter 3D laboratory <ChevronRight size={17} />
+                        </button>
+                        <button className="vl-card-start vl-card-start--flat" onClick={onStart}>
+                          Guided 2D version
+                        </button>
+                      </>
                     ) : (
                       <button className="vl-card-start" disabled>In development</button>
                     )}
@@ -211,7 +222,10 @@ function Lobby({ onStart }) {
               <div className="vl-rail-card__title"><BookOpenCheck size={19} /><strong>Recommended first</strong></div>
               <h3>Acid–base titration</h3>
               <p>Learn accurate volumetric technique and obtain concordant results.</p>
-              <button className="vl-primary-button" onClick={onStart}>Start practical</button>
+              <button className="vl-primary-button" onClick={onStart3D}>Enter 3D laboratory</button>
+              <button className="vl-secondary-button" style={{ width: '100%', marginTop: 8 }} onClick={onStart}>
+                Guided 2D version
+              </button>
             </section>
             <section className="vl-dashboard-room"><LabRoomPreview /></section>
           </aside>
