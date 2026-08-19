@@ -23,6 +23,11 @@
     "@hookform/resolvers": "^4.1.2",
     "@jvmr/pptx-to-html": "^1.0.0",
     "@kandiforge/pptx-renderer": "^1.0.0",
+    "@mui/icons-material": "^7.3.11",
+    "@mui/lab": "^7.0.0",
+    "@mui/material": "^7.3.11",
+    "@mui/system": "^7.3.11",
+    "@mui/x-data-grid": "^8.29.2",
     "@paddlejs-models/ocr": "^1.0.7",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -140,5 +145,10 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.2",
     "vite": "^6.1.0"
+  },
+  "overrides": {
+    "@kandiforge/pptx-renderer": {
+      "@mui/material": "^7.3.11"
+    }
   }
 }
