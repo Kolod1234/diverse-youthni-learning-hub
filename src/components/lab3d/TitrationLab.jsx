@@ -10,7 +10,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html, ContactShadows, Environment, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
-import LabRoom, { Cupboard, BENCH } from './LabRoom';
+import LabRoom, { BENCH } from './LabRoom';
 import {
   Burette, ConicalFlask, Beaker, Pipette, ReagentBottle, RetortStand, WhiteTile,
 } from './Apparatus';
@@ -123,7 +123,7 @@ function Tag({ children, ...props }) {
 
 function Scene({ state, actions }) {
   const {
-    buretteLevel, flaskFill, flaskColour, flaskOpacity, swirling,
+    buretteLevel, flaskFill, flaskColour, swirling,
     running, cupboardOpen, collected, tapAngle, goggles,
   } = state;
 
