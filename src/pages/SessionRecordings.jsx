@@ -71,7 +71,7 @@ export default function SessionRecordings() {
           const session = sessions.find(s => s.id === recording.session_id);
           
           return (
-            <Grid item xs={12} md={6} lg={4} key={recording.id}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={recording.id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -152,7 +152,7 @@ export default function SessionRecordings() {
         })}
 
         {filteredRecordings.length === 0 && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card sx={{ p: 6, textAlign: 'center' }}>
               <Video className="w-16 h-16 mx-auto mb-3 text-gray-300" />
               <Typography variant="h6" sx={{ mb: 1 }}>No Recordings Found</Typography>

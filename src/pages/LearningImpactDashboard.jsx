@@ -102,7 +102,7 @@ export default function LearningImpactDashboard() {
       </Box>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
@@ -119,7 +119,7 @@ export default function LearningImpactDashboard() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
@@ -136,7 +136,7 @@ export default function LearningImpactDashboard() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
@@ -151,7 +151,7 @@ export default function LearningImpactDashboard() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
@@ -168,7 +168,7 @@ export default function LearningImpactDashboard() {
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>Academy Performance</Typography>
@@ -187,7 +187,7 @@ export default function LearningImpactDashboard() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 3 }}>Enrollment by Category</Typography>
@@ -214,24 +214,24 @@ export default function LearningImpactDashboard() {
           </Card>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Key Insights</Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white', borderRadius: 2 }}>
                     <Typography variant="h5" fontWeight="bold">{totalEnrollments}</Typography>
                     <Typography variant="body2">Active Learners</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <Box sx={{ p: 2, bgcolor: 'success.main', color: 'white', borderRadius: 2 }}>
                     <Typography variant="h5" fontWeight="bold">{certifiedStudents}</Typography>
                     <Typography variant="body2">Certificates Issued</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <Box sx={{ p: 2, bgcolor: 'warning.main', color: 'white', borderRadius: 2 }}>
                     <Typography variant="h5" fontWeight="bold">{Math.round((completedCourses / (totalCourseEnrollments || 1)) * 100)}%</Typography>
                     <Typography variant="body2">Overall Completion</Typography>

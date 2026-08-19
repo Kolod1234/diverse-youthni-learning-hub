@@ -206,7 +206,7 @@ export default function AdminLibraryDashboard() {
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
             return (
-              <Grid item xs={12} sm={6} md={3} key={idx}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={idx}>
                 <Card sx={{ p: 3, borderLeft: 4, borderColor: stat.color }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Box sx={{ bgcolor: stat.color + '15', p: 1.5, borderRadius: 1 }}>
@@ -226,7 +226,7 @@ export default function AdminLibraryDashboard() {
         {/* Charts Grid */}
         <Grid container spacing={3}>
           {/* Top Books */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>📊 Most Downloaded/Viewed Books</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -244,7 +244,7 @@ export default function AdminLibraryDashboard() {
           </Grid>
 
           {/* Trend Chart */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>📈 Download & View Trends</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -262,7 +262,7 @@ export default function AdminLibraryDashboard() {
           </Grid>
 
           {/* Active Users */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>👥 Most Active Users</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -278,7 +278,7 @@ export default function AdminLibraryDashboard() {
           </Grid>
 
           {/* Category Distribution */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>📚 Books by Category</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -304,7 +304,7 @@ export default function AdminLibraryDashboard() {
           </Grid>
 
           {/* Top Keywords */}
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>🔍 Most Discussed Keywords</Typography>
               {topKeywords.length > 0 ? (
@@ -326,7 +326,7 @@ export default function AdminLibraryDashboard() {
           </Grid>
 
           {/* Tag Distribution */}
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>🏷️ Top Tags</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -342,29 +342,29 @@ export default function AdminLibraryDashboard() {
           </Grid>
 
           {/* Summary Stats */}
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>📋 Summary Statistics</Typography>
               <Grid container spacing={2}>
-                <Grid item xs={6} sm={3}>
+                <Grid size={{ xs: 6, sm: 3 }}>
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Total Resources</Typography>
                     <Typography variant="h6" fontWeight={700}>{resources.length}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid size={{ xs: 6, sm: 3 }}>
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Total Activities</Typography>
                     <Typography variant="h6" fontWeight={700}>{activities.length}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid size={{ xs: 6, sm: 3 }}>
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Categories</Typography>
                     <Typography variant="h6" fontWeight={700}>{categoryDistribution.length}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={6} sm={3}>
+                <Grid size={{ xs: 6, sm: 3 }}>
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Unique Tags</Typography>
                     <Typography variant="h6" fontWeight={700}>{tagDistribution.length}</Typography>

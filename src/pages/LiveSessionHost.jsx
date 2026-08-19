@@ -127,7 +127,7 @@ export default function LiveSessionHost() {
 
       {sessionId && session ? (
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Card sx={{ p: 3, mb: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
                 <Box>
@@ -141,25 +141,25 @@ export default function LiveSessionHost() {
               </Box>
 
               <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={6} md={3}>
+                <Grid size={{ xs: 6, md: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Calendar className="w-4 h-4 text-gray-500" />
                     <Typography variant="body2">{session.scheduled_date}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={6} md={3}>
+                <Grid size={{ xs: 6, md: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Clock className="w-4 h-4 text-gray-500" />
                     <Typography variant="body2">{session.scheduled_time}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={6} md={3}>
+                <Grid size={{ xs: 6, md: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Users className="w-4 h-4 text-gray-500" />
                     <Typography variant="body2">{session.invited_students?.length || 0} invited</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={6} md={3}>
+                <Grid size={{ xs: 6, md: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Clock className="w-4 h-4 text-gray-500" />
                     <Typography variant="body2">{session.duration_minutes} min</Typography>
@@ -206,7 +206,7 @@ export default function LiveSessionHost() {
             </Card>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Card sx={{ p: 3, mb: 3 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>Session Tools</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

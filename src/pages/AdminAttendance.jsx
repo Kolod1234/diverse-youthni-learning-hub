@@ -183,7 +183,7 @@ export default function AdminAttendance() {
 
         {/* Stats Overview */}
         <Grid container spacing={2} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -198,7 +198,7 @@ export default function AdminAttendance() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -213,7 +213,7 @@ export default function AdminAttendance() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -233,7 +233,7 @@ export default function AdminAttendance() {
         {/* Date & Session Filter */}
         <Card sx={{ mb: 4, p: 3 }}>
           <Grid container spacing={2} alignItems="flex-end">
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 type="date"
                 value={selectedDate}
@@ -243,7 +243,7 @@ export default function AdminAttendance() {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Session (Optional)</InputLabel>
                 <Select

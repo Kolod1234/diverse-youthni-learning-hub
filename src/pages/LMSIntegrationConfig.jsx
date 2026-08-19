@@ -168,7 +168,7 @@ export default function LMSIntegrationConfig() {
 
       <Grid container spacing={3}>
         {integrations.map((integration) => (
-          <Grid item xs={12} md={6} key={integration.id}>
+          <Grid size={{ xs: 12, md: 6 }} key={integration.id}>
             <Card sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                 <Box>
@@ -264,7 +264,7 @@ export default function LMSIntegrationConfig() {
         ))}
 
         {integrations.length === 0 && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card sx={{ p: 6, textAlign: 'center' }}>
               <Settings className="w-12 h-12 mx-auto mb-2 text-gray-400" />
               <Typography variant="h6" sx={{ mb: 1 }}>

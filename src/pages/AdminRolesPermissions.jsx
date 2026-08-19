@@ -124,7 +124,7 @@ export default function AdminRolesPermissions() {
             const permissions = getRolePermissions(role);
             
             return (
-              <Grid item xs={12} md={6} lg={4} key={role}>
+              <Grid size={{ xs: 12, md: 6, lg: 4 }} key={role}>
                 <Card sx={{ p: 3, height: '100%' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                     <Shield className="w-6 h-6 text-primary-main" />

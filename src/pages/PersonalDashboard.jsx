@@ -222,7 +222,7 @@ export default function PersonalDashboard() {
           {config.stats.slice(0, 3).map((stat, index) => {
             const StatIcon = stat.icon;
             return (
-              <Grid item xs={12} md={4} key={stat.label}>
+              <Grid size={{ xs: 12, md: 4 }} key={stat.label}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -268,7 +268,7 @@ export default function PersonalDashboard() {
             {quickActions.map((action, index) => {
               const ActionIcon = action.icon;
               return (
-                <Grid item xs={12} sm={6} md={4} key={action.label}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={action.label}>
                   <Link to={createPageUrl(action.path)} style={{ textDecoration: 'none' }}>
                     <Card 
                       sx={{ 
@@ -314,7 +314,7 @@ export default function PersonalDashboard() {
               {programs.map((program) => {
                 const participation = participations.find(p => p.program_id === program.id);
                 return (
-                  <Grid item xs={12} md={6} key={program.id}>
+                  <Grid size={{ xs: 12, md: 6 }} key={program.id}>
                     <Card sx={{ boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s' }}>
                       <CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', mb: 2 }}>
@@ -360,7 +360,7 @@ export default function PersonalDashboard() {
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Recent Logbooks</Typography>
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {logbooks.slice(0, 3).map((logbook) => (
-                <Grid item xs={12} md={4} key={logbook.id}>
+                <Grid size={{ xs: 12, md: 4 }} key={logbook.id}>
                   <Card sx={{ boxShadow: 3 }}>
                     <CardContent>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -397,7 +397,7 @@ export default function PersonalDashboard() {
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Upcoming Activities</Typography>
             <Grid container spacing={3}>
               {activities.slice(0, 3).map((activity) => (
-                <Grid item xs={12} md={4} key={activity.id}>
+                <Grid size={{ xs: 12, md: 4 }} key={activity.id}>
                   <Card sx={{ boxShadow: 3 }}>
                     <CardContent>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -432,7 +432,7 @@ export default function PersonalDashboard() {
               {courses.slice(0, 3).map((course) => {
                 const enrollment = enrollments.find(e => e.course_id === course.id);
                 return (
-                  <Grid item xs={12} md={4} key={course.id}>
+                  <Grid size={{ xs: 12, md: 4 }} key={course.id}>
                     <Link to={createPageUrl(`CourseDetails?id=${course.id}`)} style={{ textDecoration: 'none' }}>
                       <Card sx={{ boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s' }}>
                         <CardContent>

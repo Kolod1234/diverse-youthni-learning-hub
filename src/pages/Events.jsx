@@ -122,7 +122,7 @@ export default function Events() {
         {isLoading ? (
           <Grid container spacing={3}>
             {[1,2,3].map(i => (
-              <Grid item xs={12} md={4} key={i}>
+              <Grid size={{ xs: 12, md: 4 }} key={i}>
                 <Card sx={{ height: 360 }}>
                   <Box sx={{ height: 200, bgcolor: 'action.hover' }} className="animate-pulse" />
                   <CardContent>
@@ -147,7 +147,7 @@ export default function Events() {
               const myRsvp = getMyRsvp(event.id);
               const isPastEvent = isPast(parseISO(event.date)) && format(parseISO(event.date), 'yyyy-MM-dd') !== format(now, 'yyyy-MM-dd');
               return (
-                <Grid item xs={12} sm={6} lg={4} key={event.id}>
+                <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={event.id}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

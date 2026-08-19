@@ -59,7 +59,7 @@ export default function CollaborationHub() {
       {activeTab === 0 && (
         <Grid container spacing={3}>
           {myProjects.map((project) => (
-            <Grid item xs={12} md={6} lg={4} key={project.id}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={project.id}>
               <Card sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                   <Typography variant="h6" sx={{ flex: 1 }}>{project.title}</Typography>
@@ -92,7 +92,7 @@ export default function CollaborationHub() {
             </Grid>
           ))}
           {myProjects.length === 0 && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Card sx={{ p: 4, textAlign: 'center' }}>
                 <Users className="w-12 h-12 mx-auto mb-2 text-gray-400" />
                 <Typography color="text.secondary">No group projects yet</Typography>
@@ -105,7 +105,7 @@ export default function CollaborationHub() {
       {activeTab === 1 && (
         <Grid container spacing={3}>
           {myReviews.map((review) => (
-            <Grid item xs={12} md={6} key={review.id}>
+            <Grid size={{ xs: 12, md: 6 }} key={review.id}>
               <Card sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'between', alignItems: 'flex-start', mb: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold">
@@ -123,7 +123,7 @@ export default function CollaborationHub() {
             </Grid>
           ))}
           {myReviews.length === 0 && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Card sx={{ p: 4, textAlign: 'center' }}>
                 <Award className="w-12 h-12 mx-auto mb-2 text-gray-400" />
                 <Typography color="text.secondary">No peer reviews given yet</Typography>
@@ -136,7 +136,7 @@ export default function CollaborationHub() {
       {activeTab === 2 && (
         <Grid container spacing={3}>
           {receivedReviews.map((review) => (
-            <Grid item xs={12} md={6} key={review.id}>
+            <Grid size={{ xs: 12, md: 6 }} key={review.id}>
               <Card sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold">
@@ -170,7 +170,7 @@ export default function CollaborationHub() {
             </Grid>
           ))}
           {receivedReviews.length === 0 && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Card sx={{ p: 4, textAlign: 'center' }}>
                 <MessageSquare className="w-12 h-12 mx-auto mb-2 text-gray-400" />
                 <Typography color="text.secondary">No feedback received yet</Typography>

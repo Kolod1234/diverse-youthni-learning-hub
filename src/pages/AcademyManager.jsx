@@ -160,7 +160,7 @@ export default function AcademyManager() {
 
       <Grid container spacing={3}>
         {academies.map((academy) => (
-          <Grid item xs={12} md={6} lg={4} key={academy.id}>
+          <Grid size={{ xs: 12, md: 6, lg: 4 }} key={academy.id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardHeader
                 title={academy.title}

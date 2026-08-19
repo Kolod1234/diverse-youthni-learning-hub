@@ -35,7 +35,7 @@ export default function AttendanceStatistics({ selectedDate }) {
   return (
     <Box>
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" variant="caption">Attendance Rate</Typography>
@@ -44,7 +44,7 @@ export default function AttendanceStatistics({ selectedDate }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" variant="caption">Total Students</Typography>
@@ -52,7 +52,7 @@ export default function AttendanceStatistics({ selectedDate }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" variant="caption">Marked</Typography>
@@ -60,7 +60,7 @@ export default function AttendanceStatistics({ selectedDate }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" variant="caption">Unmarked</Typography>
@@ -71,7 +71,7 @@ export default function AttendanceStatistics({ selectedDate }) {
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Attendance Distribution</Typography>
@@ -98,7 +98,7 @@ export default function AttendanceStatistics({ selectedDate }) {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Status Breakdown</Typography>

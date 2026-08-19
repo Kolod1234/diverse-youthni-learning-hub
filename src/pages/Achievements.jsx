@@ -147,7 +147,7 @@ export default function Achievements() {
             const progress = Math.min((milestone.current / milestone.target) * 100, 100);
             
             return (
-              <Grid item xs={12} sm={6} lg={3} key={milestone.name}>
+              <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={milestone.name}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -189,7 +189,7 @@ export default function Achievements() {
 
           <Grid container spacing={2}>
             {filteredAchievements.map((achievement, idx) => (
-              <Grid item xs={6} sm={4} lg={3} key={achievement.key}>
+              <Grid size={{ xs: 6, sm: 4, lg: 3 }} key={achievement.key}>
                 <AchievementCard achievement={achievement} index={idx} />
               </Grid>
             ))}

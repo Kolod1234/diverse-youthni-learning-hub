@@ -123,7 +123,7 @@ export default function YouthWork() {
               </Box>
 
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                     <CheckCircle className="w-5 h-5" style={{ color: '#16a34a' }} />
                     <Typography variant="h6" sx={{ fontWeight: 'bold', m: 0 }}>Core Principles</Typography>
@@ -138,7 +138,7 @@ export default function YouthWork() {
                   </Box>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                     <TrendingUp className="w-5 h-5" style={{ color: '#16a34a' }} />
                     <Typography variant="h6" sx={{ fontWeight: 'bold', m: 0 }}>Key Processes</Typography>
@@ -353,7 +353,7 @@ export default function YouthWork() {
               {assignedProgress.map(progress => {
                 const qual = qualifications.find(q => q.id === progress.qualification_id);
                 return (
-                  <Grid item xs={12} key={progress.id}>
+                  <Grid size={12} key={progress.id}>
                     <Card sx={{ p: 3 }}>
                       <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                         <Box sx={{ flex: 1 }}>

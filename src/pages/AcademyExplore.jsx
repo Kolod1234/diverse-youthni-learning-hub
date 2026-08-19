@@ -96,7 +96,7 @@ export default function AcademyExplore() {
           const enrollment = getEnrollment(academy.id);
 
           return (
-            <Grid item xs={12} md={6} lg={4} key={academy.id}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={academy.id}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 {academy.thumbnail && (
                   <Box

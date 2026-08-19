@@ -139,7 +139,7 @@ export default function AdminDashboard() {
 
         {/* Quick Access Widgets */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
             </Card>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
@@ -224,7 +224,7 @@ export default function AdminDashboard() {
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
             return (
-              <Grid item xs={6} md={3} key={stat.label}>
+              <Grid size={{ xs: 6, md: 3 }} key={stat.label}>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
                   <Card>
                     <CardContent>
@@ -430,7 +430,7 @@ function PartnersManagement() {
 
       <Grid container spacing={2}>
         {logos.map((logo) => (
-          <Grid item xs={6} md={3} key={logo.id}>
+          <Grid size={{ xs: 6, md: 3 }} key={logo.id}>
             <Card sx={{ opacity: logo.is_active ? 1 : 0.5 }}>
               <CardContent>
                 <Box sx={{ aspectRatio: '1/1', bgcolor: '#f3f4f6', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1, overflow: 'hidden' }}>
@@ -943,7 +943,7 @@ function CarouselManager({ carouselType = 'main', title = 'Carousel Images' }) {
 
       <Grid container spacing={2}>
         {carouselImages.map((img) => (
-          <Grid item xs={6} md={4} key={img.id}>
+          <Grid size={{ xs: 6, md: 4 }} key={img.id}>
             <Box sx={{ position: 'relative', borderRadius: 1, overflow: 'hidden', height: 200, bgcolor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', group: '&:hover' }}>
               <Box component="img" src={img.image_url} alt="Carousel" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <IconButton onClick={() => removeImage(img.id)} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'white' } }}>

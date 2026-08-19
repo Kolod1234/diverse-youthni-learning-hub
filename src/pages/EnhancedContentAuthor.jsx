@@ -79,7 +79,7 @@ export default function EnhancedContentAuthor() {
       </Box>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card sx={{ p: 3, mb: 3 }}>
             <TextField
               label="Lesson Title"
@@ -146,7 +146,7 @@ export default function EnhancedContentAuthor() {
           </Button>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>AI Writing Assistant</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>

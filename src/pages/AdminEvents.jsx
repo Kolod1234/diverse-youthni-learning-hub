@@ -144,7 +144,7 @@ export default function AdminEvents() {
       {tab === 0 && (
         <Grid container spacing={3}>
           {events.map(event => (
-            <Grid item xs={12} md={6} lg={4} key={event.id}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={event.id}>
               <Card sx={{ borderRadius: 3, border: 1, borderColor: 'divider', opacity: event.is_published ? 1 : 0.6 }}>
                 {event.image_url && (
                   <Box component="img" src={event.image_url} alt={event.title} sx={{ width: '100%', height: 140, objectFit: 'cover' }} />
@@ -188,7 +188,7 @@ export default function AdminEvents() {
             </Grid>
           ))}
           {events.length === 0 && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box sx={{ textAlign: 'center', py: 8 }}>
                 <Calendar size={48} color="#d1d5db" style={{ margin: '0 auto 12px' }} />
                 <Typography color="text.secondary">No events yet. Create your first event!</Typography>
