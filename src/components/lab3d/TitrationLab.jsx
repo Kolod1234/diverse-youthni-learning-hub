@@ -289,7 +289,7 @@ export default function TitrationLab({ onProgress }) {
   const [collected, setCollected] = useState([]);
   const [rinsed, setRinsed] = useState(false);
   const [buretteLevel, setBuretteLevel] = useState(0);
-  const [startReading, setStartReading] = useState(null);
+  const [, setStartReading] = useState(null);
   const [pipetteFilled, setPipetteFilled] = useState(false);
   const [flaskVolume, setFlaskVolume] = useState(0);   // cm3 of alkali in the flask
   const [hasIndicator, setHasIndicator] = useState(false);
@@ -313,7 +313,6 @@ export default function TitrationLab({ onProgress }) {
   );
 
   /* ---- step gating ---- */
-  const stepDone = useCallback((id) => doneRef.current.has(id), []);
   const markDone = useCallback((id) => {
     if (!doneRef.current.has(id)) {
       doneRef.current.add(id);
