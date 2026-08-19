@@ -767,7 +767,7 @@ export default function TemplateBlocks({ onInsert, onClose, onConvertToColumns }
                         </div>
                         <Plus className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 transition-colors" />
                       </div>
-                      
+
                       <div 
                         className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs overflow-hidden"
                         dangerouslySetInnerHTML={{ 

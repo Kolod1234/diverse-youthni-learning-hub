@@ -320,7 +320,7 @@ export default function CourseDetails() {
               >
                 <Chip 
                   label={course.level} 
-                  sx={{ ...levelColors[course.level] || levelColors.beginner, border: 0, mb: 2, textTransform: 'capitalize' }}
+                  sx={{ ...(levelColors[course.level] || levelColors.beginner), border: 0, mb: 2, textTransform: 'capitalize' }}
                 />
                 
                 <Typography variant="h3" fontWeight={700} sx={{ mb: 2 }}>{course.title}</Typography>

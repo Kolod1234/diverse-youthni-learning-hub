@@ -714,10 +714,10 @@ export default function LessonPlayerClassic() {
     <ErrorBoundary>
       {/* Network Status */}
       <NetworkStatusIndicator />
-      
+
       {/* Scroll Progress */}
       <ScrollPositionIndicator />
-      
+
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
         {/* Top Bar */}
         <AppBar position="sticky" sx={{ bgcolor: 'background.paper', color: 'text.primary', boxShadow: 1, zIndex: 40 }}>

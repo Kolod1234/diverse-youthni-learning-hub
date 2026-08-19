@@ -1204,623 +1204,623 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
         </div>
         </div>
 
-        {/* Mobile/tablet slide thumbnail drawer — opens via the "Slides (N)" button.
-            Hosts the SAME SlideThumbnailRail component the desktop sidebar uses, so
-            selection, reorder, duplicate and delete behave identically and there is
-            NO duplicated slide state. Closed by default at all sizes. */}
-        <Sheet open={slidesDrawerOpen} onOpenChange={setSlidesDrawerOpen}>
-          <SheetContent side="left" className="w-[88vw] sm:w-[360px] p-0 flex flex-col">
-            <SheetHeader className="px-5 pt-5 pb-3 border-b">
-              <SheetTitle className="flex items-center gap-2 text-base">
-                <LayoutList className="w-4 h-4 text-indigo-600" />
-                Slides ({slides.length})
-              </SheetTitle>
-              <p className="text-xs text-slate-500">Tap to open. Drag to reorder.</p>
-            </SheetHeader>
-            <div className="flex-1 overflow-y-auto">
-              <SlideThumbnailRail
-                slides={slides}
-                currentSlide={currentSlide}
-                onSelect={(i) => { setCurrentSlide(i); setSlidesDrawerOpen(false); }}
-                onDragEnd={handleDragEnd}
-                onDuplicate={(i) => duplicateSlide(i)}
-                onDelete={(i) => { if (confirm('Delete this slide?')) deleteSlide(i); }}
-              />
-            </div>
-            <div className="border-t p-3 bg-slate-50">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700" size="sm">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add slide
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-64 max-h-[60vh] overflow-y-auto">
-                  {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
-                    <DropdownMenuItem
-                      key={key}
-                      onClick={() => { addSlide(key); setSlidesDrawerOpen(false); }}
-                      className="cursor-pointer py-3"
-                    >
-                      <span className="text-xl mr-3">{template.icon}</span>
-                      <span className="font-medium">{template.name}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </SheetContent>
-        </Sheet>
+      {/* Mobile/tablet slide thumbnail drawer — opens via the "Slides (N)" button.
+          Hosts the SAME SlideThumbnailRail component the desktop sidebar uses, so
+          selection, reorder, duplicate and delete behave identically and there is
+          NO duplicated slide state. Closed by default at all sizes. */}
+      <Sheet open={slidesDrawerOpen} onOpenChange={setSlidesDrawerOpen}>
+        <SheetContent side="left" className="w-[88vw] sm:w-[360px] p-0 flex flex-col">
+          <SheetHeader className="px-5 pt-5 pb-3 border-b">
+            <SheetTitle className="flex items-center gap-2 text-base">
+              <LayoutList className="w-4 h-4 text-indigo-600" />
+              Slides ({slides.length})
+            </SheetTitle>
+            <p className="text-xs text-slate-500">Tap to open. Drag to reorder.</p>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto">
+            <SlideThumbnailRail
+              slides={slides}
+              currentSlide={currentSlide}
+              onSelect={(i) => { setCurrentSlide(i); setSlidesDrawerOpen(false); }}
+              onDragEnd={handleDragEnd}
+              onDuplicate={(i) => duplicateSlide(i)}
+              onDelete={(i) => { if (confirm('Delete this slide?')) deleteSlide(i); }}
+            />
+          </div>
+          <div className="border-t p-3 bg-slate-50">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="w-full bg-indigo-600 hover:bg-indigo-700" size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add slide
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-64 max-h-[60vh] overflow-y-auto">
+                {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
+                  <DropdownMenuItem
+                    key={key}
+                    onClick={() => { addSlide(key); setSlidesDrawerOpen(false); }}
+                    className="cursor-pointer py-3"
+                  >
+                    <span className="text-xl mr-3">{template.icon}</span>
+                    <span className="font-medium">{template.name}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-        {/* Save Template Modal */}
-        {showSaveTemplate && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSaveTemplate(false)}>
-            <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
-              <h3 className="text-xl font-bold mb-4">Save as Template</h3>
-              <div className="space-y-4">
-                <div>
-                  <Label>Template Name</Label>
-                  <Input
-                    value={templateName}
-                    onChange={(e) => setTemplateName(e.target.value)}
-                    placeholder="My Custom Template"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label>Icon (Emoji)</Label>
-                  <Input
-                    value={templateIcon}
-                    onChange={(e) => setTemplateIcon(e.target.value)}
-                    placeholder="📝"
-                    className="mt-1"
-                    maxLength={2}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Choose an emoji to represent your template</p>
-                </div>
+      {/* Save Template Modal */}
+      {showSaveTemplate && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSaveTemplate(false)}>
+          <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold mb-4">Save as Template</h3>
+            <div className="space-y-4">
+              <div>
+                <Label>Template Name</Label>
+                <Input
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  placeholder="My Custom Template"
+                  className="mt-1"
+                />
               </div>
-              <div className="flex gap-3 mt-6">
-                <Button 
-                  onClick={saveCustomTemplate} 
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                  disabled={!templateName.trim()}
-                >
-                  Save Template
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setShowSaveTemplate(false);
-                    setTemplateName('');
-                    setTemplateIcon('📄');
-                  }}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
+              <div>
+                <Label>Icon (Emoji)</Label>
+                <Input
+                  value={templateIcon}
+                  onChange={(e) => setTemplateIcon(e.target.value)}
+                  placeholder="📝"
+                  className="mt-1"
+                  maxLength={2}
+                />
+                <p className="text-xs text-gray-500 mt-1">Choose an emoji to represent your template</p>
               </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <Button 
+                onClick={saveCustomTemplate} 
+                className="flex-1 bg-green-600 hover:bg-green-700"
+                disabled={!templateName.trim()}
+              >
+                Save Template
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowSaveTemplate(false);
+                  setTemplateName('');
+                  setTemplateIcon('📄');
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* AI Assistant Modal */}
-        {showAIDialog && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => !aiLoading && setShowAIDialog(false)}>
-            <div className="bg-white rounded-2xl p-6 w-[500px] max-h-[80vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                </div>
+      {/* AI Assistant Modal */}
+      {showAIDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => !aiLoading && setShowAIDialog(false)}>
+          <div className="bg-white rounded-2xl p-6 w-[500px] max-h-[80vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">AI Assistant</h3>
+                <p className="text-sm text-gray-500">
+                  {aiAction === 'generate' && 'Generate slide content from a topic'}
+                  {aiAction === 'rewrite' && 'Rewrite and improve slide content'}
+                  {aiAction === 'images' && 'Visual suggestions for your slide'}
+                  {aiAction === 'generate-image' && 'Generate custom educational images with AI'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {aiAction === 'generate' && (
                 <div>
-                  <h3 className="text-xl font-bold">AI Assistant</h3>
-                  <p className="text-sm text-gray-500">
-                    {aiAction === 'generate' && 'Generate slide content from a topic'}
-                    {aiAction === 'rewrite' && 'Rewrite and improve slide content'}
-                    {aiAction === 'images' && 'Visual suggestions for your slide'}
-                    {aiAction === 'generate-image' && 'Generate custom educational images with AI'}
+                  <Label>Topic or Prompt</Label>
+                  <Textarea
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    placeholder="E.g., 'Introduction to Photosynthesis' or 'The Water Cycle explained for students'"
+                    className="mt-1 h-24"
+                    disabled={aiLoading}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Describe what you want the slide to cover
                   </p>
                 </div>
-              </div>
+              )}
 
-              <div className="space-y-4">
-                {aiAction === 'generate' && (
-                  <div>
-                    <Label>Topic or Prompt</Label>
-                    <Textarea
-                      value={aiPrompt}
-                      onChange={(e) => setAiPrompt(e.target.value)}
-                      placeholder="E.g., 'Introduction to Photosynthesis' or 'The Water Cycle explained for students'"
-                      className="mt-1 h-24"
-                      disabled={aiLoading}
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Describe what you want the slide to cover
+              {aiAction === 'rewrite' && (
+                <div>
+                  <Label>How should we improve it?</Label>
+                  <Input
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    placeholder="E.g., 'more concise', 'simpler language', 'more engaging'"
+                    className="mt-1"
+                    disabled={aiLoading}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Leave blank for general improvement, or specify tone/style
+                  </p>
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                    <p className="text-xs text-gray-600 font-medium mb-1">Current content preview:</p>
+                    <p className="text-xs text-gray-500 line-clamp-3">
+                      {currentSlideData?.content?.replace(/<[^>]*>/g, ' ').substring(0, 150)}...
                     </p>
                   </div>
-                )}
-
-                {aiAction === 'rewrite' && (
-                  <div>
-                    <Label>How should we improve it?</Label>
-                    <Input
-                      value={aiPrompt}
-                      onChange={(e) => setAiPrompt(e.target.value)}
-                      placeholder="E.g., 'more concise', 'simpler language', 'more engaging'"
-                      className="mt-1"
-                      disabled={aiLoading}
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Leave blank for general improvement, or specify tone/style
-                    </p>
-                    <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                      <p className="text-xs text-gray-600 font-medium mb-1">Current content preview:</p>
-                      <p className="text-xs text-gray-500 line-clamp-3">
-                        {currentSlideData?.content?.replace(/<[^>]*>/g, ' ').substring(0, 150)}...
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {aiAction === 'images' && (
-                  <div>
-                    <Label>Image Suggestions with Online Search</Label>
-                    {imageSuggestions.length > 0 ? (
-                      <div className="mt-2 space-y-3 max-h-96 overflow-y-auto">
-                        {imageSuggestions.map((img, idx) => (
-                          <div key={idx} className="border rounded-lg overflow-hidden bg-white">
-                            <img 
-                              src={img.url} 
-                              alt={img.description || 'Suggested image'} 
-                              className="w-full h-40 object-cover"
-                              onError={(e) => e.target.src = 'https://via.placeholder.com/400x200/E5E7EB/9CA3AF?text=Image+Not+Available'}
-                            />
-                            <div className="p-3 space-y-2">
-                              <p className="text-sm font-medium text-gray-900 line-clamp-2">{img.description || 'Educational image'}</p>
-                              <p className="text-xs text-gray-500 truncate">{img.url}</p>
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleReplaceImage(img.url)}
-                                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-                                >
-                                  Replace Image
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleInsertImage(img.url)}
-                                  className="flex-1"
-                                >
-                                  Add as New
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="mt-2 p-8 border-2 border-dashed rounded-lg text-center">
-                        <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-sm text-gray-600 mb-2">
-                          {aiLoading ? 'Searching for relevant images...' : 'Click the button below to search for images'}
-                        </p>
-                      </div>
-                    )}
-                    
-                    {aiPrompt && !aiLoading && (
-                      <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                        <p className="text-xs font-semibold text-purple-900 mb-2">💡 AI Search Suggestions:</p>
-                        <p className="text-xs text-purple-700 whitespace-pre-line">{aiPrompt}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {aiAction === 'generate-image' && (
-                  <div>
-                    <Label>Describe the Image</Label>
-                    <Textarea
-                      value={aiPrompt}
-                      onChange={(e) => setAiPrompt(e.target.value)}
-                      placeholder="E.g., 'A labeled diagram showing the parts of a plant cell' or 'A graph comparing renewable vs non-renewable energy sources'"
-                      className="mt-1 h-32"
-                      disabled={aiLoading}
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Describe the educational image, diagram, graph, or illustration you need
-                    </p>
-                    <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                      <p className="text-xs font-semibold text-purple-900 mb-2">💡 Tips for better results:</p>
-                      <ul className="text-xs text-purple-700 space-y-1">
-                        <li>• Be specific about what should be shown</li>
-                        <li>• Mention if it's a diagram, chart, graph, or illustration</li>
-                        <li>• Include labels or annotations if needed</li>
-                        <li>• Specify educational context (e.g., "for biology students")</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                {aiAction === 'images' ? (
-                  <>
-                    <Button 
-                      onClick={handleAISuggestImages}
-                      className="flex-1 bg-purple-600 hover:bg-purple-700"
-                      disabled={aiLoading}
-                    >
-                      {aiLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Searching...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          {imageSuggestions.length > 0 ? 'Search Again' : 'Search & Suggest Images'}
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        if (!aiLoading) {
-                          setShowAIDialog(false);
-                          setAiPrompt('');
-                          setImageSuggestions([]);
-                        }
-                      }}
-                      className="flex-1"
-                      disabled={aiLoading}
-                    >
-                      Close
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button 
-                      onClick={
-                        aiAction === 'generate' ? handleAIGenerate : 
-                        aiAction === 'rewrite' ? handleAIRewrite :
-                        aiAction === 'generate-image' ? handleAIGenerateImage :
-                        null
-                      }
-                      className="flex-1 bg-purple-600 hover:bg-purple-700"
-                      disabled={aiLoading || ((aiAction === 'generate' || aiAction === 'generate-image') && !aiPrompt.trim())}
-                    >
-                      {aiLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          {aiAction === 'generate-image' ? 'Generating Image...' : 'Processing...'}
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          {aiAction === 'generate' ? 'Generate Slide' : 
-                           aiAction === 'rewrite' ? 'Rewrite Content' :
-                           aiAction === 'generate-image' ? 'Generate Image' : 'Process'}
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        if (!aiLoading) {
-                          setShowAIDialog(false);
-                          setAiPrompt('');
-                        }
-                      }}
-                      className="flex-1"
-                      disabled={aiLoading}
-                    >
-                      Cancel
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Manage Templates Modal */}
-        {showManageTemplates && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowManageTemplates(false)}>
-            <div className="bg-white rounded-2xl p-6 w-[600px] max-h-[80vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold">My Custom Templates</h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowManageTemplates(false)}>
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              {Object.keys(customTemplates).length === 0 ? (
-                <div className="text-center py-12">
-                  <LayoutTemplate className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-2">No custom templates yet</p>
-                  <p className="text-sm text-gray-400">Create a slide you like and save it as a template</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {Object.entries(customTemplates).map(([key, template]) => (
-                    <Card key={key} className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center flex-shrink-0 border-2 border-green-200">
-                          <span className="text-3xl">{template.icon}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
-                          <div 
-                            className="text-xs text-gray-500 line-clamp-2 mb-2"
-                            dangerouslySetInnerHTML={{ 
-                              __html: template.content?.replace(/<[^>]*>/g, ' ').substring(0, 120) + '...' 
-                            }}
-                          />
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                updateSlide(currentSlide, 'content', template.content);
-                                toast.success(`${template.name} applied!`);
-                                setShowManageTemplates(false);
-                              }}
-                              className="h-7 text-xs"
-                            >
-                              Apply to Current Slide
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                addSlide(key);
-                                setShowManageTemplates(false);
-                              }}
-                              className="h-7 text-xs"
-                            >
-                              <Plus className="w-3 h-3 mr-1" />
-                              Add New Slide
-                            </Button>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            if (confirm(`Delete template "${template.name}"?`)) {
-                              deleteCustomTemplate(key);
-                            }
-                          }}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
                 </div>
               )}
-              
-              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <Save className="w-5 h-5 text-green-700" />
+
+              {aiAction === 'images' && (
+                <div>
+                  <Label>Image Suggestions with Online Search</Label>
+                  {imageSuggestions.length > 0 ? (
+                    <div className="mt-2 space-y-3 max-h-96 overflow-y-auto">
+                      {imageSuggestions.map((img, idx) => (
+                        <div key={idx} className="border rounded-lg overflow-hidden bg-white">
+                          <img 
+                            src={img.url} 
+                            alt={img.description || 'Suggested image'} 
+                            className="w-full h-40 object-cover"
+                            onError={(e) => e.target.src = 'https://via.placeholder.com/400x200/E5E7EB/9CA3AF?text=Image+Not+Available'}
+                          />
+                          <div className="p-3 space-y-2">
+                            <p className="text-sm font-medium text-gray-900 line-clamp-2">{img.description || 'Educational image'}</p>
+                            <p className="text-xs text-gray-500 truncate">{img.url}</p>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => handleReplaceImage(img.url)}
+                                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                              >
+                                Replace Image
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleInsertImage(img.url)}
+                                className="flex-1"
+                              >
+                                Add as New
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-2 p-8 border-2 border-dashed rounded-lg text-center">
+                      <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <p className="text-sm text-gray-600 mb-2">
+                        {aiLoading ? 'Searching for relevant images...' : 'Click the button below to search for images'}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {aiPrompt && !aiLoading && (
+                    <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <p className="text-xs font-semibold text-purple-900 mb-2">💡 AI Search Suggestions:</p>
+                      <p className="text-xs text-purple-700 whitespace-pre-line">{aiPrompt}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {aiAction === 'generate-image' && (
+                <div>
+                  <Label>Describe the Image</Label>
+                  <Textarea
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    placeholder="E.g., 'A labeled diagram showing the parts of a plant cell' or 'A graph comparing renewable vs non-renewable energy sources'"
+                    className="mt-1 h-32"
+                    disabled={aiLoading}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Describe the educational image, diagram, graph, or illustration you need
+                  </p>
+                  <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <p className="text-xs font-semibold text-purple-900 mb-2">💡 Tips for better results:</p>
+                    <ul className="text-xs text-purple-700 space-y-1">
+                      <li>• Be specific about what should be shown</li>
+                      <li>• Mention if it's a diagram, chart, graph, or illustration</li>
+                      <li>• Include labels or annotations if needed</li>
+                      <li>• Specify educational context (e.g., "for biology students")</li>
+                    </ul>
                   </div>
-                  <div>
-                    <p className="font-medium text-green-900 mb-1">How to create templates</p>
-                    <p className="text-sm text-green-700">Design a slide you like, then click "Save as Template" to reuse it anytime!</p>
-                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              {aiAction === 'images' ? (
+                <>
+                  <Button 
+                    onClick={handleAISuggestImages}
+                    className="flex-1 bg-purple-600 hover:bg-purple-700"
+                    disabled={aiLoading}
+                  >
+                    {aiLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Searching...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        {imageSuggestions.length > 0 ? 'Search Again' : 'Search & Suggest Images'}
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      if (!aiLoading) {
+                        setShowAIDialog(false);
+                        setAiPrompt('');
+                        setImageSuggestions([]);
+                      }
+                    }}
+                    className="flex-1"
+                    disabled={aiLoading}
+                  >
+                    Close
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    onClick={
+                      aiAction === 'generate' ? handleAIGenerate : 
+                      aiAction === 'rewrite' ? handleAIRewrite :
+                      aiAction === 'generate-image' ? handleAIGenerateImage :
+                      null
+                    }
+                    className="flex-1 bg-purple-600 hover:bg-purple-700"
+                    disabled={aiLoading || ((aiAction === 'generate' || aiAction === 'generate-image') && !aiPrompt.trim())}
+                  >
+                    {aiLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        {aiAction === 'generate-image' ? 'Generating Image...' : 'Processing...'}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        {aiAction === 'generate' ? 'Generate Slide' : 
+                         aiAction === 'rewrite' ? 'Rewrite Content' :
+                         aiAction === 'generate-image' ? 'Generate Image' : 'Process'}
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      if (!aiLoading) {
+                        setShowAIDialog(false);
+                        setAiPrompt('');
+                      }
+                    }}
+                    className="flex-1"
+                    disabled={aiLoading}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manage Templates Modal */}
+      {showManageTemplates && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowManageTemplates(false)}>
+          <div className="bg-white rounded-2xl p-6 w-[600px] max-h-[80vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">My Custom Templates</h3>
+              <Button variant="ghost" size="sm" onClick={() => setShowManageTemplates(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            {Object.keys(customTemplates).length === 0 ? (
+              <div className="text-center py-12">
+                <LayoutTemplate className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 mb-2">No custom templates yet</p>
+                <p className="text-sm text-gray-400">Create a slide you like and save it as a template</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {Object.entries(customTemplates).map(([key, template]) => (
+                  <Card key={key} className="p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center flex-shrink-0 border-2 border-green-200">
+                        <span className="text-3xl">{template.icon}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
+                        <div 
+                          className="text-xs text-gray-500 line-clamp-2 mb-2"
+                          dangerouslySetInnerHTML={{ 
+                            __html: template.content?.replace(/<[^>]*>/g, ' ').substring(0, 120) + '...' 
+                          }}
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              updateSlide(currentSlide, 'content', template.content);
+                              toast.success(`${template.name} applied!`);
+                              setShowManageTemplates(false);
+                            }}
+                            className="h-7 text-xs"
+                          >
+                            Apply to Current Slide
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              addSlide(key);
+                              setShowManageTemplates(false);
+                            }}
+                            className="h-7 text-xs"
+                          >
+                            <Plus className="w-3 h-3 mr-1" />
+                            Add New Slide
+                          </Button>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm(`Delete template "${template.name}"?`)) {
+                            deleteCustomTemplate(key);
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+            
+            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex gap-3">
+                <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <Save className="w-5 h-5 text-green-700" />
+                </div>
+                <div>
+                  <p className="font-medium text-green-900 mb-1">How to create templates</p>
+                  <p className="text-sm text-green-700">Design a slide you like, then click "Save as Template" to reuse it anytime!</p>
                 </div>
               </div>
             </div>
           </div>
-        )}
-
-        {/* Advanced Template Builder */}
-        {showAdvancedBuilder && (
-          <AdvancedTemplateBuilder
-            onSave={saveAdvancedTemplate}
-            onClose={() => setShowAdvancedBuilder(false)}
-            initialTemplate={null}
-          />
-        )}
-
-        {/* Template Blocks */}
-        {showTemplateBlocks && (
-          <TemplateBlocks
-            onInsert={(html) => {
-              const currentContent = currentSlideData?.content || '';
-              updateSlide(currentSlide, 'content', currentContent + html);
-            }}
-            onConvertToColumns={(cols) => {
-              const currentContent = currentSlideData?.content || '';
-              
-              // Parse content into chunks (images, paragraphs, headings, etc.)
-              const parser = new DOMParser();
-              const doc = parser.parseFromString(currentContent, 'text/html');
-              const elements = Array.from(doc.body.children);
-              
-              // Distribute elements across columns
-              const columnsContent = Array(cols).fill('').map(() => []);
-              elements.forEach((el, idx) => {
-                const columnIndex = idx % cols;
-                // Ensure images are responsive within columns and add resize control
-                if (el.tagName === 'IMG') {
-                  const imgSrc = el.src;
-                  const wrappedImg = `<div style="position: relative; margin: 10px 0;"><div style="position: absolute; top: -30px; right: 0; background: white; padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; z-index: 10;"><span style="font-size: 11px; color: #6B7280; font-weight: 600;">Size:</span><input type="range" min="30" max="100" value="100" oninput="this.nextElementSibling.textContent = this.value + '%'; const img = this.closest('div').nextElementSibling; img.style.width = this.value + '%';" style="width: 80px; height: 4px; cursor: pointer;" /><span style="font-size: 11px; color: #1F2937; font-weight: 600; min-width: 35px;">100%</span></div><img src="${imgSrc}" style="width: 100%; height: auto; max-width: 100%; display: block; border-radius: 8px;" /></div>`;
-                  columnsContent[columnIndex].push(wrappedImg);
-                } else {
-                  // Check for images inside divs
-                  const images = el.querySelectorAll('img');
-                  images.forEach(img => {
-                    const imgSrc = img.src;
-                    const wrappedImg = document.createElement('div');
-                    wrappedImg.style.position = 'relative';
-                    wrappedImg.style.margin = '10px 0';
-                    wrappedImg.innerHTML = `<div style="position: absolute; top: -30px; right: 0; background: white; padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; z-index: 10;"><span style="font-size: 11px; color: #6B7280; font-weight: 600;">Size:</span><input type="range" min="30" max="100" value="100" oninput="this.nextElementSibling.textContent = this.value + '%'; const img = this.closest('div').nextElementSibling; img.style.width = this.value + '%';" style="width: 80px; height: 4px; cursor: pointer;" /><span style="font-size: 11px; color: #1F2937; font-weight: 600; min-width: 35px;">100%</span></div><img src="${imgSrc}" style="width: 100%; height: auto; max-width: 100%; display: block; border-radius: 8px;" />`;
-                    img.parentNode.replaceChild(wrappedImg, img);
-                  });
-                  columnsContent[columnIndex].push(el.outerHTML);
-                }
-              });
-              
-              // Build column HTML with explicit equal widths
-              let columnHtml = '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse; table-layout: fixed;"><tr>';
-              
-              const colWidth = (100 / cols).toFixed(2);
-              const padding = cols === 2 ? '15px' : cols === 3 ? '10px' : '8px';
-              
-              columnsContent.forEach((content, idx) => {
-                const borderStyle = idx < cols - 1 ? ' border-right: 2px solid #E5E7EB;' : '';
-                const paddingRight = idx < cols - 1 ? ` padding-right: ${padding};` : '';
-                const paddingLeft = idx > 0 ? ` padding-left: ${padding};` : '';
-                
-                columnHtml += `<td style="width: ${colWidth}%; vertical-align: top;${paddingRight}${paddingLeft}${borderStyle}">`;
-                columnHtml += content.length > 0 ? content.join('') : '<p style="color: #9CA3AF; font-size: 14px;">Add content here</p>';
-                columnHtml += '</td>';
-              });
-              
-              columnHtml += '</tr></table></div>';
-              
-              updateSlide(currentSlide, 'content', columnHtml);
-              toast.success(`Content organized into ${cols} columns!`);
-            }}
-            onClose={() => setShowTemplateBlocks(false)}
-          />
-        )}
-
-        {/* Presentation Mode */}
-        {showPresentation && (
-          <PresentationMode 
-            slides={slides}
-            onClose={() => setShowPresentation(false)}
-          />
-        )}
-
-        {/* Image Manager */}
-        {showImageManager && (
-          <ImageManager
-            onImageSelected={(url) => {
-              const currentContent = currentSlideData?.content || '';
-              const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${url}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Selected image" /></div>`;
-              updateSlide(currentSlide, 'content', currentContent + imageHtml);
-            }}
-            onClose={() => setShowImageManager(false)}
-            slideTitle={currentSlideData?.title}
-            slideContent={currentSlideData?.content}
-          />
-        )}
-
-        {/* Image Text Overlay */}
-        {showImageOverlay && overlayImageUrl && (
-          <ImageTextOverlay
-            imageUrl={overlayImageUrl}
-            onSave={(html) => {
-              updateSlide(currentSlide, 'content', html);
-              setShowImageOverlay(false);
-              setOverlayImageUrl('');
-            }}
-            onClose={() => {
-              setShowImageOverlay(false);
-              setOverlayImageUrl('');
-            }}
-          />
-        )}
-
-        {/* Canva Integration */}
-        {showCanva && (
-          <CanvaIntegration
-            onImageImported={(imageUrl) => {
-              const currentContent = currentSlideData?.content || '';
-              const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Canva design" /></div>`;
-              updateSlide(currentSlide, 'content', currentContent + imageHtml);
-            }}
-            onClose={() => setShowCanva(false)}
-          />
-        )}
-
-        {/* Canva Importer */}
-        {showCanvaImporter && (
-          <CanvaImporter
-            onImport={(importedSlides) => {
-              const newSlides = [...slides, ...importedSlides.map((slide, idx) => ({
-                ...slide,
-                order: slides.length + idx + 1
-              }))];
-              onChange(newSlides);
-              setCurrentSlide(slides.length);
-            }}
-            onClose={() => setShowCanvaImporter(false)}
-          />
-        )}
-
-        {/* Figma Importer */}
-        {showFigmaImporter && (
-          <FigmaImporter
-            onImport={(importedSlides) => {
-              const newSlides = [...slides, ...importedSlides.map((slide, idx) => ({
-                ...slide,
-                order: slides.length + idx + 1
-              }))];
-              onChange(newSlides);
-              setCurrentSlide(slides.length);
-            }}
-            onClose={() => setShowFigmaImporter(false)}
-          />
-        )}
-
-        {/* Image Editor */}
-        {showImageEditor && imageToEdit && (
-          <ImageEditorModal
-            imageUrl={imageToEdit}
-            onSave={(editedImageUrl) => {
-              const currentContent = currentSlideData?.content || '';
-              const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${editedImageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Edited image" /></div>`;
-              updateSlide(currentSlide, 'content', currentContent + imageHtml);
-              setShowImageEditor(false);
-              setImageToEdit(null);
-              toast.success('Edited image added to slide!');
-            }}
-            onClose={() => {
-              setShowImageEditor(false);
-              setImageToEdit(null);
-            }}
-          />
-        )}
-
-        {/* Inline Code Editor */}
-        {showInlineCodeEditor && (
-          <InlineCodeEditor
-            initialCode={inlineCode}
-            language={codeLanguage}
-            onSave={handleSaveCode}
-            onCancel={() => setShowInlineCodeEditor(false)}
-          />
-        )}
-
-        {/* Inline Text Editor */}
-        {showInlineTextEditor && (
-          <InlineTextEditor
-            initialContent={currentSlideData?.content || ''}
-            onSave={(newContent) => {
-              updateSlide(currentSlide, 'content', newContent);
-              setShowInlineTextEditor(false);
-            }}
-            onCancel={() => setShowInlineTextEditor(false)}
-          />
-        )}
-
-        {/* Apply-template confirm — only mounted when pendingTemplate is set
-            (i.e. the slide already has content and a template button was
-            clicked). Empty slides bypass this entirely. */}
-        <ApplyTemplateConfirmDialog
-          open={Boolean(pendingTemplate)}
-          templateName={pendingTemplate?.name || ''}
-          onConfirm={() => pendingTemplate && commitTemplateApply(pendingTemplate.content, pendingTemplate.name)}
-          onCancel={() => setPendingTemplate(null)}
-        />
         </div>
-        );
+      )}
+
+      {/* Advanced Template Builder */}
+      {showAdvancedBuilder && (
+        <AdvancedTemplateBuilder
+          onSave={saveAdvancedTemplate}
+          onClose={() => setShowAdvancedBuilder(false)}
+          initialTemplate={null}
+        />
+      )}
+
+      {/* Template Blocks */}
+      {showTemplateBlocks && (
+        <TemplateBlocks
+          onInsert={(html) => {
+            const currentContent = currentSlideData?.content || '';
+            updateSlide(currentSlide, 'content', currentContent + html);
+          }}
+          onConvertToColumns={(cols) => {
+            const currentContent = currentSlideData?.content || '';
+            
+            // Parse content into chunks (images, paragraphs, headings, etc.)
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(currentContent, 'text/html');
+            const elements = Array.from(doc.body.children);
+            
+            // Distribute elements across columns
+            const columnsContent = Array(cols).fill('').map(() => []);
+            elements.forEach((el, idx) => {
+              const columnIndex = idx % cols;
+              // Ensure images are responsive within columns and add resize control
+              if (el.tagName === 'IMG') {
+                const imgSrc = el.src;
+                const wrappedImg = `<div style="position: relative; margin: 10px 0;"><div style="position: absolute; top: -30px; right: 0; background: white; padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; z-index: 10;"><span style="font-size: 11px; color: #6B7280; font-weight: 600;">Size:</span><input type="range" min="30" max="100" value="100" oninput="this.nextElementSibling.textContent = this.value + '%'; const img = this.closest('div').nextElementSibling; img.style.width = this.value + '%';" style="width: 80px; height: 4px; cursor: pointer;" /><span style="font-size: 11px; color: #1F2937; font-weight: 600; min-width: 35px;">100%</span></div><img src="${imgSrc}" style="width: 100%; height: auto; max-width: 100%; display: block; border-radius: 8px;" /></div>`;
+                columnsContent[columnIndex].push(wrappedImg);
+              } else {
+                // Check for images inside divs
+                const images = el.querySelectorAll('img');
+                images.forEach(img => {
+                  const imgSrc = img.src;
+                  const wrappedImg = document.createElement('div');
+                  wrappedImg.style.position = 'relative';
+                  wrappedImg.style.margin = '10px 0';
+                  wrappedImg.innerHTML = `<div style="position: absolute; top: -30px; right: 0; background: white; padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; z-index: 10;"><span style="font-size: 11px; color: #6B7280; font-weight: 600;">Size:</span><input type="range" min="30" max="100" value="100" oninput="this.nextElementSibling.textContent = this.value + '%'; const img = this.closest('div').nextElementSibling; img.style.width = this.value + '%';" style="width: 80px; height: 4px; cursor: pointer;" /><span style="font-size: 11px; color: #1F2937; font-weight: 600; min-width: 35px;">100%</span></div><img src="${imgSrc}" style="width: 100%; height: auto; max-width: 100%; display: block; border-radius: 8px;" />`;
+                  img.parentNode.replaceChild(wrappedImg, img);
+                });
+                columnsContent[columnIndex].push(el.outerHTML);
+              }
+            });
+            
+            // Build column HTML with explicit equal widths
+            let columnHtml = '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse; table-layout: fixed;"><tr>';
+            
+            const colWidth = (100 / cols).toFixed(2);
+            const padding = cols === 2 ? '15px' : cols === 3 ? '10px' : '8px';
+            
+            columnsContent.forEach((content, idx) => {
+              const borderStyle = idx < cols - 1 ? ' border-right: 2px solid #E5E7EB;' : '';
+              const paddingRight = idx < cols - 1 ? ` padding-right: ${padding};` : '';
+              const paddingLeft = idx > 0 ? ` padding-left: ${padding};` : '';
+              
+              columnHtml += `<td style="width: ${colWidth}%; vertical-align: top;${paddingRight}${paddingLeft}${borderStyle}">`;
+              columnHtml += content.length > 0 ? content.join('') : '<p style="color: #9CA3AF; font-size: 14px;">Add content here</p>';
+              columnHtml += '</td>';
+            });
+            
+            columnHtml += '</tr></table></div>';
+            
+            updateSlide(currentSlide, 'content', columnHtml);
+            toast.success(`Content organized into ${cols} columns!`);
+          }}
+          onClose={() => setShowTemplateBlocks(false)}
+        />
+      )}
+
+      {/* Presentation Mode */}
+      {showPresentation && (
+        <PresentationMode 
+          slides={slides}
+          onClose={() => setShowPresentation(false)}
+        />
+      )}
+
+      {/* Image Manager */}
+      {showImageManager && (
+        <ImageManager
+          onImageSelected={(url) => {
+            const currentContent = currentSlideData?.content || '';
+            const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${url}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Selected image" /></div>`;
+            updateSlide(currentSlide, 'content', currentContent + imageHtml);
+          }}
+          onClose={() => setShowImageManager(false)}
+          slideTitle={currentSlideData?.title}
+          slideContent={currentSlideData?.content}
+        />
+      )}
+
+      {/* Image Text Overlay */}
+      {showImageOverlay && overlayImageUrl && (
+        <ImageTextOverlay
+          imageUrl={overlayImageUrl}
+          onSave={(html) => {
+            updateSlide(currentSlide, 'content', html);
+            setShowImageOverlay(false);
+            setOverlayImageUrl('');
+          }}
+          onClose={() => {
+            setShowImageOverlay(false);
+            setOverlayImageUrl('');
+          }}
+        />
+      )}
+
+      {/* Canva Integration */}
+      {showCanva && (
+        <CanvaIntegration
+          onImageImported={(imageUrl) => {
+            const currentContent = currentSlideData?.content || '';
+            const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Canva design" /></div>`;
+            updateSlide(currentSlide, 'content', currentContent + imageHtml);
+          }}
+          onClose={() => setShowCanva(false)}
+        />
+      )}
+
+      {/* Canva Importer */}
+      {showCanvaImporter && (
+        <CanvaImporter
+          onImport={(importedSlides) => {
+            const newSlides = [...slides, ...importedSlides.map((slide, idx) => ({
+              ...slide,
+              order: slides.length + idx + 1
+            }))];
+            onChange(newSlides);
+            setCurrentSlide(slides.length);
+          }}
+          onClose={() => setShowCanvaImporter(false)}
+        />
+      )}
+
+      {/* Figma Importer */}
+      {showFigmaImporter && (
+        <FigmaImporter
+          onImport={(importedSlides) => {
+            const newSlides = [...slides, ...importedSlides.map((slide, idx) => ({
+              ...slide,
+              order: slides.length + idx + 1
+            }))];
+            onChange(newSlides);
+            setCurrentSlide(slides.length);
+          }}
+          onClose={() => setShowFigmaImporter(false)}
+        />
+      )}
+
+      {/* Image Editor */}
+      {showImageEditor && imageToEdit && (
+        <ImageEditorModal
+          imageUrl={imageToEdit}
+          onSave={(editedImageUrl) => {
+            const currentContent = currentSlideData?.content || '';
+            const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${editedImageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Edited image" /></div>`;
+            updateSlide(currentSlide, 'content', currentContent + imageHtml);
+            setShowImageEditor(false);
+            setImageToEdit(null);
+            toast.success('Edited image added to slide!');
+          }}
+          onClose={() => {
+            setShowImageEditor(false);
+            setImageToEdit(null);
+          }}
+        />
+      )}
+
+      {/* Inline Code Editor */}
+      {showInlineCodeEditor && (
+        <InlineCodeEditor
+          initialCode={inlineCode}
+          language={codeLanguage}
+          onSave={handleSaveCode}
+          onCancel={() => setShowInlineCodeEditor(false)}
+        />
+      )}
+
+      {/* Inline Text Editor */}
+      {showInlineTextEditor && (
+        <InlineTextEditor
+          initialContent={currentSlideData?.content || ''}
+          onSave={(newContent) => {
+            updateSlide(currentSlide, 'content', newContent);
+            setShowInlineTextEditor(false);
+          }}
+          onCancel={() => setShowInlineTextEditor(false)}
+        />
+      )}
+
+      {/* Apply-template confirm — only mounted when pendingTemplate is set
+          (i.e. the slide already has content and a template button was
+          clicked). Empty slides bypass this entirely. */}
+      <ApplyTemplateConfirmDialog
+        open={Boolean(pendingTemplate)}
+        templateName={pendingTemplate?.name || ''}
+        onConfirm={() => pendingTemplate && commitTemplateApply(pendingTemplate.content, pendingTemplate.name)}
+        onCancel={() => setPendingTemplate(null)}
+      />
+    </div>
+  );
         }
 
 // ---------------------------------------------------------------------------

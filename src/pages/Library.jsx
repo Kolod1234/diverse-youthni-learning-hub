@@ -493,56 +493,56 @@ export default function Library() {
 
   return (
     <Box ref={scrollContainerRef} sx={{ minHeight: '100vh', bgcolor: '#f9fafb', position: 'relative' }}>
-          {/* Pull to Refresh Indicator */}
-          {isPulling && (
-            <Box
-              sx={{
-                position: 'fixed',
-                top: 64,
-                left: 0,
-                right: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                zIndex: 9999,
-                transition: 'transform 0.2s',
-                transform: `translateY(${Math.min(pullDistance, 80)}px)`,
-                pointerEvents: 'none'
-              }}
-            >
-              <Box sx={{ bgcolor: '#2563eb', color: 'white', px: 3, py: 1.5, borderRadius: 50, boxShadow: 6, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
-                <Typography variant="body2" fontWeight={600}>
-                  {pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
-                </Typography>
-              </Box>
-            </Box>
-          )}
-          {/* Mobile Upload FAB */}
-          {canUpload && (
-          <Box
-          onClick={handleInitiateUpload}
+      {/* Pull to Refresh Indicator */}
+      {isPulling && (
+        <Box
           sx={{
-            display: { xs: 'flex', sm: 'none' },
             position: 'fixed',
-            bottom: 80,
-            right: 16,
-            zIndex: 9999,
-            width: 56,
-            height: 56,
-            borderRadius: '50%',
-            bgcolor: '#4f46e5',
-            color: 'white',
-            alignItems: 'center',
+            top: 64,
+            left: 0,
+            right: 0,
+            display: 'flex',
             justifyContent: 'center',
-            cursor: uploadingFile || analyzing ? 'not-allowed' : 'pointer',
-            opacity: uploadingFile || analyzing ? 0.6 : 1,
-            boxShadow: '0 4px 12px rgba(79, 70, 229, 0.4)',
-            '&:hover': { boxShadow: '0 6px 16px rgba(79, 70, 229, 0.6)' }
+            zIndex: 9999,
+            transition: 'transform 0.2s',
+            transform: `translateY(${Math.min(pullDistance, 80)}px)`,
+            pointerEvents: 'none'
           }}
-          >
-          <Plus className="w-6 h-6" />
+        >
+          <Box sx={{ bgcolor: '#2563eb', color: 'white', px: 3, py: 1.5, borderRadius: 50, boxShadow: 6, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
+            <Typography variant="body2" fontWeight={600}>
+              {pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
+            </Typography>
           </Box>
-          )}
+        </Box>
+      )}
+      {/* Mobile Upload FAB */}
+      {canUpload && (
+      <Box
+      onClick={handleInitiateUpload}
+      sx={{
+        display: { xs: 'flex', sm: 'none' },
+        position: 'fixed',
+        bottom: 80,
+        right: 16,
+        zIndex: 9999,
+        width: 56,
+        height: 56,
+        borderRadius: '50%',
+        bgcolor: '#4f46e5',
+        color: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: uploadingFile || analyzing ? 'not-allowed' : 'pointer',
+        opacity: uploadingFile || analyzing ? 0.6 : 1,
+        boxShadow: '0 4px 12px rgba(79, 70, 229, 0.4)',
+        '&:hover': { boxShadow: '0 6px 16px rgba(79, 70, 229, 0.6)' }
+      }}
+      >
+      <Plus className="w-6 h-6" />
+      </Box>
+      )}
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 4, flexWrap: 'wrap' }}>
@@ -837,38 +837,36 @@ export default function Library() {
         )}
         </Container>
 
+      {/* Floating AI Assistant Button */}
+      <AILibraryAssistant resources={resources} />
 
-
-        {/* Floating AI Assistant Button */}
-        <AILibraryAssistant resources={resources} />
-
-        {/* Upload Progress Dialog */}
-        <Dialog open={uploadingFile} onClose={() => {}}>
-          <DialogTitle>Uploading Book</DialogTitle>
-          <DialogContent>
-            <Box sx={{ py: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2" color="text.secondary">Progress</Typography>
-                  <Typography variant="body2" fontWeight={600} color="primary">{Math.round(uploadProgress)}%</Typography>
-                </Box>
-                <Box sx={{ width: '100%', bgcolor: '#e5e7eb', borderRadius: 50, height: 8, overflow: 'hidden' }}>
-                  <Box 
-                    sx={{ 
-                      bgcolor: '#4f46e5', 
-                      height: '100%', 
-                      transition: 'width 0.3s ease-out',
-                      width: `${uploadProgress}%`
-                    }}
-                  />
-                </Box>
+      {/* Upload Progress Dialog */}
+      <Dialog open={uploadingFile} onClose={() => {}}>
+        <DialogTitle>Uploading Book</DialogTitle>
+        <DialogContent>
+          <Box sx={{ py: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2" color="text.secondary">Progress</Typography>
+                <Typography variant="body2" fontWeight={600} color="primary">{Math.round(uploadProgress)}%</Typography>
               </Box>
-              <Typography variant="body2" color="text.secondary" textAlign="center">
-                Please wait while your book is being uploaded...
-              </Typography>
+              <Box sx={{ width: '100%', bgcolor: '#e5e7eb', borderRadius: 50, height: 8, overflow: 'hidden' }}>
+                <Box 
+                  sx={{ 
+                    bgcolor: '#4f46e5', 
+                    height: '100%', 
+                    transition: 'width 0.3s ease-out',
+                    width: `${uploadProgress}%`
+                  }}
+                />
+              </Box>
             </Box>
-          </DialogContent>
-        </Dialog>
+            <Typography variant="body2" color="text.secondary" textAlign="center">
+              Please wait while your book is being uploaded...
+            </Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
 
       {/* Book Detail Modal */}
       <Dialog open={!!selectedBook} onClose={() => setSelectedBook(null)} maxWidth="lg" fullWidth>
