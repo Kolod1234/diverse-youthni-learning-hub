@@ -624,6 +624,41 @@ function Experiment({ onExit }) {
   );
 }
 
+/** Full-screen shell for the 3-D laboratory, with its own top bar and exit. */
+function Lab3DWorkspace({ onExit }) {
+  const [step, setStep] = useState({ done: 0, total: 9 });
+
+  return (
+    <div className="vl-lab3d">
+      <header className="vl-labbar">
+        <div className="vl-labbar__title">
+          <button className="vl-icon-button" onClick={onExit} aria-label="Leave the 3D laboratory">
+            <ArrowLeft size={20} />
+          </button>
+          <span>
+            <strong>Acid–base titration</strong>
+            <small>3D laboratory · step {step.done} of {step.total}</small>
+          </span>
+        </div>
+        <div className="vl-labbar__actions">
+          <span className="vl-labbar__hint">Drag to look around · scroll to zoom</span>
+        </div>
+      </header>
+      <div className="vl-lab3d__stage">
+        <Suspense fallback={(
+          <div className="vl-lab3d__loading">
+            <FlaskConical size={34} />
+            <strong>Preparing the laboratory…</strong>
+            <span>Setting out the glassware and lighting the bench.</span>
+          </div>
+        )}>
+          <TitrationLab3D onProgress={(id, done, total) => setStep({ done, total })} />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
 export default function Laboratory() {
   const [mode, setMode] = useState('lobby');
   return (
@@ -652,7 +687,14 @@ export default function Laboratory() {
         @media(max-width:680px){.vl-dashboard__main{padding:24px 16px 65px}.vl-dashboard__header{align-items:flex-start}.vl-dashboard__header h1{font-size:38px}.vl-dashboard__tools{display:none}.vl-stat-row{grid-template-columns:repeat(2,1fr);gap:18px}.vl-stat-row>div{padding:0;border:0}.vl-progress-card{padding:18px}.vl-dashboard__rail{grid-template-columns:1fr}.vl-practical-library .vl-card-grid{grid-template-columns:1fr}.vl-section-heading{align-items:flex-start;flex-direction:column}.vl-topbar{height:68px}.vl-ghost-button{display:none}.vl-hero{padding:44px 18px;min-height:auto}.vl-hero h1{font-size:43px}.vl-room{height:330px}.vl-room__window{width:120px;height:90px}.vl-room__poster{left:175px;width:105px}.vl-room__cupboard{display:none}.vl-room__bench--front{left:45px;right:30px}.vl-practicals{padding:58px 18px}.vl-section-heading{align-items:flex-start;flex-direction:column}.vl-filters{max-width:100%;overflow:auto}.vl-card-grid{grid-template-columns:1fr}.vl-practical-card p{min-height:0}.vl-progress__steps{display:none}.vl-workspace{padding:16px}.vl-task-card{padding:22px;border-radius:17px}.vl-safety-grid{grid-template-columns:1fr}.vl-safety-grid button{min-height:120px}.vl-dose-controls{grid-template-columns:1fr}.vl-task-actions,.vl-completion__actions{flex-direction:column}.vl-apparatus{min-height:530px}.vl-apparatus{transform-origin:top center}.vl-stand__rod{left:45px}.vl-stand__base{left:15px;width:240px}.vl-stand__clamp{left:45px;width:115px}.vl-burette{left:144px}.vl-flask{left:132px}.vl-tile{left:86px}.vl-score-grid{grid-template-columns:1fr}.vl-equation-line{grid-template-columns:1fr;gap:5px}.vl-brand strong{font-size:14px}}
         @media(prefers-reduced-motion:reduce){.vl-shell *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
       `}</style>
-      {mode === 'lobby' ? <Lobby onStart={() => setMode('experiment')} /> : <Experiment onExit={() => setMode('lobby')} />}
+      {mode === 'lobby' && (
+        <Lobby
+          onStart={() => setMode('experiment')}
+          onStart3D={() => setMode('lab3d')}
+        />
+      )}
+      {mode === 'experiment' && <Experiment onExit={() => setMode('lobby')} />}
+      {mode === 'lab3d' && <Lab3DWorkspace onExit={() => setMode('lobby')} />}
     </>
   );
 }
