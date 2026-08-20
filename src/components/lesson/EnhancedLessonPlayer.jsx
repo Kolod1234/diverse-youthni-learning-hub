@@ -351,7 +351,7 @@ export default function EnhancedLessonPlayer({
     '[&_details]:my-5 [&_details]:rounded-xl [&_details]:border [&_details]:border-slate-200 [&_details]:bg-white [&_details]:p-4',
     '[&_summary]:cursor-pointer [&_summary]:font-semibold [&_summary]:text-[#10233f]',
     '[&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-xl [&_table]:text-[15px]',
-    '[&_th]:border [&_th]:border-slate-200 [&_th]:bg-slate-100 [&_th]:p-3 [&_th]:text-left [&_td]:border [&_td]:border-slate-200 [&_td]:p-3',
+    '[&_th]:border [&_th]:border-slate-200 [&_th]:p-3 [&_th]:text-left [&_td]:border [&_td]:border-slate-200 [&_td]:p-3',
     '[&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain [&_video]:h-auto [&_video]:max-w-full [&_video]:rounded-xl [&_svg]:h-auto [&_svg]:max-w-full [&_figure]:my-7 [&_figure]:overflow-visible',
     '[&_math]:mx-1 [&_math]:inline-block [&_math]:align-middle [&_math]:font-serif [&_math]:text-[1.1em] [&_math]:text-[#0b1b32]',
     '[&_.key-rule]:my-6 [&_.key-rule]:rounded-xl [&_.key-rule]:border [&_.key-rule]:border-emerald-200 [&_.key-rule]:bg-emerald-50 [&_.key-rule]:p-5',
