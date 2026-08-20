@@ -205,6 +205,17 @@ button:focus-visible {
     vertical-align: middle;
   }
 
+  /* Default header tint sits on the row, not the cell, so that a table whose
+     <tr> carries its own inline background (e.g. a coloured header band in
+     authored lesson HTML) shows through instead of being painted over. */
+  .lesson-rich-content thead {
+    background-color: rgb(241 245 249);
+  }
+
+  .lesson-rich-content th {
+    background-color: transparent;
+  }
+
   .lesson-rich-content .geometry-diagram {
     display: block;
     width: min(100%, 46rem);
