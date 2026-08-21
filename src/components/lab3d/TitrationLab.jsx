@@ -596,7 +596,7 @@ export default function TitrationLab({ onProgress }) {
       <Canvas
         shadows
         dpr={[1, 2]}
-        camera={{ position: [0.42, 1.82, 2.25], fov: 45 }}
+        camera={{ position: [0.40, 1.60, 1.78], fov: 45 }}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -615,7 +615,7 @@ export default function TitrationLab({ onProgress }) {
            * view with cabinet doors while the cupboard the second step tells
            * the student to open was outside the frustum entirely.
            */
-          target={[0.36, 1.22, -0.55]}
+          target={[0.34, 1.12, -0.48]}
           minDistance={0.6}
           maxDistance={4.2}
           maxPolarAngle={Math.PI / 2.05}
