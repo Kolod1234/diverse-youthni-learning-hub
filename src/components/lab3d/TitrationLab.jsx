@@ -26,8 +26,46 @@ const BENCH_Y = BENCH.h + 0.02;   // top surface of the worktop
 /* Interaction helpers                                                 */
 /* ------------------------------------------------------------------ */
 
+/**
+ * A slow cyan pulse marking the object the current step wants the student to
+ * click. Without it the only affordance is hover, so a first-time user faces a
+ * wide bench of small objects with nothing indicating where to start.
+ *
+ * `facing` is 'floor' for things standing on the bench and 'wall' for the
+ * cupboard, so the ring always lies in a sensible plane.
+ */
+function HintRing({ facing = 'floor', radius = 0.05 }) {
+  const ref = useRef();
+
+  useFrame((s) => {
+    if (!ref.current) return;
+    const t = s.clock.elapsedTime;
+    const k = 1 + Math.sin(t * 2.6) * 0.16;
+    ref.current.scale.set(k, k, 1);
+    ref.current.material.opacity = 0.42 + Math.sin(t * 2.6) * 0.22;
+  });
+
+  return (
+    <mesh
+      ref={ref}
+      rotation={facing === 'floor' ? [-Math.PI / 2, 0, 0] : [0, 0, 0]}
+      position={facing === 'floor' ? [0, 0.004, 0] : [0, 0, 0.16]}
+      renderOrder={2}
+    >
+      <ringGeometry args={[radius, radius * 1.34, 40]} />
+      <meshBasicMaterial
+        color="#25c6da"
+        transparent
+        opacity={0.5}
+        depthWrite={false}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  );
+}
+
 /** Wraps children so they highlight and show a tooltip when hoverable. */
-function Interactive({ enabled = true, label, onClick, children, ...props }) {
+function Interactive({ enabled = true, label, onClick, hint = null, hintRadius = 0.05, children, ...props }) {
   const [hovered, setHovered] = useState(false);
   const group = useRef();
 
@@ -51,6 +89,7 @@ function Interactive({ enabled = true, label, onClick, children, ...props }) {
       {...props}
     >
       {children}
+      {hint && enabled && !hovered && <HintRing facing={hint} radius={hintRadius} />}
       {hovered && enabled && label && (
         <Html center distanceFactor={1.6} position={[0, 0.22, 0]} zIndexRange={[10, 0]}>
           <div style={{
