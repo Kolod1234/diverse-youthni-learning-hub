@@ -596,7 +596,7 @@ export default function TitrationLab({ onProgress }) {
       <Canvas
         shadows
         dpr={[1, 2]}
-        camera={{ position: [0.9, 1.72, 1.55], fov: 42 }}
+        camera={{ position: [0.42, 1.82, 2.25], fov: 45 }}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -609,7 +609,13 @@ export default function TitrationLab({ onProgress }) {
           </Suspense>
         </SceneErrorBoundary>
         <OrbitControls
-          target={[0, 1.05, -0.1]}
+          /*
+           * Framed so the worktop AND the wall cupboard are both on screen at
+           * the start. The old target sat too low and too close, filling the
+           * view with cabinet doors while the cupboard the second step tells
+           * the student to open was outside the frustum entirely.
+           */
+          target={[0.36, 1.22, -0.55]}
           minDistance={0.6}
           maxDistance={4.2}
           maxPolarAngle={Math.PI / 2.05}
