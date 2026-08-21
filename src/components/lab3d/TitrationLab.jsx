@@ -114,7 +114,7 @@ function Tag({ children, position }) {
     <Html
       center
       position={position}
-      distanceFactor={0.32}
+      distanceFactor={1.6}
       zIndexRange={[8, 0]}
       style={{ pointerEvents: 'none' }}
     >
