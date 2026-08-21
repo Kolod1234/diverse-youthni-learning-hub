@@ -7,15 +7,19 @@ import {
   Sparkles, Users, Volume2, X
 } from 'lucide-react';
 
+import { createScienceCentreBridge, originOf, PROTOCOL_VERSION } from '@/components/scienceCentre/scienceCentreBridge';
+
 /**
  * URL of the hosted Unity WebGL build of the Diverse Youth Virtual Science
  * Centre (entrance atrium, department scenes, first-person hands).
  *
- * The build is ~134 MB, so it is hosted separately rather than bundled into
- * this app. Set VITE_SCIENCE_CENTRE_URL at build time to the folder containing
- * the Unity index.html.
+ * The build is ~134 MB, so it is hosted on its own origin rather than bundled
+ * into this app. Set VITE_SCIENCE_CENTRE_URL at build time to the Unity host
+ * page; its origin is derived automatically and used to lock down postMessage
+ * traffic in both directions.
  */
 const SCIENCE_CENTRE_URL = import.meta.env.VITE_SCIENCE_CENTRE_URL || '';
+const CHECKPOINT_KEY = 'dysc.latest-checkpoint';
 
 const navy = '#081a2d';
 const cyan = '#25c6da';
