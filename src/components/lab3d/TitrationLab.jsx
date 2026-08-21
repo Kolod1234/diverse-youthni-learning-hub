@@ -536,9 +536,11 @@ export default function TitrationLab({ onProgress }) {
           gl.toneMappingExposure = 1.05;
         }}
       >
-        <Suspense fallback={null}>
-          <Scene state={state} actions={actions} />
-        </Suspense>
+        <SceneErrorBoundary fallback={<SceneFailure />}>
+          <Suspense fallback={null}>
+            <Scene state={state} actions={actions} />
+          </Suspense>
+        </SceneErrorBoundary>
         <OrbitControls
           target={[0, 1.05, -0.1]}
           minDistance={0.6}
