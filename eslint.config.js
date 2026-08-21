@@ -57,14 +57,4 @@ export default [
       "react-hooks/rules-of-hooks": "error",
     },
   },
-  {
-    // React Three Fiber renders three.js objects as JSX intrinsics (<mesh>,
-    // <latheGeometry>, <meshPhysicalMaterial>, ...). eslint-plugin-react only
-    // knows the DOM element whitelist, so every three.js prop reads as an
-    // unknown property. The rule has no value on these files.
-    files: ["src/components/lab3d/**/*.{js,jsx}"],
-    rules: {
-      "react/no-unknown-property": "off",
-    },
-  },
 ];
