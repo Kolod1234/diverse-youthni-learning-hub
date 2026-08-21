@@ -632,36 +632,50 @@ function Experiment({ onExit }) {
   );
 }
 
-/** Full-screen shell for the 3-D laboratory, with its own top bar and exit. */
-function Lab3DWorkspace({ onExit }) {
-  const [step, setStep] = useState({ done: 0, total: 9 });
-
+/**
+ * Full-screen shell hosting the Unity Virtual Science Centre.
+ *
+ * The Science Centre is a Unity WebGL build - the student walks in through the
+ * entrance atrium in first person, with visible hands, and chooses a
+ * department. It is embedded rather than reimplemented: Unity is the runtime
+ * for the simulation, per the project design document.
+ */
+function ScienceCentreWorkspace({ onExit }) {
   return (
     <div className="vl-lab3d">
       <header className="vl-labbar">
         <div className="vl-labbar__title">
-          <button className="vl-icon-button" onClick={onExit} aria-label="Leave the 3D laboratory">
+          <button className="vl-icon-button" onClick={onExit} aria-label="Leave the Science Centre">
             <ArrowLeft size={20} />
           </button>
           <span>
-            <strong>Acid–base titration</strong>
-            <small>3D laboratory · step {step.done} of {step.total}</small>
+            <strong>Virtual Science Centre</strong>
+            <small>Entrance atrium · Chemistry, Biology and Physics</small>
           </span>
         </div>
         <div className="vl-labbar__actions">
-          <span className="vl-labbar__hint">Drag to look around · scroll to zoom</span>
+          <span className="vl-labbar__hint">WASD to walk · mouse to look · click to interact</span>
         </div>
       </header>
       <div className="vl-lab3d__stage">
-        <Suspense fallback={(
+        {SCIENCE_CENTRE_URL ? (
+          <iframe
+            src={SCIENCE_CENTRE_URL}
+            title="Diverse Youth Virtual Science Centre"
+            allow="fullscreen; autoplay; cross-origin-isolated; xr-spatial-tracking"
+            allowFullScreen
+            style={{ width: '100%', height: '100%', border: 0, display: 'block' }}
+          />
+        ) : (
           <div className="vl-lab3d__loading">
             <FlaskConical size={34} />
-            <strong>Preparing the laboratory…</strong>
-            <span>Setting out the glassware and lighting the bench.</span>
+            <strong>Science Centre not configured</strong>
+            <span>
+              Set <code>VITE_SCIENCE_CENTRE_URL</code> to the address of the hosted
+              Unity WebGL build, then rebuild this app.
+            </span>
           </div>
-        )}>
-          <TitrationLab3D onProgress={(id, done, total) => setStep({ done, total })} />
-        </Suspense>
+        )}
       </div>
     </div>
   );
@@ -705,7 +719,7 @@ export default function Laboratory() {
         />
       )}
       {mode === 'experiment' && <Experiment onExit={() => setMode('lobby')} />}
-      {mode === 'lab3d' && <Lab3DWorkspace onExit={() => setMode('lobby')} />}
+      {mode === 'lab3d' && <ScienceCentreWorkspace onExit={() => setMode('lobby')} />}
     </>
   );
 }
