@@ -21,7 +21,8 @@
  */
 
 export const PROTOCOL_VERSION = '1.0';
-const BRIDGE_OBJECT = 'Base44Bridge';
+// Note: the 'Base44Bridge' GameObject name lives in the relay on the Unity
+// host, since only that side calls SendMessage.
 
 /**
  * Reduce a URL to its origin, so an allowlist entry can be written either way
