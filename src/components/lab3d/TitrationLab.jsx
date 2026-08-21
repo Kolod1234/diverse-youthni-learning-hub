@@ -327,7 +327,7 @@ function Scene({ state, actions }) {
 
       {/* Grounding shadow under the bench area */}
       <ContactShadows position={[0, 0.002, 0]} opacity={0.35} scale={7} blur={2.4} far={2} />
-      <Environment preset="city" background={false} />
+      <StudioEnvironment />
     </>
   );
 }
