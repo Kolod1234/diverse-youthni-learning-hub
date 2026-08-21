@@ -332,6 +332,34 @@ function Scene({ state, actions }) {
   );
 }
 
+/**
+ * Keeps a failure inside the 3-D scene visible instead of silent.
+ *
+ * Without this, anything that throws below <Canvas> unmounts the whole scene
+ * and - with a null Suspense fallback - leaves the student staring at an empty
+ * dark rectangle with no clue that something broke.
+ */
+class SceneErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  componentDidCatch(error, info) {
+    // eslint-disable-next-line no-console
+    console.error('[lab3d] scene failed to render', error, info);
+  }
+
+  render() {
+    if (this.state.error) return this.props.fallback ?? null;
+    return this.props.children;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Container: state machine + HUD                                      */
 /* ------------------------------------------------------------------ */
