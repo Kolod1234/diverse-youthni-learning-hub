@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -7,8 +7,6 @@ import {
   Sparkles, Users, Volume2, X
 } from 'lucide-react';
 
-// The 3-D laboratory pulls in three.js and React Three Fiber, so it is split
-// into its own chunk and only fetched when a student actually opens it.
 /**
  * URL of the hosted Unity WebGL build of the Diverse Youth Virtual Science
  * Centre (entrance atrium, department scenes, first-person hands).
