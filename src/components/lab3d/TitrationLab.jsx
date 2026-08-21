@@ -237,6 +237,8 @@ function Scene({ state, actions }) {
               enabled={!collected.includes(item.id)}
               label={collected.includes(item.id) ? 'Already on the bench' : `Take the ${item.id}`}
               onClick={() => actions.collect(item.id)}
+              hint={collected.includes(item.id) ? null : 'wall'}
+              hintRadius={0.05}
               position={[item.x, 0, 0.02]}
             >
               <group visible={!collected.includes(item.id)}>{item.node}</group>
@@ -331,7 +333,7 @@ function Scene({ state, actions }) {
 
         {/* Safety goggles */}
         {!goggles && (
-          <Interactive label="Put on safety goggles" onClick={actions.wearGoggles} position={[0.48, 0.03, 0.22]}>
+          <Interactive label="Put on safety goggles" onClick={actions.wearGoggles} hint="floor" hintRadius={0.055} position={[0.48, 0.03, 0.22]}>
             <group>
               <mesh castShadow>
                 <torusGeometry args={[0.026, 0.008, 10, 24]} />
@@ -350,6 +352,8 @@ function Scene({ state, actions }) {
       <Interactive
         label={cupboardOpen ? 'Close the cupboard' : 'Open the apparatus cupboard'}
         onClick={actions.toggleCupboard}
+        hint={goggles && !cupboardOpen ? 'wall' : null}
+        hintRadius={0.14}
         position={[1.55, 1.20, -2.32]}
       >
         <mesh visible={false}><boxGeometry args={[1.1, 0.2, 0.3]} /></mesh>
