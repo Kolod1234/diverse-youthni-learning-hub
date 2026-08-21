@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diverse Youth Virtual Science Centre</title>
+    <script type="module" crossorigin src="/science-centre/assets/index-CbHFz9KU.js"></script>
+    <link rel="stylesheet" crossorigin href="/science-centre/assets/index-DTloPYJS.css">
+  </head>
+  <body>
+    <main class="review-shell">
+      <header class="review-header">
+        <div>
+          <p class="eyebrow">Diverse Youth Learning Hub</p>
+          <h1>Virtual Science Centre</h1>
+        </div>
+        <div class="runtime-status" aria-live="polite">
+          <span data-testid="department">Central Atrium</span>
+          <strong data-testid="unity-status">Preparing laboratory…</strong>
+        </div>
+      </header>
+
+      <section class="player-frame" aria-label="Interactive virtual science centre">
+        <canvas id="unity-canvas" tabindex="0"></canvas>
+        <div class="loading-panel" id="loading-panel">
+          <div class="loading-mark">DY</div>
+          <p id="loading-message">Loading the science centre…</p>
+          <progress id="loading-progress" max="1" value="0"></progress>
+        </div>
+        <button id="fullscreen-button" class="fullscreen-button" type="button">Full screen</button>
+      </section>
+
+      <p id="runtime-error" class="runtime-error" role="alert"></p>
+    </main>
+    <script src="/science-centre/ready-fallback.js" defer></script>
+  </body>
+</html>
