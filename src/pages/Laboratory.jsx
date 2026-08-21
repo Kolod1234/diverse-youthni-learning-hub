@@ -643,6 +643,78 @@ function Experiment({ onExit }) {
  * for the simulation, per the project design document.
  */
 function ScienceCentreWorkspace({ onExit }) {
+  const frameRef = useRef(null);
+  const [status, setStatus] = useState('loading');   // loading | ready | error
+  const [place, setPlace] = useState('Entrance atrium');
+  const [error, setError] = useState('');
+
+  const targetOrigin = useMemo(() => originOf(SCIENCE_CENTRE_URL), []);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame || !SCIENCE_CENTRE_URL) return undefined;
+
+    // Restore the learner's last checkpoint so they resume where they stopped.
+    let checkpointJson;
+    try {
+      checkpointJson = window.localStorage.getItem(CHECKPOINT_KEY) || undefined;
+    } catch {
+      checkpointJson = undefined;   // private browsing, storage disabled
+    }
+
+    const bridge = createScienceCentreBridge({
+      targetWindow: frame.contentWindow,
+      targetOrigin,
+      launchContext: {
+        protocolVersion: PROTOCOL_VERSION,
+        sessionId: crypto.randomUUID(),
+        learnerId: 'base44-learner',
+        courseId: 'science-centre-foundation',
+        department: 0,
+        mode: 'learner',
+        textScale: 100,
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        ...(checkpointJson ? { checkpointJson } : {}),
+      },
+      onReady: () => setStatus('ready'),
+      onDepartmentChanged: (name) => {
+        setError('');
+        setPlace(name === 'Atrium' ? 'Entrance atrium' : `${name} department`);
+      },
+      onCheckpoint: (json) => {
+        try { window.localStorage.setItem(CHECKPOINT_KEY, json); } catch { /* not fatal */ }
+      },
+      onNavigationFailed: (message) => setError(message),
+    });
+
+    return () => bridge.dispose();
+  }, [targetOrigin]);
+
+  if (!SCIENCE_CENTRE_URL) {
+    return (
+      <div className="vl-lab3d">
+        <header className="vl-labbar">
+          <div className="vl-labbar__title">
+            <button className="vl-icon-button" onClick={onExit} aria-label="Go back">
+              <ArrowLeft size={20} />
+            </button>
+            <span><strong>Virtual Science Centre</strong></span>
+          </div>
+        </header>
+        <div className="vl-lab3d__stage">
+          <div className="vl-lab3d__loading">
+            <FlaskConical size={34} />
+            <strong>Science Centre not configured</strong>
+            <span>
+              Set <code>VITE_SCIENCE_CENTRE_URL</code> to the hosted Unity build,
+              then rebuild this app.
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="vl-lab3d">
       <header className="vl-labbar">
@@ -652,7 +724,7 @@ function ScienceCentreWorkspace({ onExit }) {
           </button>
           <span>
             <strong>Virtual Science Centre</strong>
-            <small>Entrance atrium · Chemistry, Biology and Physics</small>
+            <small>{error || place}</small>
           </span>
         </div>
         <div className="vl-labbar__actions">
@@ -660,22 +732,19 @@ function ScienceCentreWorkspace({ onExit }) {
         </div>
       </header>
       <div className="vl-lab3d__stage">
-        {SCIENCE_CENTRE_URL ? (
-          <iframe
-            src={SCIENCE_CENTRE_URL}
-            title="Diverse Youth Virtual Science Centre"
-            allow="fullscreen; autoplay; cross-origin-isolated; xr-spatial-tracking"
-            allowFullScreen
-            style={{ width: '100%', height: '100%', border: 0, display: 'block' }}
-          />
-        ) : (
+        <iframe
+          ref={frameRef}
+          src={SCIENCE_CENTRE_URL}
+          title="Diverse Youth Virtual Science Centre"
+          allow="fullscreen; autoplay; gamepad; xr-spatial-tracking"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', border: 0, display: 'block' }}
+        />
+        {status === 'loading' && (
           <div className="vl-lab3d__loading">
             <FlaskConical size={34} />
-            <strong>Science Centre not configured</strong>
-            <span>
-              Set <code>VITE_SCIENCE_CENTRE_URL</code> to the address of the hosted
-              Unity WebGL build, then rebuild this app.
-            </span>
+            <strong>Entering the Science Centre…</strong>
+            <span>First visit downloads the building; later visits are cached.</span>
           </div>
         )}
       </div>
