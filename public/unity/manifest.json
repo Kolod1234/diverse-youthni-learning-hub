@@ -1,0 +1,7 @@
+{
+  "loaderUrl": "/unity/Build/WebGL.loader.js",
+  "dataUrl": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/572cb05f6_WebGLdata.unityweb",
+  "frameworkUrl": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/b0a0fc351_WebGLframeworkjs.unityweb",
+  "codeUrl": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/1b319a088_WebGLwasm.unityweb",
+  "streamingAssetsUrl": "/unity/StreamingAssets"
+}
