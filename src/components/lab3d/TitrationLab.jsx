@@ -101,21 +101,73 @@ function Droplets({ active }) {
   );
 }
 
-/** Small 3-D label used on bottles and shelves. */
-function Tag({ children, ...props }) {
+/**
+ * Small label used on bottles and shelves.
+ *
+ * Deliberately a DOM overlay rather than drei's <Text>: troika (which backs
+ * <Text>) resolves its default font over a CDN at runtime, which fails on a
+ * locked-down school network and would suspend the whole scene. Html uses the
+ * page's own fonts and needs no network at all.
+ */
+function Tag({ children, position }) {
   return (
-    <Text
-      fontSize={0.012}
-      color="#1e293b"
-      anchorX="center"
-      anchorY="middle"
-      maxWidth={0.05}
-      textAlign="center"
-      {...props}
+    <Html
+      center
+      position={position}
+      distanceFactor={0.32}
+      zIndexRange={[8, 0]}
+      style={{ pointerEvents: 'none' }}
     >
-      {children}
-    </Text>
+      <div style={{
+        background: 'rgba(255,255,255,0.92)',
+        color: '#1e293b',
+        border: '1px solid rgba(30,41,59,0.25)',
+        borderRadius: 4,
+        padding: '3px 6px',
+        fontSize: 11,
+        lineHeight: 1.15,
+        fontWeight: 700,
+        textAlign: 'center',
+        whiteSpace: 'pre-line',
+        letterSpacing: '0.01em',
+      }}>
+        {children}
+      </div>
+    </Html>
   );
+}
+
+/**
+ * Image-based lighting generated locally from three's RoomEnvironment.
+ *
+ * Replaces <Environment preset="city" />, which downloads a ~2 MB HDR from
+ * raw.githack.com. That request fails offline or behind a school firewall, and
+ * because the loader suspends inside the scene's only Suspense boundary the
+ * failure blanked the entire laboratory. RoomEnvironment ships with three, so
+ * the glassware still gets believable reflections with no network dependency.
+ */
+function StudioEnvironment() {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+
+  useEffect(() => {
+    const pmrem = new THREE.PMREMGenerator(gl);
+    pmrem.compileEquirectangularShader();
+    const room = new RoomEnvironment();
+    const target = pmrem.fromScene(room, 0.04);
+    scene.environment = target.texture;
+    return () => {
+      scene.environment = null;
+      target.dispose();
+      pmrem.dispose();
+      room.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) o.material.dispose();
+      });
+    };
+  }, [gl, scene]);
+
+  return null;
 }
 
 /* ------------------------------------------------------------------ */
