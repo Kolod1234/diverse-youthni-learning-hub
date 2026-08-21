@@ -9,7 +9,15 @@ import {
 
 // The 3-D laboratory pulls in three.js and React Three Fiber, so it is split
 // into its own chunk and only fetched when a student actually opens it.
-const TitrationLab3D = lazy(() => import('@/components/lab3d/TitrationLab'));
+/**
+ * URL of the hosted Unity WebGL build of the Diverse Youth Virtual Science
+ * Centre (entrance atrium, department scenes, first-person hands).
+ *
+ * The build is ~134 MB, so it is hosted separately rather than bundled into
+ * this app. Set VITE_SCIENCE_CENTRE_URL at build time to the folder containing
+ * the Unity index.html.
+ */
+const SCIENCE_CENTRE_URL = import.meta.env.VITE_SCIENCE_CENTRE_URL || '';
 
 const navy = '#081a2d';
 const cyan = '#25c6da';
