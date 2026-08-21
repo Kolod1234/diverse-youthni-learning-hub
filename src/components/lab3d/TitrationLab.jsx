@@ -339,6 +339,8 @@ function Scene({ state, actions }) {
  * and - with a null Suspense fallback - leaves the student staring at an empty
  * dark rectangle with no clue that something broke.
  */
+
+/** What the student sees if the scene throws. */
 function SceneFailure() {
   return (
     <Html center>
@@ -360,6 +362,7 @@ function SceneFailure() {
   );
 }
 
+/** Catches anything that throws below <Canvas>. */
 class SceneErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
