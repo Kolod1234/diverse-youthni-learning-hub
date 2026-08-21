@@ -339,6 +339,27 @@ function Scene({ state, actions }) {
  * and - with a null Suspense fallback - leaves the student staring at an empty
  * dark rectangle with no clue that something broke.
  */
+function SceneFailure() {
+  return (
+    <Html center>
+      <div style={{
+        background: 'rgba(8,26,45,0.94)',
+        color: '#ffd7d7',
+        padding: '14px 18px',
+        borderRadius: 10,
+        fontSize: 14,
+        lineHeight: 1.5,
+        maxWidth: 320,
+        textAlign: 'center',
+        border: '1px solid rgba(255,120,120,0.4)',
+      }}>
+        The 3-D bench could not be drawn on this device. Details are in the
+        browser console; the 2-D laboratory is still available.
+      </div>
+    </Html>
+  );
+}
+
 class SceneErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
