@@ -18,7 +18,7 @@ import { createScienceCentreBridge, originOf, PROTOCOL_VERSION } from '@/compone
  * page; its origin is derived automatically and used to lock down postMessage
  * traffic in both directions.
  */
-const SCIENCE_CENTRE_URL = import.meta.env.VITE_SCIENCE_CENTRE_URL || '';
+const SCIENCE_CENTRE_URL = import.meta.env.VITE_SCIENCE_CENTRE_URL || '/science-centre/index.html';
 const CHECKPOINT_KEY = 'dysc.latest-checkpoint';
 
 const navy = '#081a2d';
