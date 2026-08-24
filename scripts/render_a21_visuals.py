@@ -155,7 +155,7 @@ im,d=base("Reading rates and orders from graphs","Graph shape is evidence only w
 # left conc-time with tangent
 ox,oy=120,820; xmax=760; top=200
 d.line((ox,top,ox,oy),fill=INK,width=4); d.line((ox,oy,xmax,oy),fill=INK,width=4)
-d.text((135,175),"concentration / mol dm⁻³",font=font(18,True),fill=INK)
+d.text((125,195),"[A] / mol dm⁻³",font=font(17,True),fill=INK)
 d.text((440,865),"time / s",font=font(20,True),fill=INK,anchor="mm")
 pts=[]
 for i in range(0,601,5):
@@ -250,7 +250,7 @@ for r,(a,b,c,e,col) in enumerate(items):
     d.text((690,y+20),c,font=font(20,True),fill=INK)
     d.text((1050,y+20),e,font=font(19,True),fill=col)
     if r<3: arrow(d,(800,y+140),(800,y+165),GRID,4,12)
-box(d,(90,865,1510,970),"Calculator check","At 298 K, an acid has [H⁺] > 1.0 × 10⁻⁷ mol dm⁻³.\\nA base has [H⁺] < 1.0 × 10⁻⁷ mol dm⁻³.",fill="#fff8ef",outline=ORANGE)
+box(d,(90,865,1510,970),"Calculator check","At 298 K, an acid has [H⁺] > 1.0 × 10⁻⁷ mol dm⁻³.\nA base has [H⁺] < 1.0 × 10⁻⁷ mol dm⁻³.",fill="#fff8ef",outline=ORANGE)
 save(im,"08-acid-base-roadmap.png")
 
 # 9 titration practical/curves
@@ -318,8 +318,8 @@ d.text((330,345),"δ+",font=font(19,True),fill=BLUE,anchor="mm")
 d.text((75,300),":CN⁻",font=font(27,True),fill=PURPLE,anchor="mm")
 arrow(d,(115,292),(315,290),PURPLE,5,17)
 arrow(d,(353,270),(353,225),RED,5,17)
-d.text((85,390),"1  :CN⁻ lone pair → carbonyl carbon",font=font(17,True),fill=PURPLE)
-d.text((400,390),"2  π(C=O) bond → oxygen",font=font(17,True),fill=RED)
+d.text((85,375),"1  :CN⁻ lone pair → carbonyl carbon",font=font(17,True),fill=PURPLE)
+d.text((400,415),"2  π(C=O) bond → oxygen",font=font(17,True),fill=RED)
 arrow(d,(570,300),(710,300),INK,5,17)
 d.text((930,275),"(CH₃)₂C(O⁻)CN",font=font(28,True),fill=INK,anchor="mm")
 arrow(d,(1080,300),(1190,300),TEAL,5,17)
