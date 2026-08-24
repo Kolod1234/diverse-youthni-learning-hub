@@ -68,23 +68,31 @@ def table(d,xy,headers,rows,widths,row_h=62,font_size=17,header_fill="#edf4f6"):
 
 # 1 mass spectrum anatomy
 im,d=base("Reading a mass spectrum","Relative abundance is plotted against mass-to-charge ratio, m/z. Example: propanone, C₃H₆O.")
-ox,oy=120,810; xr=1510; top=190
+ox,oy=120,810; xr=825; top=250
 d.line((ox,top,ox,oy),fill=INK,width=4); d.line((ox,oy,xr,oy),fill=INK,width=4)
-d.text((48,500),"relative abundance / %",font=font(20,True),fill=INK,anchor="mm")
-d.text((820,860),"m/z",font=font(22,True),fill=INK,anchor="mm")
+d.text((120,212),"relative abundance / %",font=font(18,True),fill=INK,anchor="lm")
+d.text((475,865),"m/z",font=font(22,True),fill=INK,anchor="mm")
 peaks=[(15,18,"CH₃⁺"),(28,9,"CO⁺"),(43,100,"CH₃CO⁺"),(58,31,"M⁺•"),(59,2.2,"M+1")]
 for mz,ab,lab in peaks:
-    x=ox+mz*19; y=oy-ab*5.6
-    d.line((x,oy,x,y),fill=BLUE if mz!=43 else ORANGE,width=7)
-    d.text((x,y-16),lab,font=font(17,True),fill=BLUE if mz!=43 else ORANGE,anchor="ms")
-    d.text((x,oy+12),str(mz),font=font(15),fill=INK,anchor="ma")
+    x=ox+mz*11.2; y=oy-ab*5.1
+    col=ORANGE if mz==43 else BLUE
+    d.line((x,oy,x,y),fill=col,width=7)
+    if mz==58:
+        d.text((x-10,y-18),lab,font=font(16,True),fill=col,anchor="rs")
+        d.text((x-6,oy+12),"58",font=font(15),fill=INK,anchor="ra")
+    elif mz==59:
+        d.text((x+13,y-36),lab,font=font(16,True),fill=col,anchor="ls")
+        d.text((x+8,oy+12),"59",font=font(15),fill=INK,anchor="la")
+    else:
+        d.text((x,y-16),lab,font=font(17,True),fill=col,anchor="ms")
+        d.text((x,oy+12),str(mz),font=font(15),fill=INK,anchor="ma")
 box(d,(900,190,1510,390),"Base peak: m/z 43","The tallest peak is assigned 100% relative abundance. It is a fragment ion, CH₃CO⁺, not the molecular ion.",fill="#fff4e8",outline=ORANGE)
 box(d,(900,420,1510,610),"Molecular-ion peak: m/z 58","M⁺• is formed when one electron is removed from the whole molecule. Its m/z gives the relative molecular mass when charge = +1.",fill="#eef5ff",outline=BLUE)
-box(d,(900,640,1510,770),"M+1 peak","Mostly caused by molecules containing one ¹³C atom. Its small height is beside, not part of, M⁺•.",fill="#edf8f4",outline=TEAL)
+box(d,(900,640,1510,790),"M+1 peak","Mostly caused by molecules containing one ¹³C atom. Its small height is beside, not part of, M⁺•.",fill="#edf8f4",outline=TEAL)
 save(im,"01-mass-spectrum-anatomy.png")
 
 # 2 high-resolution mass spectrometry
-im,d=base("High-resolution mass spectrometry separates equal nominal masses","N₂ and CO both have nominal mass 28, but their exact masses are different.")
+im,d=base("High-resolution mass spectrometry resolves nominal mass 28","N₂ and CO both have nominal mass 28, but their exact masses are different.")
 box(d,(90,185,750,420),"Nitrogen, N₂","Exact mass = 2(14.003074)\n= 28.006148",fill="#eef5ff",outline=BLUE,body_size=23)
 box(d,(850,185,1510,420),"Carbon monoxide, CO","Exact mass = 12.000000 + 15.994915\n= 27.994915",fill="#edf8f4",outline=TEAL,body_size=23)
 ox,oy=150,820; xr=1450; top=500
@@ -132,25 +140,25 @@ table(d,(90,190,1510,530),["δ / ppm","splitting","integration","assignment"],[
 ("4.12","quartet","2 H","–O–CH₂–")
 ],[210,250,250,570],row_h=85,font_size=20)
 molecule_label(d,(280,650),"CH₃",BLUE); molecule_label(d,(510,650),"C(=O)",ORANGE); molecule_label(d,(740,650),"O",TEAL); molecule_label(d,(970,650),"CH₂",PURPLE); molecule_label(d,(1200,650),"CH₃",BLUE)
-for a,b in [((365,650),(425,650)),((595,650),(655,650)),((825,650),(885,650)),((1055,650),(1115,650))]: arrow(d,a,b,INK,4,12)
+for a,b in [((365,650),(425,650)),((595,650),(655,650)),((825,650),(885,650)),((1055,650),(1115,650))]: d.line((*a,*b),fill=INK,width=5)
 box(d,(90,770,1510,930),"Deduction check","The ethyl group gives a 3 H triplet beside a 2 H quartet. The 3 H singlet has no hydrogen on the adjacent carbonyl carbon. The CH₂ attached to oxygen is shifted furthest downfield.",fill="#fff8ef",outline=ORANGE,wrap_width=115)
 save(im,"04-nmr-structure-deduction.png")
 
 # 5 redox titrations
 im,d=base("Redox titrations: correct reagent, endpoint and equation","Read the burette and flask labels before choosing a mole ratio.")
 # iodometry panel
-box(d,(70,180,760,865),"Iodine–thiosulfate titration","Burette: standard Na₂S₂O₃(aq)\nFlask: iodine released by the oxidising agent\nIndicator: freshly prepared starch, added near the endpoint\nEndpoint: blue-black → colourless\n\nI₂ + 2S₂O₃²⁻ → 2I⁻ + S₄O₆²⁻",fill="#eef5ff",outline=BLUE,body_size=19,wrap_width=55)
-# simple burette/flask
-d.rectangle((180,300,230,600),fill="#dff3ff",outline=INK,width=3)
-d.line((205,600,205,650),fill=INK,width=4); d.polygon([(195,650),(215,650),(205,665)],fill=INK)
-d.polygon([(130,790),(300,790),(270,650),(160,650)],fill="#f2e4aa",outline=INK,width=4)
-d.text((215,820),"iodine solution",font=font(16,True),fill=ORANGE,anchor="mm")
+box(d,(70,180,760,545),"Iodine–thiosulfate titration","Burette: standard Na₂S₂O₃(aq)\nFlask: iodine released by the oxidising agent\nIndicator: freshly prepared starch, added near the endpoint\nEndpoint: blue-black → colourless\n\nI₂ + 2S₂O₃²⁻ → 2I⁻ + S₄O₆²⁻",fill="#eef5ff",outline=BLUE,body_size=18,wrap_width=55)
+# simple burette and conical flask below the explanatory text
+d.rectangle((235,590,285,790),fill="#dff3ff",outline=INK,width=3)
+d.line((260,790,260,835),fill=INK,width=4); d.polygon([(250,835),(270,835),(260,850)],fill=INK)
+d.polygon([(165,930),(355,930),(320,845),(200,845)],fill="#f2e4aa",outline=INK,width=4)
+d.text((260,955),"iodine solution in flask",font=font(16,True),fill=ORANGE,anchor="mm")
 # permanganate panel
-box(d,(840,180,1530,865),"Acidified manganate(VII) titration","Burette: KMnO₄(aq)\nFlask: Fe²⁺ or another reducing agent, acidified with dilute H₂SO₄\nIndicator: none; MnO₄⁻ is self-indicating\nEndpoint: first permanent pale pink\n\nMnO₄⁻ + 8H⁺ + 5Fe²⁺ → Mn²⁺ + 4H₂O + 5Fe³⁺",fill="#f5efff",outline=PURPLE,body_size=19,wrap_width=55)
-d.rectangle((950,300,1000,600),fill="#e7d8ff",outline=INK,width=3)
-d.line((975,600,975,650),fill=INK,width=4); d.polygon([(965,650),(985,650),(975,665)],fill=INK)
-d.polygon([(900,790),(1070,790),(1040,650),(930,650)],fill="#f7dce9",outline=INK,width=4)
-d.text((985,820),"pale-pink endpoint",font=font(16,True),fill=PURPLE,anchor="mm")
+box(d,(840,180,1530,545),"Acidified manganate(VII) titration","Burette: KMnO₄(aq)\nFlask: Fe²⁺ or another reducing agent, acidified with dilute H₂SO₄\nIndicator: none; MnO₄⁻ is self-indicating\nEndpoint: first permanent pale pink\n\nMnO₄⁻ + 8H⁺ + 5Fe²⁺ → Mn²⁺ + 4H₂O + 5Fe³⁺",fill="#f5efff",outline=PURPLE,body_size=18,wrap_width=55)
+d.rectangle((1105,590,1155,790),fill="#e7d8ff",outline=INK,width=3)
+d.line((1130,790,1130,835),fill=INK,width=4); d.polygon([(1120,835),(1140,835),(1130,850)],fill=INK)
+d.polygon([(1035,930),(1225,930),(1190,845),(1070,845)],fill="#f7dce9",outline=INK,width=4)
+d.text((1130,955),"first permanent pale pink",font=font(16,True),fill=PURPLE,anchor="mm")
 save(im,"05-redox-titrations.png")
 
 # 6 back titration
@@ -162,11 +170,13 @@ steps=[
 ("4  Titrate excess acid","Use standard alkali and indicator",PURPLE),
 ("5  Subtract","acid reacted = acid added − acid remaining",GREEN),
 ("6  Use stoichiometry","find active material and percentage purity",RED)]
+positions=[(90,190),(590,190),(1090,190),(1090,520),(590,520),(90,520)]
 for i,(t,b,col) in enumerate(steps):
-    x=90+(i%3)*500; y=190+(i//3)*330
+    x,y=positions[i]
     box(d,(x,y,x+430,y+220),t,b,fill="white",outline=col,title_fill=col,wrap_width=34)
-    if i%3<2: arrow(d,(x+435,y+110),(x+490,y+110),INK,4,13)
-    if i==2: arrow(d,(1450,430),(1450,500),INK,4,13)
+    if i in (0,1): arrow(d,(x+435,y+110),(x+490,y+110),INK,4,13)
+    elif i==2: arrow(d,(1305,415),(1305,510),INK,4,13)
+    elif i in (3,4): arrow(d,(x-10,y+110),(x-65,y+110),INK,4,13)
 box(d,(260,860,1340,950),"Core subtraction","n(HCl that reacted with sample) = n(HCl initially added) − n(HCl left over)",fill="#fff8ef",outline=ORANGE,body_size=21,wrap_width=90)
 save(im,"06-back-titration-flow.png")
 
@@ -199,7 +209,7 @@ for r in range(4): d.arc((690,240+r*10,890,330-r*10),0,180,fill=PURPLE,width=4)
 # chromatogram
 ox,oy=180,850; xr=1450; top=500
 d.line((ox,top,ox,oy),fill=INK,width=4); d.line((ox,oy,xr,oy),fill=INK,width=4)
-d.text((75,670),"detector response",font=font(19,True),fill=INK,anchor="mm"); d.text((820,900),"retention time",font=font(20,True),fill=INK,anchor="mm")
+d.text((180,462),"detector response",font=font(18,True),fill=INK,anchor="lm"); d.text((820,900),"retention time",font=font(20,True),fill=INK,anchor="mm")
 for cx,h,w,col,lab in [(380,150,45,BLUE,"A"),(690,280,80,ORANGE,"B"),(1120,210,65,TEAL,"C")]:
     pts=[]
     for x in range(cx-4*w,cx+4*w,3):
@@ -227,14 +237,28 @@ im,d=base("Complex ions: coordination number, shape and denticity","A ligand don
 # octahedral
 cx,cy=320,430
 d.ellipse((cx-32,cy-32,cx+32,cy+32),fill=BLUE); d.text((cx,cy),"M",font=font(22,True),fill="white",anchor="mm")
-for dx,dy in [(0,-150),(0,150),(-150,0),(150,0),(-105,-105),(105,105)]:
+# four bonds lie in the plane; solid and hashed wedges show the two out-of-plane bonds
+for dx,dy in [(0,-150),(0,150),(-150,0),(150,0)]:
     d.line((cx,cy,cx+dx,cy+dy),fill=INK,width=4); d.ellipse((cx+dx-20,cy+dy-20,cx+dx+20,cy+dy+20),fill="#b9e4ef",outline=BLUE)
+d.polygon([(cx-8,cy-8),(cx-120,cy-120),(cx-96,cy-126)],fill=INK)
+d.ellipse((cx-125,cy-125,cx-85,cy-85),fill="#b9e4ef",outline=BLUE)
+for k in range(1,8):
+    t=k/8; x=cx+105*t; y=cy+105*t; half=2+7*t
+    d.line((x-half,y+half,x+half,y-half),fill=INK,width=2)
+d.ellipse((cx+85,cy+85,cx+125,cy+125),fill="#b9e4ef",outline=BLUE)
 d.text((320,640),"octahedral; coordination number 6",font=font(19,True),fill=BLUE,anchor="mm")
 # tetrahedral
 cx,cy=800,430
 d.ellipse((cx-32,cy-32,cx+32,cy+32),fill=TEAL); d.text((cx,cy),"M",font=font(22,True),fill="white",anchor="mm")
-for dx,dy in [(-120,-120),(120,-120),(-120,120),(120,120)]:
+# two ordinary bonds plus a solid wedge and a hashed wedge show tetrahedral projection
+for dx,dy in [(-120,-120),(120,-120)]:
     d.line((cx,cy,cx+dx,cy+dy),fill=INK,width=4); d.ellipse((cx+dx-20,cy+dy-20,cx+dx+20,cy+dy+20),fill="#c9eadf",outline=TEAL)
+d.polygon([(cx-8,cy+8),(cx-135,cy+105),(cx-108,cy+130)],fill=INK)
+d.ellipse((cx-140,cy+100,cx-100,cy+140),fill="#c9eadf",outline=TEAL)
+for k in range(1,8):
+    t=k/8; x=cx+120*t; y=cy+120*t; half=2+7*t
+    d.line((x-half,y-half,x+half,y+half),fill=INK,width=2)
+d.ellipse((cx+100,cy+100,cx+140,cy+140),fill="#c9eadf",outline=TEAL)
 d.text((800,640),"tetrahedral; coordination number 4",font=font(19,True),fill=TEAL,anchor="mm")
 # square planar
 cx,cy=1280,430
@@ -251,23 +275,27 @@ box(d,(80,190,480,430),"[Cu(H₂O)₆]²⁺","pale-blue solution\noctahedral",fi
 box(d,(600,190,1000,430),"[CuCl₄]²⁻","yellow solution; mixtures often appear green\ntetrahedral",fill="#fff5c8",outline=YELLOW,body_size=20,wrap_width=32)
 box(d,(1120,190,1520,430),"[Cu(NH₃)₄(H₂O)₂]²⁺","deep-blue solution\ndistorted octahedral",fill="#dce5ff",outline=PURPLE,body_size=19,wrap_width=32)
 arrow(d,(485,310),(590,310),ORANGE,4,14); d.text((537,270),"excess Cl⁻",font=font(18,True),fill=ORANGE,anchor="mm")
-arrow(d,(480,390),(1110,390),TEAL,4,14); d.text((795,350),"excess NH₃(aq)",font=font(18,True),fill=TEAL,anchor="mm")
+# route the ammonia pathway below the complex boxes so it does not cross the chloride complex
+d.line((280,435,280,480),fill=TEAL,width=4)
+d.line((280,480,1320,480),fill=TEAL,width=4)
+arrow(d,(1320,480),(1320,435),TEAL,4,14)
+d.text((800,450),"excess NH₃(aq)",font=font(18,True),fill=TEAL,anchor="mm")
 box(d,(130,520,1470,720),"Ammonia added in two stages","A small amount of NH₃ first removes H⁺ from coordinated water and forms pale-blue Cu(OH)₂(s). In excess NH₃, the precipitate dissolves as the deep-blue ammine complex forms.",fill="#edf8f4",outline=TEAL,wrap_width=108)
 box(d,(130,760,1470,925),"Why replacement can be favourable","When one bidentate ligand replaces two monodentate ligands, the number of free particles can increase. A positive entropy change helps drive the replacement.",fill="#fff4e8",outline=ORANGE,wrap_width=108)
 save(im,"11-copper-ligand-replacement.png")
 
 # 12 transition-metal colours and hydroxide tests
 im,d=base("Transition-metal ion colours and hydroxide tests","Use freshly made observations and distinguish the solution colour from the precipitate colour.")
-table(d,(60,175,1520,831),["ion / aqueous colour","NaOH(aq)","excess NaOH","NH₃(aq) / excess"],[
-("Cr³⁺ green/violet","grey-green ppt","dissolves: dark green","grey-green ppt; insoluble"),
-("Mn²⁺ very pale pink","off-white ppt; darkens","insoluble","off-white ppt; insoluble"),
-("Fe²⁺ pale green","green ppt; turns brown","insoluble","green ppt; insoluble"),
-("Fe³⁺ yellow/brown","red-brown ppt","insoluble","red-brown ppt; insoluble"),
-("Co²⁺ pink","blue ppt","insoluble","ppt; excess may give complex"),
-("Ni²⁺ green","green ppt","insoluble","green ppt; dissolves in excess"),
-("Cu²⁺ blue","pale-blue ppt","insoluble","pale-blue ppt; deep-blue solution")
-],[360,300,300,500],row_h=82,font_size=16)
-box(d,(180,835,1420,945),"Equations","Mⁿ⁺(aq) + nOH⁻(aq) → M(OH)ₙ(s). Air oxidation can change Mn(OH)₂ and Fe(OH)₂ on standing, so record the immediate colour first.",fill="#fff8ef",outline=ORANGE,body_size=18,wrap_width=100)
+table(d,(60,170,1520,802),["ion; solution colour","NaOH(aq) precipitate","excess NaOH","NH₃(aq); then excess"],[
+("Cr³⁺; green","green-blue","soluble; deep-green solution","green-blue; insoluble"),
+("Mn²⁺; pink","white; slowly brown/black","insoluble","white; insoluble"),
+("Fe²⁺; green","green","insoluble","green; insoluble"),
+("Fe³⁺; yellow/orange","brown","insoluble","brown; insoluble"),
+("Co²⁺; pink","blue","insoluble","blue; soluble: yellow, then brown"),
+("Ni²⁺; green","green","insoluble","green; soluble: blue solution"),
+("Cu²⁺; blue","blue","insoluble","blue; soluble: deep-blue solution")
+],[330,330,300,500],row_h=79,font_size=15)
+box(d,(180,830,1420,945),"Recording observations","State the initial solution colour, the precipitate colour after a few drops, and whether it dissolves in excess reagent. For Mn²⁺, record the immediate white precipitate before it darkens in air.",fill="#fff8ef",outline=ORANGE,body_size=18,wrap_width=100)
 save(im,"12-transition-hydroxide-tests.png")
 
 # 13 vanadium sequence
@@ -312,12 +340,12 @@ save(im,"14-standard-hydrogen-electrode.png")
 im,d=base("Cell emf, feasibility and cell types","Use reduction potentials as written: E°cell = E°cathode − E°anode.")
 box(d,(80,180,760,430),"Worked Zn/Cu cell","Cu²⁺ + 2e⁻ → Cu      E° = +0.34 V\nZn²⁺ + 2e⁻ → Zn      E° = −0.76 V\n\nE°cell = +0.34 − (−0.76) = +1.10 V\nElectrons flow from Zn to Cu.",fill="#eef5ff",outline=BLUE,body_size=20,wrap_width=55)
 box(d,(840,180,1520,430),"Prediction limits","A positive E°cell predicts thermodynamic feasibility under standard conditions. Actual direction and rate can change with concentration, gas pressure, temperature and slow kinetics.",fill="#fff4e8",outline=ORANGE,body_size=20,wrap_width=55)
-table(d,(100,520,1500,880),["cell type","example","key idea"],[
-("non-rechargeable","Li/MnO₂ primary cell","reactants consumed"),
-("rechargeable","lithium-ion cell","external voltage reverses changes"),
-("fuel cell","alkaline H₂/O₂","fuel and oxygen supplied continuously")
-],[350,420,630],row_h=90,font_size=19)
-box(d,(180,880,1420,960),"Environmental audit","Consider raw-material extraction, toxicity, energy used in manufacture and charging, useful life, collection, recycling and safe disposal.",fill="#edf8f4",outline=TEAL,body_size=18,wrap_width=100)
+table(d,(100,485,1500,805),["cell type","example","key idea"],[
+("non-rechargeable","alkaline Zn/MnO₂ cell","cell reaction is not practically reversed"),
+("rechargeable","Li/LiMnO₂ cell","external voltage drives the reverse reaction"),
+("fuel cell","alkaline H₂/O₂ cell","fuel and oxygen are supplied continuously")
+],[350,420,630],row_h=80,font_size=18)
+box(d,(180,830,1420,955),"Environmental audit","Consider raw-material extraction, toxicity, energy used in manufacture and charging, useful life, collection, recycling and safe disposal.",fill="#edf8f4",outline=TEAL,body_size=18,wrap_width=100)
 save(im,"15-emf-and-cell-types.png")
 
 # 16 amines
@@ -328,7 +356,7 @@ table(d,(80,180,1440,500),["class","general form","example"],[
 ("tertiary","R₃N","(CH₃)₃N")
 ],[320,420,620],row_h=80,font_size=21)
 box(d,(80,540,760,850),"Preparation routes","1. R–C≡N  →  R–CH₂NH₂ using LiAlH₄ in dry ether, followed by hydrolysis.\n2. Haloalkane + excess NH₃ gives a primary amine; further substitution can also occur.",fill="#eef5ff",outline=BLUE,body_size=20,wrap_width=52)
-box(d,(840,540,1520,850),"Basicity","Alkyl groups push electron density towards N, usually increasing lone-pair availability. In phenylamine, the lone pair is delocalised into the benzene ring, so it is less available to accept H⁺.",fill="#fff4e8",outline=ORANGE,body_size=20,wrap_width=52)
+box(d,(840,540,1520,850),"Basicity in water","Alkyl groups release electron density towards N, increasing lone-pair availability. Hydration of the protonated amine and crowding around N also matter, so secondary amines are often the strongest simple alkylamines in water. Phenylamine is weaker because its lone pair is delocalised into the ring.",fill="#fff4e8",outline=ORANGE,body_size=18,wrap_width=54)
 d.text((800,905),"amine + mineral acid ⇌ ammonium salt; add alkali to liberate the free amine",font=font(21,True),fill=TEAL,anchor="mm")
 save(im,"16-amines-routes-basicity.png")
 
@@ -351,9 +379,15 @@ im,d=base("Amides and amino acids","Delocalisation makes amides much less basic 
 box(d,(70,180,760,470),"Amide reactions","Preparation: RCOCl + 2NH₃ → RCONH₂ + NH₄Cl\nAcid hydrolysis: RCONH₂ + H⁺ + H₂O → RCOOH + NH₄⁺\nAlkaline hydrolysis: RCONH₂ + OH⁻ → RCOO⁻ + NH₃\nDehydration: RCONH₂ → RCN + H₂O using P₄O₁₀.",fill="#eef5ff",outline=BLUE,body_size=19,wrap_width=54)
 box(d,(840,180,1530,470),"Why amides are weak bases","The nitrogen lone pair overlaps with the carbonyl π system. It is delocalised and less available to bond to H⁺ than the localised lone pair in an amine.",fill="#fff4e8",outline=ORANGE,body_size=21,wrap_width=52)
 # amino acid forms
-molecule_label(d,(260,650),"H₂N–CH₂–COOH",BLUE); d.text((260,705),"glycine; achiral",font=font(18,True),fill=BLUE,anchor="mm")
-molecule_label(d,(720,650),"H₂N–CH(CH₃)–COOH",TEAL); d.text((720,705),"alanine; chiral",font=font(18,True),fill=TEAL,anchor="mm")
-molecule_label(d,(1240,650),"⁺H₃N–CHR–COO⁻",PURPLE); d.text((1240,705),"zwitterion",font=font(18,True),fill=PURPLE,anchor="mm")
+d.rounded_rectangle((90,610,470,690),14,fill="white",outline=BLUE,width=3)
+d.text((280,650),"H₂N–CH₂–COOH",font=font(25,True),fill=BLUE,anchor="mm")
+d.text((280,720),"glycine; achiral",font=font(18,True),fill=BLUE,anchor="mm")
+d.rounded_rectangle((530,610,970,690),14,fill="white",outline=TEAL,width=3)
+d.text((750,650),"H₂N–CH(CH₃)–COOH",font=font(25,True),fill=TEAL,anchor="mm")
+d.text((750,720),"alanine; chiral",font=font(18,True),fill=TEAL,anchor="mm")
+d.rounded_rectangle((1030,610,1510,690),14,fill="white",outline=PURPLE,width=3)
+d.text((1270,650),"⁺H₃N–CHR–COO⁻",font=font(25,True),fill=PURPLE,anchor="mm")
+d.text((1270,720),"zwitterion",font=font(18,True),fill=PURPLE,anchor="mm")
 box(d,(150,790,1450,930),"Consequences of the zwitterion","Strong ionic attractions explain relatively high melting points and good water solubility. The –COOH group reacts with bases/carbonates; the –NH₂ group reacts with acids.",fill="#edf8f4",outline=TEAL,wrap_width=104)
 save(im,"18-amides-amino-acids.png")
 
