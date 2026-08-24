@@ -40,7 +40,7 @@ im,d=base("Enzyme specificity, cofactors and coenzymes","The active site's three
 panel(d,(45,155,780,530),"A  Active-site specificity",PB,BLUE)
 enzyme_blob(d,(100,225,450,470),True)
 d.polygon([(500,260),(560,300),(520,345),(470,305)],fill=ORANGE,outline=INK)
-label(d,(525,220),"substrate",ORANGE); label(d,(275,475),"active-site shape and charge are complementary",BLUE,17)
+label(d,(525,220),"substrate",ORANGE); label(d,(400,500),"active-site shape and charge are complementary",BLUE,17)
 arrow(d,(455,305),(395,305),TEAL,6,16)
 panel(d,(820,155,1555,530),"B  Enzyme–substrate complex",PT,TEAL)
 enzyme_blob(d,(870,225,1220,470),True,fill="#9ee0cf",outline=TEAL)
@@ -49,9 +49,12 @@ label(d,(1325,295),"temporary interactions",TEAL,17); d.line((1225,300,1140,315)
 label(d,(1160,475),"binding positions reacting groups and lowers activation energy",TEAL,16)
 panels=[(45,565,520,925,"C  Cofactor","inorganic helper, for example Mg²⁺ or Zn²⁺",BLUE,PB),(560,565,1040,925,"D  Coenzyme","small organic molecule that transfers a group or electrons",PURPLE,WHITE),(1080,565,1555,925,"E  Prosthetic group","non-protein component held tightly as part of a conjugated protein",ORANGE,PO)]
 for x1,y1,x2,y2,t,desc,c,tint in panels:
- panel(d,(x1,y1,x2,y2),t,tint,c); enzyme_blob(d,(x1+65,y1+95,x1+310,y1+290),False,fill="#dcecf5",outline=c)
- d.ellipse((x2-135,y1+135,x2-65,y1+205),fill=c,outline=INK,width=3)
- wrap(d,desc,(x1+35,y2-90,x2-30,y2-25),17,MUTED,4)
+ panel(d,(x1,y1,x2,y2),t,tint,c); enzyme_blob(d,(x1+65,y1+80,x1+310,y1+245),False,fill="#dcecf5",outline=c)
+ if t.startswith("E"):
+  d.ellipse((x1+190,y1+125,x1+255,y1+190),fill=c,outline=INK,width=3)
+ else:
+  d.ellipse((x2-135,y1+120,x2-65,y1+190),fill=c,outline=INK,width=3); d.text((x2-160,y1+155),"+",font=f(26,1),fill=INK,anchor="mm")
+ wrap(d,desc,(x1+35,y2-80,x2-30,y2-25),17,MUTED,4)
 im.save(OUT/"12-enzyme-specificity-cofactors.png",optimize=True)
 
 # 13 action and activation energy
@@ -59,10 +62,10 @@ im,d=base("How enzymes lower activation energy","Catalysis changes the route and
 panel(d,(45,155,930,925),"A  Reaction-energy profile",WHITE,BLUE)
 x0,y0=130,820; x1,y1=850,230
 d.line((x0,y0,x0,220),fill=INK,width=4); d.line((x0,y0,860,y0),fill=INK,width=4)
-d.multiline_text((82,500),"free\nenergy",font=f(18,1),fill=INK,anchor="mm",align="center",spacing=2)
+d.multiline_text((90,500),"free\nenergy",font=f(18,1),fill=INK,anchor="mm",align="center",spacing=2)
 d.text((500,865),"reaction progress",font=f(20,1),fill=INK,anchor="mm")
 reactY,prodY=700,750
-d.line((150,reactY,260,reactY),fill=INK,width=5); d.line((730,prodY,840,prodY),fill=INK,width=5)
+d.line((150,reactY,260,reactY),fill=INK,width=5); d.line((730,prodY,840,prodY),fill=INK,width=5); d.line((260,reactY,840,reactY),fill=GRID,width=2)
 # smooth curves
 ptsU=[]; ptsC=[]
 for i in range(121):
@@ -75,9 +78,9 @@ for i in range(121):
 d.line(ptsU,fill=RED,width=7); d.line(ptsC,fill=TEAL,width=7)
 label(d,(545,320),"uncatalysed pathway",RED,17); label(d,(545,535),"enzyme-catalysed pathway",TEAL,17)
 # Ea arrows
-arrow(d,(330,reactY),(330,min(y for x,y in ptsU)+8),RED,5,14); d.text((305,500),"Eₐ",font=f(21,1),fill=RED,anchor="mm")
-arrow(d,(700,reactY),(700,min(y for x,y in ptsC)+8),TEAL,5,14); d.text((725,600),"lower Eₐ",font=f(18,1),fill=TEAL,anchor="mm")
-d.line((205,reactY,205,prodY),fill=PURPLE,width=5); d.polygon([(205,prodY),(195,prodY-16),(215,prodY-16)],fill=PURPLE); label(d,(225,725),"ΔG unchanged",PURPLE,16)
+arrow(d,(210,reactY),(210,min(y for x,y in ptsU)+8),RED,5,14); d.text((170,500),"Eₐ",font=f(21,1),fill=RED,anchor="mm")
+arrow(d,(820,reactY),(820,min(y for x,y in ptsC)+8),TEAL,5,14); d.text((755,585),"lower Eₐ",font=f(18,1),fill=TEAL,anchor="mm")
+d.line((760,reactY,760,prodY),fill=PURPLE,width=5); d.polygon([(760,prodY),(750,prodY-16),(770,prodY-16)],fill=PURPLE); label(d,(675,725),"ΔG unchanged",PURPLE,16)
 panel(d,(970,155,1555,520),"B  Lock-and-key model",PB,PURPLE)
 enzyme_blob(d,(1020,245,1290,455),True,fill="#d9cdf4",outline=PURPLE)
 d.polygon([(1340,290),(1400,330),(1360,370),(1305,330)],fill=ORANGE,outline=INK); arrow(d,(1310,330),(1230,330),PURPLE,5,14)
@@ -95,25 +98,25 @@ boxes=[(45,155,780,520,"A  Temperature","temperature / °C"),(820,155,1555,520,"
 for x1,y1,x2,y2,t,xlab in boxes:
  panel(d,(x1,y1,x2,y2),t,WHITE,BLUE); ax=(x1+90,y2-70); top=y1+80; right=x2-45
  d.line((ax[0],ax[1],ax[0],top),fill=INK,width=4); d.line((ax[0],ax[1],right,ax[1]),fill=INK,width=4)
- d.text((x1+35,(top+ax[1])/2),"initial rate",font=f(17,1),fill=INK,anchor="mm"); d.text(((ax[0]+right)/2,y2-32),xlab,font=f(17,1),fill=INK,anchor="mm")
+ d.multiline_text((x1+45,(top+ax[1])/2),"initial\nrate",font=f(16,1),fill=INK,anchor="mm",align="center",spacing=2); d.text(((ax[0]+right)/2,y2-32),xlab,font=f(17,1),fill=INK,anchor="mm")
  if t.startswith("A"):
   pts=[] 
   for i in range(101):
    q=i/100; x=ax[0]+q*(right-ax[0]); y=ax[1]-230*(q/.68)*math.exp(1-q/.68) if q<=.68 else ax[1]-230*math.exp(-13*(q-.68))
    pts.append((x,y))
-  d.line(pts,fill=RED,width=7); d.line((ax[0]+.68*(right-ax[0]),top+15,ax[0]+.68*(right-ax[0]),ax[1]),fill=GRID,width=3); label(d,(ax[0]+.68*(right-ax[0]),top+15),"optimum",RED,15)
+  d.line(pts,fill=RED,width=7); d.line((ax[0]+.68*(right-ax[0]),top+15,ax[0]+.68*(right-ax[0]),ax[1]),fill=GRID,width=3); label(d,(ax[0]+.68*(right-ax[0])+70,top+28),"optimum",RED,15)
  elif t.startswith("B"):
   pts=[] 
   for i in range(101):
    q=i/100; x=ax[0]+q*(right-ax[0]); y=ax[1]-235*math.exp(-((q-.55)/.20)**2); pts.append((x,y))
-  d.line(pts,fill=PURPLE,width=7); label(d,(ax[0]+.55*(right-ax[0]),top+15),"optimum",PURPLE,15)
+  d.line(pts,fill=PURPLE,width=7); label(d,(ax[0]+.55*(right-ax[0])+85,top+25),"optimum",PURPLE,15)
  elif t.startswith("C"):
   pts=[]
   for i in range(101):
    q=i/100; x=ax[0]+q*(right-ax[0]); y=ax[1]-245*q/(.22+q); pts.append((x,y))
-  d.line(pts,fill=TEAL,width=7); label(d,(right-145,top+38),"active sites saturated",TEAL,14)
+  d.line(pts,fill=TEAL,width=7); label(d,(right-150,top-15),"active sites saturated",TEAL,14)
  else:
-  d.line((ax[0],ax[1],right,top+25),fill=ORANGE,width=7); label(d,(right-135,top+55),"substrate in excess",ORANGE,15)
+  d.line((ax[0],ax[1],right,top+25),fill=ORANGE,width=7); label(d,(right-150,top-10),"substrate in excess",ORANGE,15)
 im.save(OUT/"14-enzyme-rate-graphs.png",optimize=True)
 
 # 15 inhibition
@@ -129,8 +132,8 @@ panel(d,(820,155,1555,530),"B  Non-competitive inhibition",PT,TEAL)
 enzyme_blob(d,(865,255,1180,475),True,fill="#a9dfd7",outline=TEAL)
 d.polygon([(1090,300),(1145,330),(1110,370),(1055,335)],fill=ORANGE,outline=INK)
 d.ellipse((930,420,995,485),fill=RED,outline=INK,width=3)
-label(d,(1320,305),"active site altered",TEAL); label(d,(1320,435),"inhibitor binds elsewhere",RED)
-d.line((1175,315,1260,305),fill=TEAL,width=3); d.line((995,450,1215,435),fill=RED,width=3)
+label(d,(1370,295),"active-site conformation changed",TEAL,16); label(d,(1370,425),"inhibitor binds elsewhere",RED,16)
+arrow(d,(1215,305),(1175,315),TEAL,3,11); arrow(d,(1220,435),(995,450),RED,3,11)
 panel(d,(45,565,780,925),"C  Competitive rate curves",WHITE,PURPLE)
 panel(d,(820,565,1555,925),"D  Non-competitive rate curves",WHITE,ORANGE)
 for x1,y1,x2,y2,kind in [(45,565,780,925,"comp"),(820,565,1555,925,"non")]:
@@ -140,10 +143,11 @@ for x1,y1,x2,y2,kind in [(45,565,780,925,"comp"),(820,565,1555,925,"non")]:
  for inhibited,col in [(False,BLUE),(True,RED)]:
   pts=[]
   for i in range(101):
-   q=i/100; vmax=230 if (kind=="comp" or not inhibited) else 145; km=.16 if not inhibited else (.42 if kind=="comp" else .16)
-   x=ax[0]+q*(right-ax[0]); y=ax[1]-vmax*q/(km+q); pts.append((x,y))
+   q=i/100; concentration=4*q; vmax=205 if (kind=="comp" or not inhibited) else 130; km=.16 if not inhibited else (.42 if kind=="comp" else .16)
+   x=ax[0]+q*(right-ax[0]); y=ax[1]-vmax*concentration/(km+concentration); pts.append((x,y))
   d.line(pts,fill=col,width=6)
- label(d,(right-100,top+25),"no inhibitor",BLUE,14); label(d,(right-100,top+65),"with inhibitor",RED,14)
+ for yy,col,txt in [(top+120,BLUE,"no inhibitor"),(top+155,RED,"with inhibitor")]:
+  d.line((right-170,yy,right-130,yy),fill=col,width=6); d.text((right-120,yy-9),txt,font=f(14,1),fill=col)
 im.save(OUT/"15-enzyme-inhibition.png",optimize=True)
 
 # 16 biomarkers immobilisation biosensor
