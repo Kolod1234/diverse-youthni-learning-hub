@@ -109,7 +109,7 @@ for x1,y1,x2,y2,t,xlab in boxes:
   pts=[] 
   for i in range(101):
    q=i/100; x=ax[0]+q*(right-ax[0]); y=ax[1]-235*math.exp(-((q-.55)/.20)**2); pts.append((x,y))
-  d.line(pts,fill=PURPLE,width=7); label(d,(ax[0]+.55*(right-ax[0])+85,top+25),"optimum",PURPLE,15)
+  d.line(pts,fill=PURPLE,width=7); label(d,(ax[0]+.55*(right-ax[0])-140,top+25),"optimum",PURPLE,15)
  elif t.startswith("C"):
   pts=[]
   for i in range(101):
