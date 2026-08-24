@@ -157,4 +157,45 @@ d.text((420,780),"Water-ion attractions keep the cation dispersed in solution.",
 d.text((1180,780),"Water-ion attractions keep the anion dispersed in solution.",font=font(18),fill=MUTED,anchor="mm")
 im.save(OUT/"02-water-hydration-shells.png",format="PNG",optimize=True)
 
+# Figure 3: alpha and beta glucose Haworth projections
+im,d=base("α- and β-glucose: the difference at carbon 1","Both molecules have formula C₆H₁₂O₆. Only the direction of the hydroxyl group on carbon 1 changes.")
+panel(d,(55,160,785,835),"A","α-glucose")
+panel(d,(815,160,1545,835),"B","β-glucose")
+
+def chem_bond(d,a,b,width=8):
+    d.line((a[0],a[1],b[0],b[1]),fill=INK,width=width)
+
+def substituent(d,p,direction,label,colour=INK,offset_x=0):
+    x,y=p
+    end=(x+offset_x,y+direction*62)
+    chem_bond(d,p,end,5)
+    d.text((end[0],end[1]+direction*12),label,font=font(22,True),fill=colour,anchor="ma" if direction>0 else "md")
+    return end
+
+def glucose_haworth(d,cx,cy,beta=False):
+    C5=(cx-92,cy-104); O=(cx+75,cy-104); C1=(cx+178,cy-8)
+    C2=(cx+105,cy+116); C3=(cx-58,cy+116); C4=(cx-155,cy)
+    ring=[C5,O,C1,C2,C3,C4,C5]
+    d.line(ring,fill=INK,width=10,joint="curve")
+    d.text(O,"O",font=font(30,True),fill=RED,anchor="mm",stroke_width=5,stroke_fill="#fff")
+    labels=[(C1,"C1",(24,-8)),(C2,"C2",(24,14)),(C3,"C3",(-30,16)),(C4,"C4",(-34,-6)),(C5,"C5",(-34,-15))]
+    for p,t,off in labels:
+        d.text((p[0]+off[0],p[1]+off[1]),t,font=font(17,True),fill=MUTED)
+    c1_oh_dir=-1 if beta else 1
+    substituent(d,C1,c1_oh_dir,"OH",BLUE,18)
+    substituent(d,C1,-c1_oh_dir,"H",MUTED,-18)
+    substituent(d,C2,1,"OH",BLUE,14); substituent(d,C2,-1,"H",MUTED,-14)
+    substituent(d,C3,-1,"OH",BLUE,-14); substituent(d,C3,1,"H",MUTED,14)
+    substituent(d,C4,1,"OH",BLUE,-16); substituent(d,C4,-1,"H",MUTED,16)
+    substituent(d,C5,-1,"CH₂OH",PURPLE,-18); substituent(d,C5,1,"H",MUTED,18)
+    return C1
+
+c1a=glucose_haworth(d,420,475,False)
+c1b=glucose_haworth(d,1180,475,True)
+d.rounded_rectangle((120,735,720,800),radius=14,fill="#eef4ff",outline=BLUE,width=2)
+d.text((420,767),"α: the C1 hydroxyl group is below the ring",font=font(21,True),fill=BLUE,anchor="mm")
+d.rounded_rectangle((880,735,1480,800),radius=14,fill="#eef7f6",outline=TEAL,width=2)
+d.text((1180,767),"β: the C1 hydroxyl group is above the ring",font=font(21,True),fill=TEAL,anchor="mm")
+im.save(OUT/"03-alpha-beta-glucose.png",format="PNG",optimize=True)
+
 print("rendered", len(list(OUT.glob("*.png"))), "AS Biology raster figures")
