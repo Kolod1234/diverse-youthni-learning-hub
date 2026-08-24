@@ -485,4 +485,71 @@ d.text((80,935),"Safety: concentrated nitric and sulfuric acids are corrosive an
 d.text((80,965),"Use eye protection, suitable gloves and a fume cupboard under trained supervision.",font=font(17,True),fill=RED)
 save(im,"14-methyl-3-nitrobenzoate-practical.png")
 
+# 15 monosubstituted benzene naming
+def named_ring(cx,cy,subs,r=64,numbered=False):
+    pts=[(cx+r*math.cos(math.radians(-90+i*60)),cy+r*math.sin(math.radians(-90+i*60))) for i in range(6)]
+    d.line(pts+[pts[0]],fill=INK,width=6)
+    d.ellipse((cx-r*0.52,cy-r*0.52,cx+r*0.52,cy+r*0.52),outline=BLUE,width=4)
+    if numbered:
+        for i in range(6):
+            ang=math.radians(-90+i*60)
+            tx=cx+r*0.72*math.cos(ang); ty=cy+r*0.72*math.sin(ang)
+            d.text((tx,ty),str(i+1),font=font(16,True),fill=MUTED,anchor="mm",stroke_width=3,stroke_fill="#fff")
+    for pos,txt,col in subs:
+        ang=math.radians(-90+pos*60)
+        vx,vy=pts[pos]
+        ex=vx+52*math.cos(ang); ey=vy+52*math.sin(ang)
+        d.line((vx,vy,ex,ey),fill=INK,width=5)
+        lx=ex+24*math.cos(ang); ly=ey+24*math.sin(ang)
+        d.text((lx,ly),txt,font=font(21,True),fill=col,anchor="mm",stroke_width=4,stroke_fill="#fff")
+    return pts
+
+im,d=base("Naming monosubstituted benzene derivatives","With one substituent, no ring locant is needed: substituent name + benzene.")
+mono=[
+    ((55,160,500,500),(278,330),[(0,"CH₃",TEAL)],"methylbenzene","C₆H₅CH₃"),
+    ((578,160,1023,500),(800,330),[(0,"CH₂CH₃",TEAL)],"ethylbenzene","C₆H₅CH₂CH₃"),
+    ((1100,160,1545,500),(1322,330),[(0,"Cl",GREEN)],"chlorobenzene","C₆H₅Cl"),
+    ((55,535,500,875),(278,705),[(0,"Br",ORANGE)],"bromobenzene","C₆H₅Br"),
+    ((578,535,1023,875),(800,705),[(0,"NO₂",PURPLE)],"nitrobenzene","C₆H₅NO₂"),
+    ((1100,535,1545,875),(1322,705),[(0,"F",BLUE)],"fluorobenzene","C₆H₅F")
+]
+for rect,centre,subs,nm,formula in mono:
+    d.rounded_rectangle(rect,18,fill="#fff",outline=GRID,width=3)
+    named_ring(centre[0],centre[1],subs)
+    d.text((centre[0],rect[3]-70),nm,font=font(23,True),fill=INK,anchor="mm")
+    d.text((centre[0],rect[3]-35),formula,font=font(19),fill=MUTED,anchor="mm")
+d.text((800,935),"The substituent is bonded directly to a ring carbon; benzene has formula C₆H₆ and a monosubstituted derivative has ring fragment C₆H₅–.",font=font(18,True),fill=INK,anchor="mm")
+save(im,"15-benzene-monosubstituted-naming.png")
+
+# 16 disubstituted ring numbering
+im,d=base("Numbering disubstituted benzene rings","Choose carbon 1 at a substituted carbon, then number in the direction that gives the next substituent the lowest locant.")
+patterns=[(300,(0,1),"1,2-dimethylbenzene","ortho (o-)"),(800,(0,2),"1,3-dimethylbenzene","meta (m-)"),(1300,(0,3),"1,4-dimethylbenzene","para (p-)")]
+for cx,poss,nm,common in patterns:
+    d.rounded_rectangle((cx-225,175,cx+225,750),18,fill="#fff",outline=GRID,width=3)
+    named_ring(cx,430,[(poss[0],"CH₃",TEAL),(poss[1],"CH₃",ORANGE)],125,True)
+    d.text((cx,650),nm,font=font(22,True),fill=INK,anchor="mm")
+    d.text((cx,690),common,font=font(21,True),fill=PURPLE,anchor="mm")
+d.rounded_rectangle((110,800,1490,920),16,fill="#eef5ff",outline=BLUE,width=3)
+d.text((800,835),"Systematic numbered names are unambiguous and are preferred in formal answers.",font=font(22,True),fill=BLUE,anchor="mm")
+d.text((800,875),"o-, m- and p- are common shorthand only for the 1,2-, 1,3- and 1,4- relationships.",font=font(20),fill=INK,anchor="mm")
+save(im,"16-benzene-disubstituted-numbering.png")
+
+# 17 retained parent names and a specification-linked derivative
+im,d=base("Important benzene-derived parent names","The group bonded to the ring determines whether benzene is the parent or a retained parent name is used.")
+parents=[
+    ((55,160,500,500),(278,330),[(0,"OH",BLUE)],"phenol","C₆H₅OH"),
+    ((578,160,1023,500),(800,330),[(0,"NH₂",TEAL)],"phenylamine","C₆H₅NH₂"),
+    ((1100,160,1545,500),(1322,330),[(0,"COOH",RED)],"benzoic acid","C₆H₅COOH"),
+    ((55,535,500,875),(278,705),[(0,"CHO",ORANGE)],"benzaldehyde","C₆H₅CHO"),
+    ((578,535,1023,875),(800,705),[(0,"COOCH₃",GREEN)],"methyl benzoate","C₆H₅COOCH₃"),
+    ((1100,535,1545,875),(1322,705),[(0,"COOCH₃",GREEN),(2,"NO₂",PURPLE)],"methyl 3-nitrobenzoate","NO₂ at ring carbon 3")
+]
+for rect,centre,subs,nm,formula in parents:
+    d.rounded_rectangle(rect,18,fill="#fff",outline=GRID,width=3)
+    named_ring(centre[0],centre[1],subs,64, len(subs)>1)
+    d.text((centre[0],rect[3]-70),nm,font=font(22,True),fill=INK,anchor="mm")
+    d.text((centre[0],rect[3]-35),formula,font=font(18),fill=MUTED,anchor="mm")
+d.text((800,935),"For methyl 3-nitrobenzoate, the ring carbon bonded to COOCH₃ is carbon 1; NO₂ is on carbon 3.",font=font(19,True),fill=PURPLE,anchor="mm")
+save(im,"17-benzene-parent-names.png")
+
 print("rendered", len(list(OUT.glob("*.png"))), "PNG files")
