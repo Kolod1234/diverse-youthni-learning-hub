@@ -535,7 +535,7 @@ d.text((800,875),"o-, m- and p- are common shorthand only for the 1,2-, 1,3- and
 save(im,"16-benzene-disubstituted-numbering.png")
 
 # 17 retained parent names and a specification-linked derivative
-im,d=base("Important benzene-derived parent names","The group bonded to the ring determines whether benzene is the parent or a retained parent name is used.")
+im,d=base("Important names of benzene derivatives","The group bonded to the ring determines whether benzene remains the parent or another established parent name is used.")
 parents=[
     ((55,160,500,500),(278,330),[(0,"OH",BLUE)],"phenol","C₆H₅OH"),
     ((578,160,1023,500),(800,330),[(0,"NH₂",TEAL)],"phenylamine","C₆H₅NH₂"),
@@ -551,5 +551,48 @@ for rect,centre,subs,nm,formula in parents:
     d.text((centre[0],rect[3]-35),formula,font=font(18),fill=MUTED,anchor="mm")
 d.text((800,935),"For methyl 3-nitrobenzoate, the ring carbon bonded to COOCH₃ is carbon 1; NO₂ is on carbon 3.",font=font(19,True),fill=PURPLE,anchor="mm")
 save(im,"17-benzene-parent-names.png")
+
+# 18 benzene sigma and pi bonding
+im,d=base("Bonding in benzene: σ framework and delocalised π system","Each of the six sp² carbon atoms contributes one electron in a p orbital to the shared aromatic π system.")
+d.rounded_rectangle((55,165,770,890),20,fill="#fff",outline=GRID,width=3)
+d.rounded_rectangle((800,165,1545,890),20,fill="#fff",outline=GRID,width=3)
+d.text((85,190),"A  View down onto the molecular plane",font=font(25,True),fill=BLUE)
+d.text((830,190),"B  p-orbital overlap above and below",font=font(25,True),fill=PURPLE)
+
+# panel A: explicit carbon and hydrogen atoms
+cx,cy,r=410,500,145
+pts=[(cx+r*math.cos(math.radians(-90+i*60)),cy+r*math.sin(math.radians(-90+i*60))) for i in range(6)]
+d.line(pts+[pts[0]],fill=INK,width=8)
+d.ellipse((cx-72,cy-72,cx+72,cy+72),outline=BLUE,width=6)
+for i,(x,y) in enumerate(pts):
+    ang=math.radians(-90+i*60)
+    hx=x+92*math.cos(ang); hy=y+92*math.sin(ang)
+    d.line((x,y,hx,hy),fill=INK,width=5)
+    d.ellipse((x-17,y-17,x+17,y+17),fill="#fff",outline=INK,width=3)
+    d.text((x,y),"C",font=font(17,True),fill=INK,anchor="mm")
+    d.text((hx,hy),"H",font=font(21,True),fill=TEAL,anchor="mm",stroke_width=4,stroke_fill="#fff")
+d.text((410,755),"planar hexagon · bond angles ≈ 120°",font=font(22,True),fill=INK,anchor="mm")
+d.text((410,800),"all six C–C bonds are equal (about 0.139 nm)",font=font(19),fill=MUTED,anchor="mm")
+
+# panel B: oblique sigma ring and six aligned p orbitals
+cx2,cy2,rx,ry=1170,525,230,92
+p2=[(cx2+rx*math.cos(math.radians(-90+i*60)),cy2+ry*math.sin(math.radians(-90+i*60))) for i in range(6)]
+layer=Image.new("RGBA",(W,H),(0,0,0,0)); ld=ImageDraw.Draw(layer)
+ld.ellipse((890,285,1450,450),fill=(116,84,184,55),outline=(116,84,184,120),width=3)
+ld.ellipse((890,600,1450,765),fill=(116,84,184,55),outline=(116,84,184,120),width=3)
+im.paste(layer,(0,0),layer); d=ImageDraw.Draw(im)
+d.line(p2+[p2[0]],fill=INK,width=7)
+for x,y in p2:
+    d.ellipse((x-25,y-150,x+25,y-20),fill="#d9cdf3",outline=PURPLE,width=3)
+    d.ellipse((x-25,y+20,x+25,y+150),fill="#d9cdf3",outline=PURPLE,width=3)
+    d.ellipse((x-9,y-9,x+9,y+9),fill=INK)
+# leaders end exactly on the labelled regions
+d.text((900,255),"delocalised π electron density",font=font(20,True),fill=PURPLE)
+d.line((1120,275,1120,330),fill=PURPLE,width=3); d.ellipse((1115,325,1125,335),fill=PURPLE)
+d.text((1375,510),"σ framework",font=font(19,True),fill=BLUE)
+d.line((1360,535,1290,545),fill=BLUE,width=3); d.ellipse((1285,540,1295,550),fill=BLUE)
+d.text((860,805),"Continuous side-on overlap requires the ring to remain planar.",font=font(19,True),fill=INK)
+d.text((860,842),"Six π electrons are shared across all six carbon atoms.",font=font(19),fill=MUTED)
+save(im,"18-benzene-sigma-pi-bonding.png")
 
 print("rendered", len(list(OUT.glob("*.png"))), "PNG files")
