@@ -155,7 +155,7 @@ im,d=base("Reading rates and orders from graphs","Graph shape is evidence only w
 # left conc-time with tangent
 ox,oy=120,820; xmax=760; top=200
 d.line((ox,top,ox,oy),fill=INK,width=4); d.line((ox,oy,xmax,oy),fill=INK,width=4)
-d.text((50,500),"concentration / mol dm⁻³",font=font(20,True),fill=INK,anchor="mm")
+d.text((135,175),"concentration / mol dm⁻³",font=font(18,True),fill=INK)
 d.text((440,865),"time / s",font=font(20,True),fill=INK,anchor="mm")
 pts=[]
 for i in range(0,601,5):
@@ -194,7 +194,7 @@ box(d,(830,180,1520,455),"What the rate equation tells us",
 # MB curves
 ox,oy=110,870; xr=1510; top=520
 d.line((ox,top,ox,oy),fill=INK,width=4); d.line((ox,oy,xr,oy),fill=INK,width=4)
-d.text((50,700),"number of molecules",font=font(19,True),fill=INK,anchor="mm")
+d.text((120,490),"number of molecules",font=font(18,True),fill=INK)
 d.text((800,910),"molecular kinetic energy, E",font=font(20,True),fill=INK,anchor="mm")
 def mb(temp,scale,col):
     pts=[]
@@ -203,7 +203,7 @@ def mb(temp,scale,col):
         val=(e**0.5)*math.exp(-e/temp)
         pts.append((ox+i,oy-scale*val))
     d.line(pts,fill=col,width=6)
-mb(0.75,610,BLUE); mb(1.25,390,ORANGE)
+# Peak scales are adjusted so the two qualitative distributions have the same total area.\nmb(0.75,610,BLUE); mb(1.25,285,ORANGE)
 Ea=1110
 d.line((Ea,540,Ea,870),fill=RED,width=4)
 d.text((Ea+12,555),"Eₐ",font=font(24,True),fill=RED)
@@ -235,7 +235,7 @@ box(d,(865,735,1500,920),"Do not reverse the expression",
 save(im,"07-equilibrium-kc.png")
 
 # 8 acid base road map
-im,d=base("Acid–base calculation road map","Square brackets mean concentration in mol dm⁻³. At 298 K, Kᵥ is written Kw = 1.00 × 10⁻¹⁴ mol² dm⁻⁶.")
+im,d=base("Acid–base calculation road map","Square brackets mean concentration in mol dm⁻³. At 298 K, Kw = 1.00 × 10⁻¹⁴ mol² dm⁻⁶.")
 items=[
 ("Strong acid","complete ionisation","[H⁺] from stoichiometry","pH = −log₁₀[H⁺]",BLUE),
 ("Strong base","complete dissociation","find [OH⁻]","[H⁺] = Kw/[OH⁻], then pH",TEAL),
@@ -249,11 +249,11 @@ for r,(a,b,c,e,col) in enumerate(items):
     d.text((690,y+20),c,font=font(20,True),fill=INK)
     d.text((1050,y+20),e,font=font(19,True),fill=col)
     if r<3: arrow(d,(800,y+140),(800,y+165),GRID,4,12)
-box(d,(90,890,1510,960),"Calculator check","A pH answer should match the chemistry: an acid has [H⁺] greater than 1.0 × 10⁻⁷ mol dm⁻³ at 298 K; a base has less.",fill="#fff8ef",outline=ORANGE)
+box(d,(90,865,1510,970),"Calculator check","At 298 K, an acid has [H⁺] > 1.0 × 10⁻⁷ mol dm⁻³.\\nA base has [H⁺] < 1.0 × 10⁻⁷ mol dm⁻³.",fill="#fff8ef",outline=ORANGE)
 save(im,"08-acid-base-roadmap.png")
 
 # 9 titration practical/curves
-im,d=base("Measuring a titration curve and choosing an indicator","Add measured portions of titrant, allow the pH reading to settle, record it, then plot pH against volume added.")
+im,d=base("Measuring a titration curve and choosing an indicator","Illustration: a strong acid titrated with a strong alkali. Record settled pH readings against total volume added.")
 # apparatus
 d.rectangle((180,220,260,610),fill="#dff3ff",outline=INK,width=4)
 d.line((220,610,220,690),fill=INK,width=5); d.polygon([(205,690),(235,690),(220,720)],fill=INK)
@@ -271,7 +271,7 @@ d.text((660,520),"pH",font=font(22,True),fill=INK,anchor="mm"); d.text((1110,900
 pts=[]
 for i in range(0,740,3):
     v=(i-370)/35
-    ph=2.6+9.5/(1+math.exp(-v))
+    ph=1.0+12.0/(1+math.exp(-v))
     pts.append((ox+i,oy-(ph/14)*610))
 d.line(pts,fill=BLUE,width=6)
 eqx=ox+370
@@ -326,7 +326,7 @@ data=[("2,4-DNPH","C=O group","orange/yellow precipitate","orange/yellow precipi
 for r,row in enumerate(data):
     yy=(rows[r+1]+rows[r+2])//2
     for i,t in enumerate(row): d.text(((cols[i]+cols[i+1])//2,yy),t,font=font(17,i==0),fill=INK,anchor="mm")
-d.text((90,910),"Safety: hydrogen cyanide is highly toxic. Any demonstration or practical use requires an approved procedure, specialist supervision and a risk assessment.",font=font(19,True),fill=RED)
+d.text((90,900),"Safety: hydrogen cyanide is highly toxic. Any practical use requires an approved procedure,",font=font(18,True),fill=RED)\nd.text((90,930),"specialist supervision and a suitable risk assessment.",font=font(18,True),fill=RED)
 save(im,"11-carbonyl-chemistry.png")
 
 # 12 carboxylic acids/derivatives/fats
@@ -369,14 +369,14 @@ d.text((1090,305),"H⁺ is lost",font=font(19,True),fill=TEAL,anchor="mm")
 d.text((800,350),"+",font=font(42,True),fill=PURPLE,anchor="mm")
 d.text((800,410),"E and H are both attached",font=font(17),fill=MUTED,anchor="mm")
 # electrophile table
-cols=[90,390,820,1170,1510]; rows=[600,675,755,835,915]
+cols=[90,390,820,1170,1510]; rows=[570,640,715,790,865,940]
 heads=["reaction","reagents/catalyst","electrophile","electrophile formation"]
 for i in range(4):
     d.rectangle((cols[i],rows[0],cols[i+1],rows[-1]),fill="white",outline=GRID,width=2)
-    d.text(((cols[i]+cols[i+1])//2,637),heads[i],font=font(18,True),fill=INK,anchor="mm")
+    d.text(((cols[i]+cols[i+1])//2,605),heads[i],font=font(18,True),fill=INK,anchor="mm")
 data=[("bromination","Br₂ / FeBr₃","Br⁺","Br₂ + FeBr₃ → Br⁺ + FeBr₄⁻"),
 ("nitration","conc. HNO₃ / conc. H₂SO₄","NO₂⁺","HNO₃ + H₂SO₄ → NO₂⁺ + HSO₄⁻ + H₂O"),
-("acylation","RCOCl / AlCl₃","RCO⁺","RCOCl + AlCl₃ → RCO⁺ + AlCl₄⁻")]
+("alkylation","RCl / AlCl₃","R⁺","RCl + AlCl₃ → R⁺ + AlCl₄⁻"),\n("acylation","RCOCl / AlCl₃","RCO⁺","RCOCl + AlCl₃ → RCO⁺ + AlCl₄⁻")]
 for r,row in enumerate(data):
     yy=(rows[r+1]+rows[r+2])//2
     for i,t in enumerate(row): d.text(((cols[i]+cols[i+1])//2,yy),t,font=font(16,i==0),fill=INK,anchor="mm")
@@ -394,7 +394,7 @@ d.ellipse((180,310,390,430),fill="#dceeff",outline=INK,width=4)
 d.polygon([(230,405),(340,405),(320,265),(250,265)],fill="#f5df8b",outline=INK)
 d.line((285,265,285,230),fill=INK,width=7)
 d.text((290,450),"ice-water bath controls temperature",font=font(16,True),fill=BLUE,anchor="mm")
-d.text((290,215),"methyl benzoate + nitrating mixture",font=font(15,True),fill=INK,anchor="mm")
+d.text((290,240),"methyl benzoate added slowly",font=font(14,True),fill=INK,anchor="mm")
 # stage2 Buchner
 d.polygon([(700,260),(900,260),(860,350),(740,350)],fill="#e7f1f3",outline=INK)
 d.rectangle((750,350,850,445),fill="#d9eef5",outline=INK,width=4)
@@ -412,7 +412,7 @@ box(d,(590,580,1010,900),"Isolation",
     "1. Pour onto ice as directed.\n2. Allow crystals to form.\n3. Filter using suction.\n4. Wash with a little cold solvent.",fill="#edf8f4",outline=TEAL)
 box(d,(1100,580,1520,900),"Purification",
     "1. Dissolve in minimum hot solvent.\n2. Cool slowly, then in ice.\n3. Filter and dry the crystals.\n4. Record mass and melting range.",fill="#fff4e8",outline=ORANGE)
-d.text((80,945),"Safety: concentrated nitric and sulfuric acids are corrosive; nitration is exothermic. Use eye protection, suitable gloves and a fume cupboard under trained supervision.",font=font(18,True),fill=RED)
+d.text((80,935),"Safety: concentrated nitric and sulfuric acids are corrosive and nitration is exothermic.",font=font(17,True),fill=RED)\nd.text((80,965),"Use eye protection, suitable gloves and a fume cupboard under trained supervision.",font=font(17,True),fill=RED)
 save(im,"14-methyl-3-nitrobenzoate-practical.png")
 
 print("rendered", len(list(OUT.glob("*.png"))), "PNG files")
