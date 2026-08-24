@@ -126,7 +126,7 @@ save(im,"03-proton-nmr-anatomy.png")
 
 # 4 NMR structure deduction
 im,d=base("Combining NMR evidence: ethyl ethanoate","Molecular formula C₄H₈O₂. Every signal must be assigned once and the integrations must total 8 H.")
-table(d,(90,190,["δ / ppm","splitting","integration","assignment"],[
+table(d,(90,190,1510,530),["δ / ppm","splitting","integration","assignment"],[
 ("1.25","triplet","3 H","CH₃–CH₂–"),
 ("2.05","singlet","3 H","CH₃–C(=O)–"),
 ("4.12","quartet","2 H","–O–CH₂–")
@@ -211,7 +211,7 @@ save(im,"08-gas-liquid-chromatography.png")
 
 # 9 transition-metal electron configurations
 im,d=base("Transition-metal electron configurations","Write the neutral atom first; when forming ions, remove 4s electrons before 3d electrons.")
-table(d,(90,190,["species","electron configuration","reason/check"],[
+table(d,(90,190,1490,764),["species","electron configuration","reason/check"],[
 ("Cr","[Ar] 3d⁵ 4s¹","half-filled d subshell"),
 ("Fe","[Ar] 3d⁶ 4s²","neutral atom"),
 ("Fe²⁺","[Ar] 3d⁶","remove two 4s electrons"),
@@ -258,7 +258,7 @@ save(im,"11-copper-ligand-replacement.png")
 
 # 12 transition-metal colours and hydroxide tests
 im,d=base("Transition-metal ion colours and hydroxide tests","Use freshly made observations and distinguish the solution colour from the precipitate colour.")
-table(d,(60,175,["ion / aqueous colour","NaOH(aq)","excess NaOH","NH₃(aq) / excess"],[
+table(d,(60,175,1520,831),["ion / aqueous colour","NaOH(aq)","excess NaOH","NH₃(aq) / excess"],[
 ("Cr³⁺ green/violet","grey-green ppt","dissolves: dark green","grey-green ppt; insoluble"),
 ("Mn²⁺ very pale pink","off-white ppt; darkens","insoluble","off-white ppt; insoluble"),
 ("Fe²⁺ pale green","green ppt; turns brown","insoluble","green ppt; insoluble"),
@@ -312,7 +312,7 @@ save(im,"14-standard-hydrogen-electrode.png")
 im,d=base("Cell emf, feasibility and cell types","Use reduction potentials as written: E°cell = E°cathode − E°anode.")
 box(d,(80,180,760,430),"Worked Zn/Cu cell","Cu²⁺ + 2e⁻ → Cu      E° = +0.34 V\nZn²⁺ + 2e⁻ → Zn      E° = −0.76 V\n\nE°cell = +0.34 − (−0.76) = +1.10 V\nElectrons flow from Zn to Cu.",fill="#eef5ff",outline=BLUE,body_size=20,wrap_width=55)
 box(d,(840,180,1520,430),"Prediction limits","A positive E°cell predicts thermodynamic feasibility under standard conditions. Actual direction and rate can change with concentration, gas pressure, temperature and slow kinetics.",fill="#fff4e8",outline=ORANGE,body_size=20,wrap_width=55)
-table(d,(100,520,["cell type","example","key idea"],[
+table(d,(100,520,1500,880),["cell type","example","key idea"],[
 ("non-rechargeable","Li/MnO₂ primary cell","reactants consumed"),
 ("rechargeable","lithium-ion cell","external voltage reverses changes"),
 ("fuel cell","alkaline H₂/O₂","fuel and oxygen supplied continuously")
@@ -322,7 +322,7 @@ save(im,"15-emf-and-cell-types.png")
 
 # 16 amines
 im,d=base("Amines: classification, preparation and basicity","The nitrogen lone pair accepts H⁺. Its availability changes with attached groups.")
-table(d,(80,180,["class","general form","example"],[
+table(d,(80,180,1440,500),["class","general form","example"],[
 ("primary","RNH₂","CH₃CH₂NH₂"),
 ("secondary","R₂NH","(CH₃)₂NH"),
 ("tertiary","R₃N","(CH₃)₃N")
@@ -363,7 +363,7 @@ im,d=base("Peptide links, protein structure and induced fit","A protein’s thre
 d.text((800,190),"R–CH(NH₂)–C(=O)–NH–CH(R′)–COOH",font=font(31,True),fill=INK,anchor="mm")
 d.rounded_rectangle((665,160,930,225),12,outline=ORANGE,width=4)
 d.text((800,245),"peptide link: –C(=O)–NH–",font=font(20,True),fill=ORANGE,anchor="mm")
-table(d,(100,330,["level","meaning"],[
+table(d,(100,330,1500,642),["level","meaning"],[
 ("primary","amino-acid sequence"),
 ("secondary","local folding, e.g. α-helix or β-sheet"),
 ("tertiary","overall 3D folding of one polypeptide")
