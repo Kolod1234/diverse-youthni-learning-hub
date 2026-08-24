@@ -377,7 +377,8 @@ im,d=base("Electrophilic substitution of benzene","Substitution preserves the st
 def ring(cx,cy,r=90,circle=True):
     pts=[(cx+r*math.cos(math.radians(-90+i*60)),cy+r*math.sin(math.radians(-90+i*60))) for i in range(6)]
     d.line(pts+[pts[0]],fill=INK,width=6)
-    if circle: d.ellipse((cx-48,cy-48,cx+48,cy+48),outline=BLUE,width=5)\n    return pts
+    if circle: d.ellipse((cx-48,cy-48,cx+48,cy+48),outline=BLUE,width=5)
+    return pts
 ring(220,350)
 mid=ring(800,350,90,False)
 final=ring(1380,350)
