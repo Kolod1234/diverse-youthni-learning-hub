@@ -255,20 +255,40 @@ save(im,"08-acid-base-roadmap.png")
 
 # 9 titration practical/curves
 im,d=base("Measuring a titration curve and choosing an indicator","Illustration: a strong acid titrated with a strong alkali. Record settled pH readings against total volume added.")
-# apparatus
-d.rectangle((180,220,260,610),fill="#dff3ff",outline=INK,width=4)
-d.line((220,610,220,690),fill=INK,width=5); d.polygon([(205,690),(235,690),(220,720)],fill=INK)
-d.line((250,280,400,280),fill=INK,width=10); d.line((400,200,400,800),fill=INK,width=12); d.line((320,800,500,800),fill=INK,width=12)
-d.polygon([(120,850),(320,850),(280,690),(160,690)],fill="#f7d6e0",outline=INK)
-d.line((520,610,520,790),fill=INK,width=6); d.ellipse((500,585,540,625),fill=TEAL)
-d.line((520,585,520,500),fill=INK,width=6)
-label(d,(90,180),"burette: titrant",BLUE,21,True)
-label(d,(80,875),"conical flask: analyte + stirrer",RED,19,True)
-label(d,(450,455),"pH electrode",TEAL,20,True)
+# labelled apparatus: burette and pH electrode both enter the stirred analyte
+# retort stand, boss and clamp
+d.line((440,190,440,855),fill=INK,width=12); d.line((350,855,560,855),fill=INK,width=12)
+d.line((205,285,440,285),fill=INK,width=9); d.ellipse((425,270,455,300),fill=INK)
+# graduated burette, stopcock and delivery tip
+d.rectangle((130,220,205,610),fill="#dff3ff",outline=INK,width=4)
+for yy in range(245,600,35): d.line((130,yy,145,yy),fill=MUTED,width=2)
+d.line((167,610,167,650),fill=INK,width=5); d.line((145,630,190,630),fill=INK,width=6)
+d.line((167,650,167,725),fill=INK,width=5); d.polygon([(154,725),(180,725),(167,748)],fill=INK)
+# open beaker on a magnetic stirrer; burette tip and electrode are inside
+d.rectangle((85,665,365,850),fill="white",outline=INK,width=4)
+d.rectangle((90,715,360,845),fill="#f7d6e0")
+d.line((85,665,365,665),fill=INK,width=4)
+d.rounded_rectangle((70,850,380,915),12,fill="#d8e1e3",outline=INK,width=4)
+d.rounded_rectangle((190,817,265,830),7,fill="white",outline=PURPLE,width=3)
+# pH electrode immersed in analyte, cabled to meter
+d.rounded_rectangle((292,485,325,790),12,fill="#e7f4f2",outline=TEAL,width=4)
+d.ellipse((288,770,329,812),fill=TEAL,outline=INK,width=2)
+d.line((308,485,308,445,485,445,485,520),fill=INK,width=4)
+d.rounded_rectangle((470,500,650,625),14,fill="#edf8f4",outline=TEAL,width=4)
+d.text((560,540),"pH meter",font=font(21,True),fill=TEAL,anchor="mm")
+d.text((560,585),"calibrated",font=font(18),fill=INK,anchor="mm")
+label(d,(85,180),"burette: strong alkali titrant",BLUE,19,True)
+label(d,(80,930),"beaker: strong acid analyte; magnetic stirring",RED,17,True)
+label(d,(270,420),"pH electrode",TEAL,19,True)
 # curve
 ox,oy=720,850; xr=1510; top=190
 d.line((ox,top,ox,oy),fill=INK,width=4); d.line((ox,oy,xr,oy),fill=INK,width=4)
-d.text((660,520),"pH",font=font(22,True),fill=INK,anchor="mm"); d.text((1110,900),"volume of alkali added / cm³",font=font(20,True),fill=INK,anchor="mm")
+# explicit scale labels make the illustrative graph auditable
+for ph_tick in range(0,15,2):
+    yy=oy-(ph_tick/14)*610; d.line((ox-8,yy,ox+8,yy),fill=INK,width=2); d.text((ox-16,yy),str(ph_tick),font=font(14),fill=INK,anchor="rm")
+for vol,xx in [(0,ox),(25,ox+185),(50,ox+370),(75,ox+555),(100,ox+740)]:
+    d.line((xx,oy-8,xx,oy+8),fill=INK,width=2); d.text((xx,oy+16),str(vol),font=font(14),fill=INK,anchor="ma")
+d.text((660,520),"pH",font=font(22,True),fill=INK,anchor="mm"); d.text((1110,930),"volume of alkali added / cm³",font=font(20,True),fill=INK,anchor="mm")
 pts=[]
 for i in range(0,740,3):
     v=(i-370)/35
