@@ -70,7 +70,11 @@ line_label(d,(330,775),(330,735),"ΔH°at(Na) = +108",BLUE,(-185,-12))
 line_label(d,(330,635),(330,585),"½ bond dissociation = +121",BLUE,(-240,-12))
 line_label(d,(330,485),(330,405),"IE₁(Na) = +496",PURPLE,(-160,-12))
 line_label(d,(330,305),(330,255),"EA₁(Cl) = −349",TEAL,(-170,-12))
-line_label(d,(590,210),(1030,760),"ΔH°latt = −787 kJ mol⁻¹",ORANGE,(10,-30))
+# Route the lattice-formation arrow through the clear channel between the level boxes and notes.
+d.line((560,210,620,210,620,650),fill=ORANGE,width=5)
+arrow(d,(620,650),(1040,760),ORANGE,5,16)
+d.rounded_rectangle((655,610,970,648),8,fill=BG)
+d.text((670,616),"ΔH°latt = −787 kJ mol⁻¹",font=font(19,True),fill=ORANGE)
 box(d,(650,165,1500,350),"Hess’s law check",
     "Direct route = sum of the alternative route\n−411 = 108 + 121 + 496 − 349 + ΔH°latt\nΔH°latt = −787 kJ mol⁻¹",fill="#fff8ef",outline=ORANGE)
 box(d,(650,395,1500,600),"Definition used here",
@@ -250,21 +254,21 @@ for r,(a,b,c,e,col) in enumerate(items):
     d.text((690,y+20),c,font=font(20,True),fill=INK)
     d.text((1050,y+20),e,font=font(19,True),fill=col)
     if r<3: arrow(d,(800,y+140),(800,y+165),GRID,4,12)
-box(d,(90,865,1510,970),"Calculator check","At 298 K, an acid has [H⁺] > 1.0 × 10⁻⁷ mol dm⁻³.\nA base has [H⁺] < 1.0 × 10⁻⁷ mol dm⁻³.",fill="#fff8ef",outline=ORANGE)
+box(d,(90,865,1510,970),"Calculator check","At 298 K: acid [H⁺] > 1.0 × 10⁻⁷ mol dm⁻³; base [H⁺] < 1.0 × 10⁻⁷ mol dm⁻³.",fill="#fff8ef",outline=ORANGE)
 save(im,"08-acid-base-roadmap.png")
 
 # 9 titration practical/curves
 im,d=base("Measuring a titration curve and choosing an indicator","Illustration: a strong acid titrated with a strong alkali. Record settled pH readings against total volume added.")
-# labelled apparatus: burette and pH electrode both enter the stirred analyte
+# Labelled apparatus: the burette tip stays just above the beaker; only the pH electrode is immersed.
 # retort stand, boss and clamp
 d.line((440,190,440,855),fill=INK,width=12); d.line((350,855,560,855),fill=INK,width=12)
 d.line((205,285,440,285),fill=INK,width=9); d.ellipse((425,270,455,300),fill=INK)
 # graduated burette, stopcock and delivery tip
 d.rectangle((130,220,205,610),fill="#dff3ff",outline=INK,width=4)
 for yy in range(245,600,35): d.line((130,yy,145,yy),fill=MUTED,width=2)
-d.line((167,610,167,650),fill=INK,width=5); d.line((145,630,190,630),fill=INK,width=6)
-d.line((167,650,167,725),fill=INK,width=5); d.polygon([(154,725),(180,725),(167,748)],fill=INK)
-# open beaker on a magnetic stirrer; burette tip and electrode are inside
+d.line((167,610,167,640),fill=INK,width=5); d.line((145,630,190,630),fill=INK,width=6)
+d.line((167,640,167,651),fill=INK,width=5); d.polygon([(158,651),(176,651),(167,661)],fill=INK)
+# Open beaker on a magnetic stirrer; the pH electrode is immersed in the analyte.
 d.rectangle((85,665,365,850),fill="white",outline=INK,width=4)
 d.rectangle((90,715,360,845),fill="#f7d6e0")
 d.line((85,665,365,665),fill=INK,width=4)
@@ -327,7 +331,7 @@ box(d,(180,840,1420,950),"Optical activity",
 save(im,"10-optical-isomerism.png")
 
 # 11 carbonyl mechanism/tests
-im,d=base("Carbonyl chemistry: polarity, addition and tests","The C=O bond is polar: carbon is δ+ and oxygen is δ−. Curly arrows start at an electron pair or bond.")
+im,d=base("Carbonyl compounds: polarity, addition and tests","The C=O bond is polar: carbon is δ+ and oxygen is δ−. Curly arrows start at an electron pair or bond.")
 # mechanism top: coordinates place each electron arrow on its exact source and destination
 d.text((100,175),"Nucleophilic addition of cyanide to propanone",font=font(25,True),fill=BLUE)
 d.text((340,300),"C",font=font(32,True),fill=INK,anchor="mm")
@@ -373,10 +377,10 @@ im,d=base("Carboxylic acids and their derivatives","Read each reaction arrow as 
 chem_box(d,(90,200,400,330),"RCOOH","carboxylic acid")
 chem_box(d,(650,200,960,330),"RCOOR′","ester")
 chem_box(d,(1210,200,1510,330),"RCOCl","acyl chloride")
-line_label(d,(425,265),(625,265),"R′OH, H⁺; reflux",BLUE,(0,-35))
-line_label(d,(1185,265),(985,265),"R′OH",TEAL,(0,-35))
-line_label(d,(400,315),(650,315),"+ H₂O",MUTED,(40,0))
-line_label(d,(1210,340),(960,340),"+ HCl",MUTED,(-60,0))
+line_label(d,(400,265),(650,265),"R′OH, H⁺; reflux",BLUE,(0,-35))
+line_label(d,(650,315),(400,315),"H₂O, H⁺; reflux",MUTED,(-35,10))
+line_label(d,(1210,265),(960,265),"R′OH",TEAL,(0,-35))
+d.text((1085,305),"+ HCl formed",font=font(18,True),fill=MUTED,anchor="mm")
 # triglyceride
 d.text((90,450),"Triglyceride + methanol  →  glycerol + fatty-acid methyl esters (biodiesel)",font=font(25,True),fill=INK)
 d.text((120,560),"CH₂–O–C(=O)–R₁",font=font(27,True),fill=BLUE)
@@ -388,7 +392,7 @@ d.text((930,570),"HOCH₂–CHOH–CH₂OH",font=font(25,True),fill=TEAL)
 d.text((930,640),"+ R₁COOCH₃ + R₂COOCH₃",font=font(23,True),fill=ORANGE)
 d.text((930,690),"+ R₃COOCH₃",font=font(23,True),fill=ORANGE)
 box(d,(90,780,1510,930),"Hardening an oil",
-    "Hydrogen adds across C=C bonds in unsaturated chains. Conditions: H₂ with finely divided Ni catalyst and heat. Greater saturation usually raises the melting point.",fill="#fff8ef",outline=ORANGE)
+    "Hydrogen adds across C=C bonds in unsaturated chains. Conditions: H₂ with finely divided Ni catalyst and heat.\nGreater saturation usually raises the melting point.",fill="#fff8ef",outline=ORANGE)
 save(im,"12-carboxylic-derivatives.png")
 
 # 13 benzene
@@ -468,7 +472,8 @@ arrow(d,(1285,350),(1340,350),ORANGE,4,14)
 d.ellipse((1340,350,1485,425),fill="#edf3f4",outline=INK,width=4)
 for x,y in [(1370,385),(1405,395),(1440,380),(1460,405)]:
     d.polygon([(x,y-11),(x+12,y),(x,y+11),(x-12,y)],fill="#f2dd79",outline=ORANGE)
-d.text((1410,455),"cooled, filtered, dried crystals",font=font(13,True),fill=ORANGE,anchor="mm")
+d.text((1410,447),"cooled, filtered",font=font(12,True),fill=ORANGE,anchor="mm")
+d.text((1410,464),"and dried crystals",font=font(12,True),fill=ORANGE,anchor="mm")
 # flow details
 box(d,(80,580,500,900),"Microsteps",
     "1. Cool the nitrating mixture.\n2. Add methyl benzoate slowly.\n3. Stir while controlling temperature.\n4. Allow the substitution to finish.",fill="#eef5ff",outline=BLUE)
