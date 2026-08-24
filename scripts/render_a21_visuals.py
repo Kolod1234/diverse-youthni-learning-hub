@@ -203,7 +203,8 @@ def mb(temp,scale,col):
         val=(e**0.5)*math.exp(-e/temp)
         pts.append((ox+i,oy-scale*val))
     d.line(pts,fill=col,width=6)
-# Peak scales are adjusted so the two qualitative distributions have the same total area.\nmb(0.75,610,BLUE); mb(1.25,285,ORANGE)
+# Peak scales are adjusted so the two qualitative distributions have the same total area.
+mb(0.75,610,BLUE); mb(1.25,285,ORANGE)
 Ea=1110
 d.line((Ea,540,Ea,870),fill=RED,width=4)
 d.text((Ea+12,555),"Eₐ",font=font(24,True),fill=RED)
@@ -326,7 +327,8 @@ data=[("2,4-DNPH","C=O group","orange/yellow precipitate","orange/yellow precipi
 for r,row in enumerate(data):
     yy=(rows[r+1]+rows[r+2])//2
     for i,t in enumerate(row): d.text(((cols[i]+cols[i+1])//2,yy),t,font=font(17,i==0),fill=INK,anchor="mm")
-d.text((90,900),"Safety: hydrogen cyanide is highly toxic. Any practical use requires an approved procedure,",font=font(18,True),fill=RED)\nd.text((90,930),"specialist supervision and a suitable risk assessment.",font=font(18,True),fill=RED)
+d.text((90,900),"Safety: hydrogen cyanide is highly toxic. Any practical use requires an approved procedure,",font=font(18,True),fill=RED)
+d.text((90,930),"specialist supervision and a suitable risk assessment.",font=font(18,True),fill=RED)
 save(im,"11-carbonyl-chemistry.png")
 
 # 12 carboxylic acids/derivatives/fats
@@ -376,7 +378,8 @@ for i in range(4):
     d.text(((cols[i]+cols[i+1])//2,605),heads[i],font=font(18,True),fill=INK,anchor="mm")
 data=[("bromination","Br₂ / FeBr₃","Br⁺","Br₂ + FeBr₃ → Br⁺ + FeBr₄⁻"),
 ("nitration","conc. HNO₃ / conc. H₂SO₄","NO₂⁺","HNO₃ + H₂SO₄ → NO₂⁺ + HSO₄⁻ + H₂O"),
-("alkylation","RCl / AlCl₃","R⁺","RCl + AlCl₃ → R⁺ + AlCl₄⁻"),\n("acylation","RCOCl / AlCl₃","RCO⁺","RCOCl + AlCl₃ → RCO⁺ + AlCl₄⁻")]
+("alkylation","RCl / AlCl₃","R⁺","RCl + AlCl₃ → R⁺ + AlCl₄⁻"),
+("acylation","RCOCl / AlCl₃","RCO⁺","RCOCl + AlCl₃ → RCO⁺ + AlCl₄⁻")]
 for r,row in enumerate(data):
     yy=(rows[r+1]+rows[r+2])//2
     for i,t in enumerate(row): d.text(((cols[i]+cols[i+1])//2,yy),t,font=font(16,i==0),fill=INK,anchor="mm")
@@ -412,7 +415,8 @@ box(d,(590,580,1010,900),"Isolation",
     "1. Pour onto ice as directed.\n2. Allow crystals to form.\n3. Filter using suction.\n4. Wash with a little cold solvent.",fill="#edf8f4",outline=TEAL)
 box(d,(1100,580,1520,900),"Purification",
     "1. Dissolve in minimum hot solvent.\n2. Cool slowly, then in ice.\n3. Filter and dry the crystals.\n4. Record mass and melting range.",fill="#fff4e8",outline=ORANGE)
-d.text((80,935),"Safety: concentrated nitric and sulfuric acids are corrosive and nitration is exothermic.",font=font(17,True),fill=RED)\nd.text((80,965),"Use eye protection, suitable gloves and a fume cupboard under trained supervision.",font=font(17,True),fill=RED)
+d.text((80,935),"Safety: concentrated nitric and sulfuric acids are corrosive and nitration is exothermic.",font=font(17,True),fill=RED)
+d.text((80,965),"Use eye protection, suitable gloves and a fume cupboard under trained supervision.",font=font(17,True),fill=RED)
 save(im,"14-methyl-3-nitrobenzoate-practical.png")
 
 print("rendered", len(list(OUT.glob("*.png"))), "PNG files")
