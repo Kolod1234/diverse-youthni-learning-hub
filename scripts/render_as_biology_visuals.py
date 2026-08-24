@@ -118,7 +118,7 @@ dotted(d,ht[0],central)
 dotted(d,hl[0],central)
 dotted(d,hc[0],right)
 dotted(d,hc[1],bottom)
-leader(d,[(1450,715),(1365,715),(1260,650),(1148,615)],"hydrogen bond",(1475,735),anchor="ra")
+leader(d,[(1450,715),(1365,715),(1260,650),(1140,615)],"hydrogen bond",(1475,735),anchor="ra")
 d.text((1170,810),"Each dotted line joins Hδ+ on one molecule to Oδ− on another.",font=font(18),fill=MUTED,anchor="mm")
 im.save(OUT/"01-water-molecule-hydrogen-bonding.png",format="PNG",optimize=True)
 
@@ -135,9 +135,9 @@ def small_water_radial(im,d,ion,angle,oxygen_inward=True):
     cx,cy=ion
     r=math.radians(angle)
     if oxygen_inward:
-        O=(int(cx+180*math.cos(r)),int(cy+180*math.sin(r)))
-        radial=math.degrees(math.atan2(cy-O[1],cx-O[0]))
-        water(im,d,O,(radial-52.25,radial+52.25),0.58)
+        O=(int(cx+145*math.cos(r)),int(cy+145*math.sin(r)))
+        outward=math.degrees(r)
+        water(im,d,O,(outward-52.25,outward+52.25),0.58)
     else:
         h_target=(int(cx+145*math.cos(r)),int(cy+145*math.sin(r)))
         O=(int(cx+220*math.cos(r)),int(cy+220*math.sin(r)))
@@ -151,10 +151,8 @@ for a in range(0,360,60):
     small_water_radial(im,d,c1,a,True)
     small_water_radial(im,d,c2,a,False)
 
-d.ellipse((215,295,625,705),outline=PURPLE,width=3)
-d.ellipse((955,275,1405,725),outline=GREEN,width=3)
-leader(d,[(95,250),(210,250),(290,340)],"Oδ− faces the positive ion",(85,230))
-leader(d,[(1510,250),(1435,250),(1360,350)],"Hδ+ faces the negative ion",(1515,230),anchor="ra")
+leader(d,[(95,250),(210,250),(285,325),(347,374)],"Oδ− faces the positive ion",(85,230))
+leader(d,[(1510,250),(1435,250),(1360,350),(1252,374)],"Hδ+ faces the negative ion",(1515,230),anchor="ra")
 d.text((420,780),"Water-ion attractions keep the cation dispersed in solution.",font=font(18),fill=MUTED,anchor="mm")
 d.text((1180,780),"Water-ion attractions keep the anion dispersed in solution.",font=font(18),fill=MUTED,anchor="mm")
 im.save(OUT/"02-water-hydration-shells.png",format="PNG",optimize=True)
