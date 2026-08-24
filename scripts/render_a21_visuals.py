@@ -377,16 +377,24 @@ im,d=base("Electrophilic substitution of benzene","Substitution preserves the st
 def ring(cx,cy,r=90,circle=True):
     pts=[(cx+r*math.cos(math.radians(-90+i*60)),cy+r*math.sin(math.radians(-90+i*60))) for i in range(6)]
     d.line(pts+[pts[0]],fill=INK,width=6)
-    if circle: d.ellipse((cx-48,cy-48,cx+48,cy+48),outline=BLUE,width=5)
-ring(220,350); ring(800,350,90,False); ring(1380,350)
-d.text((220,490),"benzene",font=font(23,True),fill=BLUE,anchor="mm")
-d.text((800,490),"arenium ion intermediate",font=font(21,True),fill=PURPLE,anchor="mm")
-d.text((1380,490),"substituted benzene",font=font(21,True),fill=TEAL,anchor="mm")
+    if circle: d.ellipse((cx-48,cy-48,cx+48,cy+48),outline=BLUE,width=5)\n    return pts
+ring(220,350)
+mid=ring(800,350,90,False)
+final=ring(1380,350)
+# In the sigma complex, E and H are bonded to the same ring carbon; the positive charge remains on the ring.
+v=mid[0]; d.line((v[0],v[1],v[0]-45,v[1]-65),fill=INK,width=5); d.text((v[0]-55,v[1]-90),"E",font=font(24,True),fill=PURPLE,anchor="mm")
+d.line((v[0],v[1],v[0]+45,v[1]-65),fill=INK,width=5); d.text((v[0]+55,v[1]-90),"H",font=font(24,True),fill=GREEN,anchor="mm")
+d.text((800,380),"+",font=font(36,True),fill=PURPLE,anchor="mm")
+# The product carries E and has regained its delocalised ring.
+v=final[0]; d.line((v[0],v[1],v[0],v[1]-78),fill=INK,width=5); d.text((v[0],v[1]-105),"E",font=font(24,True),fill=TEAL,anchor="mm")
+d.text((220,500),"benzene",font=font(23,True),fill=BLUE,anchor="mm")
+d.text((800,500),"arenium (sigma-complex) intermediate",font=font(19,True),fill=PURPLE,anchor="mm")
+d.text((1380,500),"substituted benzene",font=font(21,True),fill=TEAL,anchor="mm")
 arrow(d,(330,350),(680,350),PURPLE); arrow(d,(920,350),(1260,350),TEAL)
-d.text((500,305),"E⁺ attacks π electrons",font=font(19,True),fill=PURPLE,anchor="mm")
-d.text((1090,305),"H⁺ is lost",font=font(19,True),fill=TEAL,anchor="mm")
-d.text((800,350),"+",font=font(42,True),fill=PURPLE,anchor="mm")
-d.text((800,410),"E and H are both attached",font=font(17),fill=MUTED,anchor="mm")
+d.text((500,305),"E⁺ attacks π electrons",font=font(18,True),fill=PURPLE,anchor="mm")
+d.text((1090,305),"H⁺ is lost",font=font(18,True),fill=TEAL,anchor="mm")
+# positive charge drawn inside the sigma complex above
+# E and H are explicitly bonded to the same carbon above
 # electrophile table
 cols=[90,390,820,1170,1510]; rows=[570,640,715,790,865,940]
 heads=["reaction","reagents/catalyst","electrophile","electrophile formation"]
