@@ -288,7 +288,7 @@ for ph_tick in range(0,15,2):
     yy=oy-(ph_tick/14)*610; d.line((ox-8,yy,ox+8,yy),fill=INK,width=2); d.text((ox-16,yy),str(ph_tick),font=font(14),fill=INK,anchor="rm")
 for vol,xx in [(0,ox),(25,ox+185),(50,ox+370),(75,ox+555),(100,ox+740)]:
     d.line((xx,oy-8,xx,oy+8),fill=INK,width=2); d.text((xx,oy+16),str(vol),font=font(14),fill=INK,anchor="ma")
-d.text((660,520),"pH",font=font(22,True),fill=INK,anchor="mm"); d.text((1110,930),"volume of alkali added / cm³",font=font(20,True),fill=INK,anchor="mm")
+d.text((680,165),"pH",font=font(22,True),fill=INK,anchor="mm"); d.text((1110,930),"volume of alkali added / cm³",font=font(20,True),fill=INK,anchor="mm")
 pts=[]
 for i in range(0,740,3):
     v=(i-370)/35
