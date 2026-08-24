@@ -111,7 +111,7 @@ for x1,y1,x2,y2,t,xlab in boxes:
   pts=[]
   for i in range(101):
    q=i/100; x=ax[0]+q*(right-ax[0]); y=ax[1]-245*q/(.22+q); pts.append((x,y))
-  d.line(pts,fill=TEAL,width=7); d.line((right-160,top+55,right,top+55),fill=GRID,width=2); label(d,(right-80,top+30),"Vmax",TEAL,15)
+  d.line(pts,fill=TEAL,width=7); label(d,(right-145,top+38),"active sites saturated",TEAL,14)
  else:
   d.line((ax[0],ax[1],right,top+25),fill=ORANGE,width=7); label(d,(right-135,top+55),"substrate in excess",ORANGE,15)
 im.save(OUT/"14-enzyme-rate-graphs.png",optimize=True)
@@ -150,6 +150,8 @@ im.save(OUT/"15-enzyme-inhibition.png",optimize=True)
 im,d=base("Enzyme biomarkers, immobilisation and biosensors","Enzymes can reveal tissue damage, be retained for reuse, or convert a chemical concentration into a measurable signal.")
 panel(d,(45,155,520,925),"A  Enzyme biomarker",PB,BLUE)
 d.ellipse((155,260,405,510),fill="#f6c6c6",outline=RED,width=6); d.text((280,385),"damaged\ncells",font=f(25,1),fill=RED,anchor="mm")
+arrow(d,(280,520),(280,575),RED,6,16)
+label(d,(280,545),"membrane damage releases enzymes",RED,14)
 for i in range(8):
  x=120+i*45; y=600+(i%2)*40; d.ellipse((x,y,x+35,y+35),fill=BLUE,outline=INK,width=2)
 label(d,(280,700),"enzyme activity rises in blood",BLUE,17)
