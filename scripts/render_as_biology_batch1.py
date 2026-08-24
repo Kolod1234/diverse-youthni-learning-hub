@@ -122,9 +122,8 @@ d.line((180,322,180,343),fill=INK,width=5)
 d.line((180,387,180,408),fill=INK,width=5)
 for i,y in enumerate((285,365,445)):
     d.text((440,y),f"HOOC—fatty-acid chain {i+1}",font=f(23),fill=GREEN)
-arrow(d,(315,360),(380,360),ORANGE,6,16)
-d.text((795,360),"+",font=f(36,True),fill=MUTED,anchor="mm")
-arrow(d,(835,360),(945,360),BLUE,7,18)
+d.text((350,360),"+",font=f(36,True),fill=MUTED,anchor="mm")
+arrow(d,(790,360),(945,360),BLUE,7,18)
 d.text((1080,265),"triglyceride",font=f(23,True),fill=BLUE,anchor="mm")
 product_rows=[(305,"CH₂—O—C(=O)—R₁"),(365,"CH—O—C(=O)—R₂"),(425,"CH₂—O—C(=O)—R₃")]
 for y,formula in product_rows:
