@@ -438,22 +438,37 @@ stages=[(80,180,500,500,"1  Controlled nitration",BLUE),(590,180,1010,500,"2  Pr
 for x1,y1,x2,y2,t,col in stages:
     d.rounded_rectangle((x1,y1,x2,y2),18,fill="white",outline=col,width=4)
     d.text((x1+20,y1+18),t,font=font(23,True),fill=col)
-# stage1 apparatus: flask in ice
-d.ellipse((180,310,390,430),fill="#dceeff",outline=INK,width=4)
-d.polygon([(230,405),(340,405),(320,265),(250,265)],fill="#f5df8b",outline=INK)
-d.line((285,265,285,230),fill=INK,width=7)
-d.text((290,450),"ice-water bath controls temperature",font=font(16,True),fill=BLUE,anchor="mm")
-d.text((290,240),"methyl benzoate added slowly",font=font(14,True),fill=INK,anchor="mm")
-# stage2 Buchner
-d.polygon([(700,260),(900,260),(860,350),(740,350)],fill="#e7f1f3",outline=INK)
-d.rectangle((750,350,850,445),fill="#d9eef5",outline=INK,width=4)
-d.line((850,400,940,400),fill=INK,width=5)
-d.text((800,465),"Büchner funnel and suction flask",font=font(16,True),fill=TEAL,anchor="mm")
-# stage3 crystals/watchglass
-d.ellipse((1190,350,1440,440),fill="#edf3f4",outline=INK,width=4)
-for x,y in [(1240,385),(1290,400),(1340,380),(1390,405)]:
-    d.polygon([(x,y-15),(x+15,y),(x,y+15),(x-15,y)],fill="#f2dd79",outline=ORANGE)
-d.text((1315,465),"dry purified crystals",font=font(16,True),fill=ORANGE,anchor="mm")
+# stage 1: open reaction flask immersed in an external ice-water bath
+d.rectangle((135,315,445,455),fill="#dceeff",outline=BLUE,width=4)
+for ix,iy in [(165,340),(210,390),(365,350),(405,405)]: d.polygon([(ix,iy-13),(ix+15,iy),(ix,iy+13),(ix-15,iy)],fill="white",outline=BLUE)
+# conical reaction flask with open neck
+d.polygon([(205,430),(380,430),(335,300),(250,300)],fill="#f5df8b",outline=INK,width=4)
+d.rectangle((275,255,310,305),fill="white",outline=INK,width=4)
+# dropping pipette above the open neck; drop lands inside the flask
+d.line((292,225,292,275),fill=INK,width=5); d.ellipse((282,215,302,235),fill="#d8e1e3",outline=INK)
+d.ellipse((287,282,297,297),fill=ORANGE)
+d.text((155,250),"methyl benzoate\nadded slowly",font=font(14,True),fill=INK)
+d.line((240,275,282,275),fill=INK,width=3)
+d.text((290,470),"ice–water bath removes heat",font=font(15,True),fill=BLUE,anchor="mm")
+# stage 2: Büchner funnel sealed to a side-arm suction flask
+d.polygon([(690,260),(910,260),(865,345),(735,345)],fill="#e7f1f3",outline=INK,width=4)
+d.line((705,285,895,285),fill=TEAL,width=4)
+for xx in range(725,885,25): d.ellipse((xx-3,278,xx+3,284),fill=INK)
+d.rectangle((770,345,830,375),fill="#bbc9cc",outline=INK,width=3)
+d.rectangle((782,375,818,405),fill="white",outline=INK,width=4)
+d.polygon([(700,465),(900,465),(850,400),(750,400)],fill="#d9eef5",outline=INK,width=4)
+d.line((845,410,945,380),fill=INK,width=6); d.line((945,380,980,380),fill=TEAL,width=7)
+d.text((800,485),"Büchner funnel + side-arm suction flask",font=font(14,True),fill=TEAL,anchor="mm")
+d.text((950,355),"to vacuum trap/pump",font=font(13,True),fill=INK,anchor="mm")
+# stage 3: dissolve in minimum hot solvent, cool, then collect and dry crystals
+d.polygon([(1140,390),(1260,390),(1240,285),(1160,285)],fill="#fde7ba",outline=INK,width=4)
+d.rectangle((1125,395,1275,430),fill="#d8e1e3",outline=INK,width=3)
+d.text((1200,455),"minimum hot solvent",font=font(13,True),fill=INK,anchor="mm")
+arrow(d,(1285,350),(1340,350),ORANGE,4,14)
+d.ellipse((1340,350,1485,425),fill="#edf3f4",outline=INK,width=4)
+for x,y in [(1370,385),(1405,395),(1440,380),(1460,405)]:
+    d.polygon([(x,y-11),(x+12,y),(x,y+11),(x-12,y)],fill="#f2dd79",outline=ORANGE)
+d.text((1410,455),"cooled, filtered, dried crystals",font=font(13,True),fill=ORANGE,anchor="mm")
 # flow details
 box(d,(80,580,500,900),"Microsteps",
     "1. Cool the nitrating mixture.\n2. Add methyl benzoate slowly.\n3. Stir while controlling temperature.\n4. Allow the substitution to finish.",fill="#eef5ff",outline=BLUE)
