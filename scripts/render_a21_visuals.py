@@ -576,7 +576,7 @@ d.text((410,800),"all six C–C bonds are equal (about 0.139 nm)",font=font(19),
 
 # panel B: oblique sigma ring and six aligned p orbitals
 cx2,cy2,rx,ry=1170,525,230,92
-p2=[(cx2+rx*math.cos(math.radians(-90+i*60)),cy2+ry*math.sin(math.radians(-90+i*60))) for i in range(6)]
+p2=[(cx2+rx*math.cos(math.radians(-90+i*60))+70*math.sin(math.radians(-90+i*60)),cy2+ry*math.sin(math.radians(-90+i*60))) for i in range(6)]
 layer=Image.new("RGBA",(W,H),(0,0,0,0)); ld=ImageDraw.Draw(layer)
 ld.ellipse((890,285,1450,450),fill=(116,84,184,55),outline=(116,84,184,120),width=3)
 ld.ellipse((890,600,1450,765),fill=(116,84,184,55),outline=(116,84,184,120),width=3)
@@ -589,8 +589,10 @@ for x,y in p2:
 # leaders end exactly on the labelled regions
 d.text((900,255),"delocalised π electron density",font=font(20,True),fill=PURPLE)
 d.line((1120,275,1120,330),fill=PURPLE,width=3); d.ellipse((1115,325,1125,335),fill=PURPLE)
-d.text((1375,510),"σ framework",font=font(19,True),fill=BLUE)
-d.line((1360,535,1290,545),fill=BLUE,width=3); d.ellipse((1285,540,1295,550),fill=BLUE)
+sigma_target=((p2[1][0]+p2[2][0])/2,(p2[1][1]+p2[2][1])/2)
+d.text((1395,505),"σ framework",font=font(19,True),fill=BLUE)
+d.line((1380,530,sigma_target[0],sigma_target[1]),fill=BLUE,width=3)
+d.ellipse((sigma_target[0]-5,sigma_target[1]-5,sigma_target[0]+5,sigma_target[1]+5),fill=BLUE)
 d.text((860,805),"Continuous side-on overlap requires the ring to remain planar.",font=font(19,True),fill=INK)
 d.text((860,842),"Six π electrons are shared across all six carbon atoms.",font=font(19),fill=MUTED)
 save(im,"18-benzene-sigma-pi-bonding.png")
