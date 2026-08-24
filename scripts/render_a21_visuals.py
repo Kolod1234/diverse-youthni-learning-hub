@@ -308,13 +308,30 @@ save(im,"10-optical-isomerism.png")
 
 # 11 carbonyl mechanism/tests
 im,d=base("Carbonyl chemistry: polarity, addition and tests","The C=O bond is polar: carbon is δ+ and oxygen is δ−. Curly arrows start at an electron pair or bond.")
-# mechanism top
-d.text((100,190),"Nucleophilic addition of cyanide to propanone",font=font(25,True),fill=BLUE)
-d.text((180,300),"CH₃–C(=O)–CH₃   +   :CN⁻",font=font(30,True),fill=INK)
-arrow(d,(555,315),(430,300),PURPLE,5,18)
-d.text((350,355),"arrow from CN⁻ lone pair to δ+ carbon",font=font(18,True),fill=PURPLE)
-d.text((790,300),"→   (CH₃)₂C(O⁻)CN   →   (CH₃)₂C(OH)CN",font=font(28,True),fill=INK)
-d.text((960,355),"second step: O⁻ accepts H⁺",font=font(18,True),fill=TEAL)
+# mechanism top: coordinates place each electron arrow on its exact source and destination
+d.text((100,175),"Nucleophilic addition of cyanide to propanone",font=font(25,True),fill=BLUE)
+d.text((340,300),"C",font=font(32,True),fill=INK,anchor="mm")
+d.text((190,300),"CH₃",font=font(28,True),fill=INK,anchor="mm"); d.line((235,300,315,300),fill=INK,width=5)
+d.text((490,300),"CH₃",font=font(28,True),fill=INK,anchor="mm"); d.line((365,300,445,300),fill=INK,width=5)
+d.text((340,205),"O δ−",font=font(25,True),fill=RED,anchor="mm"); d.line((330,275,330,230),fill=INK,width=4); d.line((350,275,350,230),fill=INK,width=4)
+d.text((330,345),"δ+",font=font(19,True),fill=BLUE,anchor="mm")
+d.text((75,300),":CN⁻",font=font(27,True),fill=PURPLE,anchor="mm")
+arrow(d,(115,292),(315,290),PURPLE,5,17)
+arrow(d,(353,270),(353,225),RED,5,17)
+d.text((85,390),"1  :CN⁻ lone pair → carbonyl carbon",font=font(17,True),fill=PURPLE)
+d.text((400,390),"2  π(C=O) bond → oxygen",font=font(17,True),fill=RED)
+arrow(d,(570,300),(710,300),INK,5,17)
+d.text((930,275),"(CH₃)₂C(O⁻)CN",font=font(28,True),fill=INK,anchor="mm")
+arrow(d,(1080,300),(1190,300),TEAL,5,17)
+d.text((1380,275),"(CH₃)₂C(OH)CN",font=font(27,True),fill=INK,anchor="mm")
+d.text((930,340),"tetrahedral alkoxide",font=font(17),fill=MUTED,anchor="mm")
+d.text((1380,340),"protonation gives hydroxynitrile",font=font(17,True),fill=TEAL,anchor="mm")
+# replaced by audited mechanism above
+# exact structure and arrows above
+# exact electron arrow above
+# labelled above
+# intermediates above
+# protonation labelled above
 # tests table
 cols=[90,420,810,1160,1510]; rows=[470,545,650,755,860]
 heads=["reagent","what it tests","aldehyde result","ketone result"]
