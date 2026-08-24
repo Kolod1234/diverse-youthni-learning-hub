@@ -59,7 +59,7 @@ im,d=base("How enzymes lower activation energy","Catalysis changes the route and
 panel(d,(45,155,930,925),"A  Reaction-energy profile",WHITE,BLUE)
 x0,y0=130,820; x1,y1=850,230
 d.line((x0,y0,x0,220),fill=INK,width=4); d.line((x0,y0,860,y0),fill=INK,width=4)
-d.text((60,500),"free energy",font=f(20,1),fill=INK,anchor="mm")
+d.multiline_text((82,500),"free\nenergy",font=f(18,1),fill=INK,anchor="mm",align="center",spacing=2)
 d.text((500,865),"reaction progress",font=f(20,1),fill=INK,anchor="mm")
 reactY,prodY=700,750
 d.line((150,reactY,260,reactY),fill=INK,width=5); d.line((730,prodY,840,prodY),fill=INK,width=5)
