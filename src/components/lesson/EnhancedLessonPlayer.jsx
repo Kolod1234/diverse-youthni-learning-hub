@@ -17,6 +17,7 @@ import PointsAnimation from '@/components/gamification/PointsAnimation';
 import BadgeUnlock from '@/components/gamification/BadgeUnlock';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
+import MathJaxContent from '@/components/lesson/MathJaxContent';
 import TopicQuizModal from '@/components/lesson/TopicQuizModal';
 
 const SolarSystem3D = React.lazy(() => import('@/components/lesson/SolarSystem3D'));
@@ -603,7 +604,10 @@ export default function EnhancedLessonPlayer({
                   </button>
                 </div>
                 <h2 className="lesson-page-title mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
-                  <div className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')} dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }} />
+                  <MathJaxContent
+                    className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')}
+                    html={activeContentSlide.content || ''}
+                  />
                   {activeContentSlide.content?.includes('data-interactive="solar-system-3d"') && (
                     <React.Suspense fallback={<div className="mt-6 min-h-[420px] animate-pulse rounded-xl bg-slate-100" aria-label="Loading interactive Solar System" />}>
                       <SolarSystem3D />
