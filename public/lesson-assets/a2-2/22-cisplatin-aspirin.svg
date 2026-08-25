@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1140" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+  <rect width="1800" height="1140" fill="#faf8f2"/>
+
+  <!-- Title -->
+  <text x="80" y="92" font-size="52" font-weight="700" fill="#1d3a45">Cisplatin and aspirin</text>
+  <text x="82" y="140" font-size="26" fill="#5b6b72">Structure determines biological action, solubility and analytical behaviour.</text>
+  <line x1="80" y1="168" x2="1720" y2="168" stroke="#d9d4c8" stroke-width="2"/>
+
+  <!-- Cisplatin structure (cis-[Pt(NH3)2Cl2], square planar) -->
+  <g stroke="#1d3a45" stroke-width="5" stroke-linecap="round">
+    <!-- bonds stop short of the labels so text stays legible -->
+    <line x1="420" y1="395" x2="420" y2="300"/>   <!-- to top Cl -->
+    <line x1="375" y1="440" x2="270" y2="440"/>   <!-- to left Cl -->
+    <line x1="465" y1="440" x2="570" y2="440"/>   <!-- to right NH3 -->
+    <line x1="420" y1="485" x2="420" y2="580"/>   <!-- to bottom NH3 -->
+  </g>
+  <circle cx="420" cy="440" r="46" fill="#7c4fd0"/>
+  <text x="420" y="452" font-size="34" font-weight="700" fill="#ffffff" text-anchor="middle">Pt</text>
+
+  <text x="420" y="278" font-size="34" font-weight="700" fill="#1d7a4f" text-anchor="middle">Cl</text>
+  <text x="238" y="452" font-size="34" font-weight="700" fill="#1d7a4f" text-anchor="end">Cl</text>
+  <text x="596" y="452" font-size="34" font-weight="700" fill="#1d5fd0">NH<tspan baseline-shift="sub" font-size="24">3</tspan></text>
+  <text x="420" y="646" font-size="34" font-weight="700" fill="#1d5fd0" text-anchor="middle">NH<tspan baseline-shift="sub" font-size="24">3</tspan></text>
+
+  <text x="420" y="712" font-size="27" font-weight="700" fill="#7c4fd0" text-anchor="middle">cis-[Pt(NH<tspan baseline-shift="sub" font-size="19">3</tspan>)<tspan baseline-shift="sub" font-size="19">2</tspan>Cl<tspan baseline-shift="sub" font-size="19">2</tspan>], square planar</text>
+  <text x="420" y="748" font-size="22" fill="#5b6b72" text-anchor="middle">the two chloride ligands are adjacent (90&#176;) &#8212; the cis isomer</text>
+
+  <!-- Cisplatin action box -->
+  <rect x="90" y="790" width="700" height="270" rx="22" fill="#f4edfd" stroke="#7c4fd0" stroke-width="3"/>
+  <text x="120" y="846" font-size="30" font-weight="700" fill="#1d3a45">Cisplatin action</text>
+  <text x="120" y="892" font-size="24" fill="#2c3e46">After ligand exchange in cells, platinum binds to DNA</text>
+  <text x="120" y="927" font-size="24" fill="#2c3e46">bases and forms cross-links. This distorts DNA and</text>
+  <text x="120" y="962" font-size="24" fill="#2c3e46">interferes with replication. Changing the ligand</text>
+  <text x="120" y="997" font-size="24" fill="#2c3e46">arrangement changes activity.</text>
+
+  <!-- Aspirin synthesis box -->
+  <rect x="950" y="210" width="770" height="330" rx="22" fill="#eaf2fd" stroke="#1d5fd0" stroke-width="3"/>
+  <text x="985" y="268" font-size="30" font-weight="700" fill="#1d3a45">Aspirin synthesis</text>
+  <text x="985" y="316" font-size="25" fill="#2c3e46">salicylic acid + ethanoic anhydride &#8594; aspirin +</text>
+  <text x="985" y="351" font-size="25" fill="#2c3e46">ethanoic acid</text>
+  <text x="985" y="416" font-size="25" fill="#2c3e46">Purify by recrystallisation; assess purity by mass,</text>
+  <text x="985" y="451" font-size="25" fill="#2c3e46">percentage yield, melting range and</text>
+  <text x="985" y="486" font-size="25" fill="#2c3e46">chromatography.</text>
+
+  <!-- Sodium salt box -->
+  <rect x="950" y="620" width="770" height="330" rx="22" fill="#edf8f3" stroke="#0d8a63" stroke-width="3"/>
+  <text x="985" y="678" font-size="30" font-weight="700" fill="#1d3a45">Why a sodium salt can be used</text>
+  <text x="985" y="726" font-size="25" fill="#2c3e46">Deprotonation forms an ionic carboxylate salt,</text>
+  <text x="985" y="761" font-size="25" fill="#2c3e46">usually increasing water solubility. Aspirin</text>
+  <text x="985" y="796" font-size="25" fill="#2c3e46">concentration can then be determined by a</text>
+  <text x="985" y="831" font-size="25" fill="#2c3e46">validated volumetric method.</text>
+</svg>
