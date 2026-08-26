@@ -26,7 +26,10 @@ ABSOLUTE RULES:
 function needsSteps(content: string) {
   if (!content) return false;
   if (!/Solution|Model answer|Full solution|Answer/i.test(content)) return false;
-  if (/<ol|<li|step-number/.test(content)) return false;
+  // Only an ordered list (or an explicit step-number run) counts as existing
+  // working. Answers presented as <ul> bullets - e.g. "b^2-4ac = 25-24 = 1"
+  // with no substitution shown - still need micro-steps.
+  if (/<ol[\s>]|step-number/.test(content)) return false;
   return /\$/.test(content);
 }
 
