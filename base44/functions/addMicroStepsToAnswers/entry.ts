@@ -45,6 +45,14 @@ const normalise = (s: string) =>
     .replace(/[{}\s]/g, '')
     .replace(/\(\d+(s\.f\.|d\.p\.|sf|dp)\)/gi, '');
 
+// The rewritten box, with HTML tags removed, so a value that legitimately moves
+// between maths mode and surrounding text (e.g. "$6$ cm" for "$6\text{cm}$")
+// is still recognised.
+const plainBlob = (html: string) => normalise(html.replace(/<[^>]+>/g, ' '));
+// Last resort comparison: LaTeX commands and grouping punctuation dropped, so
+// only the numbers, letters and operators of the result have to survive.
+const looseBlob = (blob: string) => blob.replace(/\\[a-zA-Z]+/g, '').replace(/[()[\]$,]/g, '');
+
 // A LaTeX token survives if it reappears verbatim, or - because a chain such as
 // $a = b = c$ is legitimately split across steps - if its RESULT (the final
 // term of the relation chain) still appears anywhere in the rewritten box.
@@ -57,7 +65,9 @@ function preservedIn(blob: string, tokenSet: Set<string>, token: string) {
     .map(normalise)
     .filter(Boolean);
   const result = parts[parts.length - 1];
-  return Boolean(result) && blob.includes(result);
+  if (!result) return false;
+  if (blob.includes(result)) return true;
+  return looseBlob(blob).includes(looseBlob(result));
 }
 
 async function rewriteBox(base44, question: string, box: SlideBox) {
@@ -87,7 +97,7 @@ async function rewriteBox(base44, question: string, box: SlideBox) {
   if (!hasStepList(out)) return { changed: false, reason: 'no step list added' };
 
   const afterSet = new Set(mathTokens(out));
-  const afterBlob = normalise(out);
+  const afterBlob = plainBlob(out);
   const lost = mathTokens(masked).filter((t) => !preservedIn(afterBlob, afterSet, t));
   if (lost.length > 0) return { changed: false, reason: 'maths lost: ' + lost[0] };
 
