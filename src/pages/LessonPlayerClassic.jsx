@@ -78,7 +78,6 @@ import { motion } from 'framer-motion';
 import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
 
 const AS_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dc';
-const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
 
 export default function LessonPlayerClassic() {
   const location = useLocation();
