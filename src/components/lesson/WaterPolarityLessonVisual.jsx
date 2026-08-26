@@ -219,6 +219,75 @@ export default function WaterPolarityLessonVisual({ shouldReduceMotion = false }
         <h3 className="font-serif text-xl font-bold text-[#0b1b32] sm:text-2xl">{activeStep.title}</h3>
         <p className="mt-2 max-w-3xl text-[16px] leading-7 text-slate-700">{activeStep.explanation}</p>
       </motion.div>
+
+      <div className="mt-8 grid gap-5 lg:grid-cols-2">
+        <article className="overflow-hidden rounded-2xl border border-blue-200 bg-white shadow-[0_6px_22px_rgba(37,99,235,0.08)]">
+          <header className="flex items-center gap-3 border-b border-blue-100 bg-blue-50 px-5 py-4">
+            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">A</span>
+            <div>
+              <h3 className="font-serif text-xl font-bold text-[#0b1b32]">Why one water molecule is polar</h3>
+              <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.1em] text-blue-700">Inside one H₂O molecule</p>
+            </div>
+          </header>
+          <div className="space-y-4 p-5 text-[15px] leading-7 text-slate-700 sm:p-6">
+            <p>
+              <strong className="text-blue-800">Unequal electron attraction.</strong> Oxygen attracts the shared electrons in each
+              <span className="mx-1 rounded bg-blue-100 px-1.5 py-0.5 font-semibold text-blue-900">polar covalent O–H bond</span>
+              more strongly than hydrogen.
+            </p>
+            <p>
+              <strong className="text-blue-800">Partial charges form.</strong> Oxygen becomes
+              <span className="mx-1 rounded bg-blue-100 px-1.5 py-0.5 font-semibold text-blue-900">δ−</span>
+              and each hydrogen becomes
+              <span className="mx-1 rounded bg-orange-100 px-1.5 py-0.5 font-semibold text-orange-800">δ+</span>.
+            </p>
+            <p>
+              <strong className="text-blue-800">The bent shape matters.</strong> The H–O–H angle is approximately
+              <span className="mx-1 rounded bg-violet-100 px-1.5 py-0.5 font-semibold text-violet-800">104.5°</span>,
+              so the two bond dipoles point in different directions and do not cancel.
+            </p>
+          </div>
+          <div className="border-t border-blue-100 bg-blue-50 px-5 py-4 text-sm font-semibold leading-6 text-blue-950 sm:px-6">
+            Result: H₂O is neutral overall, but its charge is distributed unevenly, so the whole molecule is polar.
+          </div>
+        </article>
+
+        <article className="overflow-hidden rounded-2xl border border-teal-200 bg-white shadow-[0_6px_22px_rgba(13,148,136,0.09)]">
+          <header className="flex items-center gap-3 border-b border-teal-100 bg-teal-50 px-5 py-4">
+            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-600 text-sm font-bold text-white">B</span>
+            <div>
+              <h3 className="font-serif text-xl font-bold text-[#0b1b32]">How water molecules attract</h3>
+              <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.1em] text-teal-700">Between separate molecules</p>
+            </div>
+          </header>
+          <div className="space-y-4 p-5 text-[15px] leading-7 text-slate-700 sm:p-6">
+            <p>
+              <strong className="text-teal-800">A hydrogen bond forms</strong> when
+              <span className="mx-1 rounded bg-orange-100 px-1.5 py-0.5 font-semibold text-orange-800">Hδ+</span>
+              on one molecule is attracted to
+              <span className="mx-1 rounded bg-blue-100 px-1.5 py-0.5 font-semibold text-blue-900">Oδ−</span>
+              on another. The blue dashed lines show these intermolecular attractions.
+            </p>
+            <p>
+              <strong className="text-teal-800">The network is dynamic.</strong> Hydrogen bonds continually break and reform as
+              liquid-water molecules move; liquid water is not a fixed lattice.
+            </p>
+            <p>
+              <strong className="text-teal-800">Many weak attractions add up.</strong> Together they contribute to water remaining
+              liquid in cells, cohesion, surface tension and a relatively high specific heat capacity.
+            </p>
+          </div>
+          <div className="border-t border-teal-100 bg-teal-50 px-5 py-4 text-sm font-semibold leading-6 text-teal-950 sm:px-6">
+            Result: temporary hydrogen bonds give water several properties that are essential for living organisms.
+          </div>
+        </article>
+      </div>
+
+      <aside className="mt-5 rounded-xl border border-orange-200 bg-orange-50 px-5 py-4 text-[15px] leading-7 text-slate-700">
+        <strong className="text-orange-800">Key distinction:</strong> solid O–H lines represent polar covalent bonds
+        <span className="font-semibold text-slate-900"> within</span> a molecule; blue dashed lines represent hydrogen bonds
+        <span className="font-semibold text-slate-900"> between</span> molecules.
+      </aside>
     </section>
   );
 }
