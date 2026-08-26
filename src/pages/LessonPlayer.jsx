@@ -36,10 +36,10 @@ export default function LessonPlayer() {
         const lessons = await base44.entities.Lesson.filter({ id: lessonId });
         const lesson = lessons[0];
         
-        // This lesson contains a purpose-built interactive slide that is only
-        // available in the PowerPoint player. Keep the override lesson-scoped.
-        if (lessonId === WATER_INTERACTIVE_LESSON_ID && lesson?.default_player === 'LessonPlayerPowerPoint') {
-          navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
+        // The Water example is purpose-built for the enhanced course reader.
+        // Keep this lesson-scoped so every other lesson retains its preference routing.
+        if (lessonId === WATER_INTERACTIVE_LESSON_ID && lesson?.default_player === 'LessonPlayerClassic') {
+          navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`, { replace: true });
           return;
         }
 
