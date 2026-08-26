@@ -19,10 +19,13 @@ import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
 import MathJaxContent from '@/components/lesson/MathJaxContent';
 import TopicQuizModal from '@/components/lesson/TopicQuizModal';
+import WaterPolarityLessonVisual from '@/components/lesson/WaterPolarityLessonVisual';
 
 const SolarSystem3D = React.lazy(() => import('@/components/lesson/SolarSystem3D'));
 const CrystalLattice3D = React.lazy(() => import('@/components/lesson/CrystalLattice3D'));
 const AmmoniaFountainLive = React.lazy(() => import('@/components/lesson/AmmoniaFountainLive'));
+const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
+const WATER_POLARITY_MARKER = 'interactive:water-polarity';
 
 export default function EnhancedLessonPlayer({
   lesson,
@@ -100,6 +103,8 @@ export default function EnhancedLessonPlayer({
   const progressPercent = sortedLessons.length > 0 ? ((currentLessonIndex + 1) / sortedLessons.length * 100) : 0;
   const contentSlides = lesson?.slides || [];
   const activeContentSlide = contentSlides[currentContentSlide];
+  const isWaterPolarityPage = lesson?.id === WATER_INTERACTIVE_LESSON_ID
+    && activeContentSlide?.notes === WATER_POLARITY_MARKER;
 
   useEffect(() => {
     if (!lesson?.id) return;
@@ -604,10 +609,20 @@ export default function EnhancedLessonPlayer({
                   </button>
                 </div>
                 <h2 className="lesson-page-title mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
-                  <MathJaxContent
-                    className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')}
-                    html={activeContentSlide.content || ''}
-                  />
+                  {isWaterPolarityPage ? (
+                    <>
+                      <WaterPolarityLessonVisual shouldReduceMotion={shouldReduceMotion} />
+                      <MathJaxContent
+                        className={richContentClasses + ' mt-8' + (animatedStemContent ? ' lesson-page-body' : '')}
+                        html={(activeContentSlide.content || '').split('</figure>').slice(1).join('</figure>')}
+                      />
+                    </>
+                  ) : (
+                    <MathJaxContent
+                      className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')}
+                      html={activeContentSlide.content || ''}
+                    />
+                  )}
                   {activeContentSlide.content?.includes('data-interactive="solar-system-3d"') && (
                     <React.Suspense fallback={<div className="mt-6 min-h-[420px] animate-pulse rounded-xl bg-slate-100" aria-label="Loading interactive Solar System" />}>
                       <SolarSystem3D />
