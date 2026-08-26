@@ -205,7 +205,7 @@ export default function EnhancedLessonPlayer({
 
   // Load interactive content
   useEffect(() => {
-    if (!lesson?.id || lesson.id === WATER_INTERACTIVE_LESSON_ID) return;
+    if (!lesson?.id || courseId === AS_BIOLOGY_COURSE_ID || lesson.course_id === AS_BIOLOGY_COURSE_ID) return;
     
     setLoadingInteractives(true);
     base44.functions.invoke('generateLessonInteractives', {
@@ -222,7 +222,7 @@ export default function EnhancedLessonPlayer({
     }).finally(() => {
       setLoadingInteractives(false);
     });
-  }, [lesson?.id]);
+  }, [lesson?.id, lesson?.course_id, courseId]);
 
   const markCompleteMutation = useMutation({
     mutationFn: async () => {
@@ -282,7 +282,7 @@ export default function EnhancedLessonPlayer({
   ].filter(Boolean).join(' '));
   const isBookmarked = bookmarks.includes(currentPageKey);
   const topicQuizQuestions = interactiveContent?.quizQuestions || [];
-  const canOpenTopicQuiz = isLastPage && hasPages && !topicQuizCompleted;
+  const canOpenTopicQuiz = isLastPage && hasPages && topicQuizQuestions.length > 0 && !topicQuizCompleted;
 
   const closeTools = () => {
     setShowAI(false);
