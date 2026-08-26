@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { mathTokensKey, invokeWithRetry, mapWithLimit } from '../../shared/lessonHtml.ts';
 
 const OL_STYLE = 'margin:12px 0 12px 22px;line-height:1.75;font-size:1.06em;color:#24343d;';
 const LI_STYLE = 'margin:6px 0;';
@@ -22,54 +23,6 @@ ABSOLUTE RULES:
 - British English spelling.
 - Return the FULL slide HTML. If a slide needs no change, return it byte-identical.`;
 
-function mathTokens(html) {
-  return ((html || '').match(/\$\$?[^$]+\$\$?/g) || [])
-    .map((t) => t.replace(/\s+/g, ''))
-    .sort()
-    .join('|');
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function invokeWithRetry(base44, prompt) {
-  let lastError = null;
-  for (let attempt = 0; attempt < 4; attempt++) {
-    try {
-      return await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: {
-          type: 'object',
-          properties: { html: { type: 'string' }, changed: { type: 'boolean' } }
-        }
-      });
-    } catch (err) {
-      lastError = err;
-      await sleep(1500 * (attempt + 1));
-    }
-  }
-  throw lastError;
-}
-
-async function mapWithLimit(items, limit, worker) {
-  const results = new Array(items.length);
-  let next = 0;
-  const runners = [];
-  for (let i = 0; i < Math.min(limit, items.length); i++) {
-    runners.push(
-      (async () => {
-        while (next < items.length) {
-          const index = next++;
-          results[index] = await worker(items[index], index);
-        }
-      })()
-    );
-  }
-  await Promise.all(runners);
-  return results;
-}
-
 async function convertSlide(base44, content) {
   const svgs = [];
   const masked = content.replace(/<svg[\s\S]*?<\/svg>/g, (m) => {
@@ -86,7 +39,7 @@ async function convertSlide(base44, content) {
 
   let out = res && res.html ? res.html : '';
   if (!out) return { content, changed: false, reason: 'empty response' };
-  if (mathTokens(masked) !== mathTokens(out)) return { content, changed: false, reason: 'maths mismatch' };
+  if (mathTokensKey(masked) !== mathTokensKey(out)) return { content, changed: false, reason: 'maths mismatch' };
 
   for (let i = 0; i < svgs.length; i++) {
     if (!out.includes(`[SVG_${i}]`)) return { content, changed: false, reason: 'svg lost' };
