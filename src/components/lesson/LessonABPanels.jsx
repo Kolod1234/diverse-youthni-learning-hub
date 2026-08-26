@@ -101,7 +101,7 @@ const collectContent = html => {
     panelAHtml: toHtml(groups[0]),
     panelBHtml: toHtml(groups[1]),
     mediaHtml: media.map(element => element.outerHTML).join(''),
-    stacked: blocks.some(block => /grid-template-columns|<table/i.test(block.outerHTML))
+    stacked: media.length > 0 || blocks.some(block => /grid-template-columns|<table/i.test(block.outerHTML))
   };
 };
 
