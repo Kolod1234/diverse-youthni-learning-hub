@@ -59,6 +59,10 @@ const collectContent = html => {
 
   for (let index = 1; index < blocks.length; index += 1) {
     runningLength += textLength(blocks[index - 1]);
+
+    // Keep a heading with the paragraph, list or table that follows it.
+    if (/^H[2-4]$/.test(blocks[index - 1].tagName)) continue;
+
     const difference = Math.abs(totalLength - (runningLength * 2));
     if (difference < smallestDifference) {
       smallestDifference = difference;
@@ -69,7 +73,8 @@ const collectContent = html => {
   const groups = [blocks.slice(0, splitIndex), blocks.slice(splitIndex)];
 
   const extractHeading = (group, fallback) => {
-    for (const block of group) {
+    for (let index = 0; index < group.length; index += 1) {
+      const block = group[index];
       const heading = /^H[2-4]$/.test(block.tagName)
         ? block
         : block.querySelector('h2, h3, h4');
@@ -77,7 +82,8 @@ const collectContent = html => {
       if (heading) {
         const candidate = normaliseTitle(heading.textContent);
         if (candidate && candidate.length <= 78) {
-          heading.remove();
+          if (heading === block) group.splice(index, 1);
+          else heading.remove();
           return candidate;
         }
       }
@@ -161,7 +167,7 @@ export default function LessonABPanels({ html, pageTitle, lessonTitle }) {
 
   return (
     <section aria-label={'Panel A and Panel B explanation for ' + pageTitle}>
-      <div className={'grid gap-5 ' + (content.stacked ? 'grid-cols-1' : 'lg:grid-cols-2')}>
+      <div className={'grid items-start gap-5 ' + (content.stacked ? 'grid-cols-1' : 'lg:grid-cols-2')}>
         <LearningPanel
           label="A"
           title={content.panelATitle}
