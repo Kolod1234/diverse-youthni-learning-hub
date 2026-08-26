@@ -20,10 +20,12 @@ import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
 import MathJaxContent from '@/components/lesson/MathJaxContent';
 import TopicQuizModal from '@/components/lesson/TopicQuizModal';
 import WaterPolarityLessonVisual from '@/components/lesson/WaterPolarityLessonVisual';
+import LessonABPanels from '@/components/lesson/LessonABPanels';
 
 const SolarSystem3D = React.lazy(() => import('@/components/lesson/SolarSystem3D'));
 const CrystalLattice3D = React.lazy(() => import('@/components/lesson/CrystalLattice3D'));
 const AmmoniaFountainLive = React.lazy(() => import('@/components/lesson/AmmoniaFountainLive'));
+const AS_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dc';
 const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
 const WATER_POLARITY_MARKER = 'interactive:water-polarity';
 
@@ -105,6 +107,10 @@ export default function EnhancedLessonPlayer({
   const activeContentSlide = contentSlides[currentContentSlide];
   const isWaterPolarityPage = lesson?.id === WATER_INTERACTIVE_LESSON_ID
     && activeContentSlide?.notes === WATER_POLARITY_MARKER;
+  const asBiologyPanelPageIndex = contentSlides.length > 1 ? 1 : 0;
+  const isASBiologyPanelPage = (courseId === AS_BIOLOGY_COURSE_ID || lesson?.course_id === AS_BIOLOGY_COURSE_ID)
+    && lesson?.id !== WATER_INTERACTIVE_LESSON_ID
+    && currentContentSlide === asBiologyPanelPageIndex;
 
   useEffect(() => {
     if (!lesson?.id) return;
@@ -611,6 +617,12 @@ export default function EnhancedLessonPlayer({
                 <h2 className="lesson-page-title mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
                   {isWaterPolarityPage ? (
                     <WaterPolarityLessonVisual shouldReduceMotion={shouldReduceMotion} />
+                  ) : isASBiologyPanelPage ? (
+                    <LessonABPanels
+                      html={activeContentSlide.content || ''}
+                      pageTitle={activeContentSlide.title}
+                      lessonTitle={lesson.title}
+                    />
                   ) : (
                     <MathJaxContent
                       className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')}
