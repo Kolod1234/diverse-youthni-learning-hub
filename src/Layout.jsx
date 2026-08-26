@@ -1104,9 +1104,9 @@ function LayoutContent({ children, currentPageName }) {
     }
 
 const mathJaxConfig = {
-  loader: { load: ['[tex]/mhchem', '[tex]/physics'] },
+  loader: { load: ['[tex]/mhchem'] },
   tex: {
-    packages: { '[+]': ['mhchem', 'physics'] },
+    packages: { '[+]': ['mhchem'] },
     inlineMath: [['$', '$']],
     displayMath: [['$$', '$$']]
   }
