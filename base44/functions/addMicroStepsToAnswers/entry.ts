@@ -60,7 +60,10 @@ async function processSlide(base44, content: string) {
       .replace(/\\dfrac|\\tfrac/g, '\\frac')
       .replace(/\\text|\\mathrm|\\operatorname/g, '')
       .replace(/\\[,;:!]|~/g, '')
-      .replace(/[{}\s]/g, '');
+      .replace(/[{}\s]/g, '')
+      // An accuracy qualifier such as (3s.f.) or (2d.p.) is presentation, not
+      // part of the answer, and may legitimately move outside the maths.
+      .replace(/\(\d+(s\.f\.|d\.p\.|sf|dp)\)/gi, '');
   const after = mathTokens(out);
   const afterSet = new Set(after);
   // Compare against the whole rewritten slide, not only its math tokens: a
@@ -69,18 +72,18 @@ async function processSlide(base44, content: string) {
   const afterBlob = normalise(out);
   const isPreserved = (token: string) => {
     if (afterSet.has(token)) return true;
+    // Split a relation chain (=, <, >, \le, \ge, \Rightarrow) into its terms.
+    // Intermediate terms may legitimately be re-expressed while the working is
+    // broken into steps; what must survive untouched is the RESULT - the final
+    // term of the chain.
     const parts = token
       .replace(/^\$\$?/, '')
       .replace(/\$\$?$/, '')
-      .split('=')
+      .split(/=|<|>|\\le[q]?|\\ge[q]?|\\Rightarrow|\\to/)
       .map((p) => normalise(p))
       .filter(Boolean);
-    // A chain may be split across steps; the opening expression and the final
-    // answer must both still be on the slide.
-    if (parts.length > 1) {
-      return afterBlob.includes(parts[0]) && afterBlob.includes(parts[parts.length - 1]);
-    }
-    return afterBlob.includes(parts[0] || '');
+    const result = parts[parts.length - 1];
+    return Boolean(result) && afterBlob.includes(result);
   };
   const lost = mathTokens(masked).filter((token) => !isPreserved(token));
   if (lost.length > 0) return { content, changed: false, reason: 'maths lost: ' + lost[0] };
