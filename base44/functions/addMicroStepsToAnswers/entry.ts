@@ -58,10 +58,15 @@ async function processSlide(base44, content: string) {
     s
       .replace(/\\left|\\right/g, '')
       .replace(/\\dfrac|\\tfrac/g, '\\frac')
+      .replace(/\\text|\\mathrm|\\operatorname/g, '')
+      .replace(/\\[,;:!]|~/g, '')
       .replace(/[{}\s]/g, '');
   const after = mathTokens(out);
   const afterSet = new Set(after);
-  const afterBlob = normalise(after.join('|'));
+  // Compare against the whole rewritten slide, not only its math tokens: a
+  // value may legitimately move out of math mode (e.g. "= 6" with "cm" as
+  // plain text) while remaining mathematically identical.
+  const afterBlob = normalise(out);
   const isPreserved = (token: string) => {
     if (afterSet.has(token)) return true;
     const parts = token
