@@ -610,13 +610,7 @@ export default function EnhancedLessonPlayer({
                 </div>
                 <h2 className="lesson-page-title mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
                   {isWaterPolarityPage ? (
-                    <>
-                      <WaterPolarityLessonVisual shouldReduceMotion={shouldReduceMotion} />
-                      <MathJaxContent
-                        className={richContentClasses + ' mt-8' + (animatedStemContent ? ' lesson-page-body' : '')}
-                        html={(activeContentSlide.content || '').split('</figure>').slice(1).join('</figure>')}
-                      />
-                    </>
+                    <WaterPolarityLessonVisual shouldReduceMotion={shouldReduceMotion} />
                   ) : (
                     <MathJaxContent
                       className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')}
