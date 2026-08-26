@@ -77,6 +77,8 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
 
+const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
+
 export default function LessonPlayerClassic() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -247,6 +249,7 @@ export default function LessonPlayerClassic() {
   useEffect(() => {
     const loadInteractives = async () => {
       if (!lessonId || lessonId === 'null' || lessonId === 'undefined') return;
+      if (lessonId === WATER_INTERACTIVE_LESSON_ID) return;
       
       // Check cache first
       const cacheKey = `interactives_${lessonId}`;
