@@ -66,6 +66,10 @@ import ManusSlidePlayer from '@/components/lesson/ManusSlidePlayer';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
 import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
+import WaterPolarityAnimation from '@/components/lesson/WaterPolarityAnimation';
+
+const WATER_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
+const WATER_POLARITY_MARKER = 'interactive:water-polarity';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
@@ -127,6 +131,9 @@ export default function LessonPlayerPowerPoint() {
   const sortedSlides = hasSlides
     ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0))
     : [];
+  const currentSlide = sortedSlides[currentSlideIndex];
+  const isWaterPolarityInteractive = lessonId === WATER_LESSON_ID
+    && currentSlide?.notes === WATER_POLARITY_MARKER;
 
   const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['courseLessons', courseId],
@@ -561,7 +568,10 @@ export default function LessonPlayerPowerPoint() {
               ) : (lesson?.google_slides_url) && !hasSlides ? (
                 <UniversalLessonPlayer lesson={lesson} totalSlides={sortedSlides.length || 20} />
               ) : hasSlides ? (
-                <TransformWrapper disabled={isPresenting || window.innerWidth < 640}>
+                isWaterPolarityInteractive ? (
+                  <WaterPolarityAnimation />
+                ) : (
+                  <TransformWrapper disabled={isPresenting || window.innerWidth < 640}>
                   {({ zoomIn, zoomOut, resetTransform }) => (
                     <>
                       {!isPresenting && (
@@ -590,7 +600,8 @@ export default function LessonPlayerPowerPoint() {
                       </TransformComponent>
                     </>
                   )}
-                </TransformWrapper>
+                  </TransformWrapper>
+                )
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-white bg-gray-800">
                   <div className="text-center"><FileText className="w-16 h-16 mx-auto mb-4 text-gray-500" /><p className="text-gray-400">No Content</p></div>
