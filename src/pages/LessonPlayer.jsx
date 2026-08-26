@@ -14,6 +14,8 @@ import { Button, Box, Typography, Chip } from '@mui/material';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 
+const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
+
 export default function LessonPlayer() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,9 +36,14 @@ export default function LessonPlayer() {
         const lessons = await base44.entities.Lesson.filter({ id: lessonId });
         const lesson = lessons[0];
         
-        // Priority: User preference > Lesson default > Auto-detect based on content
-        
-        // If user has a preference, use it
+        // This lesson contains a purpose-built interactive slide that is only
+        // available in the PowerPoint player. Keep the override lesson-scoped.
+        if (lessonId === WATER_INTERACTIVE_LESSON_ID && lesson?.default_player === 'LessonPlayerPowerPoint') {
+          navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
+          return;
+        }
+
+        // Priority for all other lessons: User preference > Lesson default > auto-detect.
         if (userData.player_preference) {
           navigate(`/${userData.player_preference}?lesson=${lessonId}&course=${courseId}`, { replace: true });
           return;
