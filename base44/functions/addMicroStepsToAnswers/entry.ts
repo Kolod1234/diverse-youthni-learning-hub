@@ -61,7 +61,7 @@ function preservedIn(blob: string, tokenSet: Set<string>, token: string) {
   const parts = token
     .replace(/^\$\$?/, '')
     .replace(/\$\$?$/, '')
-    .split(/=|<|>|\\le[q]?|\\ge[q]?|\\Rightarrow|\\to/)
+    .split(/=|<|>|\\leq?(?![a-zA-Z])|\\geq?(?![a-zA-Z])|\\Rightarrow|\\to(?![a-zA-Z])/)
     .map(normalise)
     .filter(Boolean);
   const result = parts[parts.length - 1];
