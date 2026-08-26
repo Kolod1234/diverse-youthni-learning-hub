@@ -77,6 +77,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
 
+const AS_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dc';
 const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
 
 export default function LessonPlayerClassic() {
@@ -249,7 +250,7 @@ export default function LessonPlayerClassic() {
   useEffect(() => {
     const loadInteractives = async () => {
       if (!lessonId || lessonId === 'null' || lessonId === 'undefined') return;
-      if (lessonId === WATER_INTERACTIVE_LESSON_ID) return;
+      if (courseId === AS_BIOLOGY_COURSE_ID) return;
       
       // Check cache first
       const cacheKey = `interactives_${lessonId}`;
@@ -281,7 +282,7 @@ export default function LessonPlayerClassic() {
     };
     
     loadInteractives();
-  }, [lessonId]);
+  }, [lessonId, courseId]);
 
   const handleRegenerateInteractives = async (params) => {
     const newParams = params || quizParams;
