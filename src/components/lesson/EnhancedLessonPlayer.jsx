@@ -199,7 +199,7 @@ export default function EnhancedLessonPlayer({
 
   // Load interactive content
   useEffect(() => {
-    if (!lesson?.id) return;
+    if (!lesson?.id || lesson.id === WATER_INTERACTIVE_LESSON_ID) return;
     
     setLoadingInteractives(true);
     base44.functions.invoke('generateLessonInteractives', {
