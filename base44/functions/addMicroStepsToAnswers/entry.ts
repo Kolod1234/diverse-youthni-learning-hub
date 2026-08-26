@@ -1,104 +1,131 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { mathTokens, invokeWithRetry, mapWithLimit } from '../../shared/lessonHtml.ts';
+import {
+  findBoxes,
+  isAnswerBox,
+  hasStepList,
+  replaceBoxes,
+  boxText,
+  type SlideBox
+} from '../../shared/answerBlocks.ts';
 
 const OL_STYLE = 'margin:12px 0 12px 22px;line-height:1.75;font-size:1.06em;color:#24343d;';
 const LI_STYLE = 'margin:6px 0;';
 
-const RULES = `You are a CCEA AS Mathematics examiner improving lesson slides so that every answer is BUILT UP in micro-steps instead of appearing out of nowhere.
+const RULES = `You are a CCEA AS Mathematics examiner rewriting the SOLUTION box of a lesson slide so a learner who has never met the topic can follow every move. The learner must never see a result appear from nowhere.
 
-TASK: find each answer region of the slide - a block whose heading is Solution, Model answer, Full solution or Answer, and any worked example where a result is stated with no working. Replace the bare result with an ordered list of micro-steps that derive it, ending with the SAME final answer.
+You are given the question for context and the solution box HTML. Rewrite ONLY the solution box.
 
-STEP LIST FORMAT: <ol style="${OL_STYLE}"> with <li style="${LI_STYLE}">one small move per step</li>.
-- Each step does ONE thing (identify the method, substitute, simplify, rearrange, evaluate).
-- Show the intermediate algebra or arithmetic inside the step, using $...$ inline or $$...$$ for a key line.
-- Where it is natural, finish with a short check step (e.g. expanding back, substituting the value in).
-- 4 to 8 steps is typical. Never pad with commentary that carries no mathematics.
+REQUIRED FORMAT
+- Replace the prose/one-line working with <ol style="${OL_STYLE}"> and <li style="${LI_STYLE}">one small move per step</li>.
+- Each step does exactly ONE thing: state the method or formula, substitute the numbers, simplify, rearrange, evaluate.
+- Show the algebra or arithmetic inside the step, $...$ inline or $$...$$ for a key line.
+- Where two equations must be compared or combined, keep them on adjacent lines so the learner can see which terms line up.
+- End with the SAME final answer as the original, and where natural a short check step.
+- 4 to 9 steps is typical. No commentary that carries no mathematics.
 
-ABSOLUTE RULES:
-- The final answer must stay mathematically identical to the original, and every LaTeX expression already present must still appear.
-- Mathematics must be correct and consistent with the question on the slide. If you cannot derive the stated answer with confidence, return the slide unchanged with changed=false.
-- Keep the surrounding HTML, the box wrappers, all style attributes, and heading labels exactly as given.
+ACCURACY
+- Never change the final answer, and never invent a different method or different numbers.
+- If you cannot independently derive the stated answer, still expand the working that is already printed into its separate lines - keep every number exactly as given. Only set changed=false if the box contains no working and no answer to expand.
+- Every LaTeX expression already present must still appear somewhere in your output.
+
+PRESERVE
+- Keep the outer <div> box wrapper, its style attribute and the uppercase label div exactly as given.
+- Keep any mark-scheme line (the italic M1/A1 note) as the last element, unchanged.
 - Keep [SVG_n] placeholders exactly, in the same position.
-- Do not touch Key idea / Note / Question text, definitions, formula statements or slides that already contain step lists.
-- British English spelling. Use \\div, \\times, \\left( \\right) as in the existing content.
-- Return the FULL slide HTML.`;
+- British English spelling. Use \\times, \\div, \\left( \\right) as in the existing content.
+- Return ONLY the rewritten box HTML, complete from its opening <div> to its closing </div>.`;
 
-function needsSteps(content: string) {
-  if (!content) return false;
-  if (!/Solution|Model answer|Full solution|Answer/i.test(content)) return false;
-  // Only an ordered list (or an explicit step-number run) counts as existing
-  // working. Answers presented as <ul> bullets - e.g. "b^2-4ac = 25-24 = 1"
-  // with no substitution shown - still need micro-steps.
-  if (/<ol[\s>]|step-number/.test(content)) return false;
-  return /\$/.test(content);
+const normalise = (s: string) =>
+  s
+    .replace(/\\left|\\right/g, '')
+    .replace(/\\dfrac|\\tfrac/g, '\\frac')
+    .replace(/\\text|\\mathrm|\\operatorname/g, '')
+    .replace(/\\[,;:!]|~/g, '')
+    .replace(/[{}\s]/g, '')
+    .replace(/\(\d+(s\.f\.|d\.p\.|sf|dp)\)/gi, '');
+
+// A LaTeX token survives if it reappears verbatim, or - because a chain such as
+// $a = b = c$ is legitimately split across steps - if its RESULT (the final
+// term of the relation chain) still appears anywhere in the rewritten box.
+function preservedIn(blob: string, tokenSet: Set<string>, token: string) {
+  if (tokenSet.has(token)) return true;
+  const parts = token
+    .replace(/^\$\$?/, '')
+    .replace(/\$\$?$/, '')
+    .split(/=|<|>|\\le[q]?|\\ge[q]?|\\Rightarrow|\\to/)
+    .map(normalise)
+    .filter(Boolean);
+  const result = parts[parts.length - 1];
+  return Boolean(result) && blob.includes(result);
 }
 
-async function processSlide(base44, content: string) {
-  if (!needsSteps(content)) return { content, changed: false };
-
+async function rewriteBox(base44, question: string, box: SlideBox) {
   const svgs: string[] = [];
-  const masked = content.replace(/<svg[\s\S]*?<\/svg>/g, (m) => {
+  const masked = box.html.replace(/<svg[\s\S]*?<\/svg>/g, (m) => {
     svgs.push(m);
     return `[SVG_${svgs.length - 1}]`;
   });
 
   let res;
   try {
-    res = await invokeWithRetry(base44, `${RULES}\n\nSLIDE HTML:\n${masked}`, 'claude_sonnet_4_6');
+    res = await invokeWithRetry(
+      base44,
+      `${RULES}\n\nQUESTION (context, do not include in your output):\n${question || '(not stated on this slide)'}\n\nSOLUTION BOX HTML:\n${masked}`,
+      'claude_sonnet_4_6'
+    );
   } catch (err) {
-    return { content, changed: false, reason: 'llm error: ' + err.message };
+    return { changed: false, reason: 'llm error: ' + err.message };
   }
 
-  let out = res && res.html ? res.html : '';
-  if (!out) return { content, changed: false, reason: 'empty response' };
-  if (res.changed !== true) return { content, changed: false, reason: 'model declined' };
-  if (!/<ol[\s>]/.test(out)) return { content, changed: false, reason: 'no step list added' };
+  let out = (res && res.html ? res.html : '').trim();
+  if (!out) return { changed: false, reason: 'empty response' };
+  if (res.changed !== true) return { changed: false, reason: 'model declined' };
+  if (!out.startsWith('<div') || !out.endsWith('</div>')) {
+    return { changed: false, reason: 'box wrapper lost' };
+  }
+  if (!hasStepList(out)) return { changed: false, reason: 'no step list added' };
 
-  // Every original LaTeX expression must survive. A chain such as
-  // $a = b = c$ may legitimately be split across steps, so a token also
-  // counts as preserved when each of its "=" separated parts still appears.
-  const normalise = (s: string) =>
-    s
-      .replace(/\\left|\\right/g, '')
-      .replace(/\\dfrac|\\tfrac/g, '\\frac')
-      .replace(/\\text|\\mathrm|\\operatorname/g, '')
-      .replace(/\\[,;:!]|~/g, '')
-      .replace(/[{}\s]/g, '')
-      // An accuracy qualifier such as (3s.f.) or (2d.p.) is presentation, not
-      // part of the answer, and may legitimately move outside the maths.
-      .replace(/\(\d+(s\.f\.|d\.p\.|sf|dp)\)/gi, '');
-  const after = mathTokens(out);
-  const afterSet = new Set(after);
-  // Compare against the whole rewritten slide, not only its math tokens: a
-  // value may legitimately move out of math mode (e.g. "= 6" with "cm" as
-  // plain text) while remaining mathematically identical.
+  const afterSet = new Set(mathTokens(out));
   const afterBlob = normalise(out);
-  const isPreserved = (token: string) => {
-    if (afterSet.has(token)) return true;
-    // Split a relation chain (=, <, >, \le, \ge, \Rightarrow) into its terms.
-    // Intermediate terms may legitimately be re-expressed while the working is
-    // broken into steps; what must survive untouched is the RESULT - the final
-    // term of the chain.
-    const parts = token
-      .replace(/^\$\$?/, '')
-      .replace(/\$\$?$/, '')
-      .split(/=|<|>|\\le[q]?|\\ge[q]?|\\Rightarrow|\\to/)
-      .map((p) => normalise(p))
-      .filter(Boolean);
-    const result = parts[parts.length - 1];
-    return Boolean(result) && afterBlob.includes(result);
-  };
-  const lost = mathTokens(masked).filter((token) => !isPreserved(token));
-  if (lost.length > 0) return { content, changed: false, reason: 'maths lost: ' + lost[0] };
+  const lost = mathTokens(masked).filter((t) => !preservedIn(afterBlob, afterSet, t));
+  if (lost.length > 0) return { changed: false, reason: 'maths lost: ' + lost[0] };
 
   for (let i = 0; i < svgs.length; i++) {
-    if (!out.includes(`[SVG_${i}]`)) return { content, changed: false, reason: 'svg lost' };
+    if (!out.includes(`[SVG_${i}]`)) return { changed: false, reason: 'svg lost' };
     out = out.replace(`[SVG_${i}]`, svgs[i]);
   }
-  if (/\[SVG_\d+\]/.test(out)) return { content, changed: false, reason: 'stray svg token' };
-  if (out.length < content.length) return { content, changed: false, reason: 'output shorter than original' };
+  if (/\[SVG_\d+\]/.test(out)) return { changed: false, reason: 'stray svg token' };
+  if (out.length < box.html.length) return { changed: false, reason: 'output shorter than original' };
 
-  return { content: out, changed: out !== content };
+  return { changed: true, html: out };
+}
+
+async function processSlide(base44, content: string) {
+  if (!content) return { content, changed: false };
+
+  const boxes = findBoxes(content);
+  // Only answer regions that still present their working as prose or a single
+  // line. A box that already carries an <ol> of steps is left alone.
+  const targets = boxes.filter((b) => isAnswerBox(b) && !hasStepList(b.html) && /\$/.test(b.html));
+  if (targets.length === 0) return { content, changed: false };
+
+  const questionBoxes = boxes.filter((b) => /question|practice|exam/i.test(b.label));
+  const question = questionBoxes.map(boxText).join('\n');
+
+  const results = await mapWithLimit(targets, 2, (box) => rewriteBox(base44, question, box));
+
+  const replacements = [];
+  const reasons = [];
+  results.forEach((r, i) => {
+    if (r.changed) replacements.push({ box: targets[i], html: r.html });
+    else if (r.reason) reasons.push(r.reason);
+  });
+
+  if (replacements.length === 0) {
+    return { content, changed: false, reason: reasons[0] || 'no change' };
+  }
+  return { content: replaceBoxes(content, replacements), changed: true, reason: reasons[0] };
 }
 
 export default async function (req: Request): Promise<Response> {
