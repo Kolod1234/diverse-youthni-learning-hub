@@ -133,6 +133,14 @@ export default function AdminMathSolutionAudit() {
               Audit all 84 lessons
             </button>
             <button
+              onClick={() => runOrders([5], false)}
+              disabled={running}
+              className="inline-flex items-center gap-2 rounded-lg border border-indigo-300 bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-900 disabled:opacity-50"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Test Factorising lesson
+            </button>
+            <button
               onClick={() => runOrders(range(1, 84), true)}
               disabled={running}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50"
