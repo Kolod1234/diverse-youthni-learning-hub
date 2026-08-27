@@ -18,6 +18,10 @@ const TOPICS = [
 
 const range = (from, to) => Array.from({ length: to - from + 1 }, (_, index) => from + index);
 
+// Lesson 1 sections 1–6 were independently certified before a gateway timeout.
+// Resume at section 7 without charging or rewriting those verified sections again.
+const RESUME_OFFSETS = { 1: 6 };
+
 function ResultRow({ result }) {
   const ok = result.success && result.after_structural_failures === 0 && (result.failures || []).length === 0;
   return (
@@ -73,6 +77,30 @@ export default function AdminMathSolutionAudit() {
     const result = response?.data || response;
     if (result?.error) throw new Error(result.error);
     return result;
+  }
+
+  async function invokeAuditBatch(order, unitBatch) {
+    try {
+      return await invokeAudit({ order, unit_ids: unitBatch, batch_size: unitBatch.length });
+    } catch (batchError) {
+      if (unitBatch.length === 1) throw batchError;
+
+      const parts = [];
+      for (const unitId of unitBatch) {
+        setCurrent(`The paired request was slow; safely retrying lesson ${order} one solution at a time`);
+        parts.push(await invokeAudit({ order, unit_ids: [unitId], batch_size: 1 }));
+      }
+
+      const last = parts[parts.length - 1] || {};
+      return {
+        ...last,
+        success: parts.every((part) => part.success && (part.failures || []).length === 0),
+        saved_units: parts.reduce((sum, part) => sum + (part.saved_units || 0), 0),
+        verifier_corrections: parts.reduce((sum, part) => sum + (part.verifier_corrections || 0), 0),
+        failures: parts.flatMap((part) => part.failures || []),
+        issues: parts.flatMap((part) => part.issues || [])
+      };
+    }
   }
 
   async function paginateFactorising() {
@@ -136,8 +164,10 @@ export default function AdminMathSolutionAudit() {
           continue;
         }
 
-        const unitIds = initialScan.unit_ids || [];
-        let savedUnits = 0;
+        const allUnitIds = initialScan.unit_ids || [];
+        const resumeOffset = Math.min(RESUME_OFFSETS[order] || 0, allUnitIds.length);
+        const unitIds = allUnitIds.slice(resumeOffset);
+        let savedUnits = resumeOffset;
         let verifierCorrections = 0;
         const failures = [];
         const issueLog = [];
@@ -145,13 +175,9 @@ export default function AdminMathSolutionAudit() {
         for (let unitIndex = 0; unitIndex < unitIds.length; unitIndex += 2) {
           const unitBatch = unitIds.slice(unitIndex, unitIndex + 2);
           setCurrent(
-            `Auditing lesson ${order} of ${orders[orders.length - 1]} — solutions ${unitIndex + 1}–${unitIndex + unitBatch.length} of ${unitIds.length}`
+            `Auditing lesson ${order} of ${orders[orders.length - 1]} — solutions ${resumeOffset + unitIndex + 1}–${resumeOffset + unitIndex + unitBatch.length} of ${allUnitIds.length}`
           );
-          const batchResult = await invokeAudit({
-            order,
-            unit_ids: unitBatch,
-            batch_size: 2
-          });
+          const batchResult = await invokeAuditBatch(order, unitBatch);
           savedUnits += batchResult.saved_units || 0;
           verifierCorrections += batchResult.verifier_corrections || 0;
           failures.push(...(batchResult.failures || []));
@@ -160,7 +186,7 @@ export default function AdminMathSolutionAudit() {
           const partialResult = {
             ...batchResult,
             success: false,
-            solution_units: unitIds.length,
+            solution_units: allUnitIds.length,
             saved_units: savedUnits,
             verifier_corrections: verifierCorrections,
             failures,
