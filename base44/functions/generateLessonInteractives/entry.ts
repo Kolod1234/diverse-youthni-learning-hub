@@ -113,6 +113,44 @@ Deno.serve(async (req) => {
   ]`);
     }
 
+    if (questionTypes.includes('flashcards')) {
+      typeInstructions.push('Flashcards: concise lesson-specific terms or prompts on the front and precise answers on the back');
+      typeSchemas.push(`
+  "flashCards": [
+    {
+      "front": "specific term or prompt from THIS lesson",
+      "back": "precise definition or answer"
+    }
+  ]`);
+    }
+
+    if (questionTypes.includes('essay')) {
+      typeInstructions.push('Essay: an A-level extended-response question with a usable mark-scheme rubric and exam-technique tip');
+      typeSchemas.push(`
+  "essayQuestions": [
+    {
+      "question": "essay prompt at the requested difficulty",
+      "rubric": "specific mark-scheme points",
+      "wordCount": 250,
+      "tips": "exam technique advice"
+    }
+  ]`);
+    }
+
+    const responseFieldByType = {
+      multiple_choice: 'quizQuestions',
+      true_false: 'trueFalseQuestions',
+      short_answer: 'shortAnswerQuestions',
+      fill_blanks: 'fillInTheBlanks',
+      flashcards: 'flashCards',
+      essay: 'essayQuestions'
+    };
+    const requiredResponseFields = [...new Set(questionTypes.map(type => responseFieldByType[type]).filter(Boolean))];
+
+    if (requiredResponseFields.length === 0) {
+      return Response.json({ error: 'No supported question types were requested' }, { status: 400 });
+    }
+
     // Build keyword focus instruction
     const keywordInstruction = keywords.length > 0
       ? `\nKEYWORD FOCUS: The following specific keywords/concepts have been requested - prioritise these heavily in all generated questions, flashcards, and activities: ${keywords.join(', ')}. Every question should incorporate or directly relate to at least one of these keywords.`
@@ -172,18 +210,7 @@ Previously used angles (DO NOT repeat these): ${previousAngles.length > 0 ? prev
 Generate ONLY the requested question types in this JSON format:
 
 {
-  ${typeSchemas.join(',\n  ')},
-  "flashCards": [
-    { "front": "specific term/concept from THIS lesson", "back": "precise definition/explanation" }
-  ],
-  "essayQuestions": [
-    {
-      "question": "essay prompt at ${difficultyLabel} level",
-      "rubric": "mark scheme key points",
-      "wordCount": ${difficulty === 'easy' ? 150 : difficulty === 'advanced' ? 400 : 250},
-      "tips": "exam technique advice"
-    }
-  ]
+  ${typeSchemas.join(',\n  ')}
 }
 
 QUANTITY:
@@ -191,8 +218,8 @@ ${questionTypes.includes('multiple_choice') ? `- Exactly 10 MCQ questions. At ${
 ${questionTypes.includes('true_false') ? `- Exactly 8 true/false statements. At ${difficultyLabel} level: ${difficulty === 'easy' ? 'test basic factual accuracy' : difficulty === 'advanced' ? 'include nuanced statements that require careful analysis to classify' : 'test understanding of mechanisms and relationships'}` : ''}
 ${questionTypes.includes('short_answer') ? `- Exactly 6 short answer questions. At ${difficultyLabel} level: ${difficulty === 'easy' ? '1-sentence factual answers' : difficulty === 'advanced' ? '3-4 sentence analytical responses citing specific mechanisms' : '2-3 sentence explanations'}` : ''}
 ${questionTypes.includes('fill_blanks') ? '- Exactly 6 fill-in-the-blank exercises, each with one or two unambiguous blanks' : ''}
-- Exactly 8 flashcards covering key terms from THIS specific lesson
-- Exactly 2 essay questions
+${questionTypes.includes('flashcards') ? '- Exactly 8 flashcards covering key terms from THIS specific lesson' : ''}
+${questionTypes.includes('essay') ? '- Exactly 2 essay questions' : ''}
 
 NOTATION: Use LaTeX $...$ for inline math, $$...$$ for display math. Chemistry: \\ce{H2SO4}
 MCQ correct answer position: vary randomly across positions 0, 1, 2, 3 - do NOT cluster at position 0 or 1.
@@ -205,9 +232,11 @@ SELF-CHECK before outputting: Are these questions noticeably different from what
 ${prompt}`,
       response_json_schema: {
         type: 'object',
+        required: requiredResponseFields,
         properties: {
           quizQuestions: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -221,6 +250,7 @@ ${prompt}`,
           },
           trueFalseQuestions: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -233,6 +263,7 @@ ${prompt}`,
           },
           shortAnswerQuestions: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -246,6 +277,7 @@ ${prompt}`,
           },
           flashCards: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -256,6 +288,7 @@ ${prompt}`,
           },
           essayQuestions: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -268,6 +301,7 @@ ${prompt}`,
           },
           fillInTheBlanks: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -284,6 +318,11 @@ ${prompt}`,
 
     if (!content || typeof content !== 'object') {
       throw new Error('The AI service returned an invalid response');
+    }
+
+    const missingFields = requiredResponseFields.filter(field => !Array.isArray(content[field]) || content[field].length === 0);
+    if (missingFields.length > 0) {
+      throw new Error(`The AI service returned no usable content for: ${missingFields.join(', ')}`);
     }
 
     return Response.json({
