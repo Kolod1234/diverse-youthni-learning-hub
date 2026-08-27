@@ -28,6 +28,7 @@ const AmmoniaFountainLive = React.lazy(() => import('@/components/lesson/Ammonia
 const AS_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dc';
 const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
 const WATER_POLARITY_MARKER = 'interactive:water-polarity';
+const lessonInteractiveRequests = new Map();
 
 export default function EnhancedLessonPlayer({
   lesson,
@@ -203,25 +204,70 @@ export default function EnhancedLessonPlayer({
     mainContentRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' });
   }, [currentContentSlide, lesson?.id]);
 
-  // Load interactive content
+  // Load one cached topic quiz per lesson. The shared promise prevents duplicate
+  // requests when React re-runs effects in development.
   useEffect(() => {
     if (!lesson?.id || courseId === AS_BIOLOGY_COURSE_ID || lesson.course_id === AS_BIOLOGY_COURSE_ID) return;
-    
-    setLoadingInteractives(true);
-    base44.functions.invoke('generateLessonInteractives', {
-      lessonId: lesson.id,
-      difficulty: 'intermediate',
-      questionTypes: ['multiple_choice', 'fill_blanks'],
-      keywords: lesson.learning_objectives || []
-    }).then(response => {
-      if (response.data.success) {
-        setInteractiveContent(response.data);
+
+    let cancelled = false;
+    const cacheKey = `lesson_topic_quiz_${lesson.id}_v2`;
+
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        setInteractiveContent(JSON.parse(cached));
+        return;
       }
+    } catch {
+      try {
+        sessionStorage.removeItem(cacheKey);
+      } catch {
+        // Continue without browser storage.
+      }
+    }
+
+    setLoadingInteractives(true);
+
+    let request = lessonInteractiveRequests.get(cacheKey);
+    if (!request) {
+      request = base44.functions.invoke('generateLessonInteractives', {
+        lessonId: lesson.id,
+        difficulty: 'intermediate',
+        questionTypes: ['multiple_choice'],
+        keywords: lesson.learning_objectives || []
+      }).then(response => {
+        if (!response.data?.success) {
+          throw new Error(response.data?.error || 'Interactive content generation failed');
+        }
+        try {
+          sessionStorage.setItem(cacheKey, JSON.stringify(response.data));
+        } catch {
+          // The lesson still works when browser storage is unavailable.
+        }
+        return response.data;
+      }).finally(() => {
+        lessonInteractiveRequests.delete(cacheKey);
+      });
+      lessonInteractiveRequests.set(cacheKey, request);
+    }
+
+    request.then(content => {
+      if (!cancelled) setInteractiveContent(content);
     }).catch(err => {
+      if (cancelled) return;
       console.error('Failed to load interactive content:', err);
+      if (err.response?.status === 429) {
+        toast.error('The quiz service is busy. Please try again shortly.');
+      } else {
+        toast.error('Interactive practice could not be loaded. You can still read the lesson.');
+      }
     }).finally(() => {
-      setLoadingInteractives(false);
+      if (!cancelled) setLoadingInteractives(false);
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [lesson?.id, lesson?.course_id, courseId]);
 
   const markCompleteMutation = useMutation({
