@@ -197,7 +197,7 @@ export default function AdminMathSolutionAudit() {
           storeResult(partialResult);
 
           if (!batchResult.success || (batchResult.failures || []).length > 0) {
-            throw new Error(`Lesson ${order}, solution batch ${unitIndex + 1}–${unitIndex + unitBatch.length} did not pass every audit gate.`);
+            throw new Error(`Lesson ${order}, solution batch ${resumeOffset + unitIndex + 1}–${resumeOffset + unitIndex + unitBatch.length} did not pass every audit gate.`);
           }
         }
 
@@ -211,7 +211,7 @@ export default function AdminMathSolutionAudit() {
           order: finalScan.order,
           title: finalScan.title,
           section: finalScan.section,
-          solution_units: unitIds.length,
+          solution_units: allUnitIds.length,
           saved_units: savedUnits,
           verifier_corrections: verifierCorrections,
           failures,
