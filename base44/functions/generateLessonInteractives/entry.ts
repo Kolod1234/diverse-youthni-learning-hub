@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
@@ -101,6 +101,18 @@ Deno.serve(async (req) => {
   ]`);
     }
 
+    if (questionTypes.includes('fill_blanks')) {
+      typeInstructions.push('Fill in the Blanks: use __blank__ exactly once or twice in each sentence and provide the answers in matching order');
+      typeSchemas.push(`
+  "fillInTheBlanks": [
+    {
+      "text": "A lesson-specific sentence with a __blank__ to complete.",
+      "blanks": ["correct answer"],
+      "hint": "a concise clue that does not reveal the answer"
+    }
+  ]`);
+    }
+
     // Build keyword focus instruction
     const keywordInstruction = keywords.length > 0
       ? `\nKEYWORD FOCUS: The following specific keywords/concepts have been requested - prioritise these heavily in all generated questions, flashcards, and activities: ${keywords.join(', ')}. Every question should incorporate or directly relate to at least one of these keywords.`
@@ -178,6 +190,7 @@ QUANTITY:
 ${questionTypes.includes('multiple_choice') ? `- Exactly 10 MCQ questions. At ${difficultyLabel} level: ${difficulty === 'easy' ? 'test recall of facts only' : difficulty === 'advanced' ? 'require multi-concept reasoning, use A-level command words' : 'require application of concepts to scenarios'}` : ''}
 ${questionTypes.includes('true_false') ? `- Exactly 8 true/false statements. At ${difficultyLabel} level: ${difficulty === 'easy' ? 'test basic factual accuracy' : difficulty === 'advanced' ? 'include nuanced statements that require careful analysis to classify' : 'test understanding of mechanisms and relationships'}` : ''}
 ${questionTypes.includes('short_answer') ? `- Exactly 6 short answer questions. At ${difficultyLabel} level: ${difficulty === 'easy' ? '1-sentence factual answers' : difficulty === 'advanced' ? '3-4 sentence analytical responses citing specific mechanisms' : '2-3 sentence explanations'}` : ''}
+${questionTypes.includes('fill_blanks') ? '- Exactly 6 fill-in-the-blank exercises, each with one or two unambiguous blanks' : ''}
 - Exactly 8 flashcards covering key terms from THIS specific lesson
 - Exactly 2 essay questions
 
@@ -186,33 +199,92 @@ MCQ correct answer position: vary randomly across positions 0, 1, 2, 3 - do NOT 
 
 SELF-CHECK before outputting: Are these questions noticeably different from what ${difficultyLabel === 'EASY' ? 'a medium' : difficultyLabel === 'HARD' ? 'a medium' : 'an easy or hard'} difficulty set would look like? If not, revise them.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          { 
-            role: 'system', 
-            content: `You are a senior UK A-level examiner and assessment specialist. You create questions that are PRECISELY calibrated to the requested difficulty tier using Bloom's Taxonomy:
-- EASY = Remember/Understand (recall facts, define terms, identify concepts)
-- MEDIUM = Apply/Analyse (use knowledge in new situations, explain mechanisms, compare ideas)  
-- HARD = Evaluate/Create (critically assess, synthesise multiple concepts, construct arguments)
+    const content = await base44.integrations.Core.InvokeLLM({
+      prompt: `You are a senior UK A-level examiner and assessment specialist. Create questions that are precisely calibrated to the requested difficulty tier using Bloom's Taxonomy. Questions must be specific to the lesson, and distractors must target genuine misconceptions.
 
-Your questions are NEVER generic. They are always specific to the exact lesson topic provided. Wrong answer options are carefully crafted to target common misconceptions, not random fillers. Every question is unique in angle and phrasing. Always respond with valid JSON only.` 
+${prompt}`,
+      response_json_schema: {
+        type: 'object',
+        properties: {
+          quizQuestions: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                question: { type: 'string' },
+                question_type: { type: 'string' },
+                options: { type: 'array', items: { type: 'string' } },
+                correctAnswer: { type: 'number' },
+                explanation: { type: 'string' }
+              }
+            }
           },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.9,
-        response_format: { type: "json_object" }
-      }),
+          trueFalseQuestions: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                statement: { type: 'string' },
+                question_type: { type: 'string' },
+                isTrue: { type: 'boolean' },
+                explanation: { type: 'string' }
+              }
+            }
+          },
+          shortAnswerQuestions: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                question: { type: 'string' },
+                question_type: { type: 'string' },
+                modelAnswer: { type: 'string' },
+                keyPoints: { type: 'array', items: { type: 'string' } },
+                marks: { type: 'number' }
+              }
+            }
+          },
+          flashCards: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                front: { type: 'string' },
+                back: { type: 'string' }
+              }
+            }
+          },
+          essayQuestions: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                question: { type: 'string' },
+                rubric: { type: 'string' },
+                wordCount: { type: 'number' },
+                tips: { type: 'string' }
+              }
+            }
+          },
+          fillInTheBlanks: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                text: { type: 'string' },
+                blanks: { type: 'array', items: { type: 'string' } },
+                hint: { type: 'string' }
+              }
+            }
+          }
+        }
+      },
+      model: 'gemini_3_flash'
     });
 
-    const data = await response.json();
-    const content = JSON.parse(data.choices[0].message.content);
+    if (!content || typeof content !== 'object') {
+      throw new Error('The AI service returned an invalid response');
+    }
 
     return Response.json({
       success: true,
@@ -235,9 +307,18 @@ Your questions are NEVER generic. They are always specific to the exact lesson t
 
   } catch (error) {
     console.error('Error generating interactives:', error);
-    return Response.json({ 
-      error: 'Failed to generate interactive content',
-      details: error.message 
-    }, { status: 500 });
+    const upstreamStatus = Number(error?.status || error?.response?.status);
+    const status = upstreamStatus === 429
+      ? 429
+      : upstreamStatus >= 400 && upstreamStatus < 500
+        ? upstreamStatus
+        : 502;
+
+    return Response.json({
+      error: status === 429
+        ? 'Interactive content generation is temporarily busy'
+        : 'Failed to generate interactive content',
+      details: error?.message || 'Unknown generation error'
+    }, { status });
   }
 });
