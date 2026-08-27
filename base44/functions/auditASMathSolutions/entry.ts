@@ -160,6 +160,30 @@ function listItems(html: string) {
   return [...html.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)].map((m) => m[1]);
 }
 
+function validateEnvelope(unit: AuditUnit, html: string) {
+  const out = (html || '').trim();
+  if (!out.startsWith('<div') || !out.endsWith('</div>')) {
+    return { ok: false, reason: 'complete solution-box wrapper is missing' };
+  }
+  if (openingTag(out) !== openingTag(unit.maskedHtml)) {
+    return { ok: false, reason: 'outer solution-box opening tag changed' };
+  }
+  const found = findBoxes(out);
+  if (found.length !== 1 || !isAnswerBox(found[0])) {
+    return { ok: false, reason: 'solution label or box structure changed' };
+  }
+  if (found[0].label !== unit.box.label) {
+    return { ok: false, reason: 'solution label text changed' };
+  }
+  for (let i = 0; i < unit.svgs.length; i++) {
+    const token = `[SVG_${unit.id}_${i}]`;
+    if ((out.split(token).length - 1) !== 1) {
+      return { ok: false, reason: `placeholder ${token} was lost or duplicated` };
+    }
+  }
+  return { ok: true, reason: '' };
+}
+
 function validateCandidate(unit: AuditUnit, html: string) {
   const out = (html || '').trim();
   if (!out.startsWith('<div') || !out.endsWith('</div>')) {
@@ -263,7 +287,7 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
   let rewriteResponse: any = null;
   let rewriteProblems: string[] = [];
 
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     const retry = attempt === 0 ? '' : `\\n\\nYour previous output was rejected for these exact structural reasons:\\n- ${rewriteProblems.join('\\n- ')}\\nReturn all ids again and repair them.`;
     rewriteResponse = await invokeBatch(
       base44,
@@ -293,13 +317,16 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
       failures.push({ id: unit.id, stage: 'rewrite', reason: 'missing model output' });
       continue;
     }
-    const check = validateCandidate(unit, item.html);
-    if (!check.ok) {
-      failures.push({ id: unit.id, stage: 'rewrite', reason: check.reason });
+    const envelopeCheck = validateEnvelope(unit, item.html);
+    if (!envelopeCheck.ok) {
+      failures.push({ id: unit.id, stage: 'rewrite', reason: envelopeCheck.reason });
       continue;
     }
+    const structuralCheck = validateCandidate(unit, item.html);
     rewrittenById.set(unit.id, item.html.trim());
-    rewriteIssues.set(unit.id, Array.isArray(item.issues) ? item.issues : []);
+    const notedIssues = Array.isArray(item.issues) ? [...item.issues] : [];
+    if (!structuralCheck.ok) notedIssues.push('First-pass structure sent to verifier: ' + structuralCheck.reason);
+    rewriteIssues.set(unit.id, notedIssues);
   }
 
   const verifyUnits = units.filter((unit) => rewrittenById.has(unit.id));
@@ -309,7 +336,7 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
 
   let verifyResponse: any = null;
   let verifyProblems: string[] = [];
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     const retry = attempt === 0 ? '' : `\\n\\nYour previous output was structurally rejected for:\\n- ${verifyProblems.join('\\n- ')}\\nReturn every id again with those defects corrected.`;
     verifyResponse = await invokeBatch(
       base44,
