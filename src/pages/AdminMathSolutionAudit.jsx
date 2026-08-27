@@ -141,6 +141,8 @@ export default function AdminMathSolutionAudit() {
           }
         }
 
+        setCurrent(`Paginating long solutions in lesson ${order} of ${orders[orders.length - 1]}`);
+        const pagination = await invokeAudit({ order, paginate_only: true, max_steps: 12 });
         setCurrent(`Verifying saved lesson ${order} of ${orders[orders.length - 1]}`);
         const finalScan = await invokeAudit({ order, scan_only: true });
         const result = {
@@ -156,7 +158,8 @@ export default function AdminMathSolutionAudit() {
           issues: issueLog,
           before_structural_failures: initialScan.issues,
           after_structural_failures: finalScan.issues,
-          remaining: finalScan.rows || []
+          remaining: finalScan.rows || [],
+          pagination
         };
         nextResults.push(result);
         storeResult(result);
