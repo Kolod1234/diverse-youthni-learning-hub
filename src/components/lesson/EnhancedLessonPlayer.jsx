@@ -210,7 +210,7 @@ export default function EnhancedLessonPlayer({
     if (!lesson?.id || courseId === AS_BIOLOGY_COURSE_ID || lesson.course_id === AS_BIOLOGY_COURSE_ID) return;
 
     let cancelled = false;
-    const cacheKey = `lesson_topic_quiz_${lesson.id}_v2`;
+    const cacheKey = `lesson_topic_quiz_${lesson.id}_v3`;
 
     try {
       const cached = sessionStorage.getItem(cacheKey);
