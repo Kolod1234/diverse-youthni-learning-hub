@@ -63,6 +63,7 @@ import AdminEvents from './pages/AdminEvents';
 import AdminLearningObjectives from './pages/AdminLearningObjectives';
 import AdminLibrary from './pages/AdminLibrary';
 import AdminLibraryDashboard from './pages/AdminLibraryDashboard';
+import AdminMathSolutionAudit from './pages/AdminMathSolutionAudit';
 import AdminNotifications from './pages/AdminNotifications';
 import AdminPageBuilder from './pages/AdminPageBuilder';
 import AdminQuotes from './pages/AdminQuotes';
@@ -181,6 +182,7 @@ export const PAGES = {
     "AdminLearningObjectives": AdminLearningObjectives,
     "AdminLibrary": AdminLibrary,
     "AdminLibraryDashboard": AdminLibraryDashboard,
+    "AdminMathSolutionAudit": AdminMathSolutionAudit,
     "AdminNotifications": AdminNotifications,
     "AdminPageBuilder": AdminPageBuilder,
     "AdminQuotes": AdminQuotes,
