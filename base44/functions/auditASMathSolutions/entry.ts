@@ -238,6 +238,87 @@ function validateCandidate(unit: AuditUnit, html: string) {
   return { ok: true, reason: '' };
 }
 
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function splitEqualsChain(expression: string) {
+  const parts = expression.split(/(?<!\\)=/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length <= 2) return [expression.trim()];
+  const lines: string[] = [];
+  for (let i = 0; i < parts.length - 1; i++) {
+    lines.push(`${parts[i]} = ${parts[i + 1]}`);
+  }
+  return lines;
+}
+
+function splitMathBody(body: string) {
+  const arrowParts = body
+    .split(/\\Rightarrow|\\implies|\\therefore/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (arrowParts.length > 1) {
+    if (arrowParts.every((part) => relationCount(part) === 0)) {
+      const lines: string[] = [];
+      for (let i = 0; i < arrowParts.length - 1; i++) {
+        lines.push(`${arrowParts[i]} \\Rightarrow ${arrowParts[i + 1]}`);
+      }
+      return lines;
+    }
+    return arrowParts.flatMap(splitEqualsChain);
+  }
+
+  const commaParts = body
+    .split(/\\s*[,;]\\s*/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (commaParts.length > 1 && commaParts.every((part) => relationCount(part) <= 1)) {
+    return commaParts;
+  }
+  return splitEqualsChain(body);
+}
+
+function repairPackedListItems(html: string) {
+  return (html || '').replace(
+    /(<li\\b[^>]*>)([\\s\\S]*?)(<\\/li>)/gi,
+    (whole, opener, inner) => {
+      const chunks = [...inner.matchAll(/\\$\\$?[\\s\\S]*?\\$\\$?/g)];
+      const totalRelations = chunks.reduce((sum, match) => sum + relationCount(match[0]), 0);
+      if (totalRelations < 2 || chunks.length === 0) return whole;
+
+      const prefixText = plainText(inner.slice(0, chunks[0].index || 0));
+      const expressions: string[] = [];
+      for (const match of chunks) {
+        const token = match[0];
+        const display = token.startsWith('$$');
+        const body = token.slice(display ? 2 : 1, display ? -2 : -1).trim();
+        const pieces = splitMathBody(body);
+        for (const piece of pieces) {
+          expressions.push(display ? `$$${piece}$$` : `$${piece}$`);
+        }
+      }
+      if (expressions.length < 2) return whole;
+
+      const last = chunks[chunks.length - 1];
+      const tailText = plainText(inner.slice((last.index || 0) + last[0].length));
+      return expressions
+        .map((expression, index) => {
+          const reason = index === 0 && /[A-Za-z]{3}/.test(prefixText)
+            ? prefixText
+            : index === 0
+              ? 'Begin with the first required mathematical statement:'
+              : 'Carry out only the next small mathematical move:';
+          const tail = index === expressions.length - 1 && tailText ? ` ${escapeHtml(tailText)}` : '';
+          return `${opener}${escapeHtml(reason)} ${expression}${tail}</li>`;
+        })
+        .join('');
+    }
+  );
+}
+
 function createUnits(lesson: any): AuditUnit[] {
   const units: AuditUnit[] = [];
   (lesson.slides || []).forEach((slide, slideIndex) => {
@@ -367,7 +448,16 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
       failures.push({ id: unit.id, stage: 'verify', reason: 'missing verifier output' });
       continue;
     }
-    const check = validateCandidate(unit, item.html);
+    let finalHtml = item.html.trim();
+    let check = validateCandidate(unit, finalHtml);
+    if (!check.ok && /more than one relation or transformation/.test(check.reason)) {
+      const repairedHtml = repairPackedListItems(finalHtml);
+      const repairedCheck = validateCandidate(unit, repairedHtml);
+      if (repairedCheck.ok) {
+        finalHtml = repairedHtml;
+        check = repairedCheck;
+      }
+    }
     if (!check.ok) {
       failures.push({ id: unit.id, stage: 'verify', reason: check.reason });
       continue;
@@ -376,9 +466,11 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
       failures.push({ id: unit.id, stage: 'verify', reason: 'mathematical validity was not certified' });
       continue;
     }
-    accepted.set(unit.id, item.html.trim());
-    verifyIssues.set(unit.id, Array.isArray(item.issues) ? item.issues : []);
-    if (item.changed === true || item.html.trim() !== rewrittenById.get(unit.id)) verifierCorrections++;
+    accepted.set(unit.id, finalHtml);
+    const finalIssues = Array.isArray(item.issues) ? [...item.issues] : [];
+    if (finalHtml !== item.html.trim()) finalIssues.push('Residual relation chain split deterministically after mathematical verification.');
+    verifyIssues.set(unit.id, finalIssues);
+    if (item.changed === true || finalHtml !== rewrittenById.get(unit.id)) verifierCorrections++;
   }
 
   return { accepted, rewriteIssues, verifyIssues, verifierCorrections, failures };
