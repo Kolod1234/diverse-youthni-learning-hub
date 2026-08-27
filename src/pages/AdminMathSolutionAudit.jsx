@@ -75,6 +75,40 @@ export default function AdminMathSolutionAudit() {
     return result;
   }
 
+  async function paginateFactorising() {
+    if (running) return;
+    setRunning(true);
+    setError('');
+    try {
+      setCurrent('Splitting long Factorising solutions into shorter continuation pages');
+      const pagination = await invokeAudit({ order: 5, paginate_only: true, max_steps: 12 });
+      const scan = await invokeAudit({ order: 5, scan_only: true });
+      const result = {
+        success: scan.issues === 0,
+        lesson_complete: scan.issues === 0,
+        order: scan.order,
+        title: scan.title,
+        section: scan.section,
+        solution_units: scan.units,
+        saved_units: scan.units,
+        verifier_corrections: 0,
+        failures: [],
+        issues: [],
+        before_structural_failures: scan.issues,
+        after_structural_failures: scan.issues,
+        remaining: scan.rows || [],
+        pagination
+      };
+      storeResult(result);
+      if (scan.issues > 0) throw new Error(`Pagination left ${scan.issues} structural failure(s).`);
+    } catch (runError) {
+      setError(runError?.message || String(runError));
+    } finally {
+      setCurrent('');
+      setRunning(false);
+    }
+  }
+
   async function runOrders(orders, scanOnly = false) {
     if (running || orders.length === 0) return;
     setRunning(true);
@@ -222,6 +256,14 @@ export default function AdminMathSolutionAudit() {
             >
               <ShieldCheck className="h-4 w-4" />
               Test Factorising lesson
+            </button>
+            <button
+              onClick={paginateFactorising}
+              disabled={running}
+              className="inline-flex items-center gap-2 rounded-lg border border-cyan-300 bg-cyan-50 px-4 py-2.5 text-sm font-semibold text-cyan-900 disabled:opacity-50"
+            >
+              <ScanSearch className="h-4 w-4" />
+              Paginate Factorising
             </button>
             <button
               onClick={() => runOrders(range(1, 84), true)}
