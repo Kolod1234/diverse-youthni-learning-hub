@@ -245,44 +245,6 @@ export default function LessonPlayerClassic() {
   // Use course_id from lesson if URL doesn't have it
   const courseId = urlCourseId || lesson?.course_id;
 
-  // Load interactive content based on lesson (with caching)
-  useEffect(() => {
-    const loadInteractives = async () => {
-      if (!lessonId || lessonId === 'null' || lessonId === 'undefined') return;
-      if (courseId === AS_BIOLOGY_COURSE_ID) return;
-      
-      // Check cache first
-      const cacheKey = `interactives_${lessonId}`;
-      const cached = sessionStorage.getItem(cacheKey);
-      if (cached) {
-        try {
-          setInteractiveContent(JSON.parse(cached));
-          return;
-        } catch (e) {
-          sessionStorage.removeItem(cacheKey);
-        }
-      }
-      
-      setLoadingInteractives(true);
-      try {
-        const response = await base44.functions.invoke('generateLessonInteractives', { lessonId, ...quizParams });
-        if (response.data.success) {
-          setInteractiveContent(response.data);
-          sessionStorage.setItem(cacheKey, JSON.stringify(response.data));
-        }
-      } catch (error) {
-        console.error('Failed to load interactive content:', error);
-        if (error.response?.status === 429) {
-          toast.error('Too many requests. Please wait a moment and try again.');
-        }
-      } finally {
-        setLoadingInteractives(false);
-      }
-    };
-    
-    loadInteractives();
-  }, [lessonId, courseId]);
-
   const handleRegenerateInteractives = async (params) => {
     const newParams = params || quizParams;
     if (params) setQuizParams(params);
