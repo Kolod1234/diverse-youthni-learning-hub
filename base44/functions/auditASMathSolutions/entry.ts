@@ -272,7 +272,7 @@ function splitMathBody(body: string) {
   }
 
   const commaParts = body
-    .split(/\\s*[,;]\\s*/)
+    .split(/\s*[,;]\s*/)
     .map((part) => part.trim())
     .filter(Boolean);
   if (commaParts.length > 1 && commaParts.every((part) => relationCount(part) <= 1)) {
@@ -283,9 +283,9 @@ function splitMathBody(body: string) {
 
 function repairPackedListItems(html: string) {
   return (html || '').replace(
-    /(<li\\b[^>]*>)([\\s\\S]*?)(<\\/li>)/gi,
+    /(<li\b[^>]*>)([\s\S]*?)(<\/li>)/gi,
     (whole, opener, inner) => {
-      const chunks = [...inner.matchAll(/\\$\\$?[\\s\\S]*?\\$\\$?/g)];
+      const chunks = [...inner.matchAll(/\$\$?[\s\S]*?\$\$?/g)];
       const totalRelations = chunks.reduce((sum, match) => sum + relationCount(match[0]), 0);
       if (totalRelations < 2 || chunks.length === 0) return whole;
 
