@@ -131,7 +131,7 @@ export default function QuizGeneratorPanel({ lesson, onClose }) {
       true_false: ['true_false'],
       short_answer: ['short_answer'],
       essay: ['essay'],
-      flashcards: ['fill_blanks'],
+      flashcards: ['flashcards'],
     };
 
     try {
