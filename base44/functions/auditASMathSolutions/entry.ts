@@ -472,33 +472,134 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
   return { accepted, rewriteIssues, verifyIssues, verifierCorrections, failures };
 }
 
+function balancedItemChunks(items: string[], maxSteps: number) {
+  if (items.length <= maxSteps) return [items];
+  const pageCount = Math.ceil(items.length / maxSteps);
+  const baseSize = Math.floor(items.length / pageCount);
+  const remainder = items.length % pageCount;
+  const chunks: string[][] = [];
+  let offset = 0;
+  for (let page = 0; page < pageCount; page++) {
+    const size = baseSize + (page < remainder ? 1 : 0);
+    chunks.push(items.slice(offset, offset + size));
+    offset += size;
+  }
+  return chunks;
+}
+
 function splitSolutionBox(box: SlideBox, maxSteps: number) {
   const olMatch = box.html.match(/<ol\b[^>]*>[\s\S]*?<\/ol>/i);
-  if (!olMatch || olMatch.index === undefined) return [box.html];
+  if (!olMatch || olMatch.index === undefined) {
+    return [{ html: box.html, from: 1, to: listItems(box.html).length }];
+  }
   const items = [...olMatch[0].matchAll(/<li\b[^>]*>[\s\S]*?<\/li>/gi)].map((match) => match[0]);
-  if (items.length <= maxSteps) return [box.html];
-
   const opener = olMatch[0].match(/^<ol\b[^>]*>/i)?.[0] || '<ol>';
   const startValue = Number(opener.match(/\bstart\s*=\s*["']?(\d+)/i)?.[1] || 1);
+  if (items.length <= maxSteps) {
+    return [{ html: box.html, from: startValue, to: startValue + items.length - 1 }];
+  }
+
   const cleanOpener = opener.replace(/\s+start\s*=\s*["']?\d+["']?/i, '');
   const prefix = box.html.slice(0, olMatch.index);
   const suffix = box.html.slice(olMatch.index + olMatch[0].length);
-  const pieces: string[] = [];
+  const chunks = balancedItemChunks(items, maxSteps);
+  const pieces: { html: string; from: number; to: number }[] = [];
+  let offset = 0;
 
-  for (let offset = 0; offset < items.length; offset += maxSteps) {
-    const chunk = items.slice(offset, offset + maxSteps);
+  chunks.forEach((chunk, index) => {
     const number = startValue + offset;
     const chunkOpener = number === 1
       ? cleanOpener
       : cleanOpener.replace(/>$/, ` start="${number}">`);
-    const isLast = offset + maxSteps >= items.length;
-    pieces.push(prefix + chunkOpener + chunk.join('') + '</ol>' + (isLast ? suffix : ''));
-  }
+    const isLast = index === chunks.length - 1;
+    const closing = isLast ? suffix : '</div>';
+    pieces.push({
+      html: prefix + chunkOpener + chunk.join('') + '</ol>' + closing,
+      from: number,
+      to: number + chunk.length - 1
+    });
+    offset += chunk.length;
+  });
   return pieces;
 }
 
+function paginationTitle(title: string) {
+  const match = (title || '').match(/^(.*?) — (?:(solution \d+), )?steps \d+–\d+$/);
+  if (!match) return null;
+  return { base: match[1], solution: match[2] || '', key: match[1] + '|' + (match[2] || '') };
+}
+
+function normaliseExistingPagination(slides: any[], maxSteps: number) {
+  const out: any[] = [];
+  let index = 0;
+  while (index < slides.length) {
+    const info = paginationTitle(slides[index]?.title || '');
+    if (!info) {
+      out.push({ ...slides[index] });
+      index++;
+      continue;
+    }
+
+    const group: any[] = [];
+    let cursor = index;
+    while (cursor < slides.length) {
+      const nextInfo = paginationTitle(slides[cursor]?.title || '');
+      if (!nextInfo || nextInfo.key !== info.key) break;
+      group.push(slides[cursor]);
+      cursor++;
+    }
+
+    const firstContent = group[0]?.content || '';
+    const labelIndex = firstContent.search(/text-transform:uppercase;[^"]*">Solution/i);
+    const solutionStart = labelIndex >= 0
+      ? firstContent.lastIndexOf('<div style="margin:16px 0;padding:14px 18px;border-left:5px solid', labelIndex)
+      : -1;
+    const olStart = solutionStart >= 0 ? firstContent.indexOf('<ol', solutionStart) : -1;
+    const olOpenEnd = olStart >= 0 ? firstContent.indexOf('>', olStart) : -1;
+    const lastContent = group[group.length - 1]?.content || '';
+    const olClose = lastContent.lastIndexOf('</ol>');
+
+    if (solutionStart < 0 || olStart < 0 || olOpenEnd < 0 || olClose < 0) {
+      out.push(...group.map((slide) => ({ ...slide })));
+      index = cursor;
+      continue;
+    }
+
+    const context = firstContent.slice(0, solutionStart);
+    const solutionPrefix = firstContent.slice(solutionStart, olStart);
+    const opener = firstContent.slice(olStart, olOpenEnd + 1);
+    const cleanOpener = opener.replace(/\s+start\s*=\s*["']?\d+["']?/i, '');
+    const suffix = lastContent.slice(olClose + 5) || '</div>';
+    const items = group.flatMap((slide) =>
+      [...(slide.content || '').matchAll(/<li\b[^>]*>[\s\S]*?<\/li>/gi)].map((match) => match[0])
+    );
+    const chunks = balancedItemChunks(items, maxSteps);
+    let itemOffset = 0;
+
+    chunks.forEach((chunk, pageIndex) => {
+      const from = itemOffset + 1;
+      const to = itemOffset + chunk.length;
+      const chunkOpener = from === 1
+        ? cleanOpener
+        : cleanOpener.replace(/>$/, ` start="${from}">`);
+      const isLast = pageIndex === chunks.length - 1;
+      const suffixTitle = info.solution ? `${info.solution}, ` : '';
+      out.push({
+        ...group[0],
+        title: `${info.base} — ${suffixTitle}steps ${from}–${to}`,
+        content: context + solutionPrefix + chunkOpener + chunk.join('') + '</ol>' + (isLast ? suffix : '</div>'),
+        notes: pageIndex === 0 ? group[0].notes : ''
+      });
+      itemOffset += chunk.length;
+    });
+    index = cursor;
+  }
+  return out;
+}
+
 function paginateSolutionSlides(lesson: any, maxSteps = 12) {
-  const originalSlides = Array.isArray(lesson.slides) ? lesson.slides : [];
+  const sourceSlides = Array.isArray(lesson.slides) ? lesson.slides : [];
+  const originalSlides = normaliseExistingPagination(sourceSlides, maxSteps);
   const nextSlides: any[] = [];
   const report: any[] = [];
 
