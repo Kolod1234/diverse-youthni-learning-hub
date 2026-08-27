@@ -71,7 +71,7 @@ export default function AdminMathSolutionAudit() {
           course_id: COURSE_ID,
           order,
           scan_only: scanOnly,
-          batch_size: 8
+          batch_size: 2
         });
         const result = response?.data || response;
         if (result?.error) throw new Error(`Lesson ${order}: ${result.error}`);
