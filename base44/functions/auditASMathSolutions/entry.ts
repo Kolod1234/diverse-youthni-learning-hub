@@ -108,7 +108,7 @@ async function invokeBatch(base44, prompt: string) {
 
 function maskSvgs(html: string, id: string) {
   const svgs: string[] = [];
-  const maskedHtml = (html || '').replace(/<svg[\\s\\S]*?<\\/svg>/gi, (svg) => {
+  const maskedHtml = (html || '').replace(/<svg[\s\S]*?<\/svg>/gi, (svg) => {
     const token = `[SVG_${id}_${svgs.length}]`;
     svgs.push(svg);
     return token;
@@ -125,7 +125,7 @@ function restoreSvgs(html: string, unit: AuditUnit) {
     }
     out = out.replace(token, unit.svgs[i]);
   }
-  if (/\\[SVG_[^\\]]+\\]/.test(out)) {
+  if (/\[SVG_[^\]]+\]/.test(out)) {
     return { ok: false, reason: 'a stray SVG placeholder remains', html: '' };
   }
   return { ok: true, reason: '', html: out };
@@ -137,11 +137,11 @@ function openingTag(html: string) {
 }
 
 function mathChunks(html: string) {
-  return (html.match(/\\$\\$?[\\s\\S]*?\\$\\$?/g) || []);
+  return (html.match(/\$\$?[\s\S]*?\$\$?/g) || []);
 }
 
 function relationCount(math: string) {
-  return (math.match(/(?<!\\\\)=|\\\\Rightarrow|\\\\implies|\\\\therefore/g) || []).length;
+  return (math.match(/(?<!\\)=|\\Rightarrow|\\implies|\\therefore/g) || []).length;
 }
 
 function plainText(html: string) {
@@ -150,12 +150,12 @@ function plainText(html: string) {
     .replace(/&nbsp;/gi, ' ')
     .replace(/&minus;/gi, '-')
     .replace(/&times;/gi, '×')
-    .replace(/\\s+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
 function listItems(html: string) {
-  return [...html.matchAll(/<li\\b[^>]*>([\\s\\S]*?)<\\/li>/gi)].map((m) => m[1]);
+  return [...html.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)].map((m) => m[1]);
 }
 
 function validateCandidate(unit: AuditUnit, html: string) {
@@ -174,9 +174,9 @@ function validateCandidate(unit: AuditUnit, html: string) {
     return { ok: false, reason: 'solution label text changed' };
   }
 
-  const olCount = (out.match(/<ol\\b/gi) || []).length;
+  const olCount = (out.match(/<ol\b/gi) || []).length;
   if (olCount !== 1) return { ok: false, reason: `expected one ordered list, found ${olCount}` };
-  if (/<ol\\b[^>]*\\bstart\\s*=/i.test(out)) {
+  if (/<ol\b[^>]*\bstart\s*=/i.test(out)) {
     return { ok: false, reason: 'ordered-list numbering was manually restarted' };
   }
 
@@ -186,13 +186,13 @@ function validateCandidate(unit: AuditUnit, html: string) {
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const text = plainText(item);
-    if (/^\\s*\\d+\\s*[.)]/.test(text)) {
+    if (/^\s*\d+\s*[.)]/.test(text)) {
       return { ok: false, reason: `step ${i + 1} contains a typed number as well as automatic numbering` };
     }
-    if (/^(?:=|⇒|→|\\\\Rightarrow|\\\\implies)/.test(text)) {
+    if (/^(?:=|⇒|→|\\Rightarrow|\\implies)/.test(text)) {
       return { ok: false, reason: `step ${i + 1} begins with an unexplained continuation` };
     }
-    const firstMath = item.search(/\\$\\$?/);
+    const firstMath = item.search(/\$\$?/);
     const beforeMath = plainText(firstMath >= 0 ? item.slice(0, firstMath) : item);
     if (firstMath >= 0 && !/[A-Za-z]{3}/.test(beforeMath)) {
       return { ok: false, reason: `step ${i + 1} shows mathematics before explaining the action` };
