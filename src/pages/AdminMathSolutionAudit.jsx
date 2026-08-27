@@ -58,6 +58,23 @@ export default function AdminMathSolutionAudit() {
     [results]
   );
 
+  function storeResult(result) {
+    setResults((previous) => {
+      const withoutOrder = previous.filter((item) => item.order !== result.order);
+      return [...withoutOrder, result].sort((a, b) => a.order - b.order);
+    });
+  }
+
+  async function invokeAudit(payload) {
+    const response = await base44.functions.invoke('auditASMathSolutions', {
+      course_id: COURSE_ID,
+      ...payload
+    });
+    const result = response?.data || response;
+    if (result?.error) throw new Error(result.error);
+    return result;
+  }
+
   async function runOrders(orders, scanOnly = false) {
     if (running || orders.length === 0) return;
     setRunning(true);
@@ -66,22 +83,85 @@ export default function AdminMathSolutionAudit() {
     try {
       for (let index = 0; index < orders.length; index++) {
         const order = orders[index];
-        setCurrent(`${scanOnly ? 'Scanning' : 'Auditing'} lesson ${order} of ${orders[orders.length - 1]} (${index + 1}/${orders.length})`);
-        const response = await base44.functions.invoke('auditASMathSolutions', {
-          course_id: COURSE_ID,
-          order,
-          scan_only: scanOnly,
-          batch_size: 2
-        });
-        const result = response?.data || response;
-        if (result?.error) throw new Error(`Lesson ${order}: ${result.error}`);
+        setCurrent(`Scanning lesson ${order} of ${orders[orders.length - 1]} (${index + 1}/${orders.length})`);
+        const initialScan = await invokeAudit({ order, scan_only: true });
+
+        if (scanOnly) {
+          const scanResult = {
+            ...initialScan,
+            success: initialScan.issues === 0,
+            solution_units: initialScan.units,
+            saved_units: 0,
+            verifier_corrections: 0,
+            failures: [],
+            before_structural_failures: initialScan.issues,
+            after_structural_failures: initialScan.issues
+          };
+          nextResults.push(scanResult);
+          storeResult(scanResult);
+          continue;
+        }
+
+        const unitIds = initialScan.unit_ids || [];
+        let savedUnits = 0;
+        let verifierCorrections = 0;
+        const failures = [];
+        const issueLog = [];
+
+        for (let unitIndex = 0; unitIndex < unitIds.length; unitIndex += 2) {
+          const unitBatch = unitIds.slice(unitIndex, unitIndex + 2);
+          setCurrent(
+            `Auditing lesson ${order} of ${orders[orders.length - 1]} — solutions ${unitIndex + 1}–${unitIndex + unitBatch.length} of ${unitIds.length}`
+          );
+          const batchResult = await invokeAudit({
+            order,
+            unit_ids: unitBatch,
+            batch_size: 2
+          });
+          savedUnits += batchResult.saved_units || 0;
+          verifierCorrections += batchResult.verifier_corrections || 0;
+          failures.push(...(batchResult.failures || []));
+          issueLog.push(...(batchResult.issues || []));
+
+          const partialResult = {
+            ...batchResult,
+            success: false,
+            solution_units: unitIds.length,
+            saved_units: savedUnits,
+            verifier_corrections: verifierCorrections,
+            failures,
+            issues: issueLog,
+            before_structural_failures: initialScan.issues,
+            after_structural_failures: batchResult.after_structural_failures
+          };
+          storeResult(partialResult);
+
+          if (!batchResult.success || (batchResult.failures || []).length > 0) {
+            throw new Error(`Lesson ${order}, solution batch ${unitIndex + 1}–${unitIndex + unitBatch.length} did not pass every audit gate.`);
+          }
+        }
+
+        setCurrent(`Verifying saved lesson ${order} of ${orders[orders.length - 1]}`);
+        const finalScan = await invokeAudit({ order, scan_only: true });
+        const result = {
+          success: failures.length === 0 && finalScan.issues === 0,
+          lesson_complete: finalScan.issues === 0,
+          order: finalScan.order,
+          title: finalScan.title,
+          section: finalScan.section,
+          solution_units: unitIds.length,
+          saved_units: savedUnits,
+          verifier_corrections: verifierCorrections,
+          failures,
+          issues: issueLog,
+          before_structural_failures: initialScan.issues,
+          after_structural_failures: finalScan.issues,
+          remaining: finalScan.rows || []
+        };
         nextResults.push(result);
-        setResults((previous) => {
-          const withoutOrder = previous.filter((item) => item.order !== order);
-          return [...withoutOrder, result].sort((a, b) => a.order - b.order);
-        });
-        if (!scanOnly && (!result.success || result.after_structural_failures > 0 || (result.failures || []).length > 0)) {
-          throw new Error(`Lesson ${order} did not pass every audit gate. Review the failure details before continuing.`);
+        storeResult(result);
+        if (!result.success) {
+          throw new Error(`Lesson ${order} still has ${finalScan.issues} structural failure(s) after its final scan.`);
         }
       }
     } catch (runError) {
