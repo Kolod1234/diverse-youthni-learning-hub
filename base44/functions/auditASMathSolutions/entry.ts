@@ -400,7 +400,7 @@ function structuralScan(lesson: any) {
       });
     }
   }
-  return { units: units.length, issues, rows };
+  return { units: units.length, unit_ids: units.map((unit) => unit.id), issues, rows };
 }
 
 export default async function (req: Request): Promise<Response> {
@@ -436,8 +436,16 @@ export default async function (req: Request): Promise<Response> {
       });
     }
 
-    const units = createUnits(lesson);
-    const batchSize = Math.max(2, Math.min(8, Number(body.batch_size) || 6));
+    const allUnits = createUnits(lesson);
+    const requestedIds = Array.isArray(body.unit_ids) ? body.unit_ids.filter((id) => typeof id === 'string') : [];
+    const requestedSet = new Set(requestedIds);
+    const units = requestedIds.length > 0 ? allUnits.filter((unit) => requestedSet.has(unit.id)) : allUnits;
+    if (requestedIds.length > 0 && units.length !== requestedSet.size) {
+      const found = new Set(units.map((unit) => unit.id));
+      const missing = [...requestedSet].filter((id) => !found.has(id));
+      return Response.json({ error: 'Unknown solution unit id(s): ' + missing.join(', ') }, { status: 400 });
+    }
+    const batchSize = Math.max(1, Math.min(8, Number(body.batch_size) || 2));
     const accepted = new Map<string, string>();
     const failures: any[] = [];
     const issueLog: any[] = [];
@@ -485,7 +493,8 @@ export default async function (req: Request): Promise<Response> {
     const savedLesson = { ...lesson, slides };
     const after = structuralScan(savedLesson);
     return Response.json({
-      success: failures.length === 0 && after.issues === 0,
+      success: failures.length === 0 && accepted.size === units.length,
+      lesson_complete: after.issues === 0,
       order: lesson.order,
       title: lesson.title,
       section: lesson.section,
