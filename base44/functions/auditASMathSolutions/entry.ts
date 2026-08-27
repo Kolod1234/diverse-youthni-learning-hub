@@ -202,10 +202,6 @@ function validateCandidate(unit: AuditUnit, html: string) {
 
   const olCount = (out.match(/<ol\b/gi) || []).length;
   if (olCount !== 1) return { ok: false, reason: `expected one ordered list, found ${olCount}` };
-  if (/<ol\b[^>]*\bstart\s*=/i.test(out)) {
-    return { ok: false, reason: 'ordered-list numbering was manually restarted' };
-  }
-
   const items = listItems(out);
   if (items.length < 2) return { ok: false, reason: 'solution is not a multistep breakdown' };
 
@@ -476,6 +472,103 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
   return { accepted, rewriteIssues, verifyIssues, verifierCorrections, failures };
 }
 
+function splitSolutionBox(box: SlideBox, maxSteps: number) {
+  const olMatch = box.html.match(/<ol\b[^>]*>[\s\S]*?<\/ol>/i);
+  if (!olMatch || olMatch.index === undefined) return [box.html];
+  const items = [...olMatch[0].matchAll(/<li\b[^>]*>[\s\S]*?<\/li>/gi)].map((match) => match[0]);
+  if (items.length <= maxSteps) return [box.html];
+
+  const opener = olMatch[0].match(/^<ol\b[^>]*>/i)?.[0] || '<ol>';
+  const startValue = Number(opener.match(/\bstart\s*=\s*["']?(\d+)/i)?.[1] || 1);
+  const cleanOpener = opener.replace(/\s+start\s*=\s*["']?\d+["']?/i, '');
+  const prefix = box.html.slice(0, olMatch.index);
+  const suffix = box.html.slice(olMatch.index + olMatch[0].length);
+  const pieces: string[] = [];
+
+  for (let offset = 0; offset < items.length; offset += maxSteps) {
+    const chunk = items.slice(offset, offset + maxSteps);
+    const number = startValue + offset;
+    const chunkOpener = number === 1
+      ? cleanOpener
+      : cleanOpener.replace(/>$/, ` start="${number}">`);
+    const isLast = offset + maxSteps >= items.length;
+    pieces.push(prefix + chunkOpener + chunk.join('') + '</ol>' + (isLast ? suffix : ''));
+  }
+  return pieces;
+}
+
+function paginateSolutionSlides(lesson: any, maxSteps = 12) {
+  const originalSlides = Array.isArray(lesson.slides) ? lesson.slides : [];
+  const nextSlides: any[] = [];
+  const report: any[] = [];
+
+  originalSlides.forEach((slide, slideIndex) => {
+    const boxes = findBoxes(slide.content || '');
+    const solutions = boxes.filter(isAnswerBox);
+    const counts = solutions.map((box) => listItems(box.html).length);
+    const needsPagination = solutions.length > 1 || counts.some((count) => count > maxSteps);
+    if (!needsPagination) {
+      nextSlides.push({ ...slide });
+      return;
+    }
+
+    const made: any[] = [];
+    solutions.forEach((solution, solutionIndex) => {
+      const pieces = splitSolutionBox(solution, maxSteps);
+      const question = [...boxes]
+        .filter((box) => box.start < solution.start && /question|practice|exam/i.test(box.label))
+        .pop();
+      const nextSolution = solutions[solutionIndex + 1];
+      const support = boxes.filter(
+        (box) =>
+          box.start > solution.end &&
+          (!nextSolution || box.start < nextSolution.start) &&
+          !isAnswerBox(box) &&
+          !/question|practice|exam/i.test(box.label)
+      );
+      const totalItems = listItems(solution.html).length;
+
+      pieces.forEach((piece, pieceIndex) => {
+        const from = pieceIndex * maxSteps + 1;
+        const to = Math.min(totalItems, from + maxSteps - 1);
+        const multiSolution = solutions.length > 1;
+        const suffix = pieces.length > 1
+          ? ` — ${multiSolution ? `solution ${solutionIndex + 1}, ` : ''}steps ${from}–${to}`
+          : multiSolution
+            ? ` — solution ${solutionIndex + 1}`
+            : '';
+        const context = question ? question.html : '';
+        const trailing = pieceIndex === pieces.length - 1 ? support.map((box) => box.html).join('') : '';
+        made.push({
+          ...slide,
+          title: `${slide.title || `Page ${slideIndex + 1}`}${suffix}`,
+          content: context + piece + trailing,
+          notes: made.length === 0 ? slide.notes : ''
+        });
+      });
+    });
+
+    if (made.length === 0) {
+      nextSlides.push({ ...slide });
+      return;
+    }
+    nextSlides.push(...made);
+    report.push({
+      original_page: slideIndex + 1,
+      title: slide.title,
+      solution_boxes: solutions.length,
+      original_steps: counts.reduce((sum, count) => sum + count, 0),
+      new_pages: made.length
+    });
+  });
+
+  return {
+    changed: report.length > 0,
+    slides: nextSlides.map((slide, index) => ({ ...slide, order: index + 1 })),
+    report
+  };
+}
+
 function structuralScan(lesson: any) {
   const rows: any[] = [];
   let issues = 0;
@@ -515,6 +608,24 @@ export default async function (req: Request): Promise<Response> {
     const lessons = await base44.asServiceRole.entities.Lesson.filter({ course_id: courseId, order });
     const lesson = lessons[0];
     if (!lesson) return Response.json({ error: `Lesson order ${order} was not found` }, { status: 404 });
+
+    if (body.paginate_only) {
+      const maxSteps = Math.max(8, Math.min(16, Number(body.max_steps) || 12));
+      const paginated = paginateSolutionSlides(lesson, maxSteps);
+      if (paginated.changed) {
+        await base44.asServiceRole.entities.Lesson.update(lesson.id, { slides: paginated.slides });
+      }
+      return Response.json({
+        success: true,
+        mode: 'paginate',
+        order: lesson.order,
+        title: lesson.title,
+        max_steps: maxSteps,
+        before_slides: (lesson.slides || []).length,
+        after_slides: paginated.slides.length,
+        split_slides: paginated.report
+      });
+    }
 
     const before = structuralScan(lesson);
     if (body.scan_only) {
