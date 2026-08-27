@@ -5,7 +5,7 @@ import { AlertTriangle, CheckCircle2, Loader2, Play, RotateCcw, ScanSearch, Shie
 const COURSE_ID = '698a3d721a8a90bcc13737e2';
 
 const TOPICS = [
-  { name: 'AS1: Algebra and Functions', from: 1, to: 18 },
+  { name: 'AS1: Algebra and Functions', from: 1, to: 18, skip: [5] },
   { name: 'AS1: Coordinate Geometry', from: 19, to: 25 },
   { name: 'AS1: Sequences and Series', from: 26, to: 31 },
   { name: 'AS1: Exponentials and Logarithms', from: 32, to: 35 },
@@ -287,17 +287,19 @@ export default function AdminMathSolutionAudit() {
             {TOPICS.map((topic) => (
               <div key={topic.name} className="rounded-xl border border-slate-200 p-4">
                 <div className="font-semibold">{topic.name}</div>
-                <div className="mt-1 text-xs text-slate-500">Lessons {topic.from}–{topic.to}</div>
+                <div className="mt-1 text-xs text-slate-500">
+                  Lessons {topic.from}–{topic.to}{topic.skip?.length ? ' · certified lessons excluded from rerun' : ''}
+                </div>
                 <div className="mt-3 flex gap-2">
                   <button
-                    onClick={() => runOrders(range(topic.from, topic.to), false)}
+                    onClick={() => runOrders(range(topic.from, topic.to).filter((order) => !(topic.skip || []).includes(order)), false)}
                     disabled={running}
                     className="rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
                   >
                     Audit topic
                   </button>
                   <button
-                    onClick={() => runOrders(range(topic.from, topic.to), true)}
+                    onClick={() => runOrders(range(topic.from, topic.to).filter((order) => !(topic.skip || []).includes(order)), true)}
                     disabled={running}
                     className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-50"
                   >
