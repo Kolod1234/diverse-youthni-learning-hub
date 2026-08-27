@@ -627,11 +627,9 @@ function paginateSolutionSlides(lesson: any, maxSteps = 12) {
           !isAnswerBox(box) &&
           !/question|practice|exam/i.test(box.label)
       );
-      const totalItems = listItems(solution.html).length;
-
       pieces.forEach((piece, pieceIndex) => {
-        const from = pieceIndex * maxSteps + 1;
-        const to = Math.min(totalItems, from + maxSteps - 1);
+        const from = piece.from;
+        const to = piece.to;
         const multiSolution = solutions.length > 1;
         const suffix = pieces.length > 1
           ? ` — ${multiSolution ? `solution ${solutionIndex + 1}, ` : ''}steps ${from}–${to}`
@@ -643,7 +641,7 @@ function paginateSolutionSlides(lesson: any, maxSteps = 12) {
         made.push({
           ...slide,
           title: `${slide.title || `Page ${slideIndex + 1}`}${suffix}`,
-          content: context + piece + trailing,
+          content: context + piece.html + trailing,
           notes: made.length === 0 ? slide.notes : ''
         });
       });
@@ -663,8 +661,9 @@ function paginateSolutionSlides(lesson: any, maxSteps = 12) {
     });
   });
 
+  const normalisedChanged = JSON.stringify(originalSlides) !== JSON.stringify(sourceSlides);
   return {
-    changed: report.length > 0,
+    changed: normalisedChanged || report.length > 0,
     slides: nextSlides.map((slide, index) => ({ ...slide, order: index + 1 })),
     report
   };
