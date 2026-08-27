@@ -54,6 +54,7 @@ NON-NEGOTIABLE PRESENTATION STANDARD
 - ONE small action per list item. A step may recall one formula, substitute once, expand once, collect one kind of term, divide once, evaluate once, state one conclusion, or perform one check.
 - State the reason or instruction BEFORE the mathematics in every item. No list item may begin with a formula, "=", an implication arrow, or an unexplained result.
 - Never place two algebraic transformations in one list item. In particular, split $a=b=c$, $a=b\\Rightarrow c=d$, and a line containing several "=" signs into separate numbered items.
+- MACHINE-CHECK RULE: count every equals sign, \\Rightarrow, \\implies and \\therefore across the ENTIRE <li>, including separate maths spans. The total must be at most ONE. If the total is two or more, split that item again. A formula and its substitution must be separate numbered steps.
 - Do not combine two questions or two parts on one line. If a box answers several expressions, keep one continuous list and introduce each part in words, such as "Now consider the second expression".
 - Show all substitutions, sign changes, bracket expansions, collection of like terms, divisions, simplifications, arithmetic, units and rounding. Do not assume mental arithmetic or an unstated algebra law.
 - For factorising by splitting the middle term, separately show: calculate $ac$; identify the required product and sum; find the two numbers; split the middle term; group the first pair; group the second pair; identify the common bracket; write the product; expand to check.
@@ -81,7 +82,8 @@ A box is valid only when:
 6. no arithmetic, substitution, sign change, rearrangement, unit, rounding or conclusion is skipped;
 7. separate questions/parts are never compressed onto one line;
 8. a natural final check is present;
-9. the exact outer wrapper, label and all placeholders remain intact.
+9. the exact outer wrapper, label and all placeholders remain intact;
+10. the total count of equals signs, \\Rightarrow, \\implies and \\therefore across each entire <li> is at most ONE, even when they occur in separate maths spans.
 
 For each id, return the complete corrected HTML. If the candidate already meets every rule, return it unchanged with valid=true and changed=false. If anything fails, correct it, set changed=true, set valid=true only after correction, and list the defects you corrected. Do not defer to the first examiner or to the original final answer: independently verify it.`;
 
