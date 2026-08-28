@@ -101,7 +101,7 @@ function save(c,name){fs.writeFileSync(path.join(OUT,name),c.toBuffer('image/jpe
  arrow(x,1320,560,1320,820,C.orange,'weight W',1345,800);
  arrow(x,1270,590,1170,390,C.teal,'normal N',1035,395);
  arrow(x,1275,645,1430,570,C.red,'friction up slope',1360,700);
- arrow(x,1370,610,1215,685,C.slate,'sliding tendency',1070,655);
+ arrow(x,1370,610,1215,685,C.slate,'sliding tendency',1015,810);
  x.fillStyle=C.slate;x.font='24px Arial';x.fillText('Friction acts up the plane because sliding would be down.',995,905);
  save(c,'friction-force-directions.jpg');
 }
