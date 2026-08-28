@@ -486,54 +486,57 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
 }
 
 async function expandMissingStepsBatch(base44, lesson: any, units: AuditUnit[]) {
-  let response: any = null;
-  let problems: string[] = [];
-
-  for (let attempt = 0; attempt < 2; attempt++) {
-    const retry = attempt === 0 ? '' : `\n\nYour previous output was rejected for these exact structural reasons:\n- ${problems.join('\n- ')}\nRepair only those structural defects and return every id again.`;
-    response = await invokeBatch(
-      base44,
-      `${GAP_ONLY_RULES}\n\nLESSON: ${lesson.order}. ${lesson.title}\n\nFLAGGED UNITS (JSON):\n${JSON.stringify(manifest(units))}${retry}`
-    );
-    const byId = responseMap(response);
-    problems = [];
-    for (const unit of units) {
-      const item = byId.get(unit.id);
-      if (!item?.html) {
-        problems.push(`${unit.id}: missing output`);
-        continue;
-      }
-      const check = validateCandidate(unit, item.html);
-      if (!check.ok) problems.push(`${unit.id}: ${check.reason}`);
-    }
-    if (problems.length === 0) break;
-  }
-
   const accepted = new Map<string, string>();
   const rewriteIssues = new Map<string, string[]>();
   const verifyIssues = new Map<string, string[]>();
   const failures: { id: string; stage: string; reason: string }[] = [];
-  const byId = responseMap(response);
+  const lastReason = new Map<string, string>();
+  let pending = [...units];
 
-  for (const unit of units) {
-    const item = byId.get(unit.id);
-    if (!item?.html) {
-      failures.push({ id: unit.id, stage: 'expand-missing-steps', reason: 'missing model output' });
-      continue;
+  for (let attempt = 0; attempt < 3 && pending.length > 0; attempt++) {
+    const reasons = pending.map((unit) => `${unit.id}: ${lastReason.get(unit.id) || 'add the missing intermediate steps'}`);
+    const retry = attempt === 0 ? '' : `\n\nOnly these remaining ids were rejected:\n- ${reasons.join('\n- ')}\nRepair only those structural defects.`;
+    const response = await invokeBatch(
+      base44,
+      `${GAP_ONLY_RULES}\n\nLESSON: ${lesson.order}. ${lesson.title}\n\nFLAGGED UNITS (JSON):\n${JSON.stringify(manifest(pending))}${retry}`
+    );
+    const byId = responseMap(response);
+    const nextPending: AuditUnit[] = [];
+
+    for (const unit of pending) {
+      const item = byId.get(unit.id);
+      if (!item?.html) {
+        lastReason.set(unit.id, 'missing model output');
+        nextPending.push(unit);
+        continue;
+      }
+      const envelopeCheck = validateEnvelope(unit, item.html);
+      if (!envelopeCheck.ok) {
+        lastReason.set(unit.id, envelopeCheck.reason);
+        nextPending.push(unit);
+        continue;
+      }
+      const structuralCheck = validateCandidate(unit, item.html);
+      if (!structuralCheck.ok) {
+        lastReason.set(unit.id, structuralCheck.reason);
+        nextPending.push(unit);
+        continue;
+      }
+      accepted.set(unit.id, item.html.trim());
+      rewriteIssues.set(unit.id, Array.isArray(item.issues) ? [...item.issues] : []);
+      verifyIssues.set(unit.id, []);
+      lastReason.delete(unit.id);
     }
-    const envelopeCheck = validateEnvelope(unit, item.html);
-    if (!envelopeCheck.ok) {
-      failures.push({ id: unit.id, stage: 'expand-missing-steps', reason: envelopeCheck.reason });
-      continue;
-    }
-    const structuralCheck = validateCandidate(unit, item.html);
-    if (!structuralCheck.ok) {
-      failures.push({ id: unit.id, stage: 'expand-missing-steps', reason: structuralCheck.reason });
-      continue;
-    }
-    accepted.set(unit.id, item.html.trim());
-    rewriteIssues.set(unit.id, Array.isArray(item.issues) ? [...item.issues] : []);
-    verifyIssues.set(unit.id, []);
+
+    pending = nextPending;
+  }
+
+  for (const unit of pending) {
+    failures.push({
+      id: unit.id,
+      stage: 'expand-missing-steps',
+      reason: lastReason.get(unit.id) || 'structural validation did not pass'
+    });
   }
 
   return { accepted, rewriteIssues, verifyIssues, verifierCorrections: 0, failures };
