@@ -30,7 +30,9 @@ function ResultRow({ result }) {
         <div className="min-w-0 flex-1">
           <div className="font-semibold text-slate-900">{result.order}. {result.title}</div>
           <div className="mt-1 text-sm text-slate-700">
-            {result.saved_units ?? 0}/{result.solution_units ?? 0} solution units saved ·
+            {result.mode === 'scan'
+              ? `${result.issues ?? 0} solution units flagged`
+              : `${result.saved_units ?? 0}/${result.target_units ?? result.solution_units ?? 0} flagged solution units fixed`} ·
             {' '}{result.verifier_corrections ?? 0} second-examiner corrections ·
             {' '}{result.after_structural_failures ?? result.issues ?? 0} structural failures remain
           </div>
@@ -144,11 +146,7 @@ export default function AdminMathSolutionAudit() {
     try {
       for (let index = 0; index < orders.length; index++) {
         const order = orders[index];
-        if (!scanOnly) {
-          setCurrent(`Recombining any continuation pages in lesson ${order} before the fresh audit`);
-          await invokeAudit({ order, depaginate_only: true });
-        }
-        setCurrent(`Scanning lesson ${order} of ${orders[orders.length - 1]} (${index + 1}/${orders.length})`);
+        setCurrent(`Scanning lesson ${order} of ${orders[orders.length - 1]} for missing or compressed steps (${index + 1}/${orders.length})`);
         const initialScan = await invokeAudit({ order, scan_only: true });
 
         if (scanOnly) {
@@ -168,9 +166,27 @@ export default function AdminMathSolutionAudit() {
         }
 
         const allUnitIds = initialScan.unit_ids || [];
-        const resumeOffset = Math.min(RESUME_OFFSETS[order] || 0, allUnitIds.length);
-        const unitIds = allUnitIds.slice(resumeOffset);
-        let savedUnits = resumeOffset;
+        const unitIds = (initialScan.rows || []).map((row) => row.id).filter(Boolean);
+
+        if (unitIds.length === 0) {
+          const cleanResult = {
+            ...initialScan,
+            success: true,
+            lesson_complete: true,
+            solution_units: allUnitIds.length,
+            target_units: 0,
+            saved_units: 0,
+            verifier_corrections: 0,
+            failures: [],
+            before_structural_failures: 0,
+            after_structural_failures: 0
+          };
+          nextResults.push(cleanResult);
+          storeResult(cleanResult);
+          continue;
+        }
+
+        let savedUnits = 0;
         let verifierCorrections = 0;
         const failures = [];
         const issueLog = [];
@@ -178,7 +194,7 @@ export default function AdminMathSolutionAudit() {
         for (let unitIndex = 0; unitIndex < unitIds.length; unitIndex += 2) {
           const unitBatch = unitIds.slice(unitIndex, unitIndex + 2);
           setCurrent(
-            `Auditing lesson ${order} of ${orders[orders.length - 1]} — solutions ${resumeOffset + unitIndex + 1}–${resumeOffset + unitIndex + unitBatch.length} of ${allUnitIds.length}`
+            `Fixing lesson ${order} of ${orders[orders.length - 1]} — flagged solutions ${unitIndex + 1}–${unitIndex + unitBatch.length} of ${unitIds.length}`
           );
           const batchResult = await invokeAuditBatch(order, unitBatch);
           savedUnits += batchResult.saved_units || 0;
@@ -190,6 +206,7 @@ export default function AdminMathSolutionAudit() {
             ...batchResult,
             success: false,
             solution_units: allUnitIds.length,
+            target_units: unitIds.length,
             saved_units: savedUnits,
             verifier_corrections: verifierCorrections,
             failures,
@@ -200,13 +217,11 @@ export default function AdminMathSolutionAudit() {
           storeResult(partialResult);
 
           if (!batchResult.success || (batchResult.failures || []).length > 0) {
-            throw new Error(`Lesson ${order}, solution batch ${resumeOffset + unitIndex + 1}–${resumeOffset + unitIndex + unitBatch.length} did not pass every audit gate.`);
+            throw new Error(`Lesson ${order}, flagged solution batch ${unitIndex + 1}–${unitIndex + unitBatch.length} did not pass every audit gate.`);
           }
         }
 
-        setCurrent(`Paginating long solutions in lesson ${order} of ${orders[orders.length - 1]}`);
-        const pagination = await invokeAudit({ order, paginate_only: true, max_steps: 12 });
-        setCurrent(`Verifying saved lesson ${order} of ${orders[orders.length - 1]}`);
+        setCurrent(`Verifying the targeted step additions in lesson ${order} of ${orders[orders.length - 1]}`);
         const finalScan = await invokeAudit({ order, scan_only: true });
         const result = {
           success: failures.length === 0 && finalScan.issues === 0,
@@ -221,8 +236,7 @@ export default function AdminMathSolutionAudit() {
           issues: issueLog,
           before_structural_failures: initialScan.issues,
           after_structural_failures: finalScan.issues,
-          remaining: finalScan.rows || [],
-          pagination
+          remaining: finalScan.rows || []
         };
         nextResults.push(result);
         storeResult(result);
@@ -248,8 +262,8 @@ export default function AdminMathSolutionAudit() {
             <div>
               <h1 className="text-2xl font-bold">AS Mathematics Solution Audit</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-                Every labelled solution is independently recomputed, rewritten into one continuously numbered micro-step list,
-                checked by a second examiner, and structurally rejected if any step is compressed or unexplained.
+                Existing correct solutions are preserved. Only solution units flagged for missing, compressed or unexplained steps are expanded,
+                then checked by a second examiner before being saved.
               </p>
             </div>
           </div>
@@ -276,7 +290,7 @@ export default function AdminMathSolutionAudit() {
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
             >
               {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-              Audit all 84 lessons
+              Fix missing steps in all 84 lessons
             </button>
             <button
               onClick={() => runOrders([5], false)}
@@ -325,7 +339,7 @@ export default function AdminMathSolutionAudit() {
                     disabled={running}
                     className="rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
                   >
-                    Audit topic
+                    Fix missing steps
                   </button>
                   <button
                     onClick={() => runOrders(range(topic.from, topic.to), true)}
