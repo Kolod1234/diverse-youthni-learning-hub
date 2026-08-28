@@ -54,7 +54,7 @@ NON-NEGOTIABLE PRESENTATION STANDARD
 - ONE small action per list item. A step may recall one formula, substitute once, expand once, collect one kind of term, divide once, evaluate once, state one conclusion, or perform one check.
 - State the reason or instruction BEFORE the mathematics in every item. No list item may begin with a formula, "=", an implication arrow, or an unexplained result.
 - Never place two algebraic transformations in one list item. In particular, split $a=b=c$, $a=b\\Rightarrow c=d$, and a line containing several "=" signs into separate numbered items.
-- MACHINE-CHECK RULE: count every equals sign, \\Rightarrow, \\implies and \\therefore across the ENTIRE <li>, including separate maths spans. The total must be at most ONE. If the total is two or more, split that item again. A formula and its substitution must be separate numbered steps.
+- MACHINE-CHECK RULE: within each individual maths span, the total count of equals signs, \\Rightarrow, \\implies and \\therefore must be at most ONE. A complete explanatory sentence may cite two already-stated conditions in separate maths spans for comparison, but it must not perform two transformations. A formula and its substitution must be separate numbered steps.
 - Do not combine two questions or two parts on one line. If a box answers several expressions, keep one continuous list and introduce each part in words, such as "Now consider the second expression".
 - Show all substitutions, sign changes, bracket expansions, collection of like terms, divisions, simplifications, arithmetic, units and rounding. Do not assume mental arithmetic or an unstated algebra law.
 - For factorising by splitting the middle term, separately show: calculate $ac$; identify the required product and sum; find the two numbers; split the middle term; group the first pair; group the second pair; identify the common bracket; write the product; expand to check.
@@ -85,7 +85,7 @@ A box is valid only when:
 7. separate questions/parts are never compressed onto one line;
 8. a natural final check is present;
 9. the exact outer wrapper, label and all placeholders remain intact;
-10. the total count of equals signs, \\Rightarrow, \\implies and \\therefore across each entire <li> is at most ONE, even when they occur in separate maths spans;
+10. no individual maths span contains two or more equals signs, \\Rightarrow, \\implies or \\therefore; separate maths spans may cite two named conditions only for explanation or comparison, never to compress two transformations;
 11. no generic filler or sentence fragments are used: every step names the actual operation and remains a complete learner-facing instruction or explanation.
 
 For each id, return the complete corrected HTML. If the candidate already meets every rule, return it unchanged with valid=true and changed=false. If anything fails, correct it, set changed=true, set valid=true only after correction, and list the defects you corrected. Do not defer to the first examiner or to the original final answer: independently verify it.`;
@@ -229,9 +229,14 @@ function validateCandidate(unit: AuditUnit, html: string) {
     if (firstMath >= 0 && !/[A-Za-z]{3}/.test(beforeMath)) {
       return { ok: false, reason: `step ${i + 1} shows mathematics before explaining the action` };
     }
-    const totalRelations = mathChunks(item).reduce((sum, chunk) => sum + relationCount(chunk), 0);
-    if (totalRelations >= 2) {
-      return { ok: false, reason: `step ${i + 1} still contains more than one relation or transformation` };
+    const chunks = mathChunks(item);
+    if (chunks.some((chunk) => relationCount(chunk) >= 2)) {
+      return { ok: false, reason: `step ${i + 1} contains a packed relation or transformation chain inside one maths span` };
+    }
+    const totalRelations = chunks.reduce((sum, chunk) => sum + relationCount(chunk), 0);
+    const explanatoryText = withoutMath.toLowerCase();
+    if (totalRelations >= 2 && /\b(?:so|then|hence|therefore|thus|giving|gives|becomes|simplif(?:y|ies|ied)|substitut(?:e|ing)|rearrang(?:e|ing)|expand(?:ing)?)\b/.test(explanatoryText)) {
+      return { ok: false, reason: `step ${i + 1} compresses more than one transformation across separate maths spans` };
     }
   }
 
