@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { tempCircleImageBase64 } from '../temp-circle-upload';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -124,25 +123,6 @@ export default function LessonPlayerClassic() {
   useEffect(() => {
     base44.auth.me().then(setUser);
   }, []);
-
-  useEffect(() => {
-    if (lessonId !== '69929328b27e4b28292ba8a7') return;
-    let cancelled = false;
-    const uploadRaster = async () => {
-      try {
-        const binary = window.atob(tempCircleImageBase64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-        const file = new File([bytes], 'circle-properties-two-key-properties.jpg', { type: 'image/jpeg' });
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        if (!cancelled) document.body.dataset.tempCircleUrl = file_url;
-      } catch (error) {
-        if (!cancelled) document.body.dataset.tempCircleError = error?.message || 'upload failed';
-      }
-    };
-    uploadRaster();
-    return () => { cancelled = true; };
-  }, [lessonId]);
 
   // Ensure the lesson-builder web fonts are loaded so font-family inline
   // styles set in the editor render correctly in the rendered slide HTML.
