@@ -18,8 +18,7 @@ const TOPICS = [
 
 const range = (from, to) => Array.from({ length: to - from + 1 }, (_, index) => from + index);
 
-// Fully certified lessons may be excluded in TOPICS. Partial lessons are rerun in full so a non-contiguous save can never be skipped.
-const RESUME_OFFSETS = {};
+// Fully certified lessons may be excluded in TOPICS. All other lessons are scanned and only flagged solution units are changed.
 
 function ResultRow({ result }) {
   const ok = result.success && result.after_structural_failures === 0 && (result.failures || []).length === 0;
@@ -230,6 +229,7 @@ export default function AdminMathSolutionAudit() {
           title: finalScan.title,
           section: finalScan.section,
           solution_units: allUnitIds.length,
+          target_units: unitIds.length,
           saved_units: savedUnits,
           verifier_corrections: verifierCorrections,
           failures,
