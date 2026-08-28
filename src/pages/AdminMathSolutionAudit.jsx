@@ -324,7 +324,7 @@ export default function AdminMathSolutionAudit() {
                     Audit topic
                   </button>
                   <button
-                    onClick={() => runOrders(range(topic.from, topic.to).filter((order) => !(topic.skip || []).includes(order)), true)}
+                    onClick={() => runOrders(range(topic.from, topic.to), true)}
                     disabled={running}
                     className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-50"
                   >
