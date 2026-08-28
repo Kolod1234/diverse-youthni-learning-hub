@@ -81,7 +81,7 @@ function save(c,name){fs.writeFileSync(path.join(OUT,name),c.toBuffer('image/jpe
 }
 // Friction figure
 {
- const [c,x]=canvas('Friction opposes relative motion or the tendency to move','First identify which way the contacting surfaces move, or would move, relative to one another.');
+ const [c,x]=canvas('Friction: decide direction from relative motion','Identify which way the contacting surfaces move, or would move, relative to one another.');
  panel(x,70,190,800,770,'A','Block sliding right','#eff6ff');
  panel(x,930,190,800,770,'B','Block on a slope','#fff7ed');
  // A
@@ -101,8 +101,8 @@ function save(c,name){fs.writeFileSync(path.join(OUT,name),c.toBuffer('image/jpe
  arrow(x,1320,560,1320,820,C.orange,'weight W',1345,800);
  arrow(x,1270,590,1170,390,C.teal,'normal N',1035,395);
  arrow(x,1275,645,1120,720,C.red,'friction up slope',955,760);
- arrow(x,1370,610,1515,535,C.slate,'tendency down slope',1370,500);
- x.fillStyle=C.slate;x.font='24px Arial';x.fillText('Friction points up the plane when sliding would be down the plane.',995,905);
+ arrow(x,1370,610,1515,535,C.slate,'sliding tendency',1385,500);
+ x.fillStyle=C.slate;x.font='24px Arial';x.fillText('Friction acts up the plane because sliding would be down.',995,905);
  save(c,'friction-force-directions.jpg');
 }
 console.log('Generated dynamics JPEG assets in',OUT);
