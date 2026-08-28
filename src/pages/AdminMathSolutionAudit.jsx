@@ -32,7 +32,6 @@ function ResultRow({ result }) {
             {result.mode === 'scan'
               ? `${result.issues ?? 0} solution units flagged`
               : `${result.saved_units ?? 0}/${result.target_units ?? result.solution_units ?? 0} flagged solution units fixed`} ·
-            {' '}{result.verifier_corrections ?? 0} second-examiner corrections ·
             {' '}{result.after_structural_failures ?? result.issues ?? 0} structural failures remain
           </div>
           {(result.failures || []).length > 0 && (
@@ -263,7 +262,7 @@ export default function AdminMathSolutionAudit() {
               <h1 className="text-2xl font-bold">AS Mathematics Solution Audit</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
                 Existing correct solutions are preserved. Only solution units flagged for missing, compressed or unexplained steps are expanded,
-                then checked by a second examiner before being saved.
+                then structurally validated before being saved.
               </p>
             </div>
           </div>
