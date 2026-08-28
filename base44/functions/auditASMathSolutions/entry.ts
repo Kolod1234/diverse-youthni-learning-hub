@@ -265,8 +265,9 @@ function escapeHtml(text: string) {
 }
 
 function splitEqualsChain(expression: string) {
-  const parts = expression.split(/(?<!\\)=/).map((part) => part.trim()).filter(Boolean);
-  if (parts.length <= 2) return [expression.trim()];
+  const cleanExpression = expression.trim().replace(/^(?:=|\\Rightarrow|\\implies|\\therefore)\s*/, '');
+  const parts = cleanExpression.split(/(?<!\\)=/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length <= 2) return [cleanExpression];
   const lines: string[] = [];
   for (let i = 0; i < parts.length - 1; i++) {
     lines.push(`${parts[i]} = ${parts[i + 1]}`);
