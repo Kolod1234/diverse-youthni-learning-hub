@@ -18,8 +18,8 @@ const TOPICS = [
 
 const range = (from, to) => Array.from({ length: to - from + 1 }, (_, index) => from + index);
 
-// Fully certified lessons may be excluded in TOPICS. Mathematical Proof resumes after its first confirmed saved unit.
-const RESUME_OFFSETS = { 1: 1 };
+// Fully certified lessons may be excluded in TOPICS. Partial lessons are rerun in full so a non-contiguous save can never be skipped.
+const RESUME_OFFSETS = {};
 
 function ResultRow({ result }) {
   const ok = result.success && result.after_structural_failures === 0 && (result.failures || []).length === 0;
