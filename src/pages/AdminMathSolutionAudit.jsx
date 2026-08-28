@@ -81,14 +81,14 @@ export default function AdminMathSolutionAudit() {
 
   async function invokeAuditBatch(order, unitBatch) {
     try {
-      return await invokeAudit({ order, unit_ids: unitBatch, batch_size: unitBatch.length });
+      return await invokeAudit({ order, unit_ids: unitBatch, batch_size: unitBatch.length, gap_only: true });
     } catch (batchError) {
       if (unitBatch.length === 1) throw batchError;
 
       const parts = [];
       for (const unitId of unitBatch) {
         setCurrent(`The paired request was slow; safely retrying lesson ${order} one solution at a time`);
-        parts.push(await invokeAudit({ order, unit_ids: [unitId], batch_size: 1 }));
+        parts.push(await invokeAudit({ order, unit_ids: [unitId], batch_size: 1, gap_only: true }));
       }
 
       const last = parts[parts.length - 1] || {};
