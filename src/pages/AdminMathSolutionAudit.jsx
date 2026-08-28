@@ -190,8 +190,8 @@ export default function AdminMathSolutionAudit() {
         const failures = [];
         const issueLog = [];
 
-        for (let unitIndex = 0; unitIndex < unitIds.length; unitIndex += 2) {
-          const unitBatch = unitIds.slice(unitIndex, unitIndex + 2);
+        for (let unitIndex = 0; unitIndex < unitIds.length; unitIndex += 4) {
+          const unitBatch = unitIds.slice(unitIndex, unitIndex + 4);
           setCurrent(
             `Fixing lesson ${order} of ${orders[orders.length - 1]} — flagged solutions ${unitIndex + 1}–${unitIndex + unitBatch.length} of ${unitIds.length}`
           );
