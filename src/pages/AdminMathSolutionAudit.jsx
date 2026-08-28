@@ -11,7 +11,7 @@ const TOPICS = [
   { name: 'AS1: Exponentials and Logarithms', from: 32, to: 35, skip: [32, 33, 34, 35] },
   { name: 'AS1: Trigonometry', from: 36, to: 45, skip: [36, 37, 38, 39, 40, 41, 42, 43, 44, 45] },
   { name: 'AS1: Calculus', from: 46, to: 59, skip: [46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59] },
-  { name: 'AS2: Kinematics', from: 60, to: 67 },
+  { name: 'AS2: Kinematics', from: 60, to: 67, skip: [60, 61, 62, 63, 64, 65, 66, 67] },
   { name: 'AS2: Forces', from: 68, to: 74 },
   { name: 'AS2: Statistics', from: 75, to: 84 }
 ];
