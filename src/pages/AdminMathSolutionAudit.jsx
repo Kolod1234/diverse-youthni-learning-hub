@@ -144,6 +144,10 @@ export default function AdminMathSolutionAudit() {
     try {
       for (let index = 0; index < orders.length; index++) {
         const order = orders[index];
+        if (!scanOnly) {
+          setCurrent(`Recombining any continuation pages in lesson ${order} before the fresh audit`);
+          await invokeAudit({ order, depaginate_only: true });
+        }
         setCurrent(`Scanning lesson ${order} of ${orders[orders.length - 1]} (${index + 1}/${orders.length})`);
         const initialScan = await invokeAudit({ order, scan_only: true });
 
