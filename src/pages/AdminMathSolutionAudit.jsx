@@ -214,9 +214,6 @@ export default function AdminMathSolutionAudit() {
           };
           storeResult(partialResult);
 
-          if (!batchResult.success || (batchResult.failures || []).length > 0) {
-            throw new Error(`Lesson ${order}, flagged solution batch ${unitIndex + 1}–${unitIndex + unitBatch.length} did not pass every audit gate.`);
-          }
         }
 
         setCurrent(`Verifying the targeted step additions in lesson ${order} of ${orders[orders.length - 1]}`);
@@ -239,9 +236,6 @@ export default function AdminMathSolutionAudit() {
         };
         nextResults.push(result);
         storeResult(result);
-        if (!result.success) {
-          throw new Error(`Lesson ${order} still has ${finalScan.issues} structural failure(s) after its final scan.`);
-        }
       }
     } catch (runError) {
       setError(runError?.message || String(runError));
