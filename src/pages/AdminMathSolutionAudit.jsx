@@ -5,7 +5,7 @@ import { AlertTriangle, CheckCircle2, Loader2, Play, RotateCcw, ScanSearch, Shie
 const COURSE_ID = '698a3d721a8a90bcc13737e2';
 
 const TOPICS = [
-  { name: 'AS1: Algebra and Functions', from: 1, to: 18, skip: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+  { name: 'AS1: Algebra and Functions', from: 1, to: 18, skip: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
   { name: 'AS1: Coordinate Geometry', from: 19, to: 25 },
   { name: 'AS1: Sequences and Series', from: 26, to: 31 },
   { name: 'AS1: Exponentials and Logarithms', from: 32, to: 35 },
@@ -18,9 +18,9 @@ const TOPICS = [
 
 const range = (from, to) => Array.from({ length: to - from + 1 }, (_, index) => from + index);
 
-// Fully certified lessons are excluded in TOPICS. Polynomial Division sections 1–8
-// are independently certified; resume at its rejected ninth section without rewriting them.
-const RESUME_OFFSETS = { 11: 8 };
+// Fully certified lessons are excluded in TOPICS. Functions Notation sections 1–5
+// are independently certified; resume at its rejected sixth section without rewriting them.
+const RESUME_OFFSETS = { 13: 5 };
 
 function ResultRow({ result }) {
   const ok = result.success && result.after_structural_failures === 0 && (result.failures || []).length === 0;
