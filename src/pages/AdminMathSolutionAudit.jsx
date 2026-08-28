@@ -12,8 +12,8 @@ const TOPICS = [
   { name: 'AS1: Trigonometry', from: 36, to: 45, skip: [36, 37, 38, 39, 40, 41, 42, 43, 44, 45] },
   { name: 'AS1: Calculus', from: 46, to: 59, skip: [46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59] },
   { name: 'AS2: Kinematics', from: 60, to: 67, skip: [60, 61, 62, 63, 64, 65, 66, 67] },
-  { name: 'AS2: Forces', from: 68, to: 74 },
-  { name: 'AS2: Statistics', from: 75, to: 84 }
+  { name: 'AS2: Forces', from: 68, to: 74, skip: [68, 69, 70, 71, 72, 73, 74] },
+  { name: 'AS2: Statistics', from: 75, to: 84, skip: [75, 76, 77, 78, 79, 80, 81, 82, 83, 84] }
 ];
 
 const range = (from, to) => Array.from({ length: to - from + 1 }, (_, index) => from + index);
