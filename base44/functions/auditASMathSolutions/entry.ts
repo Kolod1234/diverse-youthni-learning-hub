@@ -90,6 +90,18 @@ A box is valid only when:
 
 For each id, return the complete corrected HTML. If the candidate already meets every rule, return it unchanged with valid=true and changed=false. If anything fails, correct it, set changed=true, set valid=true only after correction, and list the defects you corrected. Do not defer to the first examiner or to the original final answer: independently verify it.`;
 
+const GAP_ONLY_RULES = `You are a careful CCEA AS Mathematics lesson editor. The supplied solution's mathematics, method and final answer are authoritative. Your ONLY task is to add missing intermediate steps and split compressed working. Do not re-solve or rewrite parts that are already complete.
+
+- Preserve the exact outer solution-box opening <div>, style, uppercase label, mark-scheme line and every [SVG_...] placeholder.
+- Inside the box use exactly one <ol style="${OL_STYLE}"> and <li style="${LI_STYLE}"> items with automatic continuous numbering.
+- Preserve every existing value, variable, sign, formula, mathematical claim, method and final answer. Never substitute different numbers, change the method, add a new example or invent a new conclusion.
+- Keep already-complete steps unchanged as far as possible. Add text only where an operation or link is missing.
+- Split every compressed chain into one small operation per item. Name the actual action before its mathematics: identify, substitute, expand, collect, divide, simplify, evaluate, compare or conclude.
+- Each individual maths span may contain at most one equals sign, \\Rightarrow, \\implies or \\therefore.
+- Never begin an item with mathematics, an equals sign or an arrow. Never create a fragment containing only a number, variable, coordinate or operator.
+- Do not use generic filler. Use correct British English and valid LaTeX. Do not introduce SVG, images or Markdown.
+- Return the complete solution-box HTML for every requested id, with valid=true after it meets these structural rules. Return no prose outside the JSON structure.`;
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -473,6 +485,60 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
   return { accepted, rewriteIssues, verifyIssues, verifierCorrections, failures };
 }
 
+async function expandMissingStepsBatch(base44, lesson: any, units: AuditUnit[]) {
+  let response: any = null;
+  let problems: string[] = [];
+
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const retry = attempt === 0 ? '' : `\n\nYour previous output was rejected for these exact structural reasons:\n- ${problems.join('\n- ')}\nRepair only those structural defects and return every id again.`;
+    response = await invokeBatch(
+      base44,
+      `${GAP_ONLY_RULES}\n\nLESSON: ${lesson.order}. ${lesson.title}\n\nFLAGGED UNITS (JSON):\n${JSON.stringify(manifest(units))}${retry}`
+    );
+    const byId = responseMap(response);
+    problems = [];
+    for (const unit of units) {
+      const item = byId.get(unit.id);
+      if (!item?.html) {
+        problems.push(`${unit.id}: missing output`);
+        continue;
+      }
+      const check = validateCandidate(unit, item.html);
+      if (!check.ok) problems.push(`${unit.id}: ${check.reason}`);
+    }
+    if (problems.length === 0) break;
+  }
+
+  const accepted = new Map<string, string>();
+  const rewriteIssues = new Map<string, string[]>();
+  const verifyIssues = new Map<string, string[]>();
+  const failures: { id: string; stage: string; reason: string }[] = [];
+  const byId = responseMap(response);
+
+  for (const unit of units) {
+    const item = byId.get(unit.id);
+    if (!item?.html) {
+      failures.push({ id: unit.id, stage: 'expand-missing-steps', reason: 'missing model output' });
+      continue;
+    }
+    const envelopeCheck = validateEnvelope(unit, item.html);
+    if (!envelopeCheck.ok) {
+      failures.push({ id: unit.id, stage: 'expand-missing-steps', reason: envelopeCheck.reason });
+      continue;
+    }
+    const structuralCheck = validateCandidate(unit, item.html);
+    if (!structuralCheck.ok) {
+      failures.push({ id: unit.id, stage: 'expand-missing-steps', reason: structuralCheck.reason });
+      continue;
+    }
+    accepted.set(unit.id, item.html.trim());
+    rewriteIssues.set(unit.id, Array.isArray(item.issues) ? [...item.issues] : []);
+    verifyIssues.set(unit.id, []);
+  }
+
+  return { accepted, rewriteIssues, verifyIssues, verifierCorrections: 0, failures };
+}
+
 function balancedItemChunks(items: string[], maxSteps: number) {
   if (items.length <= maxSteps) return [items];
   const pageCount = Math.ceil(items.length / maxSteps);
@@ -789,7 +855,9 @@ export default async function (req: Request): Promise<Response> {
 
     for (let i = 0; i < units.length; i += batchSize) {
       const batch = units.slice(i, i + batchSize);
-      const result = await rewriteAndVerifyBatch(base44, lesson, batch);
+      const result = body.gap_only
+        ? await expandMissingStepsBatch(base44, lesson, batch)
+        : await rewriteAndVerifyBatch(base44, lesson, batch);
       for (const [id, html] of result.accepted) accepted.set(id, html);
       verifierCorrections += result.verifierCorrections;
       failures.push(...result.failures);
