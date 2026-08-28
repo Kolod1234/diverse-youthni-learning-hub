@@ -87,7 +87,7 @@ export default function AdminMathSolutionAudit() {
 
       const parts = [];
       for (const unitId of unitBatch) {
-        setCurrent(`The paired request was slow; safely retrying lesson ${order} one solution at a time`);
+        setCurrent(`The batch request was slow; safely retrying lesson ${order} one solution at a time`);
         parts.push(await invokeAudit({ order, unit_ids: [unitId], batch_size: 1, gap_only: true }));
       }
 
