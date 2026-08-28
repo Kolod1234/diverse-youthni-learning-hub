@@ -340,6 +340,32 @@ function repairPackedListItems(html: string) {
 
 function repairSimpleGapItems(html: string) {
   let out = html || '';
+  const orderedLists = [...out.matchAll(/<ol\b[^>]*>[\s\S]*?<\/ol>/gi)];
+
+  if (orderedLists.length > 1) {
+    const first = orderedLists[0];
+    const last = orderedLists[orderedLists.length - 1];
+    const combinedItems: string[] = [];
+    let previousEnd = (first.index || 0);
+
+    orderedLists.forEach((list, index) => {
+      const start = list.index || 0;
+      if (index > 0) {
+        const between = out.slice(previousEnd, start).trim();
+        if (plainText(between)) {
+          combinedItems.push(`<li style="${LI_STYLE}">Now consider the next part: ${between}</li>`);
+        }
+      }
+      combinedItems.push(...[...list[0].matchAll(/<li\b[^>]*>[\s\S]*?<\/li>/gi)].map((item) => item[0]));
+      previousEnd = start + list[0].length;
+    });
+
+    out = out.slice(0, first.index || 0)
+      + `<ol style="${OL_STYLE}">`
+      + combinedItems.join('')
+      + '</ol>'
+      + out.slice((last.index || 0) + last[0].length);
+  }
 
   for (let pass = 0; pass < 6; pass++) {
     let changed = false;
