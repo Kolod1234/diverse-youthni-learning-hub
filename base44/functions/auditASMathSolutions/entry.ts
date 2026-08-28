@@ -571,8 +571,22 @@ async function expandMissingStepsBatch(base44, lesson: any, units: AuditUnit[]) 
   const verifyIssues = new Map<string, string[]>();
   const failures: { id: string; stage: string; reason: string }[] = [];
   const lastReason = new Map<string, string>();
-  let pending = [...units];
+  const modelPending: AuditUnit[] = [];
 
+  for (const unit of units) {
+    const repairedHtml = repairSimpleGapItems(unit.maskedHtml);
+    const envelopeCheck = validateEnvelope(unit, repairedHtml);
+    const structuralCheck = validateCandidate(unit, repairedHtml);
+    if (envelopeCheck.ok && structuralCheck.ok) {
+      accepted.set(unit.id, repairedHtml.trim());
+      rewriteIssues.set(unit.id, ['Added only the missing structural step separation; existing mathematics was preserved.']);
+      verifyIssues.set(unit.id, []);
+    } else {
+      modelPending.push(unit);
+    }
+  }
+
+  let pending = modelPending;
   for (let attempt = 0; attempt < 3 && pending.length > 0; attempt++) {
     const reasons = pending.map((unit) => `${unit.id}: ${lastReason.get(unit.id) || 'add the missing intermediate steps'}`);
     const retry = attempt === 0 ? '' : `\n\nOnly these remaining ids were rejected:\n- ${reasons.join('\n- ')}\nRepair only those structural defects.`;
