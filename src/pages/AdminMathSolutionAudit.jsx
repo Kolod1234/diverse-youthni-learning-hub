@@ -5,7 +5,7 @@ import { AlertTriangle, CheckCircle2, Loader2, Play, RotateCcw, ScanSearch, Shie
 const COURSE_ID = '698a3d721a8a90bcc13737e2';
 
 const TOPICS = [
-  { name: 'AS1: Algebra and Functions', from: 1, to: 18, skip: [1] },
+  { name: 'AS1: Algebra and Functions', from: 1, to: 18, skip: [1, 2, 3, 4] },
   { name: 'AS1: Coordinate Geometry', from: 19, to: 25 },
   { name: 'AS1: Sequences and Series', from: 26, to: 31 },
   { name: 'AS1: Exponentials and Logarithms', from: 32, to: 35 },
