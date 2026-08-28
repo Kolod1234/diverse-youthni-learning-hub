@@ -402,8 +402,17 @@ function repairSimpleGapItems(html: string) {
   }
 
   return out.replace(/(<li\b[^>]*>)([\s\S]*?)(<\/li>)/gi, (whole, opener, inner) => {
+    const chunks = mathChunks(inner);
+    if (chunks.length === 0) return whole;
+
+    const firstMath = inner.search(/\$\$?/);
+    const beforeMath = plainText(firstMath >= 0 ? inner.slice(0, firstMath) : inner);
+    if (firstMath >= 0 && !/[A-Za-z]{3}/.test(beforeMath)) {
+      return `${opener}Use the preceding result to continue the calculation: ${inner}</li>`;
+    }
+
     const prose = plainText(inner.replace(/\$\$?[\s\S]*?\$\$?/g, ' '));
-    if (prose.length >= 3 || mathChunks(inner).length === 0) return whole;
+    if (prose.length >= 3) return whole;
     return `${opener}Evaluate the stated mathematical expression: ${inner}</li>`;
   });
 }
