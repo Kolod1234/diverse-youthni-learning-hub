@@ -63,6 +63,8 @@ NON-NEGOTIABLE PRESENTATION STANDARD
 - Keep any mark-scheme line after the </ol>, unchanged.
 - Keep every [SVG_...] placeholder exactly once and in the same relative location.
 - Remove obsolete compressed working rather than leaving it before or after the list.
+- Never use generic filler such as "Carry out only the next small mathematical move" or "Begin with the first required mathematical statement". Name the actual operation: substitute, expand, collect, divide, evaluate, compare, or conclude.
+- Keep explanatory sentences intact. Never split prose merely because it contains several LaTeX spans, and never create a list item that is only a variable, number, operator, coordinate fragment or punctuation fragment.
 
 ACCURACY STANDARD
 - Recompute from the QUESTION context. Do not preserve an incorrect original answer.
@@ -83,7 +85,8 @@ A box is valid only when:
 7. separate questions/parts are never compressed onto one line;
 8. a natural final check is present;
 9. the exact outer wrapper, label and all placeholders remain intact;
-10. the total count of equals signs, \\Rightarrow, \\implies and \\therefore across each entire <li> is at most ONE, even when they occur in separate maths spans.
+10. the total count of equals signs, \\Rightarrow, \\implies and \\therefore across each entire <li> is at most ONE, even when they occur in separate maths spans;
+11. no generic filler or sentence fragments are used: every step names the actual operation and remains a complete learner-facing instruction or explanation.
 
 For each id, return the complete corrected HTML. If the candidate already meets every rule, return it unchanged with valid=true and changed=false. If anything fails, correct it, set changed=true, set valid=true only after correction, and list the defects you corrected. Do not defer to the first examiner or to the original final answer: independently verify it.`;
 
@@ -208,6 +211,13 @@ function validateCandidate(unit: AuditUnit, html: string) {
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const text = plainText(item);
+    if (/Carry out only the next small mathematical move|Begin with the first required mathematical statement/i.test(text)) {
+      return { ok: false, reason: `step ${i + 1} contains generic filler instead of naming the mathematical action` };
+    }
+    const withoutMath = plainText(item.replace(/\$\$?[\s\S]*?\$\$?/g, ' '));
+    if (withoutMath.length < 3 && mathChunks(item).length > 0) {
+      return { ok: false, reason: `step ${i + 1} is a mathematical fragment without a complete explanation` };
+    }
     if (/^\s*\d+\s*[.)]/.test(text)) {
       return { ok: false, reason: `step ${i + 1} contains a typed number as well as automatic numbering` };
     }
@@ -364,7 +374,7 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
   let rewriteResponse: any = null;
   let rewriteProblems: string[] = [];
 
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     const retry = attempt === 0 ? '' : `\\n\\nYour previous output was rejected for these exact structural reasons:\\n- ${rewriteProblems.join('\\n- ')}\\nReturn all ids again and repair them.`;
     rewriteResponse = await invokeBatch(
       base44,
@@ -413,7 +423,7 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
 
   let verifyResponse: any = null;
   let verifyProblems: string[] = [];
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     const retry = attempt === 0 ? '' : `\\n\\nYour previous output was structurally rejected for:\\n- ${verifyProblems.join('\\n- ')}\\nReturn every id again with those defects corrected.`;
     verifyResponse = await invokeBatch(
       base44,
@@ -444,16 +454,8 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
       failures.push({ id: unit.id, stage: 'verify', reason: 'missing verifier output' });
       continue;
     }
-    let finalHtml = item.html.trim();
-    let check = validateCandidate(unit, finalHtml);
-    if (!check.ok && /more than one relation or transformation/.test(check.reason)) {
-      const repairedHtml = repairPackedListItems(finalHtml);
-      const repairedCheck = validateCandidate(unit, repairedHtml);
-      if (repairedCheck.ok) {
-        finalHtml = repairedHtml;
-        check = repairedCheck;
-      }
-    }
+    const finalHtml = item.html.trim();
+    const check = validateCandidate(unit, finalHtml);
     if (!check.ok) {
       failures.push({ id: unit.id, stage: 'verify', reason: check.reason });
       continue;
@@ -464,7 +466,6 @@ async function rewriteAndVerifyBatch(base44, lesson: any, units: AuditUnit[]) {
     }
     accepted.set(unit.id, finalHtml);
     const finalIssues = Array.isArray(item.issues) ? [...item.issues] : [];
-    if (finalHtml !== item.html.trim()) finalIssues.push('Residual relation chain split deterministically after mathematical verification.');
     verifyIssues.set(unit.id, finalIssues);
     if (item.changed === true || finalHtml !== rewrittenById.get(unit.id)) verifierCorrections++;
   }
