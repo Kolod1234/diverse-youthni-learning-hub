@@ -53,7 +53,7 @@ export default function AdminRSSFeed() {
   }, []);
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('tempCircleUpload') !== '1') return;
+    if (new URLSearchParams(window.location.search).get('circle') !== '1') return;
     let cancelled = false;
     const uploadRaster = async () => {
       try {
