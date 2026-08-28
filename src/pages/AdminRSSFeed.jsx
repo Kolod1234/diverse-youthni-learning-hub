@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { tempCircleImageBase64 } from '../temp-circle-upload';
 import {
   Box, Container, Typography, Card, Button, TextField, Chip, Stack,
   Dialog, DialogTitle, DialogContent, DialogActions, Menu, MenuItem,
@@ -50,24 +49,6 @@ export default function AdminRSSFeed() {
 
   useEffect(() => {
     base44.auth.me().then(setUser);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    const uploadRaster = async () => {
-      try {
-        const binary = window.atob(tempCircleImageBase64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-        const file = new File([bytes], 'circle-properties-two-key-properties.jpg', { type: 'image/jpeg' });
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        if (!cancelled) document.body.dataset.tempCircleUrl = file_url;
-      } catch (error) {
-        if (!cancelled) document.body.dataset.tempCircleError = error?.message || 'upload failed';
-      }
-    };
-    uploadRaster();
-    return () => { cancelled = true; };
   }, []);
 
   const { data: feedItems = [] } = useQuery({
