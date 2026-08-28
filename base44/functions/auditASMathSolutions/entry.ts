@@ -233,11 +233,6 @@ function validateCandidate(unit: AuditUnit, html: string) {
     if (chunks.some((chunk) => relationCount(chunk) >= 2)) {
       return { ok: false, reason: `step ${i + 1} contains a packed relation or transformation chain inside one maths span` };
     }
-    const totalRelations = chunks.reduce((sum, chunk) => sum + relationCount(chunk), 0);
-    const explanatoryText = withoutMath.toLowerCase();
-    if (totalRelations >= 2 && /\b(?:so|then|hence|therefore|thus|giving|gives|becomes|simplif(?:y|ies|ied)|substitut(?:e|ing)|rearrang(?:e|ing)|expand(?:ing)?)\b/.test(explanatoryText)) {
-      return { ok: false, reason: `step ${i + 1} compresses more than one transformation across separate maths spans` };
-    }
   }
 
   for (let i = 0; i < unit.svgs.length; i++) {
