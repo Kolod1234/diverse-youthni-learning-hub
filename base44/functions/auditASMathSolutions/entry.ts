@@ -338,6 +338,50 @@ function repairPackedListItems(html: string) {
   );
 }
 
+function repairSimpleGapItems(html: string) {
+  let out = html || '';
+
+  for (let pass = 0; pass < 6; pass++) {
+    let changed = false;
+    out = out.replace(/(<li\b[^>]*>)([\s\S]*?)(<\/li>)/gi, (whole, opener, inner) => {
+      const chunks = [...inner.matchAll(/\$\$?[\s\S]*?\$\$?/g)];
+      const packed = chunks.find((match) => {
+        const token = match[0];
+        const display = token.startsWith('$$');
+        const body = token.slice(display ? 2 : 1, display ? -2 : -1);
+        return (body.match(/(?<!\\)=/g) || []).length >= 2 && !/\\Rightarrow|\\implies|\\therefore/.test(body);
+      });
+      if (!packed) return whole;
+
+      const token = packed[0];
+      const display = token.startsWith('$$');
+      const delimiter = display ? '$$' : '$';
+      const body = token.slice(display ? 2 : 1, display ? -2 : -1).trim();
+      const pieces = splitEqualsChain(body);
+      if (pieces.length < 2) return whole;
+
+      changed = true;
+      const start = packed.index || 0;
+      const before = inner.slice(0, start);
+      const after = inner.slice(start + token.length);
+      return pieces.map((piece, index) => {
+        const explanation = index === 0
+          ? before
+          : 'Use the preceding value to evaluate the next equality: ';
+        const suffix = index === pieces.length - 1 ? after : '';
+        return `${opener}${explanation}${delimiter}${piece}${delimiter}${suffix}</li>`;
+      }).join('');
+    });
+    if (!changed) break;
+  }
+
+  return out.replace(/(<li\b[^>]*>)([\s\S]*?)(<\/li>)/gi, (whole, opener, inner) => {
+    const prose = plainText(inner.replace(/\$\$?[\s\S]*?\$\$?/g, ' '));
+    if (prose.length >= 3 || mathChunks(inner).length === 0) return whole;
+    return `${opener}Evaluate the stated mathematical expression: ${inner}</li>`;
+  });
+}
+
 function createUnits(lesson: any): AuditUnit[] {
   const units: AuditUnit[] = [];
   (lesson.slides || []).forEach((slide, slideIndex) => {
@@ -511,19 +555,20 @@ async function expandMissingStepsBatch(base44, lesson: any, units: AuditUnit[]) 
         nextPending.push(unit);
         continue;
       }
-      const envelopeCheck = validateEnvelope(unit, item.html);
+      const repairedHtml = repairSimpleGapItems(item.html);
+      const envelopeCheck = validateEnvelope(unit, repairedHtml);
       if (!envelopeCheck.ok) {
         lastReason.set(unit.id, envelopeCheck.reason);
         nextPending.push(unit);
         continue;
       }
-      const structuralCheck = validateCandidate(unit, item.html);
+      const structuralCheck = validateCandidate(unit, repairedHtml);
       if (!structuralCheck.ok) {
         lastReason.set(unit.id, structuralCheck.reason);
         nextPending.push(unit);
         continue;
       }
-      accepted.set(unit.id, item.html.trim());
+      accepted.set(unit.id, repairedHtml.trim());
       rewriteIssues.set(unit.id, Array.isArray(item.issues) ? [...item.issues] : []);
       verifyIssues.set(unit.id, []);
       lastReason.delete(unit.id);
