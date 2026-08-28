@@ -375,7 +375,7 @@ function repairSimpleGapItems(html: string) {
         const token = match[0];
         const display = token.startsWith('$$');
         const body = token.slice(display ? 2 : 1, display ? -2 : -1);
-        return (body.match(/(?<!\\)=/g) || []).length >= 2 && !/\\Rightarrow|\\implies|\\therefore/.test(body);
+        return relationCount(body) >= 2;
       });
       if (!packed) return whole;
 
@@ -383,7 +383,7 @@ function repairSimpleGapItems(html: string) {
       const display = token.startsWith('$$');
       const delimiter = display ? '$$' : '$';
       const body = token.slice(display ? 2 : 1, display ? -2 : -1).trim();
-      const pieces = splitEqualsChain(body);
+      const pieces = splitMathBody(body);
       if (pieces.length < 2) return whole;
 
       changed = true;
@@ -393,7 +393,7 @@ function repairSimpleGapItems(html: string) {
       return pieces.map((piece, index) => {
         const explanation = index === 0
           ? before
-          : 'Use the preceding value to evaluate the next equality: ';
+          : 'Use the preceding result to write the next relation: ';
         const suffix = index === pieces.length - 1 ? after : '';
         return `${opener}${explanation}${delimiter}${piece}${delimiter}${suffix}</li>`;
       }).join('');
