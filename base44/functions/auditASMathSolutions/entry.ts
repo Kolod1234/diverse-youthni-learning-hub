@@ -598,6 +598,23 @@ function normaliseExistingPagination(slides: any[], maxSteps: number) {
   return out;
 }
 
+function depaginateSolutionSlides(lesson: any) {
+  const sourceSlides = Array.isArray(lesson.slides) ? lesson.slides : [];
+  const combined = normaliseExistingPagination(sourceSlides, 100000).map((slide) => {
+    const info = paginationTitle(slide?.title || '');
+    if (!info) return { ...slide };
+    return {
+      ...slide,
+      title: info.solution ? `${info.base} — ${info.solution}` : info.base
+    };
+  });
+  const slides = combined.map((slide, index) => ({ ...slide, order: index + 1 }));
+  return {
+    changed: JSON.stringify(slides) !== JSON.stringify(sourceSlides),
+    slides
+  };
+}
+
 function paginateSolutionSlides(lesson: any, maxSteps = 12) {
   const sourceSlides = Array.isArray(lesson.slides) ? lesson.slides : [];
   const originalSlides = normaliseExistingPagination(sourceSlides, maxSteps);
@@ -709,6 +726,21 @@ export default async function (req: Request): Promise<Response> {
     const lessons = await base44.asServiceRole.entities.Lesson.filter({ course_id: courseId, order });
     const lesson = lessons[0];
     if (!lesson) return Response.json({ error: `Lesson order ${order} was not found` }, { status: 404 });
+
+    if (body.depaginate_only) {
+      const depaginated = depaginateSolutionSlides(lesson);
+      if (depaginated.changed) {
+        await base44.asServiceRole.entities.Lesson.update(lesson.id, { slides: depaginated.slides });
+      }
+      return Response.json({
+        success: true,
+        mode: 'depaginate',
+        order: lesson.order,
+        title: lesson.title,
+        before_slides: (lesson.slides || []).length,
+        after_slides: depaginated.slides.length
+      });
+    }
 
     if (body.paginate_only) {
       const maxSteps = Math.max(8, Math.min(16, Number(body.max_steps) || 12));
