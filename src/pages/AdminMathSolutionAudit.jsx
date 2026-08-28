@@ -7,7 +7,7 @@ const COURSE_ID = '698a3d721a8a90bcc13737e2';
 const TOPICS = [
   { name: 'AS1: Algebra and Functions', from: 1, to: 18, skip: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] },
   { name: 'AS1: Coordinate Geometry', from: 19, to: 25, skip: [19, 20, 21, 22, 23, 24, 25] },
-  { name: 'AS1: Sequences and Series', from: 26, to: 31 },
+  { name: 'AS1: Sequences and Series', from: 26, to: 31, skip: [26, 27, 28, 29, 30, 31] },
   { name: 'AS1: Exponentials and Logarithms', from: 32, to: 35 },
   { name: 'AS1: Trigonometry', from: 36, to: 45 },
   { name: 'AS1: Calculus', from: 46, to: 59 },
