@@ -29,7 +29,7 @@ function save(c,n){fs.writeFileSync(path.join(OUT,n),c.toBuffer('image/jpeg',{qu
  x.fillStyle=C.green;x.font='700 30px Arial';x.fillText('Σp before = Σp after',190,770);x.fillText('ΣEₖ before = ΣEₖ after',160,825);
  x.fillStyle='#cbd5e1';x.strokeStyle=C.navy;x.lineWidth=4;x.fillRect(1150,520,360,120);x.strokeRect(1150,520,360,120);x.fillStyle=C.navy;x.font='700 28px Arial';x.fillText('objects move together',1185,592);arrow(x,1510,580,1630,580,C.orange,'common velocity v',1340,475);
  x.fillStyle=C.green;x.font='700 30px Arial';x.fillText('Σp before = Σp after',1090,770);x.fillStyle=C.red;x.fillText('ΣEₖ after < ΣEₖ before',1050,825);
- x.fillStyle=C.slate;x.font='25px Arial';x.fillText('Lost kinetic energy is transferred to deformation, heating and sound.',955,880);
+ x.fillStyle=C.slate;x.font='25px Arial';x.fillText('Lost Eₖ → deformation, heating and sound.',1040,880);
  save(c,'elastic-inelastic-collisions.jpg');
 }
 // Force-time and impulse
@@ -49,7 +49,7 @@ function save(c,n){fs.writeFileSync(path.join(OUT,n),c.toBuffer('image/jpeg',{qu
  const L=220,R=1580,T=220,B=830;x.strokeStyle=C.navy;x.lineWidth=5;x.beginPath();x.moveTo(L,B);x.lineTo(R,B);x.moveTo(L,B);x.lineTo(L,T);x.stroke();
  x.fillStyle=C.navy;x.font='30px Arial';x.fillText('contact time',720,915);x.save();x.translate(90,620);x.rotate(-Math.PI/2);x.fillText('contact force',0,0);x.restore();
  x.fillStyle='rgba(220,38,38,.16)';x.beginPath();x.moveTo(430,B);x.quadraticCurveTo(610,260,790,B);x.closePath();x.fill();x.strokeStyle=C.red;x.lineWidth=9;x.beginPath();x.moveTo(430,B);x.quadraticCurveTo(610,260,790,B);x.stroke();
- x.fillStyle='rgba(37,99,235,.16)';x.beginPath();x.moveTo(890,B);x.quadraticCurveTo(1190,510,1490,B);x.closePath();x.fill();x.strokeStyle=C.blue;x.lineWidth=9;x.beginPath();x.moveTo(890,B);x.quadraticCurveTo(1190,510,1490,B);x.stroke();
+ x.fillStyle='rgba(37,99,235,.16)';x.beginPath();x.moveTo(890,B);x.quadraticCurveTo(1190,488,1490,B);x.closePath();x.fill();x.strokeStyle=C.blue;x.lineWidth=9;x.beginPath();x.moveTo(890,B);x.quadraticCurveTo(1190,488,1490,B);x.stroke();
  x.fillStyle=C.red;x.font='700 28px Arial';x.fillText('short time, high peak force',380,245);x.fillStyle=C.blue;x.fillText('longer time, lower peak force',1020,480);
  x.fillStyle=C.teal;x.font='700 32px Arial';x.fillText('same impulse:  F̄Δt = Δp',650,990);
  save(c,'impact-time-force-comparison.jpg');
