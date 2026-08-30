@@ -217,7 +217,9 @@ def projectile():
     ax.text(2.03,.82,r"$u\cos\theta$",color=TEAL,fontsize=11,ha="center")
     ax.text(2.84,1.90,r"$u\sin\theta$",color=TEAL,fontsize=11,rotation=90,va="center")
     ax.text(2.08,2.25,r"$u$",color=NAVY,fontsize=13)
-    ax.add_patch(FancyArrowPatch((7.0,4.0),(7.0,2.6),arrowstyle="-|>",mutation_scale=16,lw=2.5,color=NAVY)); ax.text(7.15,3.2,r"$g$",color=NAVY,fontsize=13)
+    ax.add_patch(FancyArrowPatch((8.15,4.45),(8.15,3.30),arrowstyle="-|>",mutation_scale=16,lw=2.5,color=NAVY))
+    ax.text(8.32,3.95,r"$g$",color=NAVY,fontsize=13)
+    ax.text(8.32,3.62,"throughout flight",color=MUTED,fontsize=9)
     save(fig, "projectile.png")
 
 
