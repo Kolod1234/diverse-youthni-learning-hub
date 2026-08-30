@@ -208,9 +208,16 @@ def projectile():
     axes(ax)
     x=np.linspace(1.45,8.8,250); y=1.1+1.3*(x-1.45)-.18*(x-1.45)**2
     ax.plot(x,y,color=ORANGE,lw=3)
-    p=np.array([1.45,1.1]); ax.add_patch(FancyArrowPatch(p,p+np.array([1.65,1.65]),arrowstyle="-|>",mutation_scale=16,lw=2.5,color=TEAL))
+    p=np.array([1.45,1.1]); horizontal=np.array([1.25,0.0]); vertical=np.array([0.0,1.625])
+    ax.add_patch(FancyArrowPatch(p,p+horizontal+vertical,arrowstyle="-|>",mutation_scale=16,lw=2.5,color=NAVY))
+    ax.add_patch(FancyArrowPatch(p,p+horizontal,arrowstyle="-|>",mutation_scale=14,lw=2.2,color=TEAL))
+    ax.add_patch(FancyArrowPatch(p+horizontal,p+horizontal+vertical,arrowstyle="-|>",mutation_scale=14,lw=2.2,color=TEAL))
+    ax.add_patch(Arc(p,1.1,1.1,theta1=0,theta2=52.4,color=ORANGE,lw=1.8))
+    ax.text(2.05,1.30,r"$\theta$",color=ORANGE,fontsize=12)
+    ax.text(2.03,.82,r"$u\cos\theta$",color=TEAL,fontsize=11,ha="center")
+    ax.text(2.84,1.90,r"$u\sin\theta$",color=TEAL,fontsize=11,rotation=90,va="center")
+    ax.text(2.08,2.25,r"$u$",color=NAVY,fontsize=13)
     ax.add_patch(FancyArrowPatch((7.0,4.0),(7.0,2.6),arrowstyle="-|>",mutation_scale=16,lw=2.5,color=NAVY)); ax.text(7.15,3.2,r"$g$",color=NAVY,fontsize=13)
-    ax.text(2.35,2.25,r"$u\sin\theta$",color=TEAL,fontsize=11); ax.text(2.1,1.25,r"$u\cos\theta$",color=TEAL,fontsize=11)
     save(fig, "projectile.png")
 
 
