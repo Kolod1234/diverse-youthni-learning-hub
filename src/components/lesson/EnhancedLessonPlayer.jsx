@@ -82,7 +82,7 @@ export default function EnhancedLessonPlayer({
   // Get course lessons
   const { data: courseLessons = [] } = useQuery({
     queryKey: ['courseLessons', courseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
+    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 500),
     enabled: !!courseId,
     retry: 3,
     staleTime: 5 * 60 * 1000
