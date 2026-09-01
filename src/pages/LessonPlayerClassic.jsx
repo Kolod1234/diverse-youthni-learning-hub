@@ -295,7 +295,7 @@ export default function LessonPlayerClassic() {
       if (!courseId || courseId === 'null' || courseId === 'undefined') {
         return [];
       }
-      return base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100);
+      return base44.entities.Lesson.filter({ course_id: courseId }, 'order', 500);
     },
     enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined',
     retry: 3,
