@@ -63,8 +63,16 @@ export default function LessonPlayer() {
           return;
         }
         
-        // Auto-route based on content type - always default to PowerPoint for Google Slides
-        navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
+        // Auto-route on actual content type. Lessons backed by a deck (Google Slides,
+        // an uploaded file, Manus) belong in the PowerPoint player; written richtext
+        // lessons belong in the Classic reader, which is built around slides[].
+        // Previously everything fell through to PowerPoint, so written lessons whose
+        // default_player was never set opened in a deck viewer.
+        const hasDeck = Boolean(lesson?.google_slides_url || lesson?.file_url || lesson?.manus_slides_url);
+        const fallbackPlayer = (!hasDeck && lesson?.slides?.length > 0)
+          ? 'LessonPlayerClassic'
+          : 'LessonPlayerPowerPoint';
+        navigate(`/${fallbackPlayer}?lesson=${lessonId}&course=${courseId}`, { replace: true });
         return;
       } catch (error) {
         setLoading(false);
