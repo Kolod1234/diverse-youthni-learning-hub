@@ -80,7 +80,7 @@ import GlobalSearch from '@/components/search/GlobalSearch';
 // Pages where tutors should NOT be auto-redirected (i.e., tutor-specific pages)
 const TUTOR_PAGES = [
   'Explore', 'Library', 'BookDetails', 'CourseDetails',
-  'TutorDashboard', 'TutorDashboardOverview', 'TutorCourseManager',
+  'TutorDashboard', 'TutorDashboardOverview', 'TutorCourseManager', 'LessonPlayer', 'LessonPlayerClassic', 'LessonPlayerPowerPoint', 'LessonPlayerRise', 'ModernLessonPlayer',
   'TutorSetup', 'TutorBookingManager', 'LessonEditor', 'ScheduleSession',
   'GradeAssignments', 'QuizGenerator', 'StudentAnalytics', 'CreateAssignment',
   'SessionRecordings', 'AdminDashboard', 'AdminUsers', 'AdminCourseBuilder',
