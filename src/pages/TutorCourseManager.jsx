@@ -581,10 +581,9 @@ export default function TutorCourseManager() {
                                           href={`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}&course=${courseId}`}
                                           variant="outline"
                                           size="sm"
-                                          disabled={!lesson.slides?.length}
                                           className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                                          title={lesson.slides?.length ? 'Preview this lesson as a learner sees it' : 'This lesson has no slides yet'}
-                                          aria-label={lesson.slides?.length ? `Preview ${lesson.title} in the lesson player` : `${lesson.title} has no slides to preview`}
+                                          title="Preview this lesson as a learner sees it"
+                                          aria-label={`Preview ${lesson.title} in the lesson player`}
                                         >
                                           <Eye className="w-4 h-4" />
                                         </Button>
