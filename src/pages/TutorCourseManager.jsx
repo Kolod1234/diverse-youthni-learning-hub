@@ -536,9 +536,9 @@ export default function TutorCourseManager() {
                                         <div className="flex items-center gap-2 mb-1">
                                           <h3 className="font-semibold text-gray-900">{lesson.title}</h3>
                                           {lesson.is_preview && (
-                                            <Badge variant="secondary" className="text-xs">
+                                            <Badge variant="secondary" className="text-xs" title="Status: this lesson is free to view without enrolment">
                                               <Eye className="w-3 h-3 mr-1" />
-                                              Preview
+                                              Free preview
                                             </Badge>
                                           )}
                                           {lesson.video_url && (
@@ -569,6 +569,17 @@ export default function TutorCourseManager() {
                                           <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
                                       <div className="flex gap-2">
+                                        <Link to={`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}&course=${courseId}`}>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            disabled={!lesson.slides?.length}
+                                            className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                                            title={lesson.slides?.length ? 'Preview this lesson as a learner sees it' : 'This lesson has no slides yet'}
+                                          >
+                                            <Eye className="w-4 h-4" />
+                                          </Button>
+                                        </Link>
                                         <Button 
                                           variant="outline" 
                                           size="sm" 
