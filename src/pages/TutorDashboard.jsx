@@ -774,7 +774,7 @@ function HomeView({ courses, user }) {
                     <div className="font-medium text-gray-900 text-sm">{course.title}</div>
                     <div className="text-xs text-gray-500 mt-0.5 capitalize">{course.category?.replace(/_/g, ' ')} · {courseEnrollments.length} students</div>
                   </div>
-                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}><Button variant="outline" size="sm" className="border-slate-300 bg-white text-slate-900 hover:bg-slate-50">Manage course</Button></Link>
+                  <Button component="a" href={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`} variant="outline" size="sm" className="border-slate-300 bg-white text-slate-900 hover:bg-slate-50">Manage course</Button>
                 </div>
               );
             })}
