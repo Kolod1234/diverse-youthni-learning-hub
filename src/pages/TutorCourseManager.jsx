@@ -574,16 +574,17 @@ export default function TutorCourseManager() {
                                           <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
                                       <div className="flex gap-2">
-                                        {/* navigate() rather than a <Link> wrapper: Button here is
-                                            MUI, which renders a real <button>, and a button nested
-                                            inside an anchor swallows the click instead of navigating. */}
+                                        {/* Use a native destination link so preview navigation remains
+                                            reliable inside the draggable tutor lesson list. */}
                                         <Button
+                                          component="a"
+                                          href={`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}&course=${courseId}`}
                                           variant="outline"
                                           size="sm"
-                                          onClick={() => navigate(`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}&course=${courseId}`)}
                                           disabled={!lesson.slides?.length}
                                           className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
                                           title={lesson.slides?.length ? 'Preview this lesson as a learner sees it' : 'This lesson has no slides yet'}
+                                          aria-label={lesson.slides?.length ? `Preview ${lesson.title} in the lesson player` : `${lesson.title} has no slides to preview`}
                                         >
                                           <Eye className="w-4 h-4" />
                                         </Button>
