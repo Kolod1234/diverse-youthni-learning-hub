@@ -43,14 +43,22 @@ export default function LessonPlayer() {
           return;
         }
 
+        // Only these player pages exist as real routes (see pages.config.js).
+        // A stored preference or lesson default pointing anywhere else — e.g. the
+        // legacy 'ModernLessonPlayer', which is a component and was never a page —
+        // would redirect to a blank route and leave the user unable to open ANY
+        // lesson. Unknown values are therefore ignored rather than followed, which
+        // also self-heals accounts that already have a bad preference saved.
+        const VALID_PLAYERS = ['LessonPlayerClassic', 'LessonPlayerPowerPoint', 'LessonPlayerRise'];
+
         // Priority for all other lessons: User preference > Lesson default > auto-detect.
-        if (userData.player_preference) {
+        if (VALID_PLAYERS.includes(userData.player_preference)) {
           navigate(`/${userData.player_preference}?lesson=${lessonId}&course=${courseId}`, { replace: true });
           return;
         }
         
         // Check lesson for default player set by tutor/admin
-        if (lesson?.default_player) {
+        if (VALID_PLAYERS.includes(lesson?.default_player)) {
           navigate(`/${lesson.default_player}?lesson=${lessonId}&course=${courseId}`, { replace: true });
           return;
         }
@@ -380,7 +388,7 @@ export default function LessonPlayer() {
                 </Box>
 
                 <Button
-                  onClick={() => savePreference('ModernLessonPlayer')}
+                  onClick={() => savePreference('LessonPlayerClassic')}
                   variant="contained"
                   fullWidth
                   endIcon={<ChevronRight size={20} />}
