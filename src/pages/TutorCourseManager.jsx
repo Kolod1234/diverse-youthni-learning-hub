@@ -574,15 +574,26 @@ export default function TutorCourseManager() {
                                           <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
                                       <div className="flex gap-2">
-                                        {/* Use a native destination link so preview navigation remains
-                                            reliable inside the draggable tutor lesson list. */}
+                                        {/* Preview opens in a new tab via a real anchor.
+                                            Two reasons this shape rather than <Link> or navigate():
+                                            1. This row lives inside a @hello-pangea/dnd <Draggable>,
+                                               whose sensors listen for mousedown/click on the subtree;
+                                               stopPropagation keeps the drag sensor out of it.
+                                            2. target=_blank is handled natively by the browser, so no
+                                               in-app router guard or redirect can swallow it, and the
+                                               tutor keeps their place (and any unsaved edits) in the
+                                               manager while checking the lesson. */}
                                         <Button
                                           component="a"
-                                          href={`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}&course=${courseId}`}
+                                          href={`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}${courseId ? `&course=${courseId}` : ''}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          onMouseDown={(e) => e.stopPropagation()}
+                                          onClick={(e) => e.stopPropagation()}
                                           variant="outline"
                                           size="sm"
                                           className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                                          title="Preview this lesson as a learner sees it"
+                                          title="Preview this lesson as a learner sees it (opens in a new tab)"
                                           aria-label={`Preview ${lesson.title} in the lesson player`}
                                         >
                                           <Eye className="w-4 h-4" />
