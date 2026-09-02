@@ -18,8 +18,10 @@ export default function LessonPlayerRise() {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   
-  const lessonId = searchParams.get('lessonId');
-  const courseId = searchParams.get('courseId');
+  // Accept both param spellings: this page links to itself with ?lessonId/?courseId,
+  // but LessonPlayer and the rest of the app navigate with ?lesson/?course.
+  const lessonId = searchParams.get('lessonId') || searchParams.get('lesson');
+  const courseId = searchParams.get('courseId') || searchParams.get('course');
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [expandedSections, setExpandedSections] = useState({});
   const { scormReady, trackProgress, markComplete: scormMarkComplete } = useSCORMTracking(lessonId, courseId);
@@ -28,7 +30,7 @@ export default function LessonPlayerRise() {
   // Fetch lesson data
   const { data: lesson, isLoading: lessonLoading } = useQuery({
     queryKey: ['lesson', lessonId],
-    queryFn: () => base44.entities.Lesson.list({ id: lessonId }),
+    queryFn: () => base44.entities.Lesson.filter({ id: lessonId }),
     enabled: !!lessonId,
     select: (data) => data?.[0],
   });
@@ -36,7 +38,7 @@ export default function LessonPlayerRise() {
   // Fetch course data
   const { data: course, isLoading: courseLoading } = useQuery({
     queryKey: ['course', courseId],
-    queryFn: () => base44.entities.Course.list({ id: courseId }),
+    queryFn: () => base44.entities.Course.filter({ id: courseId }),
     enabled: !!courseId,
     select: (data) => data?.[0],
   });
