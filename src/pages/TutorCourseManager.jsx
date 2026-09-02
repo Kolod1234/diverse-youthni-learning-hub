@@ -31,7 +31,7 @@ const X = _w(CloseIcon), ArrowLeft = _w(ArrowBackIcon), GripVertical = _w(DragIn
 const Video = _w(VideocamIcon), Eye = _w(VisibilityIcon), Loader2 = _w(HourglassEmptyIcon), FileText = _w(DescriptionIcon);
 const FileSliders = _w(SlideshowIcon), Brain = _w(PsychologyIcon), LayoutTemplate = _w(DashboardIcon);
 const Award = _w(EmojiEventsIcon), Share2 = _w(ShareIcon), Download = _w(DownloadIcon);
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
 import RichTextEditor from '@/components/editor/RichTextEditor';
@@ -44,6 +44,7 @@ import ContentInsertMenu from '@/components/editor/ContentInsertMenu';
 import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
 
 export default function TutorCourseManager() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const urlParams = new URLSearchParams(window.location.search);
   const courseId = urlParams.get('courseId');
@@ -569,17 +570,19 @@ export default function TutorCourseManager() {
                                           <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
                                       <div className="flex gap-2">
-                                        <Link to={`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}&course=${courseId}`}>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            disabled={!lesson.slides?.length}
-                                            className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                                            title={lesson.slides?.length ? 'Preview this lesson as a learner sees it' : 'This lesson has no slides yet'}
-                                          >
-                                            <Eye className="w-4 h-4" />
-                                          </Button>
-                                        </Link>
+                                        {/* navigate() rather than a <Link> wrapper: Button here is
+                                            MUI, which renders a real <button>, and a button nested
+                                            inside an anchor swallows the click instead of navigating. */}
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => navigate(`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}&course=${courseId}`)}
+                                          disabled={!lesson.slides?.length}
+                                          className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                                          title={lesson.slides?.length ? 'Preview this lesson as a learner sees it' : 'This lesson has no slides yet'}
+                                        >
+                                          <Eye className="w-4 h-4" />
+                                        </Button>
                                         <Button 
                                           variant="outline" 
                                           size="sm" 
@@ -602,11 +605,14 @@ export default function TutorCourseManager() {
                                         >
                                           <Brain className="w-4 h-4" />
                                         </Button>
-                                        <Link to={`${createPageUrl('LessonEditor')}?id=${lesson.id}&courseId=${courseId}`}>
-                                          <Button variant="outline" size="sm" title="Open in full-screen Lesson Editor">
-                                            <Edit className="w-4 h-4" />
-                                          </Button>
-                                        </Link>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => navigate(`${createPageUrl('LessonEditor')}?id=${lesson.id}&courseId=${courseId}`)}
+                                          title="Open in full-screen Lesson Editor"
+                                        >
+                                          <Edit className="w-4 h-4" />
+                                        </Button>
                                         <Button variant="outline" size="sm" onClick={() => {
                                           if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
                                         }}>
