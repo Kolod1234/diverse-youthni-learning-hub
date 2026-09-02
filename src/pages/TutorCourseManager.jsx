@@ -583,21 +583,17 @@ export default function TutorCourseManager() {
                                                in-app router guard or redirect can swallow it, and the
                                                tutor keeps their place (and any unsaved edits) in the
                                                manager while checking the lesson. */}
-                                        <Button
-                                          component="a"
+                                        <a
                                           href={`${createPageUrl('LessonPlayerClassic')}?lesson=${lesson.id}${courseId ? `&course=${courseId}` : ''}`}
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           onMouseDown={(e) => e.stopPropagation()}
-                                          onClick={(e) => e.stopPropagation()}
-                                          variant="outline"
-                                          size="sm"
-                                          className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
                                           title="Preview this lesson as a learner sees it (opens in a new tab)"
                                           aria-label={`Preview ${lesson.title} in the lesson player`}
+                                          className="inline-flex items-center justify-center h-9 px-3 rounded-md border border-blue-200 bg-blue-50 text-blue-700 no-underline hover:bg-blue-100"
                                         >
                                           <Eye className="w-4 h-4" />
-                                        </Button>
+                                        </a>
                                         <Button 
                                           variant="outline" 
                                           size="sm" 
