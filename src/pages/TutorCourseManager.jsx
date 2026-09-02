@@ -283,9 +283,12 @@ export default function TutorCourseManager() {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
           <p className="text-gray-600 mb-6">You have not been assigned to <strong>{course?.title}</strong>. Please contact an admin to be added as a tutor for this course.</p>
-          <Link to={createPageUrl('TutorDashboard')}>
-            <Button className="bg-indigo-600 hover:bg-indigo-700">Back to Dashboard</Button>
-          </Link>
+          <Button
+            onClick={() => navigate(createPageUrl('TutorDashboard'))}
+            className="bg-indigo-600 hover:bg-indigo-700"
+          >
+            Back to Dashboard
+          </Button>
         </div>
       </div>
     );
@@ -318,12 +321,13 @@ export default function TutorCourseManager() {
               <Brain className="w-4 h-4 mr-2" />
               AI Generator
             </Button>
-            <Link to={`${createPageUrl('LessonEditor')}?courseId=${courseId}`}>
-              <Button className="bg-indigo-600">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Lesson
-              </Button>
-            </Link>
+            <Button
+              onClick={() => navigate(`${createPageUrl('LessonEditor')}?courseId=${courseId}`)}
+              className="bg-indigo-600"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Lesson
+            </Button>
             <Button
               onClick={() => setShowTemplates(true)}
               variant="outline"
