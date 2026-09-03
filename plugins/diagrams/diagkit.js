@@ -112,6 +112,15 @@ class Diagram {
     g.lineTo(x,Y+r); g.quadraticCurveTo(x,Y,x+r,Y);
     g.closePath();
   }
+  /* Flat filled band, e.g. a shaded "set range" behind a curve.
+     Not registered as occupied: bands are meant to sit under other art. */
+  rect(x,y,w,h,colour){
+    const g=this.g; g.fillStyle=colour; g.fillRect(x,this.Y(y+h),w,h);
+  }
+  /* Double-headed measurement arrow. */
+  darrow(p1,p2,colour=SLATE,lw=1.8){
+    this.arrow(p1,p2,colour,lw); this.arrow(p2,p1,colour,lw);
+  }
   line(x1,y1,x2,y2,{colour=SLATE,lw=1.6,dashed=false}={}){
     const g=this.g; g.save(); if(dashed) g.setLineDash([7,5]);
     g.strokeStyle=colour; g.lineWidth=lw;
