@@ -29,8 +29,33 @@ class Diagram {
     this.g=this.cv.getContext('2d');
     this.g.fillStyle=BG; this.g.fillRect(0,0,w,h);
     this.g.lineJoin='round'; this.g.lineCap='round';
+    this.occupied=[];      // [x,y,w,h] rects in diagram coords
+    this.warnings=[];
   }
   Y(y){ return this.h - y; }
+
+  /* Register a drawn rect so caption()/audit() can reason about the layout. */
+  claim(x,y,w,h,tag){ this.occupied.push({x,y,w,h,tag}); }
+  static overlaps(a,b){
+    return a.x < b.x+b.w && b.x < a.x+a.w && a.y < b.y+b.h && b.y < a.y+a.h;
+  }
+  /* Lowest edge of anything drawn so far (excluding the caption band). */
+  lowestY(){
+    return this.occupied.length ? Math.min(...this.occupied.map(r=>r.y)) : this.h;
+  }
+  /* Report layout faults instead of relying on the eye. */
+  audit(){
+    const faults=[...this.warnings];
+    for(const r of this.occupied){
+      if(r.x < 0 || r.y < 0 || r.x+r.w > this.w || r.y+r.h > this.h)
+        faults.push(`offcanvas ${r.tag} [${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.w)},${Math.round(r.h)}]`);
+    }
+    for(let i=0;i<this.occupied.length;i++)
+      for(let j=i+1;j<this.occupied.length;j++)
+        if(Diagram.overlaps(this.occupied[i],this.occupied[j]))
+          faults.push(`overlap ${this.occupied[i].tag} x ${this.occupied[j].tag}`);
+    return faults;
+  }
 
   lineHeight(size){ return size*PT*LINESPACING; }
   measure(text, size, bold){
