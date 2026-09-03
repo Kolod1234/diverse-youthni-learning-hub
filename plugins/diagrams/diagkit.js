@@ -128,6 +128,7 @@ class Diagram {
     g.strokeStyle=colour; g.lineWidth=1.8; g.stroke();
     const f=this.fit(w,h,label,size,bold);
     this._text(x+w/2,y+h/2,f.text,{size:f.size,colour,bold});
+    this.claim(x,y,w,h,'box:'+String(label).slice(0,18));
   }
   note(x,y,w,h,label,colour=SLATE,size=11,fill='#ffffff'){
     const g=this.g;
@@ -135,6 +136,7 @@ class Diagram {
     g.fillStyle=fill; g.fill(); g.strokeStyle=colour; g.lineWidth=1.2; g.stroke();
     const f=this.fit(w,h,label,size,false);
     this._text(x+w/2,y+h/2,f.text,{size:f.size,colour:TEXT});
+    this.claim(x,y,w,h,'note:'+String(label).slice(0,18));
   }
   arrow(p1,p2,colour=SLATE,lw=2.0,{dashed=false,rad=0,head=8}={}){
     const g=this.g;
@@ -167,8 +169,26 @@ class Diagram {
     const f=this.fit(w,400,t,size,bold,0,0);
     this._text(x,y,f.text,{size:f.size,colour,bold,ha});
   }
+  /* Captions sit in the bottom band. Rather than trusting hand-tuned
+     coordinates across hundreds of diagrams, shrink and re-wrap until the
+     block clears everything already drawn; record a warning if it cannot. */
   caption(t,{y=22,size=11.5,wrap=95}={}){
-    this._text(this.w/2,y,Diagram.wrapChars(t,wrap).join('\n'),{size,colour:SLATE});
+    const floor=this.lowestY();
+    let s=size, w=wrap, block=null, txt=null;
+    for(let guard=0; guard<40; guard++){
+      txt=Diagram.wrapChars(t,w).join('\n');
+      const m=this.measure(txt,s,false);
+      block={x:(this.w-m.w)/2, y:y-m.h/2, w:m.w, h:m.h};
+      const clearsTop    = block.y+block.h <= floor;
+      const clearsBottom = block.y >= 0;
+      const clearsSides  = block.w <= this.w-24;
+      if(clearsTop && clearsBottom && clearsSides) break;
+      if(!clearsSides || !clearsTop){ w=Math.round(w*1.08)+2; }   // wider lines = fewer rows
+      if(w>150 || !clearsBottom){ w=wrap; s-=0.5; }
+      if(s<7.5){ this.warnings.push(`caption did not fit above y=${Math.round(floor)}`); break; }
+    }
+    this._text(this.w/2,y,txt,{size:s,colour:SLATE});
+    this.claim(block.x,block.y,block.w,block.h,'caption');
   }
 
   steps(items,{x=40,y0=380,w=680,rowh=34,gap=8,colour=TEAL,size=10.5,num=true}={}){
@@ -196,6 +216,7 @@ class Diagram {
       this._text(x+12,yy+rowh/2,f1.text,{size:f1.size,colour,bold:true,ha:'left'});
       const f2=this.fit(w*0.56,rowh,body,size,false,12);
       this._text(x+w-12,yy+rowh/2,f2.text,{size:f2.size,colour:TEXT,ha:'right'});
+      this.claim(x,yy,w,rowh,'card:'+String(head).slice(0,18));
       yy-=rowh+gap;
     }
     return yy;
