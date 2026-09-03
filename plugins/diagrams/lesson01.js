@@ -254,7 +254,7 @@ module.exports = {
            'The already-high value rises further',
            'Feedback cannot operate while the sensor error persists'],
           {x:40,y0:286,w:680,rowh:38,gap:9,colour:AMBER,size:10.5});
-  d.box(40,48,680,52,'Independent measurement reveals the mismatch; repairing or bypassing the sensor restores regulation',TEAL,10.5);
+  d.box(40,42,680,50,'Independent measurement reveals the mismatch; repairing or bypassing the sensor restores regulation',TEAL,10.5);
   return d; },
 
 // 21 — misconceptions corrected
