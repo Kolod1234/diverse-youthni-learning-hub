@@ -121,6 +121,35 @@ class Diagram {
   darrow(p1,p2,colour=SLATE,lw=1.8){
     this.arrow(p1,p2,colour,lw); this.arrow(p2,p1,colour,lw);
   }
+  /* Filled polygon. Points are [x,y] in diagram space. */
+  poly(pts,{fill=null,stroke=null,lw=1.8,close=true}={}){
+    const g=this.g; g.beginPath();
+    pts.forEach((p,i)=> i? g.lineTo(p[0],this.Y(p[1])) : g.moveTo(p[0],this.Y(p[1])));
+    if(close) g.closePath();
+    if(fill){ g.fillStyle=fill; g.fill(); }
+    if(stroke){ g.strokeStyle=stroke; g.lineWidth=lw; g.stroke(); }
+  }
+  /* Filled ellipse, optionally rotated (radians). */
+  ellipse(cx,cy,rx,ry,{fill=null,stroke=null,lw=1.8,rot=0}={}){
+    const g=this.g; g.beginPath();
+    g.ellipse(cx,this.Y(cy),rx,ry,rot,0,Math.PI*2);
+    if(fill){ g.fillStyle=fill; g.fill(); }
+    if(stroke){ g.strokeStyle=stroke; g.lineWidth=lw; g.stroke(); }
+  }
+  /* Smooth closed curve through points (Catmull-Rom -> bezier). */
+  blob(pts,{fill=null,stroke=null,lw=1.8}={}){
+    const g=this.g, n=pts.length, P=pts.map(p=>[p[0],this.Y(p[1])]);
+    g.beginPath(); g.moveTo(P[0][0],P[0][1]);
+    for(let i=0;i<n;i++){
+      const p0=P[(i-1+n)%n], p1=P[i], p2=P[(i+1)%n], p3=P[(i+2)%n];
+      g.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6, p1[1]+(p2[1]-p0[1])/6,
+                      p2[0]-(p3[0]-p1[0])/6, p2[1]-(p3[1]-p1[1])/6,
+                      p2[0], p2[1]);
+    }
+    g.closePath();
+    if(fill){ g.fillStyle=fill; g.fill(); }
+    if(stroke){ g.strokeStyle=stroke; g.lineWidth=lw; g.stroke(); }
+  }
   line(x1,y1,x2,y2,{colour=SLATE,lw=1.6,dashed=false}={}){
     const g=this.g; g.save(); if(dashed) g.setLineDash([7,5]);
     g.strokeStyle=colour; g.lineWidth=lw;
