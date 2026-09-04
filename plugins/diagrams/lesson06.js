@@ -4,9 +4,9 @@ const { makeLesson } = require('./kidneyLessonFactory');
 module.exports = makeLesson({
   title: 'Ultrafiltration in the Glomerulus',
   prefix: 'a2-006-p',
-  openStaxPath: 'lesson-assets/a2-biology/a2-homeostasis-06-ultrafiltration-pressure-openstax.png',
+  openStaxPath: 'lesson-assets/a2-biology/a2-homeostasis-06-ultrafiltration-pressure-photorealistic.png',
   openStaxCopies: [
-    { source: 'lesson-assets/a2-biology/a2-homeostasis-06-ultrafiltration-pressure-openstax.png', pageNumbers: [8, 10, 12, 13, 16, 17, 18] },
+    { source: 'lesson-assets/a2-biology/a2-homeostasis-06-ultrafiltration-pressure-photorealistic.png', pageNumbers: [8, 10, 12, 13, 16, 17, 18] },
     { source: 'lesson-assets/a2-biology/a2-homeostasis-05-filtration-barrier-photorealistic.png', pageNumbers: [9, 14, 15] },
   ],
   centralIdea: 'A wider afferent and narrower efferent arteriole sustain high glomerular pressure; plasma oncotic pressure and capsular back pressure oppose filtration.',
@@ -87,4 +87,3 @@ module.exports = makeLesson({
   recap: ['Afferent inflow and restricted efferent outflow maintain glomerular pressure', 'Plasma oncotic and capsular pressures oppose outward filtration', 'The intact barrier filters water and small solutes but retains cells and most proteins', 'Net filtration pressure predicts whether filtrate forms'],
   nextLesson: 'Selective Reabsorption — recovering useful solutes and water from the filtrate',
 });
-

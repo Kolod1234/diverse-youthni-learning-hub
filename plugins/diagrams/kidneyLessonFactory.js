@@ -202,4 +202,3 @@ function makeLesson(cfg) {
 }
 
 module.exports = { makeLesson };
-
