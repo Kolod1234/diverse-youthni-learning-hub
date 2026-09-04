@@ -4,9 +4,9 @@ const { makeLesson } = require('./kidneyLessonFactory');
 module.exports = makeLesson({
   title: 'Selective Reabsorption',
   prefix: 'a2-007-p',
-  openStaxPath: 'lesson-assets/a2-biology/a2-homeostasis-07-nephron-reabsorption-openstax.png',
+  openStaxPath: 'lesson-assets/a2-biology/a2-homeostasis-07-selective-reabsorption-photorealistic.png',
   openStaxCopies: [
-    { source: 'lesson-assets/a2-biology/a2-homeostasis-07-nephron-reabsorption-openstax.png', pageNumbers: [6, 15] },
+    { source: 'lesson-assets/a2-biology/a2-homeostasis-07-selective-reabsorption-photorealistic.png', pageNumbers: [6, 15] },
     { source: 'lesson-assets/a2-biology/a2-homeostasis-07-pct-transport-openstax.png', pageNumbers: [7, 8, 9, 10, 12, 13, 14, 16, 17, 18] },
   ],
   centralIdea: 'PCT cells use active sodium transport and co-transport to recover salts, glucose and amino acids; the resulting water-potential gradient draws water back by osmosis.',
@@ -87,4 +87,3 @@ module.exports = makeLesson({
   recap: ['PCT microvilli and mitochondria support rapid selective transport', 'Sodium pumping maintains gradients for co-transport of glucose and amino acids', 'Water follows recovered solutes by osmosis', 'Later ADH-controlled water recovery is facultative'],
   nextLesson: 'The Loop of Henlé, ADH and Osmoregulation — building the gradient and adjusting water loss',
 });
-

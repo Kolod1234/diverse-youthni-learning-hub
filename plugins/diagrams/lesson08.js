@@ -4,9 +4,9 @@ const { makeLesson } = require('./kidneyLessonFactory');
 module.exports = makeLesson({
   title: 'The Loop of Henlé, ADH and Osmoregulation',
   prefix: 'a2-008-p',
-  openStaxPath: 'lesson-assets/a2-biology/a2-homeostasis-08-countercurrent-openstax.png',
+  openStaxPath: 'lesson-assets/a2-biology/a2-homeostasis-08-loop-adh-photorealistic.png',
   openStaxCopies: [
-    { source: 'lesson-assets/a2-biology/a2-homeostasis-08-countercurrent-openstax.png', pageNumbers: [6, 7, 8, 9] },
+    { source: 'lesson-assets/a2-biology/a2-homeostasis-08-loop-adh-photorealistic.png', pageNumbers: [6, 7, 8, 9] },
   ],
   centralIdea: 'The loop of Henlé establishes a medullary osmotic gradient; hypothalamic osmoreceptors and ADH then adjust collecting-duct permeability to conserve the required amount of water.',
   overview: ['countercurrent LOOP', 'salty MEDULLA', 'OSMORECEPTORS', 'ADH release', 'AQUAPORINS and water recovery'],
@@ -86,4 +86,3 @@ module.exports = makeLesson({
   recap: ['The descending limb loses water; the ascending limb exports salt but retains water', 'Countercurrent flow establishes a concentrated medulla', 'The hypothalamus makes ADH and the posterior pituitary releases it', 'ADH inserts aquaporins so water returns by osmosis', 'Negative feedback reduces ADH when blood water potential is restored'],
   nextLesson: 'Natural Barriers, Antigens and Antibodies — the first lesson in A2 Immunity',
 });
-
