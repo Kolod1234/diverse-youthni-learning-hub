@@ -52,9 +52,74 @@ const OPENSTAX_FIGURES = [
   },
   {
     path: '/lesson-assets/a2-biology/a2-homeostasis-05-filtration-barrier-photorealistic.png',
+    paths: [
+      '/lesson-assets/a2-biology/a2-homeostasis-05-filtration-barrier-photorealistic.png',
+      '/a2-biology/a2-006-p09.png',
+      '/a2-biology/a2-006-p14.png',
+      '/a2-biology/a2-006-p15.png',
+    ],
     book: 'Anatomy and Physiology 2e',
     figure: 'Figure 25.12',
     sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/25-4-microscopic-anatomy-of-the-kidney',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/lesson-assets/a2-biology/a2-homeostasis-06-ultrafiltration-pressure-openstax.png',
+      '/a2-biology/a2-006-p08.png',
+      '/a2-biology/a2-006-p10.png',
+      '/a2-biology/a2-006-p12.png',
+      '/a2-biology/a2-006-p13.png',
+      '/a2-biology/a2-006-p16.png',
+      '/a2-biology/a2-006-p17.png',
+      '/a2-biology/a2-006-p18.png',
+    ],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 25.16',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/25-5-physiology-of-urine-formation',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/lesson-assets/a2-biology/a2-homeostasis-07-nephron-reabsorption-openstax.png',
+      '/a2-biology/a2-007-p06.png',
+      '/a2-biology/a2-007-p15.png',
+    ],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 25.17',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/25-6-tubular-reabsorption',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/lesson-assets/a2-biology/a2-homeostasis-07-pct-transport-openstax.png',
+      '/a2-biology/a2-007-p07.png',
+      '/a2-biology/a2-007-p08.png',
+      '/a2-biology/a2-007-p09.png',
+      '/a2-biology/a2-007-p10.png',
+      '/a2-biology/a2-007-p12.png',
+      '/a2-biology/a2-007-p13.png',
+      '/a2-biology/a2-007-p14.png',
+      '/a2-biology/a2-007-p16.png',
+      '/a2-biology/a2-007-p17.png',
+      '/a2-biology/a2-007-p18.png',
+    ],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 25.18',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/25-6-tubular-reabsorption',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/lesson-assets/a2-biology/a2-homeostasis-08-countercurrent-openstax.png',
+      '/a2-biology/a2-008-p06.png',
+      '/a2-biology/a2-008-p07.png',
+      '/a2-biology/a2-008-p08.png',
+      '/a2-biology/a2-008-p09.png',
+    ],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 25.20',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/25-6-tubular-reabsorption',
     bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
   },
 ];
@@ -705,8 +770,8 @@ export default function EnhancedLessonPlayer({
                       html={activeContentSlide.content || ''}
                     />
                   )}
-                  {OPENSTAX_FIGURES.filter((figure) => activeContentSlide.content?.includes(figure.path)).map((figure) => (
-                    <p key={figure.path} className="mt-3 text-center text-xs leading-5 text-slate-500">
+                  {OPENSTAX_FIGURES.filter((figure) => (figure.paths || [figure.path]).some((path) => activeContentSlide.content?.includes(path))).map((figure) => (
+                    <p key={`${figure.book}-${figure.figure}`} className="mt-3 text-center text-xs leading-5 text-slate-500">
                       Image: <a className="underline underline-offset-2" href={figure.sectionUrl} target="_blank" rel="noreferrer">OpenStax, {figure.book}, {figure.figure}</a>. Licensed under <a className="underline underline-offset-2" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noreferrer">CC BY-NC-SA 4.0</a>. <a className="underline underline-offset-2" href={figure.bookUrl} target="_blank" rel="noreferrer">Access for free at OpenStax.</a>
                     </p>
                   ))}
