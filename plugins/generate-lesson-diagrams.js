@@ -133,4 +133,3 @@ export default function generateLessonDiagrams() {
     configureServer(server) { try { run(server.config.logger); } catch (e) { console.warn('[diagrams]', e.message); } },
   };
 }
-
