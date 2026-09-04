@@ -28,6 +28,7 @@ const AmmoniaFountainLive = React.lazy(() => import('@/components/lesson/Ammonia
 const AS_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dc';
 const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
 const WATER_POLARITY_MARKER = 'interactive:water-polarity';
+const OPENSTAX_KIDNEY_FIGURE_PATH = '/lesson-assets/a2-biology/a2-homeostasis-02-kidney-cross-section-photorealistic.png';
 const lessonInteractiveRequests = new Map();
 
 export default function EnhancedLessonPlayer({
@@ -674,6 +675,11 @@ export default function EnhancedLessonPlayer({
                       className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')}
                       html={activeContentSlide.content || ''}
                     />
+                  )}
+                  {activeContentSlide.content?.includes(OPENSTAX_KIDNEY_FIGURE_PATH) && (
+                    <p className="mt-3 text-center text-xs leading-5 text-slate-500">
+                      Image: <a className="underline underline-offset-2" href="https://openstax.org/books/anatomy-and-physiology-2e/pages/25-3-gross-anatomy-of-the-kidney" target="_blank" rel="noreferrer">OpenStax, Anatomy and Physiology 2e, Figure 25.8</a>. Licensed under <a className="underline underline-offset-2" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noreferrer">CC BY-NC-SA 4.0</a>. <a className="underline underline-offset-2" href="https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction" target="_blank" rel="noreferrer">Access for free at OpenStax.</a>
+                    </p>
                   )}
                   {activeContentSlide.content?.includes('data-interactive="solar-system-3d"') && (
                     <React.Suspense fallback={<div className="mt-6 min-h-[420px] animate-pulse rounded-xl bg-slate-100" aria-label="Loading interactive Solar System" />}>
