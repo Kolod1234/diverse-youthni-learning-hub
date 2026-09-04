@@ -84,9 +84,13 @@ module.exports = {
   d.plot([[cx-86,cy-112],[cx-66,cy-70]],{colour:AMBER,lw:1.2});
   d.label(cx+96,cy+64,'PELVIS',INDIGO,9.5,{bold:true});
   d.plot([[cx+82,cy+56],[cx+44,cy+18]],{colour:INDIGO,lw:1.2});
-  d.arrow([120,cy+62],[cx+18,cy+16],RED,1.8); d.label(114,cy+62,'renal artery',RED,9.5,{ha:'right'});
-  d.arrow([cx+18,cy-16],[120,cy-62],BLUE,1.8); d.label(114,cy-62,'renal vein',BLUE,9.5,{ha:'right'});
-  d.arrow([cx+56,cy],[cx+140,cy-52],AMBER,1.9); d.label(cx+146,cy-54,'ureter',AMBER,9.5,{ha:'left'});
+  // artery in, vein out and ureter out all meet at the hilum on the right
+  d.arrow([cx+150,cy+74],[cx+30,cy+26],RED,1.8);
+  d.label(cx+156,cy+76,'renal artery in',RED,9.5,{ha:'left'});
+  d.arrow([cx+30,cy-26],[cx+150,cy-74],BLUE,1.8);
+  d.label(cx+156,cy-76,'renal vein out',BLUE,9.5,{ha:'left'});
+  d.arrow([cx+56,cy],[cx+150,cy],AMBER,1.9);
+  d.label(cx+156,cy,'ureter to bladder',AMBER,9.5,{ha:'left'});
   d.note(486,286,234,92,'Filtration and most reabsorption happen in the CORTEX. The water-concentrating gradient sits in the MEDULLA.',GREY,9.5);
   d.caption('Blood arrives under pressure, is filtered and reclaimed, and the fluid that remains drains through the pelvis into the ureter as urine.',{y:52,size:10});
   return d; } },
