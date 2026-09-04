@@ -181,6 +181,22 @@ function makeLesson(cfg) {
     return d;
   });
 
+  // A lesson may reuse authoritative OpenStax figures on any page whose fixed
+  // image path is listed here. Those files are supplied through assets-b64, so
+  // the build generator must leave them untouched.
+  Object.entries(cfg.externalPages || {}).forEach(([pageNumber, path]) => {
+    pages[Number(pageNumber) - 1] = { path, skip: true };
+  });
+  (cfg.openStaxCopies || []).forEach(({ source, pageNumbers }) => {
+    pageNumbers.forEach((pageNumber) => {
+      const n = String(pageNumber).padStart(2, '0');
+      pages[pageNumber - 1] = {
+        path: `a2-biology/${cfg.prefix}${n}.png`,
+        copyFrom: source,
+      };
+    });
+  });
+
   if (pages.length !== 30) throw new Error(`${cfg.title}: expected 30 pages, got ${pages.length}`);
   return { dir: 'a2-biology', prefix: cfg.prefix, pages };
 }
