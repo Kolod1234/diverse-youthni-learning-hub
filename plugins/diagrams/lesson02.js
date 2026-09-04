@@ -63,6 +63,10 @@ module.exports = {
 
 // 5 — labelled kidney section (replaces the dead photorealistic asset)
 { path: 'lesson-assets/a2-biology/a2-homeostasis-02-kidney-cross-section-photorealistic.png',
+  draw: require('./art/kidney.js') },
+
+// (superseded schematic kept out of the deck)
+{ skip: true,
   draw: (K) => { const { newSheet, TEAL, BLUE, INDIGO, AMBER, RED, SLATE, GREY } = K;
   const d = newSheet('Gross structure of the kidney, and where each job happens');
   const cx=252, cy=232;                      // centre of the organ
