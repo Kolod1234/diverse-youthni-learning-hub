@@ -61,9 +61,9 @@ module.exports = {
   d.caption('Every long answer on this topic should follow this order. Marks come from the links between stages, not from the facts alone.',{y:38,size:10});
   return d; },
 
-// 5 — labelled kidney section (replaces the dead photorealistic asset)
-{ path: 'lesson-assets/a2-biology/a2-homeostasis-02-kidney-cross-section-photorealistic.png',
-  draw: require('./art/kidney.js') },
+// 5 — kidney section: served by the OpenStax figure decoded from assets-b64,
+//     so nothing is drawn for this slide.
+{ skip: true },
 
 
 // 6 — excretion removes metabolic waste
