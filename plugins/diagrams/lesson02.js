@@ -65,19 +65,25 @@ module.exports = {
 { path: 'lesson-assets/a2-biology/a2-homeostasis-02-kidney-cross-section-photorealistic.png',
   draw: (K) => { const { newSheet, TEAL, BLUE, INDIGO, AMBER, RED, SLATE, GREY } = K;
   const d = newSheet('Gross structure of the kidney, and where each job happens');
-  d.rect(150,120,300,240,'#eef2ff');
-  d.rect(150,120,70,240,'#ecfdf5');
-  d.rect(220,158,150,164,'#fffbeb');
-  d.plot([[150,360],[450,360],[450,120],[150,120],[150,360]],{colour:SLATE,lw:1.8});
-  d.plot([[220,120],[220,360]],{colour:SLATE,lw:1.4,dashed:true});
-  d.plot([[370,158],[370,322]],{colour:SLATE,lw:1.4,dashed:true});
-  d.label(185,372,'CORTEX',TEAL,9.5,{bold:true});
-  d.label(295,372,'MEDULLA',AMBER,9.5,{bold:true});
-  d.label(412,372,'PELVIS',INDIGO,9.5,{bold:true});
-  d.arrow([116,300],[150,300],RED,1.8); d.label(110,300,'renal artery',RED,9.5,{ha:'right'});
-  d.arrow([150,240],[116,240],BLUE,1.8); d.label(110,240,'renal vein',BLUE,9.5,{ha:'right'});
-  d.arrow([450,168],[498,168],AMBER,1.8); d.label(504,168,'ureter',AMBER,9.5,{ha:'left'});
-  d.note(486,250,234,90,'Filtration and most reabsorption happen in the CORTEX. The water-concentrating gradient sits in the MEDULLA.',GREY,9.5);
+  const cx=250, cy=228;                      // centre of the bean
+  // outer bean outline: convex on the left, indented at the hilum on the right
+  const bean=[[cx-118,cy+8],[cx-96,cy+80],[cx-30,cy+122],[cx+52,cy+108],
+              [cx+86,cy+56],[cx+30,cy+26],[cx+30,cy-26],[cx+86,cy-56],
+              [cx+52,cy-108],[cx-30,cy-122],[cx-96,cy-80]];
+  d.blob(bean,{fill:'#d1fae5',stroke:SLATE,lw:2.0});          // cortex tint
+  // medulla: a ring of pyramids pointing inward to the pelvis
+  const pyr=[[-70,86],[-104,34],[-104,-34],[-70,-86]];
+  pyr.forEach(p=>{ const bx=cx+p[0], by=cy+p[1];
+    d.poly([[bx-6,by+30],[bx-6,by-30],[bx+58,by]],{fill:'#fcd34d',stroke:SLATE,lw:1.3}); });
+  // renal pelvis funnelling into the ureter
+  d.poly([[cx+18,cy+34],[cx+18,cy-34],[cx+62,cy-12],[cx+62,cy+12]],{fill:'#c7d2fe',stroke:SLATE,lw:1.5});
+  d.label(cx-92,cy+96,'CORTEX',TEAL,9.5,{bold:true});
+  d.label(cx-58,cy-8,'MEDULLA',AMBER,9.5,{bold:true});
+  d.label(cx+44,cy+52,'PELVIS',INDIGO,9,{bold:true});
+  d.arrow([120,cy+40],[cx+34,cy+22],RED,1.8); d.label(114,cy+40,'renal artery',RED,9.5,{ha:'right'});
+  d.arrow([cx+34,cy-22],[120,cy-40],BLUE,1.8); d.label(114,cy-40,'renal vein',BLUE,9.5,{ha:'right'});
+  d.arrow([cx+62,cy],[cx+150,cy-36],AMBER,1.9); d.label(cx+156,cy-38,'ureter',AMBER,9.5,{ha:'left'});
+  d.note(486,286,234,92,'Filtration and most reabsorption happen in the CORTEX. The water-concentrating gradient sits in the MEDULLA.',GREY,9.5);
   d.caption('Blood arrives under pressure, is filtered and reclaimed, and the fluid that remains drains through the pelvis into the ureter as urine.',{y:52,size:10});
   return d; } },
 
