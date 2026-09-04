@@ -169,15 +169,15 @@ function makeLesson(cfg) {
 
   pages.push((K) => {
     const d = sheet(K, 'CCEA exam-style answer - complete reasoning chain');
-    d.steps(cfg.examAnswer, { x: 43, y0: 350, w: 674, rowh: 31, gap: 5, colour: K.TEAL, size: 9.1 });
-    d.caption(cfg.examCaption, { y: 27, size: 9.1, wrap: 110 });
+    d.steps(cfg.examAnswer, { x: 43, y0: 350, w: 674, rowh: 27, gap: 4, colour: K.TEAL, size: 9.1 });
+    d.caption(cfg.examCaption, { y: 24, size: 8.8, wrap: 116 });
     return d;
   });
 
   pages.push((K) => {
     const d = sheet(K, 'Lesson recap and next connection');
-    d.steps(cfg.recap, { x: 48, y0: 306, w: 664, rowh: 52, gap: 13, colour: K.TEAL, size: 10.8 });
-    d.box(48, 58, 664, 72, 'NEXT LESSON: ' + cfg.nextLesson, K.INDIGO, 10.8);
+    d.steps(cfg.recap, { x: 48, y0: 316, w: 664, rowh: 40, gap: 8, colour: K.TEAL, size: 9.8 });
+    d.box(48, 38, 664, 54, 'NEXT LESSON: ' + cfg.nextLesson, K.INDIGO, 10.2);
     return d;
   });
 
