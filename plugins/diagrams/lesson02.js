@@ -61,10 +61,11 @@ module.exports = {
   d.caption('Every long answer on this topic should follow this order. Marks come from the links between stages, not from the facts alone.',{y:38,size:10});
   return d; },
 
-// 5 — kidney section. Drawn placeholder, in use until the licensed OpenStax
-//     figure is added to the app as a real image at this asset path.
+// 5 — licensed OpenStax Anatomy & Physiology 2e, Figure 25.8.
+//     The binary is decoded from assets-b64 by decode-lesson-images.js.
+//     Visible attribution is rendered by EnhancedLessonPlayer.
 { path: 'lesson-assets/a2-biology/a2-homeostasis-02-kidney-cross-section-photorealistic.png',
-  draw: require('./art/kidney.js') },
+  skip: true },
 
 
 // 6 — excretion removes metabolic waste
