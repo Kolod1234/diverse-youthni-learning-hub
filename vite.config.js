@@ -12,7 +12,7 @@ export default defineConfig({
     // dev and before build, so lesson diagram <img> paths resolve.
     decodeLessonImages(),
     // Draws the A2 lesson diagrams straight into public/ at build time, so the
-    // 240 slide images are generated from code rather than stored as binaries.
+    // 150 registered slide images are generated from code rather than stored as binaries.
     generateLessonDiagrams(),
     base44({
       // Support for legacy code that imports the base44 SDK with @/integrations, @/entities, etc.
