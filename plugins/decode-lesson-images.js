@@ -25,12 +25,28 @@ function walk(dir) {
 function decodeAll() {
   const src = path.resolve(process.cwd(), SRC)
   let written = 0
+
+  // Large assets are written in numbered parts (name.b64.part1, .part2, ...)
+  // because the tooling that produces them has a per-write size limit.
+  // Group those so each asset is reassembled in order before decoding.
+  const groups = new Map()
   for (const file of walk(src)) {
-    if (!file.endsWith('.b64')) continue
-    const rel = path.relative(src, file).replace(/\.b64$/, '')
+    const m = file.match(/^(.*\.b64)\.part(\d+)$/)
+    const key = m ? m[1] : file
+    if (!key.endsWith('.b64')) continue
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key).push({ file, part: m ? Number(m[2]) : 0 })
+  }
+
+  for (const [key, parts] of groups) {
+    const rel = path.relative(src, key).replace(/\.b64$/, '')
     const out = path.resolve(process.cwd(), OUT, rel)
     try {
-      const b64 = fs.readFileSync(file, 'utf8').replace(/\s+/g, '')
+      parts.sort((a, b) => a.part - b.part)
+      const b64 = parts
+        .map((p) => fs.readFileSync(p.file, 'utf8'))
+        .join('')
+        .replace(/\s+/g, '')
       const buf = Buffer.from(b64, 'base64')
       if (!buf.length) continue
       if (fs.existsSync(out) && fs.statSync(out).size === buf.length) continue
