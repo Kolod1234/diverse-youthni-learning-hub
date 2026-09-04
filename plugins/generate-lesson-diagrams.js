@@ -79,6 +79,9 @@ export default function generateLessonDiagrams() {
         const n = String(i + 1).padStart(2, '0');
         // A page is normally a draw function named by prefix+NN. Some slides
         // point at a different asset path, so those declare { path, draw }.
+        // A page marked skip is served by a real image decoded from assets-b64,
+        // so nothing must be drawn over it here.
+        if (page && page.skip) return;
         const draw = typeof page === 'function' ? page : page.draw;
         const file = page.path
           ? path.join(publicDir, page.path)
