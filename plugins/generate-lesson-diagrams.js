@@ -11,6 +11,7 @@
 
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 
@@ -35,13 +36,27 @@ export default function generateLessonDiagrams() {
     const log = (m) => (logger ? logger.info(m) : console.log(m));
     const warn = (m) => (logger ? logger.warn(m) : console.warn(m));
 
+    // node-canvas ships a native binding that is not always present after a
+    // clean install (install scripts may be skipped). Build it on demand once,
+    // rather than silently shipping a lesson with no illustrations.
     let kit, quant;
-    try {
+    const load = () => {
       kit = require('./diagrams/diagkit.js');
       quant = require('./diagrams/quantpng.js');
-    } catch (err) {
-      warn(`[diagrams] skipped — drawing toolkit unavailable (${err.message})`);
-      return;
+    };
+    try {
+      load();
+    } catch (first) {
+      try {
+        log('[diagrams] building the canvas binding (one-off)…');
+        execSync('npm rebuild canvas', {
+          cwd: path.resolve(HERE, '..'), stdio: 'ignore', timeout: 300000,
+        });
+        load();
+      } catch (second) {
+        warn(`[diagrams] skipped — drawing toolkit unavailable (${second.message})`);
+        return;
+      }
     }
 
     const publicDir = path.resolve(HERE, '..', 'public');
