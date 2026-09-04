@@ -27,6 +27,9 @@ const GENERATORS = [
   'diagrams/lesson03.js',
   'diagrams/lesson04.js',
   'diagrams/lesson05.js',
+  'diagrams/lesson06.js',
+  'diagrams/lesson07.js',
+  'diagrams/lesson08.js',
 ];
 
 export default function generateLessonDiagrams() {
@@ -84,6 +87,19 @@ export default function generateLessonDiagrams() {
         // point at a different asset path, so those declare { path, draw }.
         // A page marked skip is served by a real image decoded from assets-b64,
         // so nothing must be drawn over it here.
+        if (page && page.copyFrom) {
+          const source = path.join(publicDir, page.copyFrom);
+          const file = path.join(publicDir, page.path);
+          try {
+            if (!fs.existsSync(source)) throw new Error(`OpenStax source asset missing: ${page.copyFrom}`);
+            fs.mkdirSync(path.dirname(file), { recursive: true });
+            fs.copyFileSync(source, file);
+            written++; bytes += fs.statSync(file).size;
+          } catch (err) {
+            faults.push(`${mod.prefix}${n}: threw ${err.message}`);
+          }
+          return;
+        }
         if (page && page.skip) return;
         const draw = typeof page === 'function' ? page : page.draw;
         const file = page.path
@@ -117,3 +133,4 @@ export default function generateLessonDiagrams() {
     configureServer(server) { try { run(server.config.logger); } catch (e) { console.warn('[diagrams]', e.message); } },
   };
 }
+
