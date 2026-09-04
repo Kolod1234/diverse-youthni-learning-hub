@@ -65,24 +65,28 @@ module.exports = {
 { path: 'lesson-assets/a2-biology/a2-homeostasis-02-kidney-cross-section-photorealistic.png',
   draw: (K) => { const { newSheet, TEAL, BLUE, INDIGO, AMBER, RED, SLATE, GREY } = K;
   const d = newSheet('Gross structure of the kidney, and where each job happens');
-  const cx=250, cy=228;                      // centre of the bean
-  // outer bean outline: convex on the left, indented at the hilum on the right
-  const bean=[[cx-118,cy+8],[cx-96,cy+80],[cx-30,cy+122],[cx+52,cy+108],
-              [cx+86,cy+56],[cx+30,cy+26],[cx+30,cy-26],[cx+86,cy-56],
-              [cx+52,cy-108],[cx-30,cy-122],[cx-96,cy-80]];
-  d.blob(bean,{fill:'#d1fae5',stroke:SLATE,lw:2.0});          // cortex tint
-  // medulla: a ring of pyramids pointing inward to the pelvis
-  const pyr=[[-70,86],[-104,34],[-104,-34],[-70,-86]];
-  pyr.forEach(p=>{ const bx=cx+p[0], by=cy+p[1];
-    d.poly([[bx-6,by+30],[bx-6,by-30],[bx+58,by]],{fill:'#fcd34d',stroke:SLATE,lw:1.3}); });
-  // renal pelvis funnelling into the ureter
-  d.poly([[cx+18,cy+34],[cx+18,cy-34],[cx+62,cy-12],[cx+62,cy+12]],{fill:'#c7d2fe',stroke:SLATE,lw:1.5});
-  d.label(cx-92,cy+96,'CORTEX',TEAL,9.5,{bold:true});
-  d.label(cx-58,cy-8,'MEDULLA',AMBER,9.5,{bold:true});
-  d.label(cx+44,cy+52,'PELVIS',INDIGO,9,{bold:true});
-  d.arrow([120,cy+40],[cx+34,cy+22],RED,1.8); d.label(114,cy+40,'renal artery',RED,9.5,{ha:'right'});
-  d.arrow([cx+34,cy-22],[120,cy-40],BLUE,1.8); d.label(114,cy-40,'renal vein',BLUE,9.5,{ha:'right'});
-  d.arrow([cx+62,cy],[cx+150,cy-36],AMBER,1.9); d.label(cx+156,cy-38,'ureter',AMBER,9.5,{ha:'left'});
+  const cx=252, cy=232;                      // centre of the organ
+  // outer bean: rounded on the left, notched at the hilum on the right
+  const outer=(s)=>[[cx-112*s,cy],[cx-98*s,cy+62*s],[cx-46*s,cy+104*s],[cx+24*s,cy+96*s],
+                    [cx+62*s,cy+52*s],[cx+16*s,cy+20*s],[cx+16*s,cy-20*s],[cx+62*s,cy-52*s],
+                    [cx+24*s,cy-96*s],[cx-46*s,cy-104*s],[cx-98*s,cy-62*s]];
+  d.blob(outer(1.00),{fill:'#a7f3d0',stroke:SLATE,lw:2.0});   // cortex = outer rim
+  d.blob(outer(0.74),{fill:'#fde68a',stroke:SLATE,lw:1.4});   // medulla = inner zone
+  // medullary pyramids pointing in toward the pelvis
+  [[-52,52],[-72,0],[-52,-52]].forEach(p=>{ const bx=cx+p[0], by=cy+p[1];
+    d.poly([[bx-4,by+22],[bx-4,by-22],[bx+44,by]],{fill:'#f59e0b',stroke:SLATE,lw:1.2}); });
+  // renal pelvis funnelling out of the hilum
+  d.poly([[cx+4,cy+30],[cx+4,cy-30],[cx+56,cy-10],[cx+56,cy+10]],{fill:'#a5b4fc',stroke:SLATE,lw:1.5});
+  // labels placed outside the organ with short leaders
+  d.label(cx-108,cy+118,'CORTEX',TEAL,9.5,{bold:true});
+  d.plot([[cx-92,cy+110],[cx-78,cy+86]],{colour:TEAL,lw:1.2});
+  d.label(cx-104,cy-120,'MEDULLA',AMBER,9.5,{bold:true});
+  d.plot([[cx-86,cy-112],[cx-66,cy-70]],{colour:AMBER,lw:1.2});
+  d.label(cx+96,cy+64,'PELVIS',INDIGO,9.5,{bold:true});
+  d.plot([[cx+82,cy+56],[cx+44,cy+18]],{colour:INDIGO,lw:1.2});
+  d.arrow([120,cy+62],[cx+18,cy+16],RED,1.8); d.label(114,cy+62,'renal artery',RED,9.5,{ha:'right'});
+  d.arrow([cx+18,cy-16],[120,cy-62],BLUE,1.8); d.label(114,cy-62,'renal vein',BLUE,9.5,{ha:'right'});
+  d.arrow([cx+56,cy],[cx+140,cy-52],AMBER,1.9); d.label(cx+146,cy-54,'ureter',AMBER,9.5,{ha:'left'});
   d.note(486,286,234,92,'Filtration and most reabsorption happen in the CORTEX. The water-concentrating gradient sits in the MEDULLA.',GREY,9.5);
   d.caption('Blood arrives under pressure, is filtered and reclaimed, and the fluid that remains drains through the pelvis into the ureter as urine.',{y:52,size:10});
   return d; } },
