@@ -22,6 +22,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 // where each fn(kit) returns a Diagram ready to be encoded.
 const GENERATORS = [
   'diagrams/lesson01.js',
+  'diagrams/lesson02.js',
 ];
 
 export default function generateLessonDiagrams() {
@@ -59,10 +60,16 @@ export default function generateLessonDiagrams() {
       const outDir = path.join(publicDir, mod.dir);
       try { fs.mkdirSync(outDir, { recursive: true }); } catch { /* ignore */ }
 
-      mod.pages.forEach((draw, i) => {
+      mod.pages.forEach((page, i) => {
         const n = String(i + 1).padStart(2, '0');
-        const file = path.join(outDir, `${mod.prefix}${n}.png`);
+        // A page is normally a draw function named by prefix+NN. Some slides
+        // point at a different asset path, so those declare { path, draw }.
+        const draw = typeof page === 'function' ? page : page.draw;
+        const file = page.path
+          ? path.join(publicDir, page.path)
+          : path.join(outDir, `${mod.prefix}${n}.png`);
         try {
+          fs.mkdirSync(path.dirname(file), { recursive: true });
           const d = draw(kit);
           const bad = d.audit();
           if (bad.length) faults.push(`${mod.prefix}${n}: ${bad.join('; ')}`);
