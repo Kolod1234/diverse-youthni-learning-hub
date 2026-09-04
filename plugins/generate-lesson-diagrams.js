@@ -24,6 +24,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const GENERATORS = [
   'diagrams/lesson01.js',
   'diagrams/lesson02.js',
+  'diagrams/lesson03.js',
+  'diagrams/lesson04.js',
+  'diagrams/lesson05.js',
 ];
 
 export default function generateLessonDiagrams() {
