@@ -65,7 +65,7 @@ const OPENSTAX_FIGURES = [
   },
   {
     paths: [
-      '/lesson-assets/a2-biology/a2-homeostasis-06-ultrafiltration-pressure-openstax.png',
+      '/lesson-assets/a2-biology/a2-homeostasis-06-ultrafiltration-pressure-photorealistic.png',
       '/a2-biology/a2-006-p08.png',
       '/a2-biology/a2-006-p10.png',
       '/a2-biology/a2-006-p12.png',
@@ -81,7 +81,7 @@ const OPENSTAX_FIGURES = [
   },
   {
     paths: [
-      '/lesson-assets/a2-biology/a2-homeostasis-07-nephron-reabsorption-openstax.png',
+      '/lesson-assets/a2-biology/a2-homeostasis-07-selective-reabsorption-photorealistic.png',
       '/a2-biology/a2-007-p06.png',
       '/a2-biology/a2-007-p15.png',
     ],
@@ -111,7 +111,7 @@ const OPENSTAX_FIGURES = [
   },
   {
     paths: [
-      '/lesson-assets/a2-biology/a2-homeostasis-08-countercurrent-openstax.png',
+      '/lesson-assets/a2-biology/a2-homeostasis-08-loop-adh-photorealistic.png',
       '/a2-biology/a2-008-p06.png',
       '/a2-biology/a2-008-p07.png',
       '/a2-biology/a2-008-p08.png',
