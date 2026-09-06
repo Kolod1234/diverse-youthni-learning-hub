@@ -1,0 +1,87 @@
+/* A2 Biology, Lesson 16 — Antibiotic Resistance and New Antimicrobials. */
+const { makeLesson } = require('./immunityLessonFactory');
+
+module.exports = makeLesson({
+  title: 'Antibiotic Resistance and New Antimicrobials',
+  prefix: 'a2-016-p',
+  featured: {
+    path: 'lesson-assets/a2-biology/a2-immunity-16-antibiotic-resistance-photorealistic.png',
+    title: 'Antibiotic selection changes a population',
+    key: 'Antibiotics do not create directed resistance; they select rare resistant variants already present or acquired by gene transfer.',
+    chain: ['variation before treatment', 'susceptible cells die', 'resistant survivors reproduce'],
+    caption: 'The frequency of resistance rises across generations because survival and reproduction are differential.',
+  },
+  openStaxCopies: [
+    { source: 'lesson-assets/a2-biology/openstax-14-18-drug-resistance.png', pageNumbers: [8, 9, 10, 20] },
+    { source: 'lesson-assets/a2-biology/openstax-13-31-disk-diffusion.png', pageNumbers: [15, 19, 26, 27] },
+  ],
+  centralIdea: 'Antibiotic exposure is a selection pressure: susceptible bacteria die while resistant variants survive, reproduce and spread resistance vertically or through horizontal gene transfer.',
+  overview: ['Genetic VARIATION exists', 'antibiotic applies SELECTION', 'resistant cells survive', 'alleles spread VERTICALLY or horizontally', 'resistance frequency rises'],
+  overviewCaption: 'Explain resistance as a change in the bacterial population, never as an individual bacterium choosing to adapt.',
+  outcomes: ['Explain selection for resistance', 'Compare vertical and horizontal spread', 'Evaluate human selection pressures', 'Describe screening for new antimicrobials'],
+  prior: 'Starting point: mutations produce new alleles at random, while natural selection changes allele frequencies through differential survival and reproduction.',
+  terms: [
+    ['Antibiotic', 'substance that kills bacteria or inhibits their growth'],
+    ['Resistance', 'heritable ability to survive an antimicrobial concentration'],
+    ['Selection pressure', 'environmental factor affecting survival and reproduction'],
+    ['Vertical transmission', 'gene inheritance from parent cell to daughter cells'],
+    ['Horizontal gene transfer', 'gene movement between cells, often on plasmids'],
+    ['Zone of inhibition', 'clear area where microbial growth is suppressed'],
+  ],
+  termsCaption: 'Resistance is meaningful only in relation to a named antimicrobial and exposure level.',
+  sequence: ['A mutation or acquired gene creates heritable variation', 'The bacterial population contains susceptible and resistant cells', 'An antibiotic kills or inhibits susceptible cells', 'Resistant variants survive the exposure', 'Survivors reproduce by binary fission', 'Resistance alleles increase in frequency', 'Plasmids can transfer resistance horizontally to other cells'],
+  concepts: [
+    { title: 'Variation must exist before selection', key: 'Random mutation or prior gene transfer creates some resistant bacteria before antibiotic treatment.', chain: ['DNA changes at random', 'phenotypes differ', 'selection can now act'], caption: 'The drug does not cause a useful mutation because the bacteria need it.' },
+    { title: 'Differential survival drives the change', key: 'The antibiotic removes susceptible competitors while resistant cells remain alive.', chain: ['antibiotic reaches population', 'susceptible cells die', 'resistant cells survive'], caption: 'Selection acts on phenotypes, but the inherited change is in allele frequency.' },
+    { title: 'Reproduction raises resistance frequency', key: 'Surviving resistant bacteria divide and pass resistance alleles to daughter cells.', chain: ['survivor divides', 'allele transmitted vertically', 'resistant fraction increases'], caption: 'The population evolves even though no single bacterium transforms because of need.' },
+    { title: 'Horizontal transfer accelerates spread', key: 'Conjugative plasmids, transformation or transduction can move resistance genes between cells.', chain: ['resistance gene on mobile DNA', 'DNA enters another bacterium', 'recipient expresses resistance'], caption: 'OpenStax Figure 14.18 also shows how several gene products protect cells from drugs.' },
+    { title: 'Human behaviour strengthens selection pressure', key: 'Unnecessary exposure and incomplete effective treatment increase opportunities for resistant cells to survive and spread.', chain: ['antibiotic used poorly', 'susceptible cells removed', 'resistant survivors transmitted'], caption: 'The mutation is random, but the survival advantage under treatment is not.' },
+    { title: 'Local reservoirs can seed epidemics', key: 'A resistant strain can spread from a reservoir through connected host populations.', chain: ['reservoir maintains strain', 'transmission reaches new hosts', 'case numbers expand'], caption: 'Epidemic describes an unusual regional rise; pandemic describes sustained international spread.' },
+    { title: 'Scale depends on transmission networks', key: 'Travel, crowding, healthcare contact and sanitation affect how quickly a resistant strain disperses.', chain: ['infected host moves', 'new contacts exposed', 'separate outbreaks connect'], caption: 'Resistance affects treatment success; transmission factors determine geographical spread.' },
+    { title: 'Animal reservoirs and viral emergence differ', key: 'Zoonotic emergence involves a pathogen crossing species, whereas antibiotics select resistance only in bacteria.', chain: ['animal pathogen varies', 'host barrier crossed', 'human transmission may follow'], caption: 'Antibiotics neither treat viruses nor prevent a viral pandemic.' },
+    { title: 'Natural chemical competition suggests new drugs', key: 'Microorganisms often secrete compounds that inhibit competitors in the same habitat.', chain: ['organisms compete', 'inhibitory metabolite released', 'candidate compound isolated'], caption: 'Screening natural products can reveal new antimicrobial molecules.' },
+    { title: 'A clear zone is evidence of inhibition', key: 'An effective compound diffuses through agar and prevents growth near its disc.', chain: ['disc releases compound', 'concentration gradient forms', 'clear zone measured'], caption: 'OpenStax Figure 13.31 shows disk diffusion and measured zones of inhibition.' },
+  ],
+  worked: {
+    question: 'Explain how repeated use of one antibiotic can increase the proportion of resistant bacteria.',
+    mustConnect: ['pre-existing heritable variation', 'differential survival', 'reproduction and allele frequency'],
+    trap: 'Do not state that exposure makes each bacterium mutate deliberately or become immune.',
+    steps: ['Random mutation or gene transfer has already produced variation', 'A few cells carry a resistance allele', 'The antibiotic is a selection pressure', 'Susceptible bacteria are killed or fail to reproduce', 'Resistant bacteria survive at a higher rate', 'Survivors divide by binary fission', 'Their daughter cells inherit the resistance allele', 'Repeated exposure raises the resistance-allele frequency in the population'],
+    conclusion: 'Antibiotic exposure selects resistant variants, so their descendants form a larger fraction of later generations.',
+    check: 'the answer begins with variation and ends with a population-level frequency change.',
+    finalCaption: 'Mutation supplies variation; selection sorts it; reproduction amplifies the survivors.',
+  },
+  compare: {
+    title: 'Finding a new antimicrobial',
+    heads: ['SCREEN', 'VALIDATE'],
+    left: ['culture candidate organism', 'extract secreted compounds', 'apply samples to inoculated agar', 'measure zones of inhibition'],
+    right: ['repeat against several pathogens', 'determine effective concentration', 'test toxicity to host cells', 'investigate mechanism and resistance risk'],
+    caption: 'A large clear zone is promising evidence, but diffusion rate and safety must be controlled before clinical use.',
+  },
+  application: {
+    title: 'Application: antibiotics during a viral outbreak',
+    situation: 'Patients request antibiotics for a respiratory disease confirmed to be caused by a virus.',
+    steps: ['The target pathogen is viral, not bacterial', 'Antibiotics act on bacterial structures or metabolism', 'Treatment will not stop viral replication', 'Unnecessary exposure selects resistance among commensal bacteria', 'Antibiotics may be justified only for a diagnosed secondary bacterial infection'],
+    caption: 'Choosing not to prescribe an ineffective drug reduces avoidable selection pressure.',
+  },
+  misconceptions: [
+    ['bacteria become resistant because they try to survive', 'random heritable variants exist before selection'],
+    ['antibiotics cure viral infections', 'antibiotics target bacterial features, not viral replication'],
+    ['the largest inhibition zone always proves the best drug', 'diffusion, concentration and toxicity also require control'],
+  ],
+  specification: { title: 'CCEA specification checkpoint — 4.3 Disease', note: 'Explain antibiotic resistance by natural selection, identify human selection pressures, and describe approaches to discovering new antimicrobials.' },
+  questions: ['Why is mutation described as random?', 'How does an antibiotic act as a selection pressure?', 'How can plasmids spread resistance?', 'What causes a zone of inhibition?'],
+  answers: [
+    [['Random mutation', 'DNA changes do not occur because a bacterium needs the resulting phenotype'], ['Selection pressure', 'the drug lowers susceptible survival relative to resistant survival']],
+    [['Plasmid spread', 'horizontal transfer moves resistance genes between bacterial cells'], ['Zone of inhibition', 'a diffusing compound reaches concentrations that prevent nearby microbial growth']],
+  ],
+  data: { title: 'Data task: resistance frequency', question: 'A culture contains 40 resistant cells among 2,000 before treatment and 270 among 300 survivors after treatment. Calculate both percentages.', values: ['before: 40 / 2,000', 'after: 270 / 300', 'percentage = fraction × 100'], formula: 'resistant percentage = resistant cells ÷ total cells × 100' },
+  calculation: { title: 'Data task — calculation', steps: ['Before treatment: 40 ÷ 2,000 = 0.020', '0.020 × 100 = 2.0%', 'After treatment: 270 ÷ 300 = 0.90', '0.90 × 100 = 90%', 'The resistant proportion increased by 88 percentage points'], answer: 'Resistance frequency rose from 2.0% to 90% among the counted populations.' },
+  examQuestion: 'Explain how antibiotic resistance evolves and describe how disk diffusion can screen organisms for new antimicrobial compounds.',
+  examAnswer: ['Mutation or horizontal transfer creates heritable resistance variation', 'The variation exists before antibiotic exposure', 'Antibiotic is a selection pressure', 'Susceptible bacteria die or reproduce less', 'Resistant bacteria survive', 'Survivors reproduce and transmit resistance vertically', 'Plasmids can transfer resistance horizontally', 'Candidate organisms or extracts are placed on inoculated agar', 'An antimicrobial diffuses from each disc', 'A zone of inhibition indicates suppressed growth and its diameter can be measured'],
+  examCaption: 'Separate the evolutionary explanation from the practical screening method, and control alternative explanations for zone size.',
+  recap: ['Resistance variation arises before selection', 'Antibiotics favour resistant survivors', 'Reproduction raises resistance frequency', 'Horizontal transfer can accelerate spread', 'Disk diffusion screens inhibitory compounds'],
+  nextLesson: 'ELISA uses antibody specificity and quantitative standards to measure disease biomarkers.',
+});
+
+
