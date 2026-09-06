@@ -523,8 +523,9 @@ export default function EnhancedLessonPlayer({
   const progressPercent = sortedLessons.length > 0 ? ((currentLessonIndex + 1) / sortedLessons.length * 100) : 0;
   const contentSlides = lesson?.slides || [];
   const activeContentSlide = contentSlides[currentContentSlide];
-  const a2GeneratedVisualLesson = [9, 20].includes(Number(lesson?.order))
-    ? Number(lesson?.order)
+  const a2LessonOrder = Number(lesson?.order);
+  const a2GeneratedVisualLesson = a2LessonOrder === 9 || (a2LessonOrder >= 20 && a2LessonOrder <= 28)
+    ? a2LessonOrder
     : null;
   const needsA2GeneratedVisual = (courseId === A2_BIOLOGY_COURSE_ID || lesson?.course_id === A2_BIOLOGY_COURSE_ID)
     && a2GeneratedVisualLesson
