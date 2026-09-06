@@ -457,15 +457,18 @@ export default function EnhancedLessonPlayer({
   const progressPercent = sortedLessons.length > 0 ? ((currentLessonIndex + 1) / sortedLessons.length * 100) : 0;
   const contentSlides = lesson?.slides || [];
   const activeContentSlide = contentSlides[currentContentSlide];
-  const needsA2ImmunityVisual = (courseId === A2_BIOLOGY_COURSE_ID || lesson?.course_id === A2_BIOLOGY_COURSE_ID)
-    && Number(lesson?.order) === 9
+  const a2GeneratedVisualLesson = [9, 20].includes(Number(lesson?.order))
+    ? Number(lesson?.order)
+    : null;
+  const needsA2GeneratedVisual = (courseId === A2_BIOLOGY_COURSE_ID || lesson?.course_id === A2_BIOLOGY_COURSE_ID)
+    && a2GeneratedVisualLesson
     && activeContentSlide
     && !/<img\b/i.test(activeContentSlide.content || '');
-  const a2ImmunityVisualPath = needsA2ImmunityVisual
-    ? `/a2-biology/a2-009-p${String(currentContentSlide + 1).padStart(2, '0')}.png`
+  const a2GeneratedVisualPath = needsA2GeneratedVisual
+    ? `/a2-biology/a2-${String(a2GeneratedVisualLesson).padStart(3, '0')}-p${String(currentContentSlide + 1).padStart(2, '0')}.png`
     : null;
-  const renderedSlideHtml = a2ImmunityVisualPath
-    ? `<figure class='page-visual'><img src='${a2ImmunityVisualPath}' alt='Teaching diagram for this immunity page.' loading='lazy' /><figcaption>Immunity process diagram aligned to this page.</figcaption></figure>${activeContentSlide.content || ''}`
+  const renderedSlideHtml = a2GeneratedVisualPath
+    ? `<figure class='page-visual'><img src='${a2GeneratedVisualPath}' alt='Teaching diagram aligned to this biology page.' loading='lazy' /><figcaption>Biology process diagram aligned to this page.</figcaption></figure>${activeContentSlide.content || ''}`
     : (activeContentSlide?.content || '');
   const isWaterPolarityPage = lesson?.id === WATER_INTERACTIVE_LESSON_ID
     && activeContentSlide?.notes === WATER_POLARITY_MARKER;
