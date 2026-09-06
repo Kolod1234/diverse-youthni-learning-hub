@@ -664,6 +664,62 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-1-overview-of-muscle-tissues',
     bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
   },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 10, 11, 16, 17, 18, 21, 22, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-029-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-29-population-growth-curves-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 45.9',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-3-environmental-limits-to-population-growth',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [12, 15, 20, 26].map((page) => `/a2-biology/a2-029-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 45.10',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-3-environmental-limits-to-population-growth',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-030-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-30-r-k-selection-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 45.13',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-4-population-dynamics-and-regulation',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [11, 13, 25, 26, 27].map((page) => `/a2-biology/a2-030-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 45.6',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-1-population-demography',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 4, 9, 10, 15, 16, 17, 18, 21, 22, 23, 25, 26, 27, 28, 29, 30].map((page) => `/a2-biology/a2-031-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-31-population-interactions-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 45.18',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-6-community-ecology',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [3, 6, 7, 8, 11, 19, 20, 24].map((page) => `/a2-biology/a2-031-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 45.24',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-6-community-ecology',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-031-p12.png'],
+    book: 'Biology 2e',
+    figure: 'Figure 45.27',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-6-community-ecology',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-031-p14.png'],
+    book: 'Biology 2e',
+    figure: 'Figure 45.26',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-6-community-ecology',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
