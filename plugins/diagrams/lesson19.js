@@ -1,0 +1,87 @@
+/* A2 Biology, Lesson 19 — Practical: Antimicrobial Properties of Plants. */
+const { makeLesson } = require('./immunityLessonFactory');
+
+module.exports = makeLesson({
+  title: 'Practical: Antimicrobial Properties of Plants',
+  prefix: 'a2-019-p',
+  featured: {
+    path: 'lesson-assets/a2-biology/a2-immunity-19-plant-antimicrobial-practical-photorealistic.png',
+    title: 'Preparing comparable plant extracts',
+    key: 'A fair comparison standardises plant mass, surface area, solvent volume, extraction time and the amount loaded onto each disc.',
+    chain: ['weigh plant tissue', 'grind with fixed solvent', 'filter extract', 'load equal disc volume', 'test on one lawn'],
+    caption: 'The biological source is the independent variable only when the extraction and assay are kept equivalent.',
+  },
+  openStaxCopies: [
+    { source: 'lesson-assets/a2-biology/openstax-14-2-herbal-antimicrobials.png', pageNumbers: [6, 7] },
+    { source: 'lesson-assets/a2-biology/openstax-13-31-disk-diffusion.png', pageNumbers: [9, 10, 11, 12, 13, 14, 15, 19, 26, 27] },
+  ],
+  centralIdea: 'A plant-extract investigation is valid only when extraction yield, applied dose, bacterial lawn and incubation are controlled; inhibition zones show suppressed growth, not automatically killing.',
+  overview: ['Ask a TESTABLE question', 'standardise EXTRACTION', 'apply equal doses to discs', 'compare with CONTROLS', 'measure and qualify conclusions'],
+  overviewCaption: 'Separate the effect of plant chemistry from solvent effects, loading differences and variation in bacterial growth.',
+  outcomes: ['Prepare comparable plant extracts', 'Select positive and negative controls', 'Measure and analyse zones', 'Evaluate inhibition and biological relevance'],
+  prior: 'Starting point: antimicrobial molecules can diffuse from a paper disc through agar, forming a clear zone where a susceptible bacterial lawn fails to grow.',
+  terms: [
+    ['Plant extract', 'soluble compounds removed from plant tissue by a solvent'],
+    ['Positive control', 'known antimicrobial expected to inhibit growth'],
+    ['Negative control', 'carrier treatment expected not to inhibit growth'],
+    ['Standardisation', 'keeping quantities and procedures consistent'],
+    ['Bacteriostatic', 'inhibits bacterial growth without necessarily killing cells'],
+    ['Bactericidal', 'kills bacterial cells at the tested exposure'],
+  ],
+  termsCaption: 'A solvent control is essential because the extraction liquid itself may inhibit growth.',
+  sequence: ['Choose plant species or organ as the independent variable', 'Standardise mass, maturity and preparation', 'Extract using equal solvent volumes and times', 'Prepare a uniform bacterial lawn', 'Load equal extract volumes onto sterile discs', 'Include solvent and known-antibiotic controls', 'Incubate safely, measure zones, repeat and evaluate'],
+  concepts: [
+    { title: 'Turn the idea into a testable question', key: 'Define one plant-related independent variable and a numerical zone-diameter dependent variable.', chain: ['choose comparison', 'operationalise extract dose', 'plan replicates'], caption: 'OpenStax Figure 14.2 provides the real context of plant-derived medicinal compounds.' },
+    { title: 'Standardise plant material', key: 'Use equal fresh mass, comparable tissue age and the same plant organ for each extract.', chain: ['sample matched tissue', 'weigh equal mass', 'record biological source'], caption: 'Differences in water content, maturity or organ type can change apparent antimicrobial concentration.' },
+    { title: 'Control extraction conditions', key: 'Grind to a similar extent with equal solvent volume for the same time and temperature.', chain: ['cell walls disrupted', 'soluble compounds enter solvent', 'extract filtered'], caption: 'A fixed mass-to-volume ratio makes the nominal extract concentration comparable.' },
+    { title: 'Load discs quantitatively', key: 'Apply the same measured extract volume and drying interval to identical sterile paper discs.', chain: ['fixed aliquot pipetted', 'carrier handled equally', 'disc placed on lawn'], caption: 'OpenStax Figure 13.31 shows how treatment discs release compounds into inoculated agar.' },
+    { title: 'Use negative and positive controls', key: 'A solvent-only disc tests the carrier; a known antimicrobial confirms that the lawn can show inhibition.', chain: ['negative control checks solvent', 'positive checks responsiveness', 'plant result interpreted'], caption: 'Aseptic no-treatment controls can also reveal contamination or abnormal lawn growth.' },
+    { title: 'Compare plant-extract inhibition zones', key: 'Measure each clear-zone diameter through its centre using a consistent rule.', chain: ['zone edge identified', 'diameter measured in mm', 'repeat mean calculated'], caption: 'Only compare zones produced on equivalent lawns with the same disc and incubation conditions.' },
+    { title: 'Prepare a uniform test organism', key: 'One standardised bacterial suspension is spread evenly so every extract faces the same biological challenge.', chain: ['culture density matched', 'surface covered uniformly', 'disc positions randomised'], caption: 'Patchy or differently dense lawns make zone diameters incomparable.' },
+    { title: 'Measure and calculate transparently', key: 'Retain raw repeat measurements, calculate a mean and show spread with range or another appropriate statistic.', chain: ['raw diameters tabulated', 'anomaly considered', 'mean + range reported'], caption: 'Do not silently discard a repeat because it weakens the expected pattern.' },
+    { title: 'Separate inhibition from killing', key: 'A clear zone shows that visible growth did not occur, but surviving cells may regrow when the extract is removed.', chain: ['growth absent near disc', 'cells may be dormant or damaged', 'subculture tests killing'], caption: 'Disk diffusion alone cannot distinguish bacteriostatic from bactericidal action.' },
+    { title: 'Evaluate diffusion and biological relevance', key: 'A small poorly diffusing molecule may form a larger zone than a potent compound that moves slowly through agar.', chain: ['compound concentration differs', 'diffusion rate differs', 'zone size has multiple causes'], caption: 'Laboratory inhibition is promising evidence, not proof of safety or effectiveness in a patient.' },
+  ],
+  worked: {
+    question: 'Mint extract forms a 16 mm mean zone while solvent forms a 5 mm zone. What can be concluded, and what cannot?',
+    mustConnect: ['comparison with negative control', 'growth inhibition under test conditions', 'limits on killing and clinical claims'],
+    trap: 'Do not subtract the diameters as if the solvent zone were a simple linear background correction.',
+    steps: ['The solvent-only disc is the negative control', 'It produced a 5 mm zone, so the carrier is not biologically inert', 'Mint extract produced a larger 16 mm mean zone', 'A mint-derived component may add inhibitory activity beyond the carrier', 'Repeats and variability must be inspected', 'The test shows suppression of visible growth', 'It does not prove bacteria were killed', 'It does not establish dose, toxicity or effectiveness in humans'],
+    conclusion: 'Mint extract shows additional inhibition relative to this solvent control, but the active compound and clinical relevance remain unknown.',
+    check: 'the conclusion is comparative and does not overstate the assay.',
+    finalCaption: 'Controls make a conclusion possible; limitations determine how far that conclusion can extend.',
+  },
+  compare: {
+    title: 'Controls and conclusions',
+    heads: ['NEGATIVE CONTROL', 'POSITIVE CONTROL'],
+    left: ['contains solvent and blank disc', 'reveals carrier inhibition', 'should show little or no zone', 'supports attribution to plant extract'],
+    right: ['contains known antimicrobial', 'confirms lawn is susceptible', 'checks assay can display a zone', 'provides a reference response'],
+    caption: 'Neither control turns zone diameter into a direct measure of killing or patient benefit.',
+  },
+  application: {
+    title: 'Application: improving an inconsistent investigation',
+    situation: 'Replicates vary widely because discs received drops of different sizes and plant pieces were not weighed.',
+    steps: ['Use equal fresh mass for every extract', 'Add solvent with a fixed pipetted volume', 'Grind and extract for a fixed duration', 'Load identical discs with equal measured aliquots', 'Use one standardised lawn and randomise positions', 'Increase independent repeats and report spread'],
+    caption: 'Standardisation reduces avoidable variation; repeats reveal the biological and measurement variation that remains.',
+  },
+  misconceptions: [
+    ['a natural plant product is automatically safe', 'dose, toxicity and interactions must be tested'],
+    ['a clear zone proves bactericidal action', 'disk diffusion demonstrates inhibition of visible growth'],
+    ['solvent controls are optional', 'the solvent may itself inhibit bacteria'],
+  ],
+  specification: { title: 'CCEA practical checkpoint — plant antimicrobials', note: 'Design, carry out and evaluate a controlled plant-extract investigation using aseptic technique, appropriate controls, repeats and quantitative analysis.' },
+  questions: ['Why standardise plant mass?', 'What does the solvent control test?', 'Why use a positive control?', 'Why can zone size mislead?'],
+  answers: [
+    [['Plant mass', 'equal mass helps make the amount available for extraction comparable'], ['Solvent control', 'shows whether inhibition is caused by the extraction solvent or disc carrier']],
+    [['Positive control', 'a known antimicrobial confirms the lawn and assay can show inhibition'], ['Zone-size limit', 'diffusion, loading, agar and inoculum affect diameter as well as activity']],
+  ],
+  data: { title: 'Practical data: plant extracts and controls', question: 'Mean zones are garlic 21 mm, mint 14 mm, solvent 4 mm and antibiotic 28 mm. Rank the treatments and state the cautious conclusion.', values: ['largest: antibiotic 28', 'garlic 21 > mint 14', 'solvent 4 is not zero'], formula: 'compare means, controls and variability' },
+  calculation: { title: 'Practical data — full interpretation', steps: ['Rank means: antibiotic > garlic > mint > solvent', 'Positive control confirms a strong detectable response', 'Solvent zone shows some carrier inhibition', 'Both plant extracts exceed the solvent mean', 'Garlic exceeds mint under these conditions', 'Variation and diffusion must be checked before claiming a real potency difference'], answer: 'Garlic showed the greater plant-extract inhibition, but controls and spread limit the conclusion.' },
+  examQuestion: 'Plan an investigation comparing antimicrobial properties of two plant extracts and explain how the results should be interpreted.',
+  examAnswer: ['Use equal masses of comparable plant tissue', 'Grind with equal solvent volume for the same time', 'Filter and load equal aliquots onto identical discs', 'Spread one standardised bacterial lawn aseptically', 'Include solvent-only negative control', 'Include known-antimicrobial positive control', 'Keep agar, spacing, time and temperature constant', 'Use independent repeats', 'Measure zone diameters and calculate mean and spread', 'Conclude inhibition only and discuss diffusion, toxicity and bacteriostatic limits'],
+  examCaption: 'Link each control to the alternative explanation it excludes, then keep the conclusion within the evidence.',
+  recap: ['Extraction conditions must be standardised', 'Equal disc loading enables comparison', 'Both controls are needed', 'Zones show inhibition, not necessarily killing', 'Diffusion and safety limit wider claims'],
+  nextLesson: 'phytochromes show how plants also use specialised molecules to detect and respond to environmental signals.',
+});
+
+
