@@ -26,6 +26,7 @@ const SolarSystem3D = React.lazy(() => import('@/components/lesson/SolarSystem3D
 const CrystalLattice3D = React.lazy(() => import('@/components/lesson/CrystalLattice3D'));
 const AmmoniaFountainLive = React.lazy(() => import('@/components/lesson/AmmoniaFountainLive'));
 const AS_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dc';
+const A2_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dd';
 const WATER_INTERACTIVE_LESSON_ID = '6992f49f4f5ddcd614cb9d2e';
 const WATER_POLARITY_MARKER = 'interactive:water-polarity';
 const OPENSTAX_FIGURES = [
@@ -122,6 +123,103 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/25-6-tubular-reabsorption',
     bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
   },
+  {
+    paths: [
+      '/a2-biology/a2-009-p03.png',
+      '/a2-biology/a2-009-p14.png',
+      '/a2-biology/a2-009-p23.png',
+      '/a2-biology/a2-009-p36.png',
+    ],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 21.12',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/21-2-barrier-defenses-and-the-innate-immune-response',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-009-p19.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 21.21',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/21-4-the-adaptive-immune-response-b-lymphocytes-and-antibodies',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/a2-biology/a2-009-p20.png',
+      '/a2-biology/a2-011-p06.png',
+    ],
+    book: 'Biology 2e',
+    figure: 'Figure 42.25',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/42-3-antibodies',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/a2-biology/a2-009-p21.png',
+      '/a2-biology/a2-011-p14.png',
+      '/a2-biology/a2-011-p19.png',
+      '/a2-biology/a2-011-p20.png',
+    ],
+    book: 'Biology 2e',
+    figure: 'Figure 42.24',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/42-3-antibodies',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/lesson-assets/a2-biology/a2-immunity-10-humoral-cell-mediated-photorealistic.png',
+      '/a2-biology/a2-010-p10.png',
+      '/a2-biology/a2-010-p12.png',
+    ],
+    book: 'Biology 2e',
+    figure: 'Figure 42.11',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/42-2-adaptive-immune-response',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/a2-biology/a2-010-p08.png',
+      '/a2-biology/a2-010-p09.png',
+    ],
+    book: 'Biology 2e',
+    figure: 'Figure 42.16',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/42-2-adaptive-immune-response',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-010-p11.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 21.23',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/21-4-the-adaptive-immune-response-b-lymphocytes-and-antibodies',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-010-p19.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 21.19',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/21-3-the-adaptive-immune-response-t-lymphocytes-and-their-functional-types',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/a2-biology/a2-010-p15.png',
+      '/a2-biology/a2-010-p26.png',
+    ],
+    book: 'Biology 2e',
+    figure: 'Figure 42.17',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/42-2-adaptive-immune-response',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [
+      '/a2-biology/a2-011-p11.png',
+      '/a2-biology/a2-011-p12.png',
+      '/a2-biology/a2-011-p13.png',
+    ],
+    book: 'Biology 2e',
+    figure: 'Figure 42.8',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/42-1-innate-immune-response',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
@@ -201,6 +299,16 @@ export default function EnhancedLessonPlayer({
   const progressPercent = sortedLessons.length > 0 ? ((currentLessonIndex + 1) / sortedLessons.length * 100) : 0;
   const contentSlides = lesson?.slides || [];
   const activeContentSlide = contentSlides[currentContentSlide];
+  const needsA2ImmunityVisual = (courseId === A2_BIOLOGY_COURSE_ID || lesson?.course_id === A2_BIOLOGY_COURSE_ID)
+    && Number(lesson?.order) === 9
+    && activeContentSlide
+    && !/<img\b/i.test(activeContentSlide.content || '');
+  const a2ImmunityVisualPath = needsA2ImmunityVisual
+    ? `/a2-biology/a2-009-p${String(currentContentSlide + 1).padStart(2, '0')}.png`
+    : null;
+  const renderedSlideHtml = a2ImmunityVisualPath
+    ? `<figure class='page-visual'><img src='${a2ImmunityVisualPath}' alt='Teaching diagram for this immunity page.' loading='lazy' /><figcaption>Immunity process diagram aligned to this page.</figcaption></figure>${activeContentSlide.content || ''}`
+    : (activeContentSlide?.content || '');
   const isWaterPolarityPage = lesson?.id === WATER_INTERACTIVE_LESSON_ID
     && activeContentSlide?.notes === WATER_POLARITY_MARKER;
   const asBiologyPanelPageIndex = contentSlides.length > 1 ? 1 : 0;
@@ -760,17 +868,17 @@ export default function EnhancedLessonPlayer({
                     <WaterPolarityLessonVisual shouldReduceMotion={shouldReduceMotion} />
                   ) : isASBiologyPanelPage ? (
                     <LessonABPanels
-                      html={activeContentSlide.content || ''}
+                      html={renderedSlideHtml}
                       pageTitle={activeContentSlide.title}
                       lessonTitle={lesson.title}
                     />
                   ) : (
                     <MathJaxContent
                       className={richContentClasses + (animatedStemContent ? ' lesson-page-body' : '')}
-                      html={activeContentSlide.content || ''}
+                      html={renderedSlideHtml}
                     />
                   )}
-                  {OPENSTAX_FIGURES.filter((figure) => (figure.paths || [figure.path]).some((path) => activeContentSlide.content?.includes(path))).map((figure) => (
+                  {OPENSTAX_FIGURES.filter((figure) => (figure.paths || [figure.path]).some((path) => renderedSlideHtml.includes(path))).map((figure) => (
                     <p key={`${figure.book}-${figure.figure}`} className="mt-3 text-center text-xs leading-5 text-slate-500">
                       Image: <a className="underline underline-offset-2" href={figure.sectionUrl} target="_blank" rel="noreferrer">OpenStax, {figure.book}, {figure.figure}</a>. Licensed under <a className="underline underline-offset-2" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noreferrer">CC BY-NC-SA 4.0</a>. <a className="underline underline-offset-2" href={figure.bookUrl} target="_blank" rel="noreferrer">Access for free at OpenStax.</a>
                     </p>
