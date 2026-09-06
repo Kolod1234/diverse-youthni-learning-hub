@@ -615,6 +615,55 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/college-physics-2e/pages/26-1-physics-of-the-eye',
     bookUrl: 'https://openstax.org/books/college-physics-2e/pages/1-introduction-to-science-and-the-realm-of-physics-physical-quantities-and-units',
   },
+  {
+    paths: ['/a2-biology/a2-027-p03.png', '/a2-biology/a2-027-p04.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 10.3',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-2-skeletal-muscle',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-027-p05.png', '/a2-biology/a2-027-p18.png', '/a2-biology/a2-027-p26.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 10.4',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-2-skeletal-muscle',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-027-p06.png', '/a2-biology/a2-027-p07.png', '/a2-biology/a2-027-p08.png', '/a2-biology/a2-027-p20.png', '/a2-biology/a2-027-p21.png', '/a2-biology/a2-027-p23.png', '/a2-biology/a2-027-p24.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 10.5',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-2-skeletal-muscle',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-027-p13.png', '/a2-biology/a2-027-p28.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 10.8',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-3-muscle-fiber-contraction-and-relaxation',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-027-p09.png', '/a2-biology/a2-027-p10.png', '/a2-biology/a2-027-p11.png', '/a2-biology/a2-027-p16.png', '/a2-biology/a2-027-p19.png', '/a2-biology/a2-027-p22.png', '/a2-biology/a2-027-p27.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 10.10',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-3-muscle-fiber-contraction-and-relaxation',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-027-p12.png', '/a2-biology/a2-027-p14.png', '/a2-biology/a2-027-p15.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 10.11',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-3-muscle-fiber-contraction-and-relaxation',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-028-p03.png', '/a2-biology/a2-028-p04.png', '/a2-biology/a2-028-p05.png', '/a2-biology/a2-028-p06.png', '/a2-biology/a2-028-p07.png', '/a2-biology/a2-028-p11.png', '/a2-biology/a2-028-p12.png', '/a2-biology/a2-028-p13.png', '/a2-biology/a2-028-p14.png', '/a2-biology/a2-028-p15.png', '/a2-biology/a2-028-p16.png', '/a2-biology/a2-028-p17.png', '/a2-biology/a2-028-p18.png'],
+    book: 'Anatomy and Physiology 2e',
+    figure: 'Figure 10.2',
+    sectionUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-1-overview-of-muscle-tissues',
+    bookUrl: 'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
