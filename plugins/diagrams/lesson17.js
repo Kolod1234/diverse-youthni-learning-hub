@@ -1,0 +1,81 @@
+/* A2 Biology, Lesson 17 — ELISA, Cytokines and Disease Biomarkers. */
+const { makeLesson } = require('./immunityLessonFactory');
+
+module.exports = makeLesson({
+  title: 'ELISA, Cytokines and Disease Biomarkers',
+  prefix: 'a2-017-p',
+  openStaxPath: 'lesson-assets/a2-biology/a2-immunity-17-elisa-photorealistic.png',
+  openStaxCopies: [
+    { source: 'lesson-assets/a2-biology/openstax-20-24-sandwich-elisa.png', pageNumbers: [6, 7, 8, 9, 10, 12, 13, 14, 19, 26, 27] },
+    { source: 'lesson-assets/a2-biology/openstax-17-10-cytokine-signalling.png', pageNumbers: [11, 15, 20] },
+  ],
+  centralIdea: 'A sandwich ELISA captures one specific antigen between two antibodies, links the complex to an enzyme and converts substrate colour into a quantitative estimate using standards and controls.',
+  overview: ['CAPTURE antibody coats well', 'sample ANTIGEN binds', 'wash removes unbound material', 'enzyme-linked antibody completes SANDWICH', 'colour is compared with standards'],
+  overviewCaption: 'Every wash preserves specifically bound complexes while removing molecules that would create background signal.',
+  outcomes: ['Sequence a sandwich ELISA', 'Explain the purpose of washing', 'Use standards and controls', 'Evaluate cytokines as biomarkers'],
+  prior: 'Starting point: antibodies bind complementary epitopes, while enzymes catalyse reactions whose coloured products can be measured.',
+  terms: [
+    ['ELISA', 'enzyme-linked immunosorbent assay'],
+    ['Capture antibody', 'immobilised antibody that binds the target antigen'],
+    ['Detection antibody', 'second antibody that binds another target epitope'],
+    ['Substrate', 'molecule converted by the linked enzyme into a coloured product'],
+    ['Standard curve', 'known concentrations used to relate absorbance to concentration'],
+    ['Biomarker', 'measurable biological indicator associated with a condition or process'],
+  ],
+  termsCaption: 'A valid quantitative result needs specificity, controls and a reading within the standard range.',
+  sequence: ['Immobilise capture antibody in a microplate well', 'Block remaining nonspecific binding sites', 'Add sample so target antigen binds', 'Wash away unbound sample components', 'Add enzyme-linked detection antibody', 'Wash away unbound conjugate', 'Add substrate and compare absorbance with standards'],
+  concepts: [
+    { title: 'Capture antibody gives the assay its first specificity', key: 'Identical immobilised antibodies line each well and retain only antigen with a complementary epitope.', chain: ['antibody fixed to plastic', 'sample added', 'target antigen captured'], caption: 'OpenStax Figure 20.24 shows capture antibody attached to the microplate surface.' },
+    { title: 'The sample supplies an unknown target amount', key: 'Target antigen binds capture sites while unrelated sample molecules remain unbound.', chain: ['unknown sample added', 'specific collisions occur', 'antigen remains in well'], caption: 'Blocking reduces nonspecific protein attachment to exposed plastic.' },
+    { title: 'Washing protects the meaning of the signal', key: 'A wash removes unbound molecules without dislodging high-affinity specific complexes.', chain: ['buffer enters', 'unbound material leaves', 'captured antigen remains'], caption: 'Poor washing raises background colour and can produce false positives or inaccurate estimates.' },
+    { title: 'Detection antibody completes the sandwich', key: 'A second antibody binds a different epitope on the captured antigen and carries or recruits an enzyme.', chain: ['captured antigen present', 'second antibody binds', 'enzyme retained in well'], caption: 'Two-recognition-site binding increases specificity for the target.' },
+    { title: 'Substrate converts binding into colour', key: 'Retained enzyme catalyses formation of a coloured product after substrate is added.', chain: ['substrate added', 'enzyme catalyses reaction', 'colour accumulates'], caption: 'Within the assay range, more captured antigen retains more enzyme and produces greater absorbance.' },
+    { title: 'Cytokines can act as disease biomarkers', key: 'Cytokines are soluble signalling proteins whose concentration may change with immune activation.', chain: ['cells release cytokine', 'signal enters sample fluid', 'ELISA quantifies target'], caption: 'OpenStax Figure 17.10 shows cytokines acting over autocrine, paracrine and endocrine distances.' },
+    { title: 'A blank estimates background signal', key: 'A blank contains reagents but no target antigen, revealing colour unrelated to the target.', chain: ['no target added', 'reagents processed', 'baseline absorbance measured'], caption: 'Blank absorbance can be subtracted or used as a validity check according to the protocol.' },
+    { title: 'A positive control tests whether the assay works', key: 'A known target-containing sample should produce a signal in the expected range.', chain: ['known antigen supplied', 'all reagents challenged', 'expected colour confirms function'], caption: 'A negative control checks nonspecific binding; neither replaces the calibration standards.' },
+    { title: 'Standards turn colour into concentration', key: 'Known antigen concentrations generate a calibration curve of absorbance against concentration.', chain: ['serial standards prepared', 'absorbance measured', 'unknown interpolated'], caption: 'OpenStax Figure 20.24 shows stronger colour at higher antigen concentration.' },
+    { title: 'Cytokine specificity has limits', key: 'One cytokine concentration can support an interpretation but rarely proves one disease by itself.', chain: ['many processes release cytokine', 'values overlap among patients', 'combine with clinical evidence'], caption: 'Cross-reactivity, timing and biological variation can alter diagnostic sensitivity and specificity.' },
+  ],
+  worked: {
+    question: 'Explain why colour develops in a positive sandwich ELISA well but not in a correctly functioning negative well.',
+    mustConnect: ['specific antigen capture', 'enzyme-linked detection antibody', 'washing before substrate'],
+    trap: 'Do not state that the antigen itself changes colour or that washing removes the captured complex.',
+    steps: ['Capture antibody is immobilised in both wells', 'The positive sample contains complementary antigen', 'Its antigen binds the capture antibody', 'Washing removes unbound sample molecules', 'Enzyme-linked detection antibody binds another antigen epitope', 'A second wash removes unbound enzyme-linked antibody', 'The positive well retains enzyme and converts substrate to coloured product', 'The negative well lacks target antigen, so its enzyme-linked antibody is washed away and little colour forms'],
+    conclusion: 'Colour reports retained enzyme, which is retained only when the target completes the antibody–antigen sandwich.',
+    check: 'the explanation states what remains after each wash in both positive and negative wells.',
+    finalCaption: 'The wash steps are causal, not decorative: they make retained enzyme evidence of specific binding.',
+  },
+  compare: {
+    title: 'Standards and controls have different jobs',
+    heads: ['STANDARDS', 'CONTROLS'],
+    left: ['contain known target concentrations', 'generate calibration relationship', 'allow interpolation of unknowns', 'define useful measurement range'],
+    right: ['test expected assay behaviour', 'blank or negative estimates background', 'positive confirms reagents function', 'flag invalid experimental runs'],
+    caption: 'Quantification requires standards; confidence that the run worked requires controls.',
+  },
+  application: {
+    title: 'Application: monitoring a cytokine',
+    situation: 'A patient cytokine sample is tested before and after treatment using the same validated sandwich ELISA.',
+    steps: ['Run both samples with standards and controls', 'Subtract or assess blank background consistently', 'Interpolate within the calibration range', 'Compare replicate concentration estimates', 'Consider sampling time and biological variation', 'Use the result alongside other clinical evidence'],
+    caption: 'A measured change may track inflammation, but one biomarker alone does not establish cause or diagnosis.',
+  },
+  misconceptions: [
+    ['a darker well is automatically positive', 'colour must exceed valid controls and lie within the calibrated range'],
+    ['washing removes the target antigen', 'specific antigen remains bound while unbound material is removed'],
+    ['one cytokine uniquely identifies one disease', 'many immune processes can alter the same cytokine'],
+  ],
+  specification: { title: 'CCEA specification checkpoint — 4.2 Immunity', note: 'Describe ELISA antibody specificity, enzyme-linked detection, standards and controls, and interpret cytokines or other molecules as disease biomarkers.' },
+  questions: ['Why are two antibodies used in sandwich ELISA?', 'Why wash after the detection antibody?', 'What is the purpose of standards?', 'Why is a cytokine an imperfect standalone diagnostic?'],
+  answers: [
+    [['Two antibodies', 'capture and detection antibodies recognise target epitopes, increasing specificity'], ['Wash', 'removes unbound enzyme-linked antibody so background colour is minimised']],
+    [['Standards', 'known concentrations relate absorbance to antigen concentration'], ['Cytokine limit', 'several diseases and normal immune processes may change the same cytokine']],
+  ],
+  data: { title: 'Data task: calibration curve', question: 'Standards give 0, 20, 40 and 60 pg mL⁻¹ at absorbances 0.05, 0.25, 0.45 and 0.65. An unknown has absorbance 0.35. Estimate its concentration.', values: ['0.25 → 20 pg mL⁻¹', '0.45 → 40 pg mL⁻¹', 'unknown 0.35 is halfway'], formula: 'linear interpolation between adjacent standards' },
+  calculation: { title: 'Data task — interpolation', steps: ['The unknown lies between absorbance 0.25 and 0.45', 'This absorbance interval is 0.20', '0.35 is 0.10 above 0.25, so it is halfway', 'The concentration interval is 40 − 20 = 20 pg mL⁻¹', 'Half of 20 is 10; add to 20'], answer: 'Estimated cytokine concentration = 30 pg mL⁻¹.' },
+  examQuestion: 'Describe how a sandwich ELISA quantifies a cytokine in a patient sample and explain the roles of standards and controls.',
+  examAnswer: ['Capture antibody is immobilised in each well', 'Remaining binding sites are blocked', 'Patient cytokine binds its complementary capture antibody', 'Unbound sample components are washed away', 'Enzyme-linked detection antibody binds another cytokine epitope', 'Unbound detection antibody is washed away', 'Substrate is converted into coloured product by retained enzyme', 'Absorbance increases with captured cytokine in the useful range', 'Known standards generate a calibration curve', 'Blank, negative and positive controls reveal background or assay failure'],
+  examCaption: 'Sequence the assay accurately, then distinguish calibration from quality control.',
+  recap: ['Capture antibody immobilises the target', 'Washes remove unbound material', 'Detection antibody retains an enzyme', 'Standards convert absorbance to concentration', 'Controls and wider evidence support valid interpretation'],
+  nextLesson: 'the next topic builds from molecular measurement to broader analysis of biological data and evidence.',
+});
+
+
