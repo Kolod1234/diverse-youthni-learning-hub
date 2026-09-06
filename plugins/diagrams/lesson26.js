@@ -1,0 +1,33 @@
+/* A2 Biology, Lesson 26 — Practical: Identifying Structures of the Mammalian Eye. */
+const { makeCoordinationLesson } = require('./coordinationLessonFactory');
+
+const slides = [
+  { title: 'Practical: Identifying Structures of the Mammalian Eye', key: 'A successful practical combines safe dissection or microscopy, accurate identification, calibrated measurement and evidence-based recording.', chain: ['prepare safely', 'observe systematically', 'identify structures', 'measure and record'], caption: 'Separate observations from interpretations in the lab record.' },
+  { title: 'Specification focus and practical outcomes', kind: 'steps', chain: ['Recognise eye structures', 'Recognise retinal layers', 'Distinguish rods and cones', 'Produce a biological drawing', 'Calibrate and measure', 'Evaluate limitations'], caption: 'Practical marks reward method and evidence as well as correct names.' },
+  { title: 'Microscope technique', kind: 'steps', chain: ['Start on low power', 'Centre the specimen', 'Focus with coarse control', 'Increase magnification', 'Use fine focus only', 'Adjust illumination'], caption: 'Return to low power before locating a new region.' },
+  { title: 'Orientating an eye section', key: 'Find the curved cornea and lens anteriorly, the layered retina posteriorly, and the optic nerve leaving the back of the eye.', chain: ['locate cornea', 'identify lens space', 'trace retina', 'find optic nerve'], caption: 'OpenStax Figure 36.18 is the reference cross-section for orientation.' },
+  { title: 'Identifying the three coats', kind: 'steps', chain: ['Outer sclera: dense and pale', 'Middle choroid: darkly pigmented', 'Inner retina: layered nervous tissue', 'Check continuity around posterior eye'], caption: 'OpenStax Figure 36.18 labels both whole-eye and retinal anatomy.' },
+  { title: 'Finding rods, cones, fovea and blind spot', kind: 'cards', cards: [['RODS', 'elongated receptors; abundant away from fovea'], ['CONES', 'tapered receptors; concentrated at fovea'], ['FOVEA', 'cone-rich region of greatest acuity'], ['OPTIC DISC', 'nerve exit; no receptors']], caption: 'OpenStax Figure 36.19 compares receptor shapes.' },
+  { title: 'Rules for a biological drawing', kind: 'steps', chain: ['Use a sharp pencil', 'Draw large and in proportion', 'Use single clear lines', 'Do not shade or sketch', 'Use ruled non-crossing labels', 'Add title and scale'], caption: 'Draw what is observed rather than an idealised textbook image.' },
+  { title: 'Calibrating an eyepiece graticule', kind: 'steps', key: 'At the selected objective, align the eyepiece scale with a stage micrometer.', chain: ['Match both zero marks', 'Find a second coincident mark', 'Read known micrometer distance', 'Divide by eyepiece divisions', 'Record µm per division'], caption: 'Calibration changes when the objective lens changes.' },
+  { title: 'Worked measurement calculation', kind: 'steps', key: '50 eyepiece divisions align with 0.50 mm; specimen spans 18 divisions.', chain: ['0.50 mm = 500 µm', 'one division = 500 ÷ 50 = 10 µm', 'size = 18 × 10 µm', 'specimen size = 180 µm'], caption: 'Convert to micrometres before calculating the calibration.' },
+  { title: 'What belongs in the lab book', kind: 'cards', cards: [['METHOD', 'enough detail to repeat'], ['OBSERVATION', 'drawing, labels and raw values'], ['CALCULATION', 'formula, substitution and units'], ['EVALUATION', 'specific error and improvement']], caption: 'Record magnification and calibration with each measured image.' },
+  { title: 'Limitations of prepared sections', key: 'A thin section is a two-dimensional slice: orientation, compression, staining and preparation can distort apparent shape.', chain: ['tissue fixed', 'section cut', 'stain applied', '2D image interpreted'], caption: 'Compare the specimen with OpenStax Figure 36.18 while allowing for preparation artefacts.' },
+  { title: 'Sources of error and improvements', kind: 'compare', heads: ['LIMITATION', 'IMPROVEMENT'], left: ['section folded', 'boundary chosen inconsistently', 'scale not recalibrated', 'single field sampled'], right: ['select intact region', 'define boundary rule', 'calibrate each objective', 'measure several fields'], caption: 'An improvement must address the named source of uncertainty.' },
+  { title: 'Worked practical examination question', kind: 'steps', chain: ['Identify sclera by outer position', 'Identify choroid by pigment', 'Identify retina by layers', 'Locate optic nerve exit', 'State optic disc lacks receptors', 'Support each claim with visible evidence'], caption: 'OpenStax Figure 36.18 provides the reference arrangement.' },
+  { title: 'Practical check', kind: 'steps', chain: ['Can you orient the section?', 'Can you distinguish all three coats?', 'Can you identify optic nerve?', 'Can you calibrate the scale?', 'Can you calculate actual size?', 'Can you state one limitation?'], caption: 'Use the reference figure only after making an independent observation.' },
+  { title: 'Answers and self-correction', kind: 'cards', cards: [['OUTER COAT', 'sclera'], ['PIGMENTED COAT', 'choroid'], ['SENSORY COAT', 'retina'], ['NERVE EXIT', 'optic disc or blind spot']], caption: 'Check positions against OpenStax Figure 36.18.' },
+  { title: 'Key practical terms', kind: 'cards', cards: [['CALIBRATION', 'known length per graticule division'], ['MAGNIFICATION', 'image size ÷ actual size'], ['ARTEFACT', 'feature introduced during preparation'], ['FIELD OF VIEW', 'visible circular specimen area']], caption: 'State units with every scale or actual-size value.' },
+  { title: 'Specification checkpoint', kind: 'steps', chain: ['Eye structures identified from specimen', 'Retinal layers recognised', 'Rods and cones distinguished', 'Drawing conventions followed', 'Measurement calibrated', 'Limitations evaluated'], caption: 'OpenStax Figure 36.18 is a labelled reference, not a substitute for recording the actual specimen.' },
+  { title: 'Practical recap', kind: 'steps', chain: ['Work safely and systematically', 'Orient before identifying detail', 'Use position and appearance as evidence', 'Draw with clear conventions', 'Calibrate before measuring', 'Evaluate artefacts and sampling'], caption: 'The practical links observed tissue to the functional anatomy shown in OpenStax Figures 36.18 and 36.19.' },
+];
+
+module.exports = makeCoordinationLesson({
+  title: 'Practical: Identifying Structures of the Mammalian Eye', prefix: 'a2-026-p', pageCount: 18, slides,
+  openStaxCopies: [
+    { source: 'lesson-assets/a2-biology/openstax-36-18-eye-retina.png', pageNumbers: [4, 5, 11, 12, 13, 14, 15, 16, 17, 18] },
+    { source: 'lesson-assets/a2-biology/openstax-36-19-rods-cones.png', pageNumbers: [6] },
+  ],
+});
+
+
