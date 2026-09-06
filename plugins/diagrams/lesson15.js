@@ -1,0 +1,82 @@
+/* A2 Biology, Lesson 15 — Blood Transfusion Compatibility and Incompatibility. */
+const { makeLesson } = require('./immunityLessonFactory');
+
+module.exports = makeLesson({
+  title: 'Blood Transfusion Compatibility and Incompatibility',
+  prefix: 'a2-015-p',
+  openStaxPath: 'lesson-assets/a2-biology/a2-immunity-15-transfusion-compatibility-photorealistic.png',
+  openStaxCopies: [
+    { source: 'lesson-assets/a2-biology/openstax-18-17-abo-blood-groups.png', pageNumbers: [6, 7, 8, 9, 10, 12, 20] },
+    { source: 'lesson-assets/a2-biology/openstax-19-5-incompatible-transfusion.png', pageNumbers: [11, 14, 15] },
+    { source: 'lesson-assets/a2-biology/openstax-18-16-blood-crossmatch.png', pageNumbers: [19, 26, 27] },
+  ],
+  centralIdea: 'A red-cell transfusion is compatible only when antibodies in the recipient plasma cannot bind antigens on the donated red cells; binding causes agglutination and haemolysis.',
+  overview: ['Identify the COMPONENT transfused', 'list DONOR red-cell antigens', 'list RECIPIENT antibodies', 'test complementary binding', 'predict safe or unsafe'],
+  overviewCaption: 'Compatibility is a directional donor-red-cell–recipient-plasma comparison, not a vague match of group letters.',
+  outcomes: ['Predict ABO red-cell compatibility', 'Explain agglutination and haemolysis', 'Interpret cross-match results', 'Evaluate universal-donor shorthand'],
+  prior: 'Starting point: ABO phenotype determines red-cell surface antigens and the naturally occurring anti-A or anti-B antibodies in plasma.',
+  terms: [
+    ['Donor', 'person whose blood component is transfused'],
+    ['Recipient', 'person receiving the blood component'],
+    ['Agglutination', 'antibody cross-links red cells into clumps'],
+    ['Haemolysis', 'rupture and destruction of red blood cells'],
+    ['Cross-match', 'test mixing donor cells with recipient plasma'],
+    ['Packed red cells', 'concentrated red cells with most donor plasma removed'],
+  ],
+  termsCaption: 'Always state whether you are discussing antigens on cells or antibodies in plasma.',
+  sequence: ['Identify that packed red cells are being transfused', 'Read the donor A, B and D antigens', 'Read the recipient anti-A, anti-B and relevant anti-D antibodies', 'Check for a complementary antigen–antibody pair', 'If none binds, the red-cell transfer is ABO compatible', 'If binding occurs, antibodies cross-link donor cells', 'Agglutination, complement activation and haemolysis can impair circulation and kidneys'],
+  concepts: [
+    { title: 'The component determines the compatibility question', key: 'Packed red-cell compatibility focuses on donor-cell antigens meeting recipient-plasma antibodies.', chain: ['donor red cells selected', 'most donor plasma removed', 'recipient antibodies dominate'], caption: 'Whole blood, plasma and red-cell products do not use identical compatibility rules.' },
+    { title: 'List donor red-cell antigens first', key: 'Group A cells display A antigen, B display B, AB display both and O display neither.', chain: ['read donor group', 'name surface antigens', 'ignore slogans'], caption: 'OpenStax Figure 18.17 provides the antigen inventory for each ABO phenotype.' },
+    { title: 'Then list recipient plasma antibodies', key: 'Group A plasma contains anti-B, B contains anti-A, O contains both and AB contains neither.', chain: ['read recipient group', 'name antibodies', 'test for a match'], caption: 'An antibody attacks its complementary antigen, not a cell simply because the group letter differs.' },
+    { title: 'Compatibility requires no complementary match', key: 'A donor antigen is unsafe when the recipient has the corresponding antibody.', chain: ['donor antigen exposed', 'recipient antibody binds', 'transfusion incompatible'], caption: 'For example, group A donor cells are unsafe for a group B recipient because anti-A is present.' },
+    { title: 'Why group O red cells are broadly compatible', key: 'Group O red cells carry neither A nor B antigen for recipient anti-A or anti-B to bind.', chain: ['no A antigen', 'no B antigen', 'ABO binding avoided'], caption: 'This applies to packed red cells and does not erase Rh or other blood-group antigens.' },
+    { title: 'Incompatible transfusion initiates antibody binding', key: 'Recipient immunoglobulins bind repeated antigen sites on transfused cells.', chain: ['incompatible cells enter', 'specific antibody attaches', 'cells become cross-linked'], caption: 'OpenStax Figure 19.5 shows incompatible transfused cells agglutinating in the recipient circulation.' },
+    { title: 'Why group AB recipients are broadly compatible', key: 'Group AB plasma lacks both anti-A and anti-B antibodies.', chain: ['no anti-A', 'no anti-B', 'ABO donor antigens not attacked'], caption: 'The conclusion concerns red-cell transfusion; AB plasma donation has the opposite broad compatibility pattern.' },
+    { title: 'Why donor antibodies usually matter less in packed cells', key: 'Most donor plasma is removed, so relatively little donor anti-A or anti-B is transferred.', chain: ['cells separated', 'plasma volume reduced', 'recipient plasma is main exposure'], caption: 'This is why compatibility is usually reasoned from donor cells to recipient antibodies.' },
+    { title: 'Agglutination and haemolysis are linked', key: 'Antibodies cross-link cells and may activate complement, damaging their membranes.', chain: ['antibody bridges cells', 'clumps obstruct small vessels', 'membranes rupture'], caption: 'Agglutination is clumping; haemolysis is red-cell destruction—do not use the terms as synonyms.' },
+    { title: 'A severe reaction has systemic consequences', key: 'Destroyed cells release haemoglobin and reduce oxygen transport while inflammatory pathways cause shock.', chain: ['red cells lost', 'free haemoglobin filtered', 'kidney injury + shock risk'], caption: 'The reaction can become rapidly life-threatening, so identity checks and cross-matching are essential.' },
+  ],
+  worked: {
+    question: 'Can packed group A-positive red cells be given to a group B-positive recipient? Explain fully.',
+    mustConnect: ['donor antigen A', 'recipient anti-A', 'agglutination and haemolysis'],
+    trap: 'Do not compare only the Rh signs or claim that donor antibodies attack the recipient.',
+    steps: ['The transfused component contains donor red cells', 'Group A-positive donor cells display antigen A and antigen D', 'A group B recipient has anti-A in plasma', 'Anti-A is complementary to antigen A', 'Recipient anti-A binds the donor red cells', 'Each antibody can cross-link more than one cell', 'The cells agglutinate and complement may promote haemolysis', 'Therefore the red-cell transfusion is incompatible despite matching Rh status'],
+    conclusion: 'A-positive donor red cells are unsafe for a B-positive recipient because recipient anti-A binds donor antigen A.',
+    check: 'the conclusion names the donor antigen, recipient antibody and resulting cell damage.',
+    finalCaption: 'A high-quality answer follows the molecules from first contact to the clinical consequence.',
+  },
+  compare: {
+    title: 'Cross-match before transfusion',
+    heads: ['NO AGGLUTINATION', 'AGGLUTINATION'],
+    left: ['donor cells remain separate', 'recipient antibody has no target', 'sample is compatible in this test', 'other safety checks still apply'],
+    right: ['donor cells form visible clumps', 'recipient antibody found its antigen', 'sample is incompatible', 'do not transfuse that unit'],
+    caption: 'OpenStax Figure 18.16 shows how agglutination reveals an antigen–antibody incompatibility.',
+  },
+  application: {
+    title: 'Application: “group O is universal”',
+    situation: 'An emergency label describes O-negative packed red cells as universal donor blood.',
+    steps: ['Group O cells lack A and B antigens', 'Rh-negative cells lack antigen D', 'This avoids the three common antigen targets', 'Other red-cell antigens still exist', 'Donor plasma antibodies matter in whole blood or plasma products', 'Cross-matching remains the safer individual test'],
+    caption: 'Treat “universal” as useful shorthand for packed red cells, not an exception to antigen–antibody biology.',
+  },
+  misconceptions: [
+    ['matching one group letter guarantees safety', 'compatibility depends on every relevant antigen and antibody'],
+    ['group O has no antibodies', 'group O plasma contains both anti-A and anti-B'],
+    ['agglutination and haemolysis are identical', 'agglutination is clumping; haemolysis is cell rupture'],
+  ],
+  specification: { title: 'CCEA specification checkpoint — 4.2 Immunity', note: 'Apply ABO and Rh antigen–antibody specificity to transfusion compatibility, agglutination, haemolysis and cross-matching.' },
+  questions: ['Why can group O packed red cells be widely donated?', 'Why can an AB recipient receive many ABO red-cell groups?', 'What causes agglutination?', 'What does a positive cross-match show?'],
+  answers: [
+    [['Group O cells', 'lack A and B antigens, so recipient anti-A or anti-B has no target'], ['AB recipient', 'plasma lacks anti-A and anti-B antibodies']],
+    [['Agglutination', 'antibody binds and cross-links complementary antigens on several red cells'], ['Positive cross-match', 'visible clumping shows donor cells are incompatible with recipient plasma']],
+  ],
+  data: { title: 'Data task: cross-match results', question: 'Recipient plasma is mixed with three donor samples. A and C remain smooth; B forms visible clumps. Which samples pass this compatibility test?', values: ['A: no clumps', 'B: clumps', 'C: no clumps'], formula: 'No agglutination = compatible in this test' },
+  calculation: { title: 'Data task — interpretation', steps: ['Sample B agglutinates', 'Recipient antibody therefore binds an antigen on B cells', 'B is incompatible and must not be transfused', 'A and C show no detected antigen–antibody reaction', 'A and C pass this cross-match, subject to all other clinical checks'], answer: 'A and C pass; B fails because it agglutinates.' },
+  examQuestion: 'Explain why packed group O-negative red cells are often used in emergencies, and why cross-matching is still required.',
+  examAnswer: ['Group O red cells lack antigen A', 'They also lack antigen B', 'Recipient anti-A and anti-B therefore have no target', 'Rh-negative red cells lack antigen D', 'This reduces risk of anti-D binding or sensitisation', 'Packed cells contain little donor plasma', 'Other blood-group antigens remain on the donor cells', 'A recipient may possess antibodies against those antigens', 'Cross-matching exposes donor cells to recipient plasma', 'Agglutination identifies an unsafe antigen–antibody reaction'],
+  examCaption: 'Qualify the universal-donor shorthand and finish with the evidence supplied by a cross-match.',
+  recap: ['Red-cell compatibility is directional', 'Compare donor antigens with recipient antibodies', 'Complementary binding causes agglutination', 'Haemolysis can cause shock and kidney injury', 'Cross-matching detects individual incompatibility'],
+  nextLesson: 'antibiotic resistance applies natural selection to microbial populations under a different kind of chemical pressure.',
+});
+
+
