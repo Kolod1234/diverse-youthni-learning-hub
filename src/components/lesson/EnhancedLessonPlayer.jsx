@@ -986,6 +986,41 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-5-metabolism-without-oxygen',
     bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
   },
+  {
+    paths: [1, 3, 4, 7, 8, 9, 10, 11, 12, 14, 15, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30].map((page) => `/a2-biology/a2-050-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 7.19',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-6-connections-of-carbohydrate-protein-and-lipid-metabolic-pathways',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 8, 10, 11, 16, 17, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-051-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-respiration-51-respirometer-apparatus-photorealistic.png'),
+    book: 'AP Biology Lab Manual',
+    figure: 'Figure 8.3',
+    sectionUrl: 'https://assets.openstax.org/oscms-prodcms/media/documents/STUDENT_-_AP_Biology_Lab_Manual_Full.pdf',
+    bookUrl: 'https://assets.openstax.org/oscms-prodcms/media/documents/STUDENT_-_AP_Biology_Lab_Manual_Full.pdf',
+  },
+  {
+    paths: [7, 9, 12, 13, 18, 20, 21, 22, 25].map((page) => `/a2-biology/a2-051-p${String(page).padStart(2, '0')}.png`),
+    book: 'AP Biology Lab Manual',
+    figure: 'Figure 8.4',
+    sectionUrl: 'https://assets.openstax.org/oscms-prodcms/media/documents/STUDENT_-_AP_Biology_Lab_Manual_Full.pdf',
+    bookUrl: 'https://assets.openstax.org/oscms-prodcms/media/documents/STUDENT_-_AP_Biology_Lab_Manual_Full.pdf',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 16, 17, 20, 21, 22, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-052-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-photosynthesis-52-chloroplast-organisation-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 8.6',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/8-1-overview-of-photosynthesis',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [9, 10, 11, 12, 13, 14, 15, 18, 19, 25].map((page) => `/a2-biology/a2-052-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 8.7',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/8-1-overview-of-photosynthesis',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
