@@ -755,6 +755,55 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-1-population-demography',
     bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
   },
+  {
+    paths: [1, 3, 4, 6, 21, 22, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-035-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-35-community-ecosystem-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 44.2',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/44-1-the-scope-of-ecology',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [7, 14, 19, 20].map((page) => `/a2-biology/a2-035-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 46.2',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [8, 9, 10, 11, 15, 16, 17, 18, 25].map((page) => `/a2-biology/a2-035-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 46.6',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [6, 9, 11, 21, 22, 23, 24, 28].map((page) => `/a2-biology/a2-036-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 45.32',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-6-community-ecology',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 7, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 29, 30].map((page) => `/a2-biology/a2-036-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-36-succession-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 45.33',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-6-community-ecology',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [6, 7, 11, 12, 24].map((page) => `/a2-biology/a2-037-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 46.4',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 10, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 28, 29, 30].map((page) => `/a2-biology/a2-037-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-37-food-chains-webs-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 46.6',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
