@@ -937,6 +937,55 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-2-glycolysis',
     bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
   },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 16, 17, 18, 21, 22, 23, 24].map((page) => `/a2-biology/a2-047-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-respiration-47-link-krebs-cycle-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 7.10',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-3-oxidation-of-pyruvate-and-the-citric-acid-cycle',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [10, 11, 12, 13, 14, 15, 19, 20, 25, 28, 29, 30].map((page) => `/a2-biology/a2-047-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 7.11',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-3-oxidation-of-pyruvate-and-the-citric-acid-cycle',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-048-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-respiration-48-electron-transport-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 7.12',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-4-oxidative-phosphorylation',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-048-p14.png'],
+    book: 'Biology 2e',
+    figure: 'Figure 7.13',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-4-oxidative-phosphorylation',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [13, 25].map((page) => `/a2-biology/a2-048-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 7.14',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-4-oxidative-phosphorylation',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 9, 10, 11, 15, 16, 17, 18, 21, 22, 23, 24, 26, 27, 28, 29, 30].map((page) => `/a2-biology/a2-049-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-respiration-49-aerobic-anaerobic-comparison-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 7.14',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-4-oxidative-phosphorylation',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [8, 12, 13, 19, 20, 25].map((page) => `/a2-biology/a2-049-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 7.16',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-5-metabolism-without-oxygen',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
