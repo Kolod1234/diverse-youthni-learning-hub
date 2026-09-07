@@ -895,6 +895,48 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/biology-2e/pages/6-4-atp-adenosine-triphosphate',
     bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
   },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9].map((page) => `/a2-biology/a2-044-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-respiration-44-glycolysis-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 7.8',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-2-glycolysis',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30].map((page) => `/a2-biology/a2-044-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 7.9',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-2-glycolysis',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 10, 11, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-045-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-respiration-45-mitochondrial-organisation-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 7.6',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-1-energy-in-living-systems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [12, 13, 14, 25, 26, 27].map((page) => `/a2-biology/a2-045-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 7.14',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-4-oxidative-phosphorylation',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 7, 8, 10, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30].map((page) => `/a2-biology/a2-046-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-respiration-46-anaerobic-nad-regeneration-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 7.16',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-5-metabolism-without-oxygen',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [6, 12].map((page) => `/a2-biology/a2-046-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 7.9',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/7-2-glycolysis',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
