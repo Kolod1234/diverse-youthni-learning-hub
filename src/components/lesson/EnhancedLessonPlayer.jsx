@@ -853,6 +853,48 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/biology-2e/pages/31-1-nutritional-requirements-of-plants',
     bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
   },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30].map((page) => `/a2-biology/a2-041-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-41-carbon-cycle-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 46.15',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-3-biogeochemical-cycles',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30].map((page) => `/a2-biology/a2-042-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-42-nitrogen-cycle-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 46.17',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-3-biogeochemical-cycles',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-042-p19.png'],
+    book: 'Biology 2e',
+    figure: 'Figure 46.19',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-3-biogeochemical-cycles',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-042-p20.png'],
+    book: 'Biology 2e',
+    figure: 'Figure 31.11',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/31-3-nutritional-adaptations-of-plants',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 10, 11, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 30].map((page) => `/a2-biology/a2-043-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-respiration-43-atp-energy-coupling-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 6.13',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/6-4-atp-adenosine-triphosphate',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [9, 12, 13, 20, 25].map((page) => `/a2-biology/a2-043-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 6.14',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/6-4-atp-adenosine-triphosphate',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
