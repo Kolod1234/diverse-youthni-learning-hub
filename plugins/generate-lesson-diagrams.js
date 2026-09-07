@@ -71,6 +71,9 @@ const GENERATORS = [
   'diagrams/lesson47.js',
   'diagrams/lesson48.js',
   'diagrams/lesson49.js',
+  'diagrams/lesson50.js',
+  'diagrams/lesson51.js',
+  'diagrams/lesson52.js',
 ];
 
 export default function generateLessonDiagrams() {
