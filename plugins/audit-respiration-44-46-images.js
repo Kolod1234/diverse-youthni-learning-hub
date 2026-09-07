@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const { loadImage } = require('canvas');
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { loadImage } from 'canvas';
 
 const publicDir = path.resolve('public');
 const featured = {
