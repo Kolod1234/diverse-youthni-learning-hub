@@ -720,6 +720,41 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-6-community-ecology',
     bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
   },
+  {
+    paths: [1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30].map((page) => `/a2-biology/a2-032-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-32-biological-control-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 24.28',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/24-5-importance-of-fungi-in-human-life',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 9, 11, 14, 18, 20, 21, 22, 23, 25, 28, 29, 30].map((page) => `/a2-biology/a2-033-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 19.6',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/19-2-population-genetics',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 10, 12, 21, 22, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-034-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-34-yeast-cmr-practical-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 24.3',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/24-1-characteristics-of-fungi',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [11, 13, 16, 17].map((page) => `/a2-biology/a2-034-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 45.10',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-3-environmental-limits-to-population-growth',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [14, 15, 18, 19, 20, 25, 26, 27].map((page) => `/a2-biology/a2-034-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 45.4',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/45-1-population-demography',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
