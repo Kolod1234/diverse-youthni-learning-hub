@@ -804,6 +804,55 @@ const OPENSTAX_FIGURES = [
     sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
     bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
   },
+  {
+    paths: [6, 7, 8, 24].map((page) => `/a2-biology/a2-038-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 46.4',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 28, 29, 30].map((page) => `/a2-biology/a2-038-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-38-gpp-npp-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 46.8',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 7, 8, 9, 10, 11, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30].map((page) => `/a2-biology/a2-039-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-39-pyramids-efficiency-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 46.10',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [12, 13, 14, 15, 19, 20].map((page) => `/a2-biology/a2-039-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 46.8',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [1, 3, 4, 6, 9, 10, 11, 16, 17, 18, 19, 21, 22, 23, 24, 28, 29, 30].map((page) => `/a2-biology/a2-040-p${String(page).padStart(2, '0')}.png`).concat('/lesson-assets/a2-biology/a2-ecology-40-agricultural-energetics-photorealistic.png'),
+    book: 'Biology 2e',
+    figure: 'Figure 46.8',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: [7, 8, 20].map((page) => `/a2-biology/a2-040-p${String(page).padStart(2, '0')}.png`),
+    book: 'Biology 2e',
+    figure: 'Figure 31.4',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/31-1-nutritional-requirements-of-plants',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
+  {
+    paths: ['/a2-biology/a2-040-p15.png'],
+    book: 'Biology 2e',
+    figure: 'Figure 31.5',
+    sectionUrl: 'https://openstax.org/books/biology-2e/pages/31-1-nutritional-requirements-of-plants',
+    bookUrl: 'https://openstax.org/books/biology-2e/pages/1-introduction',
+  },
 ];
 const lessonInteractiveRequests = new Map();
 
