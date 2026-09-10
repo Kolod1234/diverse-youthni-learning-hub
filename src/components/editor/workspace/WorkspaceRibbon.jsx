@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useContext, useRef, useState } from 'react';
+import { LessonFormattingContext } from '@/components/editor/lessonBuilder/LessonFormattingContext';
+import { LessonAuthoringToolbarContent, ToolDialog } from '@/components/editor/lessonBuilder/LessonAuthoringToolbar';
 import {
   Plus, Copy, Trash2, Undo2, Redo2,
   Image as ImageIcon, Type, Heading1, List, Table, Code,
@@ -69,6 +71,12 @@ function Group({ label, children }) {
 const TAB_DEFS = ['home', 'insert', 'design', 'arrange'];
 
 export default function WorkspaceRibbon(props) {
+  const formatting = useContext(LessonFormattingContext);
+  const emptyEditor = useRef(null);
+  const optionsDialog = useRef(null);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const closeOptions = () => { optionsDialog.current?.close(); setOptionsOpen(false); };
+  const optionAction = action => () => { closeOptions(); action?.(); };
   const {
     activeTab = 'home',
     onTabChange,
@@ -124,7 +132,7 @@ export default function WorkspaceRibbon(props) {
   const tab = tabHasActions[activeTab] ? activeTab : (visibleTabs[0] || 'home');
 
   return (
-    <div className="bg-white border-b border-slate-200 shrink-0">
+    <div className="bg-white border-b border-slate-200 shrink-0 relative z-30" data-workspace-ribbon="true">
       {/* Tabs row */}
       <div className="flex items-center gap-0 px-3 pt-1 overflow-x-auto">
         {visibleTabs.map((t) => {
@@ -176,12 +184,22 @@ export default function WorkspaceRibbon(props) {
 
       {/* Ribbon row — 76 px tall (56 button + 20 group label). */}
       <div
-        className="flex items-stretch px-2 py-1 overflow-x-auto bg-slate-50/60 border-t border-slate-100"
+        className={`flex items-stretch px-2 py-1 bg-slate-50/60 border-t border-slate-100 ${tab === 'home' && formatting ? 'flex-wrap gap-y-1' : 'overflow-x-auto'}`}
         style={{ minHeight: 76 }}
         role="toolbar"
         aria-label={`${tab} ribbon`}
       >
-        {tab === 'home' && (
+        {tab === 'home' && formatting && <>
+          <Group label="History">
+            <Btn icon={Undo2} label="Undo" title="Undo (Ctrl+Z)" onClick={onUndo} disabled={canUndo === false}/>
+            <Btn icon={Redo2} label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={onRedo} disabled={canRedo === false}/>
+          </Group>
+          <LessonAuthoringToolbarContent key={formatting.activeEditor?.id || 'idle'} editableRef={formatting.activeEditor?.ref || emptyEditor} disabled={!formatting.activeEditor}/>
+          <Group label="Lesson">
+            <Btn icon={LayoutTemplate} label="More options" onClick={()=>setOptionsOpen(true)}/>
+          </Group>
+        </>}
+        {tab === 'home' && !formatting && (
           <>
             <Group label="Clipboard">
               <Btn icon={Undo2} label="Undo" title="Undo (Ctrl+Z)" onClick={onUndo} disabled={canUndo === false} />
@@ -284,6 +302,13 @@ export default function WorkspaceRibbon(props) {
           </>
         )}
       </div>
+      {optionsOpen && <ToolDialog title="Slide, layout and preview options" onClose={closeOptions} dialogRef={optionsDialog}>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div><h3 className="mb-2 text-sm font-semibold">Slide</h3><div className="flex flex-wrap"><Btn icon={Plus} label="New" onClick={onAddSlide && optionAction(onAddSlide)}/><Btn icon={Copy} label="Duplicate" onClick={onDuplicateSlide && optionAction(onDuplicateSlide)}/><Btn icon={Trash2} label="Delete" onClick={onDeleteSlide && optionAction(onDeleteSlide)}/></div></div>
+          <div><h3 className="mb-2 text-sm font-semibold">Layout</h3><div className="flex flex-wrap"><Btn icon={Square} label="1 col" onClick={onAddOneColumn && optionAction(onAddOneColumn)}/><Btn icon={Columns2} label="2 cols" onClick={onAddTwoColumns && optionAction(onAddTwoColumns)}/><Btn icon={Columns3} label="3 cols" onClick={onAddThreeColumns && optionAction(onAddThreeColumns)}/><Btn icon={LayoutTemplate} label="Templates" onClick={onOpenTemplates && optionAction(onOpenTemplates)}/><Btn icon={Grid3x3} label="Blocks" onClick={onOpenBlocks && optionAction(onOpenBlocks)}/></div></div>
+          <div><h3 className="mb-2 text-sm font-semibold">Preview and export</h3><div className="flex flex-wrap"><Btn icon={Eye} label="Preview" onClick={onPreview && optionAction(onPreview)}/><Btn icon={Play} label="Present" onClick={onPresent && optionAction(onPresent)}/><Btn icon={Download} label="Export PPTX" onClick={onExportPptx && optionAction(onExportPptx)}/></div></div>
+        </div>
+      </ToolDialog>}
     </div>
   );
 }
