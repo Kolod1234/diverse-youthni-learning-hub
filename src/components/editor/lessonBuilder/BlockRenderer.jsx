@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import InlineEditable from './InlineEditable';
 import InlineToolbar from './InlineToolbar';
+import LessonAuthoringToolbar from './LessonAuthoringToolbar';
 import MathBlock from './MathBlock';
 import ScientificEquationBlock from './ScientificEquationBlock';
 import ImageBlock from './ImageBlock';
@@ -28,7 +29,7 @@ function GatedInlineToolbar(props) {
 // modal, no separate "edit" screen. Tutors edit inline, exactly where it sits.
 // All blocks call onChange(nextData) with the entire updated data object.
 
-export default function BlockRenderer({ block, onChange, focused }) {
+export default function BlockRenderer({ block, onChange, focused, authoringTools = false }) {
   const d = block.data || {};
   const upd = (patch) => onChange({ ...d, ...patch });
 
@@ -55,7 +56,7 @@ export default function BlockRenderer({ block, onChange, focused }) {
         data={d}
         onChange={onChange}
         renderChild={(child, childOnChange) => (
-          <BlockRenderer block={child} onChange={childOnChange} />
+          <BlockRenderer block={child} onChange={childOnChange} authoringTools={authoringTools} />
         )}
       />
     );
@@ -65,7 +66,7 @@ export default function BlockRenderer({ block, onChange, focused }) {
     case 'learning-objective':return <BadgeBlock label="🎯 Learning Objective" color="emerald" html={d.html} onChange={(html) => upd({ html })} />;
     case 'key-takeaway':      return <BadgeBlock label="⭐ Key Takeaway" color="amber" html={d.html} onChange={(html) => upd({ html })} />;
     case 'knowledge-check':   return <KnowledgeCheckBlock data={d} onChange={upd} />;
-    case 'legacy-html':       return <LegacyHtmlBlock html={d.html} onChange={(html) => upd({ html })} />;
+    case 'legacy-html':       return <LegacyHtmlBlock html={d.html} onChange={(html) => upd({ html })} authoringTools={authoringTools} />;
     default:                  return <div className="text-xs text-red-500">Unknown block type: {block.type}</div>;
   }
 }
@@ -495,9 +496,9 @@ function KnowledgeCheckBlock({ data, onChange }) {
   );
 }
 
-function LegacyHtmlBlock({ html, onChange }) {
+function LegacyHtmlBlock({ html, onChange, authoringTools }) {
   return (
-    <LegacyHtmlEditor html={html} onChange={onChange} />
+    <LegacyHtmlEditor html={html} onChange={onChange} authoringTools={authoringTools} />
   );
 }
 
@@ -568,6 +569,7 @@ class LegacyHtmlEditor extends React.Component {
             {sourceMode ? 'Done editing source' : 'Edit source'}
           </button>
         </div>
+        {!sourceMode && this.props.authoringTools && <LessonAuthoringToolbar editableRef={this.previewRef} />}
         {sourceMode ? (
           <textarea
             value={html || ''}
@@ -583,6 +585,8 @@ class LegacyHtmlEditor extends React.Component {
             role="textbox"
             aria-label="Lesson content"
             aria-multiline="true"
+            spellCheck={true}
+            lang="en-GB"
             tabIndex={0}
             contentEditable
             suppressContentEditableWarning
