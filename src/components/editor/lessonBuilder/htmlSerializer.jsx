@@ -806,6 +806,29 @@ export function htmlToEditorBlocks(html) {
     if (root.querySelector(':scope > [data-lb-stage="free"]')) {
       return htmlToBlocks(source);
     }
+    // Keep explicitly authored native blocks editable after save/reload.
+    // All other nodes (including text and stylesheets) remain HTML, in order.
+    if (root.querySelector(':scope > [data-lesson-block]')) {
+      const blocks = [];
+      let preserved = '';
+      const flush = () => {
+        if (preserved) blocks.push(createBlock('legacy-html', { html: preserved }));
+        preserved = '';
+      };
+      for (const node of root.childNodes) {
+        if (node.nodeType === 1 && node.hasAttribute('data-lesson-block')) {
+          const parsed = parseSimpleElement(node, node.tagName.toLowerCase());
+          if (parsed) {
+            flush();
+            blocks.push(parsed);
+            continue;
+          }
+        }
+        preserved += node.outerHTML ?? node.textContent;
+      }
+      flush();
+      return blocks;
+    }
   }
   return [createBlock('legacy-html', { html: source })];
 }
