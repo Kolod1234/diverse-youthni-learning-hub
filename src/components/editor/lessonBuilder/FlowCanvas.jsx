@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MathJaxContent from '@/components/lesson/MathJaxContent';
 import BlockRenderer from './BlockRenderer';
 import { BlockExpandedContext } from './BlockWrapper';
@@ -9,6 +9,12 @@ import { blocksToHtml } from './htmlSerializer';
 // can never be written back into the lesson source.
 export default function FlowCanvas({ blocks, onChangeBlocks }) {
   const [editingId, setEditingId] = useState(null);
+  const activeEditorRef = useRef(null);
+  useEffect(() => {
+    if (!editingId) return;
+    activeEditorRef.current?.querySelector('[contenteditable="true"], textarea, input')
+      ?.focus({ preventScroll: true });
+  }, [editingId]);
   const update = (idx, data) => onChangeBlocks(prev =>
     prev.map((block, i) => i === idx ? { ...block, data } : block)
   );
@@ -37,7 +43,12 @@ export default function FlowCanvas({ blocks, onChangeBlocks }) {
                 {editing ? 'Done editing' : 'Edit content'}
               </button>
             </div>
-            <div className="lesson-flow-prose">
+            {editing && (
+              <p className="mb-2 text-sm text-indigo-700" role="status">
+                Click the text to edit. Use Save Lesson to keep your changes.
+              </p>
+            )}
+            <div ref={editing ? activeEditorRef : null} className="lesson-flow-prose">
               {editing ? (
                 <BlockExpandedContext.Provider value={true}>
                   <BlockRenderer block={block} focused onChange={data => update(idx, data)} />
