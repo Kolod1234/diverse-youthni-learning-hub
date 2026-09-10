@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -26,7 +26,16 @@ export default function LessonEditor() {
   const lessonId = params.get('id');
   const courseId = params.get('courseId');
   const [user, setUser] = useState(null);
-  const [lessonForm, setLessonForm] = useState({});
+  const [lessonForm, setLessonFormState] = useState({});
+  const lessonFormRef = useRef(lessonForm);
+  // Update the draft ref synchronously, before React batches the next render.
+  // Save can then read edits flushed by the active builder in the same event.
+  const setLessonForm = useCallback((update) => {
+    const next = typeof update === 'function' ? update(lessonFormRef.current) : update;
+    lessonFormRef.current = next;
+    setLessonFormState(next);
+  }, []);
+  const loadedLessonRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [converting, setConverting] = useState(false);
   const [convertingPptx, setConvertingPptx] = useState(false);
@@ -157,26 +166,19 @@ export default function LessonEditor() {
   }, [user, lesson]);
 
   useEffect(() => {
-    if (lesson) {
+    // Background refetches must not replace a tutor's unsaved draft.
+    if (lesson?.id === lessonId && loadedLessonRef.current !== lessonId) {
+      loadedLessonRef.current = lessonId;
       setLessonForm(lesson);
     }
-  }, [lesson]);
+  }, [lesson, lessonId, setLessonForm]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      // 1. Flush any pending block edits from the active VisualLessonBuilder
-      //    into lessonForm.slides BEFORE we read it. The builder serialises
-      //    blocks → HTML on a 1.2s debounce; without this synchronous flush,
-      //    a Save click within that window would persist a stale slide.
-      try { builderFlushRef.current?.(); } catch { /* no-op: never block save on flush */ }
-
-      // 2. Read the freshest form state via the functional setter trick — we
-      //    don't write anything; we just capture the absolute latest snapshot,
-      //    which includes the flush we just performed above (React batches
-      //    setLessonForm from the flush synchronously in onChange).
-      let snapshot;
-      setLessonForm((cur) => { snapshot = cur; return cur; });
-      const form = snapshot || lessonForm;
+      // Flush the active editor, then read the synchronous draft snapshot.
+      // If serialization fails, preserve the draft and report the save error.
+      builderFlushRef.current?.();
+      const form = lessonFormRef.current;
 
       // 3. Resolve the effective course id. Editing → use the lesson's
       //    course_id (immutable here). Creating → form > URL.
@@ -534,7 +536,7 @@ export default function LessonEditor() {
       <div className="flex-1 min-h-0 min-w-0 w-full">
         <SlideEditor
           slides={lessonForm.slides || []}
-          onChange={(slides) => setLessonForm({ ...lessonForm, slides })}
+          onChange={(slides) => setLessonForm(form => ({ ...form, slides }))}
           isPersisted={!!lessonId}
           builderFlushRef={builderFlushRef}
         />
