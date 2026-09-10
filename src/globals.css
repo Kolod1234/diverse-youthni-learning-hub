@@ -60,6 +60,14 @@ body {
   }
 }
 
+/* Rich-text authoring must override the app shell's no-selection gesture
+   styles, including headings, paragraphs and links inside the editing host. */
+[contenteditable="true"],
+[contenteditable="true"] * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* Tailwind Directives */
 @tailwind base;
 @tailwind components;
