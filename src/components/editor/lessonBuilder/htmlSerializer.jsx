@@ -793,6 +793,23 @@ function blockToHtml(b) {
   }
 }
 
+// Keep document lessons intact in the editor. Parsing styled HTML into simple
+// blocks drops outer styles, text nodes and stylesheets; assigning those blocks
+// guessed frames also crops them. Only explicitly authored free stages should
+// be opened as a positioned canvas.
+export function htmlToEditorBlocks(html) {
+  const source = String(html || '');
+  if (!source.trim()) return [];
+  if (typeof document !== 'undefined') {
+    const root = document.createElement('div');
+    root.innerHTML = source;
+    if (root.querySelector(':scope > [data-lb-stage="free"]')) {
+      return htmlToBlocks(source);
+    }
+  }
+  return [createBlock('legacy-html', { html: source })];
+}
+
 // ── htmlToBlocks ───────────────────────────────────────────────────────────
 // Conservative: only recognises clean top-level elements. Anything else
 // (nested grids, table-based layouts, mixed inline styles…) is preserved as
@@ -819,7 +836,7 @@ export function htmlToBlocks(html) {
       const inner = frameEl.querySelector(':scope > .lb-frame-inner');
       const innerHtml = inner ? inner.innerHTML : frameEl.innerHTML;
       const parsed = htmlToBlocks(innerHtml);
-      const block = parsed[0] || createBlock('legacy-html', { html: innerHtml });
+      const block = parsed.length === 1 ? parsed[0] : createBlock('legacy-html', { html: innerHtml });
       const num = (k, d) => {
         const v = parseFloat(frameEl.getAttribute(k));
         return Number.isFinite(v) ? v : d;
