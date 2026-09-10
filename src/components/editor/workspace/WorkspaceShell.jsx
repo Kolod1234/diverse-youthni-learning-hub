@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PresentationWorkspace from './PresentationWorkspace';
-import { blocksToHtml, htmlToBlocks } from '@/components/editor/lessonBuilder/htmlSerializer';
+import { blocksToHtml, htmlToEditorBlocks } from '@/components/editor/lessonBuilder/htmlSerializer';
 import { createBlock } from '@/components/editor/lessonBuilder/blockTypes';
 import { exportSlidesToPptx } from './exportPptx';
 
@@ -125,7 +125,7 @@ export default function WorkspaceShell({
   const handleImageSelected = useCallback((url) => {
     if (!currentSlideData) return;
     if (!url) return;
-    const existingBlocks = htmlToBlocks(currentSlideData.content || '');
+    const existingBlocks = htmlToEditorBlocks(currentSlideData.content || '');
     const imageBlock = createBlock('image', {
       url,
       alt: '',
@@ -388,7 +388,7 @@ export default function WorkspaceShell({
             // mapping (multi-column layouts, image grids, code, etc.)
             // fall through to the original append-HTML behaviour.
             if (Array.isArray(nativeBlocks) && nativeBlocks.length > 0) {
-              const existing = htmlToBlocks(currentSlideData.content || '');
+              const existing = htmlToEditorBlocks(currentSlideData.content || '');
               const merged = blocksToHtml([...existing, ...nativeBlocks]);
               updateSlide(currentSlide, 'content', merged);
               return;
