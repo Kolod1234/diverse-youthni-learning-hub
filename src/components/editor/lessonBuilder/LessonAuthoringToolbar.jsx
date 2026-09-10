@@ -1,4 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Bold, Italic, Underline, Strikethrough, Superscript, Subscript, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, RemoveFormatting, Palette, Square, Plus, SpellCheck } from 'lucide-react';
+import { LessonFormattingContext } from './LessonFormattingContext';
 import { base44 } from '@/api/base44Client';
 import { FONT_FAMILIES } from './fontFamilies';
 
@@ -11,6 +14,24 @@ const FIELD = 'rounded border border-slate-300 bg-white px-2 py-1.5 text-sm text
 // input events feed the existing draft and undo stack. Toolbar/dialog focus
 // must never replace the saved selection with a selection from another field.
 export default function LessonAuthoringToolbar({ editableRef }) {
+  const workspace = useContext(LessonFormattingContext);
+  const id = useId();
+  const activate = workspace?.activate;
+  const deactivate = workspace?.deactivate;
+  useEffect(() => {
+    if (!activate || !editableRef.current) return;
+    const editor = editableRef.current;
+    const select = () => activate(editableRef, id);
+    select();
+    editor.addEventListener('focusin', select);
+    return () => { editor.removeEventListener('focusin', select); deactivate(editableRef); };
+  }, [activate, deactivate, editableRef, id]);
+  // In a workspace the ribbon owns the controls; never render a second bar
+  // inside the lesson. Standalone builders retain the same grouped controls.
+  return workspace ? null : <LessonAuthoringToolbarContent editableRef={editableRef} />;
+}
+
+export function LessonAuthoringToolbarContent({ editableRef, disabled = false }) {
   const rangeRef = useRef(null);
   const [panel, setPanel] = useState(null);
   const [message, setMessage] = useState('');
@@ -31,8 +52,8 @@ export default function LessonAuthoringToolbar({ editableRef }) {
   const [corrected, setCorrected] = useState('');
   const grammarRef = useRef(null);
   const operationRef = useRef(0);
-  const panelRef = useRef(null);
   const toolbarRef = useRef(null);
+  const dialogRef = useRef(null);
   const imageTargetRef = useRef(null);
 
   const capture = useCallback(() => {
@@ -44,6 +65,7 @@ export default function LessonAuthoringToolbar({ editableRef }) {
   }, [editableRef]);
 
   useEffect(() => {
+    capture();
     document.addEventListener('selectionchange', capture);
     return () => {
       document.removeEventListener('selectionchange', capture);
@@ -51,13 +73,12 @@ export default function LessonAuthoringToolbar({ editableRef }) {
     };
   }, [capture]);
 
-  useEffect(() => {
-    if (panel) panelRef.current?.querySelector('input, textarea, select, button')?.focus();
-  }, [panel]);
 
   const restore = (saved = rangeRef.current) => {
     const editor = editableRef.current;
     if (!editor?.isConnected) return null;
+    // The editable must leave the modal's inert background before a command.
+    if (dialogRef.current?.open) dialogRef.current.close();
     editor.focus({ preventScroll: true });
     const range = saved && editor.contains(saved.commonAncestorContainer)
       ? saved.cloneRange() : document.createRange();
@@ -170,7 +191,7 @@ export default function LessonAuthoringToolbar({ editableRef }) {
     let node = range.startContainer.nodeType === 1 ? range.startContainer : range.startContainer.parentElement;
     const box = node.closest('[data-lesson-box]');
     node = box && editor.contains(box) ? box : node.closest('p,h1,h2,h3,h4,li,blockquote,div');
-    if (!node || node === editor || !editor.contains(node)) { setMessage('Click a paragraph or text box before applying a border.'); return; }
+    if (!node || node === editor || !editor.contains(node)) { setMessage('Click a paragraph or text box before applying a border.'); dialogRef.current?.showModal(); return; }
     node.style.border = borderWidth === '0' ? 'none' : borderWidth + 'px ' + borderStyle + ' ' + borderColor;
     if (borderWidth !== '0') node.style.padding = '12px 16px';
     changed();
@@ -240,7 +261,7 @@ export default function LessonAuthoringToolbar({ editableRef }) {
     const range = rangeRef.current;
     const editor = editableRef.current;
     const text = range?.toString().trim();
-    if (!range || !editor?.contains(range.commonAncestorContainer) || !text) { setMessage('Select a sentence or paragraph, then choose Check grammar.'); return; }
+    if (!range || !editor?.contains(range.commonAncestorContainer) || !text) { setOriginal(''); setCorrected(''); setPanel('grammar'); setMessage('Select a sentence or paragraph in the lesson, then choose Check grammar.'); return; }
     if (text.length > 6000) { setMessage('Select up to 6,000 characters at a time.'); return; }
     const originalText = range.toString();
     grammarRef.current = { range: range.cloneRange(), editor, html: editor.innerHTML, text: originalText };
@@ -265,7 +286,7 @@ export default function LessonAuthoringToolbar({ editableRef }) {
     const saved = grammarRef.current;
     if (!saved || saved.editor !== editableRef.current || !saved.editor.isConnected ||
         saved.editor.innerHTML !== saved.html || saved.range.toString() !== saved.text) {
-      setMessage('The lesson changed during the grammar check. Close this panel and select the text again.');
+      setMessage('The lesson changed during the grammar check. Close this dialog and select the text again.');
       return;
     }
     restore(saved.range);
@@ -274,63 +295,62 @@ export default function LessonAuthoringToolbar({ editableRef }) {
     closePanel();
   };
 
-  const tools = [
-    ['Bold','bold'], ['Italic','italic'], ['Underline','underline'],
-    ['Strikethrough','strikeThrough'], ['Superscript','superscript'], ['Subscript','subscript'],
-    ['Bullets','insertUnorderedList'], ['Numbered list','insertOrderedList'],
-    ['Align left','justifyLeft'], ['Align centre','justifyCenter'], ['Align right','justifyRight'],
-    ['Clear formatting','removeFormat'],
-  ];
+  const fontTools = [['Bold','bold',Bold],['Italic','italic',Italic],['Underline','underline',Underline],['Strikethrough','strikeThrough',Strikethrough],['Superscript','superscript',Superscript],['Subscript','subscript',Subscript],['Clear formatting','removeFormat',RemoveFormatting]];
+  const paragraphTools = [['Align left','justifyLeft',AlignLeft],['Align centre','justifyCenter',AlignCenter],['Align right','justifyRight',AlignRight],['Bullets','insertUnorderedList',List],['Numbered list','insertOrderedList',ListOrdered]];
+  const iconButton = ([label, cmd, Icon]) => <button key={cmd} type="button" className="lesson-format-icon" aria-label={label} title={label} onClick={() => command(cmd)}><Icon size={16}/></button>;
+  const panelTitle = {science:'Scientific notation',image:'Image settings',border:'Border settings',grammar:'Grammar review',colours:'Text colour and highlighting',insert:'Insert into lesson'}[panel];
 
-  return (
-    <div ref={toolbarRef} className="lesson-authoring-tools sticky top-0 z-20 mb-3 max-h-[45vh] overflow-y-auto rounded-lg border border-indigo-200 bg-white p-3 shadow-sm">
-      <div className="mb-2 text-xs font-semibold text-indigo-800">Text and lesson tools</div>
-      <div role="toolbar" aria-label="Lesson formatting and insert tools" className="flex flex-wrap items-center gap-1.5"
+  return <>
+    <div ref={toolbarRef} className="lesson-authoring-tools lesson-ribbon-formatting">
+      <fieldset disabled={disabled} role="toolbar" aria-label="Lesson formatting and insert tools"
         onMouseDown={event => { capture(); if (event.target.closest('button')) event.preventDefault(); }}>
-        <label className="text-xs">Font
-          <select aria-label="Font type" className={FIELD + ' ml-1 max-w-[150px]'} value={font}
-            onChange={e => { setFont(e.target.value); command('fontName', e.target.value || 'Arial'); }}>
-            {FONT_FAMILIES.map(item => <option key={item.label} value={item.value}>{item.label}</option>)}
-          </select>
-        </label>
-        <label className="text-xs">Size
-          <select aria-label="Font size" className={FIELD + ' ml-1'} value={size} onChange={e => applySize(e.target.value)}>
-            {[10,12,14,16,18,20,24,28,32,40,48,64].map(value => <option key={value} value={value}>{value}</option>)}
-          </select>
-        </label>
-        <select aria-label="Text style" className={FIELD} defaultValue="" onChange={e => { command('formatBlock', e.target.value); e.target.value = ''; }}>
-          <option value="" disabled>Paragraph / heading</option><option value="p">Paragraph</option>
-          <option value="h1">Heading 1</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option>
-        </select>
-        {tools.map(([label, cmd]) => <button key={cmd} type="button" className={BUTTON} onClick={() => command(cmd)}>{label}</button>)}
-        <label className="flex items-center gap-1 text-xs">Font color
-          <input type="color" aria-label="Font color" value={color} className="h-8 w-8 cursor-pointer"
-            onInput={e => setColor(e.currentTarget.value)} onChange={e => {setColor(e.target.value); command('foreColor', e.target.value);}} />
-        </label>
-        <button type="button" className={BUTTON} onClick={() => command('foreColor', color)}>Apply font color</button>
-        <label className="flex items-center gap-1 text-xs">Highlight
-          <input type="color" aria-label="Highlight color" value={highlight} className="h-8 w-8 cursor-pointer"
-            onInput={e => setHighlight(e.currentTarget.value)} onChange={e => {setHighlight(e.target.value); command('hiliteColor', e.target.value);}} />
-        </label>
-        <button type="button" className={BUTTON} onClick={() => command('hiliteColor', highlight)}>Highlight text</button>
-        <button type="button" className={BUTTON} onClick={() => command('hiliteColor', 'transparent')}>Remove highlight</button>
-        <select aria-label="Insert symbol" className={FIELD} defaultValue="" onChange={e => { command('insertText', e.target.value); e.target.value = ''; }}>
-          <option value="" disabled>Scientific symbols</option>{SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <button type="button" className={BUTTON} onClick={() => openPanel('science')}>Scientific notation</button>
-        <button type="button" className={BUTTON} onClick={() => {setImageUrl('');setImageAlt('');setImageWidth('100');openPanel('image');}}>Insert image</button>
-        <button type="button" className={BUTTON} onClick={() => insertBox('quote')}>Insert quote</button>
-        <button type="button" className={BUTTON} onClick={() => insertBox('text')}>Text box</button>
-        <button type="button" className={BUTTON} onClick={() => insertBox('bubble')}>Speech bubble</button>
-        <button type="button" className={BUTTON} onClick={() => openPanel('border')}>Border</button>
-        <button type="button" className={BUTTON} onClick={() => insertHtml('<hr style="border:0;border-top:2px solid #94a3b8;margin:18px 0"><p><br></p>', undefined, false)}>Divider line</button>
-        <button type="button" className={BUTTON} onClick={checkGrammar} disabled={busy}>Check grammar</button>
-      </div>
-      {!panel && message && <p role="status" className="mt-2 text-sm text-indigo-800">{message}</p>}
-      {panel && <div ref={panelRef} role="region" aria-label={panel === 'science' ? 'Scientific notation' : panel === 'image' ? 'Image settings' : panel === 'border' ? 'Border settings' : 'Grammar review'}
-        className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3"
-        onKeyDown={e => {if(e.key === 'Escape') {e.stopPropagation();closePanel();}}}>
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="lesson-format-group" role="group" aria-label="Font">
+          <div className="lesson-format-row">
+            <select aria-label="Font type" title="Font type" className="lesson-format-field lesson-font-family" value={font} onChange={e => {setFont(e.target.value);command('fontName',e.target.value || 'Arial');}}>{FONT_FAMILIES.map(item=><option key={item.label} value={item.value}>{item.label}</option>)}</select>
+            <select aria-label="Font size" title="Font size" className="lesson-format-field lesson-font-size" value={size} onChange={e=>applySize(e.target.value)}>{[10,12,14,16,18,20,24,28,32,40,48,64].map(value=><option key={value} value={value}>{value}</option>)}</select>
+            <select aria-label="Text style" title="Paragraph or heading" className="lesson-format-field lesson-text-style" defaultValue="" onChange={e=>{command('formatBlock',e.target.value);e.target.value='';}}><option value="" disabled>Text style</option><option value="p">Paragraph</option><option value="h1">Heading 1</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option></select>
+          </div>
+          <div className="lesson-format-row">{fontTools.map(iconButton)}</div>
+          <span className="lesson-format-label">Font</span>
+        </div>
+        <div className="lesson-format-group" role="group" aria-label="Paragraph">
+          <div className="lesson-format-row">{paragraphTools.slice(0,3).map(iconButton)}</div>
+          <div className="lesson-format-row">{paragraphTools.slice(3).map(iconButton)}</div>
+          <span className="lesson-format-label">Paragraph</span>
+        </div>
+        <div className="lesson-format-group" role="group" aria-label="Formatting">
+          <button type="button" className="lesson-format-action" onClick={()=>openPanel('colours')}><Palette size={15}/>Colours</button>
+          <button type="button" className="lesson-format-action" onClick={()=>openPanel('border')}><Square size={15}/>Borders</button>
+          <span className="lesson-format-label">Formatting</span>
+        </div>
+        <div className="lesson-format-group" role="group" aria-label="Insert">
+          <button type="button" className="lesson-format-tall" onClick={()=>openPanel('insert')}><Plus size={18}/><span>Insert options</span></button>
+          <span className="lesson-format-label">Insert</span>
+        </div>
+        <div className="lesson-format-group" role="group" aria-label="Review">
+          <button type="button" className="lesson-format-tall" onClick={checkGrammar} disabled={busy}><SpellCheck size={18}/><span>Check grammar</span></button>
+          <span className="lesson-format-label">Review</span>
+        </div>
+      </fieldset>
+      {!panel && message && <p role="status" className="lesson-format-message">{message}</p>}
+    </div>
+    {panel && <ToolDialog title={panelTitle} onClose={closePanel} dialogRef={dialogRef}>
+      <div className="flex flex-wrap items-end gap-3">
+          {panel === 'colours' && <div className="grid w-full gap-5 sm:grid-cols-2">
+            <div className="space-y-3"><label className="flex items-center gap-3 text-sm">Font colour<input type="color" aria-label="Font color" className="h-9 w-12" value={color} onChange={e=>setColor(e.target.value)}/></label><button type="button" className={BUTTON} onClick={()=>{command('foreColor',color);closePanel();}}>Apply font color</button></div>
+            <div className="space-y-3"><label className="flex items-center gap-3 text-sm">Highlight<input type="color" aria-label="Highlight color" className="h-9 w-12" value={highlight} onChange={e=>setHighlight(e.target.value)}/></label><div className="flex flex-wrap gap-2"><button type="button" className={BUTTON} onClick={()=>{command('hiliteColor',highlight);closePanel();}}>Highlight text</button><button type="button" className={BUTTON} onClick={()=>{command('hiliteColor','transparent');closePanel();}}>Remove highlight</button></div></div>
+          </div>}
+          {panel === 'insert' && <div className="w-full space-y-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <button type="button" className={BUTTON} onClick={()=>{setImageUrl('');setImageAlt('');setImageWidth('100');openPanel('image');}}>Insert image</button>
+              <button type="button" className={BUTTON} onClick={()=>{insertBox('quote');closePanel();}}>Insert quote</button>
+              <button type="button" className={BUTTON} onClick={()=>{insertBox('text');closePanel();}}>Text box</button>
+              <button type="button" className={BUTTON} onClick={()=>{insertBox('bubble');closePanel();}}>Speech bubble</button>
+              <button type="button" className={BUTTON} onClick={()=>{insertHtml('<hr style="border:0;border-top:2px solid #94a3b8;margin:18px 0"><p><br></p>',undefined,false);closePanel();}}>Divider line</button>
+              <button type="button" className={BUTTON} onClick={()=>openPanel('science')}>Scientific notation</button>
+            </div>
+            <label className="flex flex-wrap items-center gap-3 text-sm">Scientific symbols<select aria-label="Insert symbol" className={FIELD} defaultValue="" onChange={e=>{command('insertText',e.target.value);closePanel();}}><option value="" disabled>Choose a symbol</option>{SYMBOLS.map(s=><option key={s} value={s}>{s}</option>)}</select></label>
+          </div>}
           {panel === 'science' && <>
             <label className="text-sm">Coefficient<input autoFocus className={FIELD + ' block w-28'} aria-label="Coefficient" value={coefficient} onChange={e => setCoefficient(e.target.value)} /></label>
             <span className="pb-2">× 10</span>
@@ -363,7 +383,46 @@ export default function LessonAuthoringToolbar({ editableRef }) {
           {busy && <p role="status" className="text-sm">{panel === 'grammar' ? 'Checking grammar…' : 'Uploading image…'}</p>}
           {message && <p role="status" className="w-full text-sm text-indigo-800">{message}</p>}
         </div>
-      </div>}
-    </div>
-  );
+    </ToolDialog>}
+    <style>{RIBBON_CSS}</style>
+  </>;
 }
+
+// A native modal enters the browser's top layer, outside both the scrolling
+// lesson and its scaled canvas. Escape, focus trapping and background inertness
+// are handled by the browser; closing restores the saved lesson selection.
+export function ToolDialog({ title, onClose, children, dialogRef }) {
+  const titleId=useId();
+  useEffect(()=>{
+    const dialog=dialogRef.current;
+    dialog.showModal();
+    return()=>{if(dialog.open)dialog.close();};
+  },[]);
+  return createPortal(<dialog ref={dialogRef} className="lesson-tools-dialog lesson-authoring-tools" aria-labelledby={titleId}
+    onCancel={e=>{e.preventDefault();onClose();}}
+    onClick={e=>{if(e.target!==e.currentTarget)return;const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)onClose();}}>
+    <div className="mb-5 flex items-center justify-between gap-4"><h2 id={titleId} className="text-lg font-semibold text-slate-900">{title}</h2><button type="button" className={BUTTON} aria-label="Close dialog" onClick={onClose}>✕</button></div>
+    {children}
+  </dialog>,document.body);
+}
+
+const RIBBON_CSS = `
+.lesson-ribbon-formatting { min-width:0; flex:1 1 auto; font-family:ui-sans-serif,system-ui,sans-serif; color:#334155; }
+.lesson-ribbon-formatting fieldset { display:flex; flex-wrap:wrap; align-items:stretch; gap:0; min-width:0; border:0; padding:0; margin:0; }
+.lesson-format-group { display:flex; flex-direction:column; gap:3px; padding:0 9px; border-right:1px solid #e2e8f0; }
+.lesson-format-group:last-child { border-right:0; }
+.lesson-format-row { display:flex; align-items:center; gap:3px; min-height:28px; }
+.lesson-format-label { margin-top:auto; text-align:center; text-transform:uppercase; letter-spacing:.04em; font-size:10px; line-height:16px; color:#64748b; }
+.lesson-format-field { height:28px; border:1px solid #cbd5e1; border-radius:5px; background:white; padding:2px 5px; font-size:12px; color:#334155; }
+.lesson-font-family { width:125px; } .lesson-font-size { width:52px; } .lesson-text-style { width:104px; }
+.lesson-format-icon { display:inline-flex; align-items:center; justify-content:center; width:29px; height:28px; border:1px solid transparent; border-radius:5px; background:transparent; padding:3px; }
+.lesson-format-action { display:flex; align-items:center; gap:6px; height:28px; padding:3px 7px; border-radius:5px; background:transparent; border:1px solid transparent; font-size:12px; white-space:nowrap; }
+.lesson-format-tall { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; height:59px; padding:3px 8px; border:1px solid transparent; border-radius:5px; font-size:11px; white-space:nowrap; background:transparent; }
+.lesson-ribbon-formatting button:hover { background:#eef2ff; border-color:#c7d2fe; }
+.lesson-ribbon-formatting button:focus-visible,.lesson-ribbon-formatting select:focus-visible { outline:2px solid #6366f1; outline-offset:1px; }
+.lesson-ribbon-formatting fieldset:disabled { opacity:.5; }
+.lesson-format-message { margin:4px 9px 0; font-size:12px; color:#4338ca; }
+.lesson-tools-dialog { position:fixed; inset:0; margin:auto; width:min(680px,calc(100vw - 32px)); max-height:85dvh; overflow:auto; padding:24px; border:1px solid #cbd5e1; border-radius:14px; background:white; color:#334155; box-shadow:0 20px 70px #0f172a40; font-family:ui-sans-serif,system-ui,sans-serif; }
+.lesson-tools-dialog::backdrop { background:#0f172a70; }
+@media(max-width:700px) { .lesson-format-group { padding:0 5px; margin-bottom:4px; } .lesson-tools-dialog { padding:18px; } }
+`;
