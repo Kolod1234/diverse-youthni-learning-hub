@@ -71,8 +71,13 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
 
   useEffect(() => {
     capture();
+    const editor = editableRef.current;
+    // selectionchange is queued; capture synchronously before keyboard focus
+    // leaves the editor so a picker cannot receive an older caret position.
+    editor?.addEventListener('focusout', capture);
     document.addEventListener('selectionchange', capture);
     return () => {
+      editor?.removeEventListener('focusout', capture);
       document.removeEventListener('selectionchange', capture);
       operationRef.current += 1;
     };
