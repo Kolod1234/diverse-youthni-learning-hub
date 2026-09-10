@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import InlineEditable from './InlineEditable';
 import InlineToolbar from './InlineToolbar';
 import LessonAuthoringToolbar from './LessonAuthoringToolbar';
+import LessonObjectControls from './LessonObjectControls';
 import MathBlock from './MathBlock';
 import ScientificEquationBlock from './ScientificEquationBlock';
 import ImageBlock from './ImageBlock';
@@ -29,7 +30,7 @@ function GatedInlineToolbar(props) {
 // modal, no separate "edit" screen. Tutors edit inline, exactly where it sits.
 // All blocks call onChange(nextData) with the entire updated data object.
 
-export default function BlockRenderer({ block, onChange, focused, authoringTools = false }) {
+export default function BlockRenderer({ block, onChange, focused, authoringTools = false, objectTools = false }) {
   const d = block.data || {};
   const upd = (patch) => onChange({ ...d, ...patch });
 
@@ -66,7 +67,7 @@ export default function BlockRenderer({ block, onChange, focused, authoringTools
     case 'learning-objective':return <BadgeBlock label="🎯 Learning Objective" color="emerald" html={d.html} onChange={(html) => upd({ html })} />;
     case 'key-takeaway':      return <BadgeBlock label="⭐ Key Takeaway" color="amber" html={d.html} onChange={(html) => upd({ html })} />;
     case 'knowledge-check':   return <KnowledgeCheckBlock data={d} onChange={upd} />;
-    case 'legacy-html':       return <LegacyHtmlBlock html={d.html} onChange={(html) => upd({ html })} authoringTools={authoringTools} />;
+    case 'legacy-html':       return <LegacyHtmlBlock html={d.html} onChange={(html) => upd({ html })} authoringTools={authoringTools} objectTools={objectTools} />;
     default:                  return <div className="text-xs text-red-500">Unknown block type: {block.type}</div>;
   }
 }
@@ -496,9 +497,9 @@ function KnowledgeCheckBlock({ data, onChange }) {
   );
 }
 
-function LegacyHtmlBlock({ html, onChange, authoringTools }) {
+function LegacyHtmlBlock({ html, onChange, authoringTools, objectTools }) {
   return (
-    <LegacyHtmlEditor html={html} onChange={onChange} authoringTools={authoringTools} />
+    <LegacyHtmlEditor html={html} onChange={onChange} authoringTools={authoringTools} objectTools={objectTools} />
   );
 }
 
@@ -570,6 +571,7 @@ class LegacyHtmlEditor extends React.Component {
           </button>
         </div>
         {!sourceMode && this.props.authoringTools && <LessonAuthoringToolbar editableRef={this.previewRef} />}
+        {!sourceMode && this.props.objectTools && <LessonObjectControls editableRef={this.previewRef} />}
         {sourceMode ? (
           <textarea
             value={html || ''}
