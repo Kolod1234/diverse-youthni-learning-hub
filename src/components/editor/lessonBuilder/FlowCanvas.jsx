@@ -12,7 +12,8 @@ export default function FlowCanvas({ blocks, onChangeBlocks }) {
   const activeEditorRef = useRef(null);
   useEffect(() => {
     if (!editingId) return;
-    activeEditorRef.current?.querySelector('[contenteditable="true"], textarea, input')
+    (activeEditorRef.current?.querySelector('[contenteditable="true"]') ||
+      activeEditorRef.current?.querySelector('textarea, input'))
       ?.focus({ preventScroll: true });
   }, [editingId]);
   const update = (idx, data) => onChangeBlocks(prev =>
@@ -51,7 +52,7 @@ export default function FlowCanvas({ blocks, onChangeBlocks }) {
             <div ref={editing ? activeEditorRef : null} className="lesson-flow-prose">
               {editing ? (
                 <BlockExpandedContext.Provider value={true}>
-                  <BlockRenderer block={block} focused onChange={data => update(idx, data)} />
+                  <BlockRenderer block={block} focused authoringTools onChange={data => update(idx, data)} />
                 </BlockExpandedContext.Provider>
               ) : (
                 <MathJaxContent html={blocksToHtml([block])} />
