@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 import SlashMenu from './SlashMenu';
 import PreviewModal from './PreviewModal';
 import FreeCanvas from './FreeCanvas';
-import { blocksToHtml, htmlToBlocks } from './htmlSerializer';
+import FlowCanvas from './FlowCanvas';
+import { blocksToHtml, htmlToEditorBlocks } from './htmlSerializer';
 import { createBlock, BLOCK_GROUPS } from './blockTypes';
-import { migrateFlowToFrames, nextCascadePosition, clampFrame } from './freeFrame';
+import { nextCascadePosition, clampFrame } from './freeFrame';
 import useUndoRedo from './useUndoRedo';
 import useUnsavedChangesWarning from './useUnsavedChangesWarning';
 import { injectFontStylesheet } from './fontFamilies';
@@ -41,13 +42,15 @@ export default function VisualLessonBuilder({
   useEffect(() => { injectFontStylesheet(); }, []);
 
   // Derive initial blocks from the incoming slide content exactly once.
-  // Legacy flow slides (no frames) are migrated to stacked frames on load
-  // so the free canvas isn't empty for previously-authored content.
+  // Preserve document HTML; only saved free stages use positioned frames.
   const initialBlocks = useMemo(
-    () => migrateFlowToFrames(htmlToBlocks(slide?.content || '')),
+    () => htmlToEditorBlocks(slide?.content || ''),
     [slide?.id || slide?.order]
   );
   const { value: blocks, setValue: setBlocks, undo, redo, reset, canUndo, canRedo } = useUndoRedo(initialBlocks);
+
+  const isFlowLayout = blocks.length > 0 && !blocks.some(block => block.frame);
+  const lastBlocksHtml = useRef(blocksToHtml(initialBlocks));
 
   const [selectedId, setSelectedId] = useState(null);
   const focusedId = selectedId;
@@ -78,7 +81,8 @@ export default function VisualLessonBuilder({
 
   // Sync into builder when the parent switches to a different slide.
   useEffect(() => {
-    const next = migrateFlowToFrames(htmlToBlocks(slide?.content || ''));
+    const next = htmlToEditorBlocks(slide?.content || '');
+    lastBlocksHtml.current = blocksToHtml(next);
     reset(next);
     lastSerialised.current = slide?.content || '';
     setPersistedAt(null);
@@ -97,7 +101,8 @@ export default function VisualLessonBuilder({
   useEffect(() => {
     const incoming = slide?.content || '';
     if (incoming === lastSerialised.current) return; // our own echo — ignore
-    const next = migrateFlowToFrames(htmlToBlocks(incoming));
+    const next = htmlToEditorBlocks(incoming);
+    lastBlocksHtml.current = blocksToHtml(next);
     reset(next);
     lastSerialised.current = incoming;
     setExpandedId(null);
@@ -107,14 +112,15 @@ export default function VisualLessonBuilder({
   // Autosave: serialise blocks → HTML and push to parent on a debounce. We push
   // to the parent which writes to slide.content, keeping the existing storage
   // shape intact (LessonPlayer keeps reading slide.content as HTML).
-  const isDirty = lastSerialised.current !== blocksToHtml(blocks);
+  const isDirty = lastBlocksHtml.current !== blocksToHtml(blocks);
   useUnsavedChangesWarning(isDirty);
 
   useEffect(() => {
     if (!slideRef.current) return;
     const html = blocksToHtml(blocks);
-    if (html === lastSerialised.current) return;
+    if (html === lastBlocksHtml.current) return;
     const t = setTimeout(() => {
+      lastBlocksHtml.current = html;
       lastSerialised.current = html;
       // Push edits up into the parent's form state. This is NOT a server save
       // — it just keeps the in-memory lesson draft in sync with the blocks.
@@ -154,7 +160,7 @@ export default function VisualLessonBuilder({
       const frame = atPct
         ? clampFrame({ ...nextCascadePosition(prev, type), x: atPct.x, y: atPct.y })
         : nextCascadePosition(prev, type);
-      block.frame = frame;
+      if (!isFlowLayout) block.frame = frame;
       const next = [...prev, block];
       setTimeout(() => setFocusedId(block.id), 0);
       return next;
@@ -169,11 +175,12 @@ export default function VisualLessonBuilder({
   const flushToParent = () => {
     if (!slideRef.current) return null;
     const html = blocksToHtml(blocks);
-    if (html !== lastSerialised.current) {
+    if (html !== lastBlocksHtml.current) {
+      lastBlocksHtml.current = html;
       lastSerialised.current = html;
       onChangeRef.current?.({ ...slideRef.current, content: html });
     }
-    return html;
+    return lastSerialised.current;
   };
 
   // Expose flush to the parent via a ref. Re-binds on every render so the
@@ -186,7 +193,8 @@ export default function VisualLessonBuilder({
 
   const manualSave = async () => {
     if (!slideRef.current) return;
-    const html = blocksToHtml(blocks);
+    const html = isDirty ? blocksToHtml(blocks) : lastSerialised.current;
+    lastBlocksHtml.current = blocksToHtml(blocks);
     lastSerialised.current = html;
     const nextSlide = { ...slideRef.current, content: html };
     // Always push the latest blocks into the parent's draft form state.
@@ -275,6 +283,12 @@ export default function VisualLessonBuilder({
       <div className={chromeless ? 'px-2 sm:px-4 py-2 relative' : 'px-4 py-3 relative'}>
         {blocks.length === 0 ? (
           <EmptyState onPick={(type) => addBlock(type)} />
+        ) : isFlowLayout ? (
+          <FlowCanvas
+            key={slide?.id || slide?.order}
+            blocks={blocks}
+            onChangeBlocks={(updater, opts) => setBlocks(updater, opts)}
+          />
         ) : (
           <FreeCanvas
             blocks={blocks}
