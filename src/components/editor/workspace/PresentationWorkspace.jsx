@@ -10,6 +10,7 @@ import { ALL_BLOCK_ITEMS, createBlock } from '@/components/editor/lessonBuilder/
 
 import useWorkspaceState from './useWorkspaceState';
 import WorkspaceRibbon from './WorkspaceRibbon';
+import { LessonFormattingProvider } from '@/components/editor/lessonBuilder/LessonFormattingContext';
 import WorkspaceThumbnailRail from './WorkspaceThumbnailRail';
 import WorkspaceStage from './WorkspaceStage';
 import WorkspaceNotes from './WorkspaceNotes';
@@ -236,6 +237,7 @@ export default function PresentationWorkspace({
   // relies on a real flex parent and ResizeObserver inside the
   // stage to recompute Fit on size changes.
   return (
+    <LessonFormattingProvider>
     <div
       className="flex flex-col bg-white h-full w-full min-h-0 min-w-0"
       style={{
@@ -448,6 +450,7 @@ export default function PresentationWorkspace({
         onApplyBackground={applyBackground}
       />
     </div>
+    </LessonFormattingProvider>
   );
 }
 
