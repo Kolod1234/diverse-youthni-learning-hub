@@ -91,8 +91,7 @@ export default function Explore() {
     await Promise.all([
       refetchCourses(),
       queryClient.invalidateQueries(['all-reviews']),
-      queryClient.invalidateQueries(['all-enrollments']),
-      queryClient.invalidateQueries({ queryKey: ['registered-learner-count'] })
+      queryClient.invalidateQueries(['all-enrollments'])
     ]);
   });
 
@@ -102,27 +101,10 @@ export default function Explore() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: allEnrollments = [] } = useQuery({
+  const { data: allEnrollments = [], isLoading: enrollmentsLoading } = useQuery({
     queryKey: ['all-enrollments'],
     queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
     staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: registeredLearnerCount, isPending: learnersLoading, isError: learnersError } = useQuery({
-    queryKey: ['registered-learner-count'],
-    queryFn: async () => {
-      const response = await base44.functions.invoke('getRegisteredLearnerCount', {});
-      const count = response.data?.count;
-      if (!Number.isSafeInteger(count) || count < 0) {
-        throw new Error('Learner count unavailable');
-      }
-      return count;
-    },
-    enabled: Boolean(user),
-    staleTime: 60 * 1000,
-    refetchInterval: 60 * 1000,
-    refetchOnWindowFocus: true,
-    retry: 1,
   });
 
   const reviewStatsByCourse = useMemo(() => {
@@ -385,8 +367,8 @@ export default function Explore() {
     },
     {
       icon: PeopleIcon,
-      label: 'Registered Learners',
-      value: learnersError ? 'Unavailable' : learnersLoading ? '...' : registeredLearnerCount,
+      label: 'Active Learners',
+      value: enrollmentsLoading ? '...' : allEnrollments.length,
     },
     {
       icon: StarIcon,
