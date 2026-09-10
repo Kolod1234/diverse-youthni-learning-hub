@@ -40,6 +40,7 @@ export default function WorkspaceStage({
   // Used by the Design library to preview slide background templates
   // (solid colours, gradients, images) without touching slide content.
   stageBackground = null,
+  flowLayout = false,
 }) {
   const containerRef = React.useRef(null);
   const [size, setSize] = React.useState({ w: 0, h: 0 });
@@ -89,10 +90,10 @@ export default function WorkspaceStage({
     const hByWidth = wByWidth / STAGE_RATIO;
     const hByHeight = availH * 0.98;
     const wByHeight = hByHeight * STAGE_RATIO;
-    const stageW = Math.min(wByWidth, wByHeight);
+    const stageW = flowLayout ? wByWidth : Math.min(wByWidth, wByHeight);
     const stageH = stageW / STAGE_RATIO;
     return { stageW, stageH };
-  }, [zoom, size.w, size.h]);
+  }, [zoom, size.w, size.h, flowLayout]);
 
   return (
     <div className="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
@@ -112,18 +113,20 @@ export default function WorkspaceStage({
         {/* Vertical centering wrapper. min-h-full so the slide stays
             vertically centred in the visible pasteboard area; if the
             scaled slide is taller than the pasteboard, we scroll. */}
-        <div className="min-h-full w-full flex items-center justify-center p-2 sm:p-3">
+        <div className={`min-h-full w-full flex ${flowLayout ? 'items-start' : 'items-center'} justify-center p-2 sm:p-3`}>
           <div
             // The visible 16:9 slide. Fixed pixel size so the inner
             // editor cannot stretch it.
             className="border border-slate-200 rounded-md shadow-[0_8px_30px_rgba(15,23,42,0.10)] overflow-hidden flex flex-col"
             style={{
               width: stageW,
-              height: stageH,
+              height: flowLayout ? 'auto' : stageH,
+              minHeight: flowLayout ? stageH : undefined,
+              flexShrink: 0,
               // aspectRatio is belt-and-braces — even if size math
               // somehow disagrees with the rectangle, the 16:9
               // ratio is enforced.
-              aspectRatio: `${STAGE_W} / ${STAGE_H}`,
+              aspectRatio: flowLayout ? undefined : `${STAGE_W} / ${STAGE_H}`,
               // White by default; overridden by per-slide design background.
               background: stageBackground || '#ffffff',
             }}
@@ -131,7 +134,7 @@ export default function WorkspaceStage({
             {/* Inner slide-content viewport. Scrolls if the
                 structured editor needs more room than the 16:9 box
                 allows. Padding keeps content off the slide edges. */}
-            <div className="flex-1 min-h-0 min-w-0 overflow-auto">
+            <div className={flowLayout ? 'min-w-0 w-full' : 'flex-1 min-h-0 min-w-0 overflow-auto'}>
               {children}
             </div>
           </div>
