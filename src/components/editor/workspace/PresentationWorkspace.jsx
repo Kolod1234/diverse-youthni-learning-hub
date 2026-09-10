@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { LayoutList } from 'lucide-react';
 import VisualLessonBuilder from '@/components/editor/lessonBuilder/VisualLessonBuilder';
 import PreviewModal from '@/components/editor/lessonBuilder/PreviewModal';
-import { blocksToHtml, htmlToBlocks } from '@/components/editor/lessonBuilder/htmlSerializer';
+import { blocksToHtml, htmlToBlocks, htmlToEditorBlocks } from '@/components/editor/lessonBuilder/htmlSerializer';
 import { ALL_BLOCK_ITEMS, createBlock } from '@/components/editor/lessonBuilder/blockTypes';
 
 import useWorkspaceState from './useWorkspaceState';
@@ -133,7 +133,7 @@ export default function PresentationWorkspace({
   const insertBlockType = useCallback((type, dataOverrides = null) => {
     if (!currentSlideData) return;
     const existing = currentSlideData.content || '';
-    const existingBlocks = htmlToBlocks(existing);
+    const existingBlocks = htmlToEditorBlocks(existing);
     const block = createBlock(type);
     if (dataOverrides) block.data = { ...block.data, ...dataOverrides };
     const next = [...existingBlocks, block];
@@ -190,7 +190,7 @@ export default function PresentationWorkspace({
   const insertHtmlAsset = useCallback((html) => {
     if (!currentSlideData) return;
     const existing = currentSlideData.content || '';
-    const existingBlocks = htmlToBlocks(existing);
+    const existingBlocks = htmlToEditorBlocks(existing);
     const newBlocks = htmlToBlocks(html);
     const merged = blocksToHtml([...existingBlocks, ...newBlocks]);
     const updated = { ...currentSlideData, content: merged };
@@ -347,6 +347,7 @@ export default function PresentationWorkspace({
           {/* WorkspaceStage owns pasteboard + status bar slot.
               Notes are shown above the status bar via the slot. */}
           <WorkspaceStage
+            flowLayout={!!currentSlideData?.content?.trim() && !htmlToEditorBlocks(currentSlideData.content).some(block => block.frame)}
             zoom={ws.zoom}
             stageBackground={currentSlideData?.background || null}
             statusBarSlot={
@@ -483,7 +484,7 @@ function BuilderHost({
   //     otherwise force an intrinsic height larger than the 16:9
   //     box, producing the nested scrollbars the builder reported.
   return (
-    <div className="w-full h-full overflow-auto lesson-slide-canvas">
+    <div className="w-full min-w-0 lesson-slide-canvas">
       <VisualLessonBuilder
         slide={slide}
         onChange={onChange}
