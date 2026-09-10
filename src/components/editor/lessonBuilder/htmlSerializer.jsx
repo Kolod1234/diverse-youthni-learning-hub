@@ -824,7 +824,8 @@ export function htmlToEditorBlocks(html) {
             continue;
           }
         }
-        preserved += node.outerHTML ?? node.textContent;
+        preserved += node.nodeType === 3 ? escapeHtml(node.textContent)
+          : node.nodeType === 8 ? `<!--${node.textContent}-->` : (node.outerHTML || '');
       }
       flush();
       return blocks;
