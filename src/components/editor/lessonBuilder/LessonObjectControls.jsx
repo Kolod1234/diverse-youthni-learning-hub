@@ -110,9 +110,12 @@ export default function LessonObjectControls({ editableRef }) {
         d.node.style.transform=d.transform;
         const previousPointer=d.node.style.pointerEvents;
         d.node.style.pointerEvents='none';
+        const chrome=Array.from(document.querySelectorAll('[data-object-controls]'));
+        chrome.forEach(el=>{el.style.visibility='hidden';});
         const hit=document.elementFromPoint(e.clientX,e.clientY);
         let range=document.caretRangeFromPoint?.(e.clientX,e.clientY);
         if(!range && document.caretPositionFromPoint){const p=document.caretPositionFromPoint(e.clientX,e.clientY);if(p){range=document.createRange();range.setStart(p.offsetNode,p.offset);range.collapse(true);}}
+        chrome.forEach(el=>{el.style.visibility='';});
         d.node.style.pointerEvents=previousPointer;
         const editor=editableRef.current;
         if(d.mode==='inline' && range && editor.contains(range.startContainer) && !d.node.contains(range.startContainer) &&
