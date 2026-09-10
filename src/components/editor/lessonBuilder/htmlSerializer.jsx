@@ -599,7 +599,8 @@ function blockToHtml(b) {
       ].join(' ');
       // Wrapper div fills the available frame (or sits inline in flow mode).
       // No card chrome — that's the whole point of the dedicated shape block.
-      return `<div ${dataAttrs} style="width:100%; height:100%; min-height:60px;"><svg viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" style="display:block; overflow:visible;">${geom}</svg></div>`;
+      const shapeSize = b.frame ? 'width:100%;height:100%;min-height:12px;' : `display:inline-block;vertical-align:middle;width:220px;max-width:100%;height:${isStrokeOnly ? 28 : 160}px;margin:8px 12px 8px 0;`;
+      return `<div ${dataAttrs} style="${shapeSize}"><svg viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" style="display:block; overflow:visible;">${geom}</svg></div>`;
     }
     case 'divider':
       return `<hr data-lesson-block="divider" style="border:0; border-top:1px solid #E5E7EB; margin:24px 0;" />`;
