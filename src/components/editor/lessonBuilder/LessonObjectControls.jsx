@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { blocksToHtml } from './htmlSerializer';
 import { documentRoot, documentObjects, fitDocument, objectFromTarget, objectMode, setObjectMode } from './documentObjects';
 
 const control = 'rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 hover:bg-indigo-50';
 const directions = ['nw','n','ne','e','se','s','sw','w'];
+const shapes = {square:'Rectangle',rounded:'Rounded rectangle',circle:'Circle / oval',triangle:'Triangle',diamond:'Diamond',pentagon:'Pentagon',hexagon:'Hexagon',octagon:'Octagon',star:'Star',heart:'Heart',arrowR:'Right arrow',arrowL:'Left arrow',arrowU:'Up arrow',arrowD:'Down arrow',line:'Line',lineDashed:'Dashed line',lineDotted:'Dotted line',arrowLineR:'Arrow line',arrowLineL:'Left arrow line',arrowLineDouble:'Double arrow line'};
 
 // Selection chrome is portaled outside the editable DOM. It is never saved.
 export default function LessonObjectControls({ editableRef }) {
@@ -154,6 +156,16 @@ export default function LessonObjectControls({ editableRef }) {
   };
   const apply = fn => {if(selected.current){fn(selected.current);changed();}};
   const changeMode = mode => apply(node=>setObjectMode(node,editableRef.current,mode));
+  const changeShape = shape => apply(node=>{
+    const wasLine=/^(line|arrowLine)/.test(node.dataset.shape || '');
+    const isLine=/^(line|arrowLine)/.test(shape);
+    const holder=document.createElement('div');
+    holder.innerHTML=blocksToHtml([{id:'object',type:'shape',data:{shape,fill:node.dataset.fill,stroke:node.dataset.stroke,strokeWidth:Number(node.dataset.strokeWidth),noFill:!isLine&&!wasLine&&node.dataset.noFill==='1'}}]);
+    const next=holder.firstElementChild;
+    node.innerHTML=next.innerHTML;
+    ['shape','fill','stroke','strokeWidth','noFill'].forEach(key=>{node.dataset[key]=next.dataset[key];});
+    if(wasLine!==isLine)node.style.height=isLine?'28px':'160px';
+  });
   const formatShape = (key,value) => apply(node=>{
     const shape=node.matches('[data-lesson-block="shape"]')?node:null;
     if(!shape)return;
@@ -185,13 +197,15 @@ export default function LessonObjectControls({ editableRef }) {
       <button type="button" className={control} onClick={()=>apply(n=>{if(objectMode(n)!=='free')setObjectMode(n,editableRef.current,'free');const layers=Array.from(documentRoot(editableRef.current).children).map(el=>Number(el.style.zIndex)||0);n.style.zIndex=String(Math.max(...layers,0)+1);})}>Bring forward</button>
       <button type="button" className={control} onClick={()=>apply(n=>{if(objectMode(n)!=='free')setObjectMode(n,editableRef.current,'free');n.style.zIndex='0';})}>Send backward</button>
       {shape&&<>
+        <select aria-label="Shape type" className={control} value={node.dataset.shape || 'square'} onChange={e=>changeShape(e.target.value)}>{Object.entries(shapes).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select>
         <label className="text-xs">Colour <input aria-label="Object fill colour" type="color" value={node.dataset.fill?.startsWith('#')?node.dataset.fill:'#6366f1'} onChange={e=>formatShape('fill',e.target.value)}/></label>
         <label className="text-xs">Outline <input aria-label="Object outline colour" type="color" value={node.dataset.stroke?.startsWith('#')?node.dataset.stroke:'#1e293b'} onChange={e=>formatShape('stroke',e.target.value)}/></label>
         <label className="text-xs">Thickness <input aria-label="Object outline width" className="w-12 rounded border p-1" type="number" min="0" max="20" value={Number(node.dataset.strokeWidth)||0} onChange={e=>formatShape('stroke-width',String(Math.max(0,Math.min(20,Number(e.target.value)||0))))}/></label>
-        <button type="button" className={control} onClick={()=>formatShape('fill','none')}>No fill</button>
+        {!/^(line|arrowLine)/.test(node.dataset.shape || '')&&<button type="button" className={control} onClick={()=>formatShape('fill','none')}>No fill</button>}
       </>}
       <button type="button" className={control} onClick={()=>apply(n=>{n.remove();selected.current=null;setRect(null);})}>Delete object</button>
       <button type="button" className={control} onClick={()=>{selected.current=null;setRect(null);}}>Done</button>
     </div>
   </div>,document.body);
 }
+
