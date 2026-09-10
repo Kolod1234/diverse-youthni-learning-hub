@@ -525,13 +525,13 @@ class LegacyHtmlEditor extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     // Only push the prop value into the DOM when:
     //  • we just left source mode (need to re-render the styled card), or
-    //  • the html prop changed AND the user isn't actively typing.
+    //  • an external edit/undo differs from the current DOM. Local typing
+    //    echoes compare equal below and never disturb the caret.
     const exitedSourceMode = prevState.sourceMode && !this.state.sourceMode;
     const propChanged = prevProps.html !== this.props.html;
     if (this.state.sourceMode) return;
     if (!this.previewRef.current) return;
     if (!exitedSourceMode && !propChanged) return;
-    if (!exitedSourceMode && this.isEditing) return;
     if (this.previewRef.current.innerHTML === (this.props.html || '')) return;
     this.previewRef.current.innerHTML = this.props.html || '';
   }
@@ -571,6 +571,7 @@ class LegacyHtmlEditor extends React.Component {
         {sourceMode ? (
           <textarea
             value={html || ''}
+            aria-label="Lesson HTML source"
             onChange={(e) => onChange(e.target.value)}
             className="w-full font-mono text-xs bg-white border border-gray-200 rounded p-2 outline-none min-h-[160px]"
             spellCheck={false}
@@ -579,6 +580,10 @@ class LegacyHtmlEditor extends React.Component {
         ) : (
           <div
             ref={this.previewRef}
+            role="textbox"
+            aria-label="Lesson content"
+            aria-multiline="true"
+            tabIndex={0}
             contentEditable
             suppressContentEditableWarning
             onInput={this.handleInput}
