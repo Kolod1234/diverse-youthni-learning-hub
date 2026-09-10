@@ -23,8 +23,6 @@ import { injectFontStylesheet } from './fontFamilies';
 // always serialise back to slide.content as sanitised HTML so the existing
 // LessonPlayer / presentation pages render unchanged.
 
-const AUTOSAVE_MS = 1200;
-
 export default function VisualLessonBuilder({
   slide, onChange, onPersist, isPersisted = false, flushRef,
   // chromeless: when true (used by the new PresentationWorkspace) the builder
@@ -109,9 +107,9 @@ export default function VisualLessonBuilder({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slide?.content]);
 
-  // Autosave: serialise blocks → HTML and push to parent on a debounce. We push
-  // to the parent which writes to slide.content, keeping the existing storage
-  // shape intact (LessonPlayer keeps reading slide.content as HTML).
+  // Keep the in-memory lesson draft current after every edit. Only the outer
+  // Save Lesson action writes to the server. A delayed draft update could be
+  // cancelled when switching slides, silently discarding the latest typing.
   const isDirty = lastBlocksHtml.current !== blocksToHtml(blocks);
   useUnsavedChangesWarning(isDirty);
 
@@ -119,14 +117,9 @@ export default function VisualLessonBuilder({
     if (!slideRef.current) return;
     const html = blocksToHtml(blocks);
     if (html === lastBlocksHtml.current) return;
-    const t = setTimeout(() => {
-      lastBlocksHtml.current = html;
-      lastSerialised.current = html;
-      // Push edits up into the parent's form state. This is NOT a server save
-      // — it just keeps the in-memory lesson draft in sync with the blocks.
-      onChangeRef.current?.({ ...slideRef.current, content: html });
-    }, AUTOSAVE_MS);
-    return () => clearTimeout(t);
+    lastBlocksHtml.current = html;
+    lastSerialised.current = html;
+    onChangeRef.current?.({ ...slideRef.current, content: html });
   }, [blocks]);
 
   // Keyboard shortcuts: Cmd/Ctrl+Z, Cmd/Ctrl+Shift+Z, Cmd/Ctrl+S.
