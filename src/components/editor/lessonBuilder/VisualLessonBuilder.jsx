@@ -306,7 +306,7 @@ export default function VisualLessonBuilder({
             onClick={() => { pendingInsertRef.current = null; setSlashOpen((o) => !o); }}
             className="gap-1.5 text-gray-600"
           >
-            <Plus className="w-4 h-4" /> Add block
+            <Plus className="w-4 h-4" /> Insert content
           </Button>
           {slashOpen && (
             <div className="absolute left-0 top-full mt-1 z-20">
