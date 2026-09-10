@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Bold, Italic, Underline, Strikethrough, Superscript, Subscript, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, RemoveFormatting, Palette, Square, Plus, SpellCheck } from 'lucide-react';
+import { Bold, Italic, Underline, Strikethrough, Superscript, Subscript, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, RemoveFormatting, Highlighter, Baseline, Square, Plus, SpellCheck } from 'lucide-react';
 import { LessonFormattingContext } from './LessonFormattingContext';
 import { base44 } from '@/api/base44Client';
 import { FONT_FAMILIES } from './fontFamilies';
@@ -55,11 +55,16 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
   const toolbarRef = useRef(null);
   const dialogRef = useRef(null);
   const imageTargetRef = useRef(null);
+  const colourRangeRef = useRef(null);
 
   const capture = useCallback(() => {
     const editor = editableRef.current;
     const selection = window.getSelection();
     if (!editor || !selection?.rangeCount) return;
+    // A colour picker or dialog can move focus without choosing a new place
+    // in the lesson. Keep the lesson selection until the user returns to it.
+    const focused = document.activeElement;
+    if (toolbarRef.current?.contains(focused) || dialogRef.current?.contains(focused)) return;
     const range = selection.getRangeAt(0);
     if (editor.contains(range.commonAncestorContainer)) rangeRef.current = range.cloneRange();
   }, [editableRef]);
@@ -77,12 +82,13 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
   const restore = (saved = rangeRef.current) => {
     const editor = editableRef.current;
     if (!editor?.isConnected) return null;
-    // The editable must leave the modal's inert background before a command.
+    // Clone before changing focus, so closing a popup cannot change the
+    // range we are about to restore.
+    const valid = saved && editor.contains(saved.commonAncestorContainer);
+    const range = valid ? saved.cloneRange() : document.createRange();
     if (dialogRef.current?.open) dialogRef.current.close();
     editor.focus({ preventScroll: true });
-    const range = saved && editor.contains(saved.commonAncestorContainer)
-      ? saved.cloneRange() : document.createRange();
-    if (!saved || !editor.contains(saved.commonAncestorContainer)) {
+    if (!valid) {
       range.selectNodeContents(editor);
       range.collapse(false);
     }
@@ -104,6 +110,41 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
     changed();
     setMessage('');
   };
+
+  const beginColourSelection = () => {
+    capture();
+    colourRangeRef.current = rangeRef.current?.cloneRange() || null;
+  };
+
+  const applyColour = (name, value, saved = rangeRef.current) => {
+    const editor = editableRef.current;
+    if (!saved || !editor?.contains(saved.commonAncestorContainer) || saved.collapsed || !saved.toString()) {
+      setMessage('Select the text you want to colour or highlight first.');
+      return;
+    }
+    const range = restore(saved);
+    if (!range) return;
+    document.execCommand('styleWithCSS', false, true);
+    const applied = document.execCommand(name, false, value);
+    if (!applied) {
+      setMessage('The colour could not be applied. Select the text and try again.');
+      return;
+    }
+    changed();
+    colourRangeRef.current = rangeRef.current?.cloneRange() || null;
+    setMessage('');
+  };
+
+  const colourPicker = (name, value, setValue, label) => <input
+    type="color" className="lesson-colour-picker" aria-label={label} title={label}
+    value={value} onPointerDown={beginColourSelection} onFocus={beginColourSelection}
+    onInput={e => {
+      const next = e.currentTarget.value;
+      setValue(next);
+      applyColour(name, next, colourRangeRef.current);
+    }}
+    onChange={e => setValue(e.currentTarget.value)}
+  />;
 
   const insertHtml = (html, saved, replace = true) => {
     const range = restore(saved);
@@ -298,7 +339,7 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
   const fontTools = [['Bold','bold',Bold],['Italic','italic',Italic],['Underline','underline',Underline],['Strikethrough','strikeThrough',Strikethrough],['Superscript','superscript',Superscript],['Subscript','subscript',Subscript],['Clear formatting','removeFormat',RemoveFormatting]];
   const paragraphTools = [['Align left','justifyLeft',AlignLeft],['Align centre','justifyCenter',AlignCenter],['Align right','justifyRight',AlignRight],['Bullets','insertUnorderedList',List],['Numbered list','insertOrderedList',ListOrdered]];
   const iconButton = ([label, cmd, Icon]) => <button key={cmd} type="button" className="lesson-format-icon" aria-label={label} title={label} onClick={() => command(cmd)}><Icon size={16}/></button>;
-  const panelTitle = {science:'Scientific notation',image:'Image settings',border:'Border settings',grammar:'Grammar review',colours:'Text colour and highlighting',insert:'Insert into lesson'}[panel];
+  const panelTitle = {science:'Scientific notation',image:'Image settings',border:'Border settings',grammar:'Grammar review',insert:'Insert into lesson'}[panel];
 
   return <>
     <div ref={toolbarRef} className="lesson-authoring-tools lesson-ribbon-formatting">
@@ -310,7 +351,16 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
             <select aria-label="Font size" title="Font size" className="lesson-format-field lesson-font-size" value={size} onChange={e=>applySize(e.target.value)}>{[10,12,14,16,18,20,24,28,32,40,48,64].map(value=><option key={value} value={value}>{value}</option>)}</select>
             <select aria-label="Text style" title="Paragraph or heading" className="lesson-format-field lesson-text-style" defaultValue="" onChange={e=>{command('formatBlock',e.target.value);e.target.value='';}}><option value="" disabled>Text style</option><option value="p">Paragraph</option><option value="h1">Heading 1</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option></select>
           </div>
-          <div className="lesson-format-row">{fontTools.map(iconButton)}</div>
+          <div className="lesson-format-row">{fontTools.map(iconButton)}
+            <div className="lesson-colour-control" role="group" aria-label="Text colour">
+              <button type="button" className="lesson-format-icon" aria-label="Apply text colour" title="Apply text colour to selection" onClick={()=>applyColour('foreColor',color)}><Baseline size={17}/><span className="lesson-colour-line" style={{backgroundColor:color}}/></button>
+              {colourPicker('foreColor',color,setColor,'Text colour picker')}
+            </div>
+            <div className="lesson-colour-control" role="group" aria-label="Text highlight">
+              <button type="button" className="lesson-format-icon" aria-label="Highlight text" title="Highlight selected text" onClick={()=>applyColour('hiliteColor',highlight)}><Highlighter size={17}/><span className="lesson-colour-line" style={{backgroundColor:highlight}}/></button>
+              {colourPicker('hiliteColor',highlight,setHighlight,'Highlight colour picker')}
+            </div>
+          </div>
           <span className="lesson-format-label">Font</span>
         </div>
         <div className="lesson-format-group" role="group" aria-label="Paragraph">
@@ -319,7 +369,7 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
           <span className="lesson-format-label">Paragraph</span>
         </div>
         <div className="lesson-format-group" role="group" aria-label="Formatting">
-          <button type="button" className="lesson-format-action" onClick={()=>openPanel('colours')}><Palette size={15}/>Colours</button>
+          <button type="button" className="lesson-format-action" onClick={()=>applyColour('hiliteColor','transparent')}><Highlighter size={15}/>No highlight</button>
           <button type="button" className="lesson-format-action" onClick={()=>openPanel('border')}><Square size={15}/>Borders</button>
           <span className="lesson-format-label">Formatting</span>
         </div>
@@ -336,10 +386,6 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
     </div>
     {panel && <ToolDialog title={panelTitle} onClose={closePanel} dialogRef={dialogRef}>
       <div className="flex flex-wrap items-end gap-3">
-          {panel === 'colours' && <div className="grid w-full gap-5 sm:grid-cols-2">
-            <div className="space-y-3"><label className="flex items-center gap-3 text-sm">Font colour<input type="color" aria-label="Font color" className="h-9 w-12" value={color} onChange={e=>setColor(e.target.value)}/></label><button type="button" className={BUTTON} onClick={()=>{command('foreColor',color);closePanel();}}>Apply font color</button></div>
-            <div className="space-y-3"><label className="flex items-center gap-3 text-sm">Highlight<input type="color" aria-label="Highlight color" className="h-9 w-12" value={highlight} onChange={e=>setHighlight(e.target.value)}/></label><div className="flex flex-wrap gap-2"><button type="button" className={BUTTON} onClick={()=>{command('hiliteColor',highlight);closePanel();}}>Highlight text</button><button type="button" className={BUTTON} onClick={()=>{command('hiliteColor','transparent');closePanel();}}>Remove highlight</button></div></div>
-          </div>}
           {panel === 'insert' && <div className="w-full space-y-4">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               <button type="button" className={BUTTON} onClick={()=>{setImageUrl('');setImageAlt('');setImageWidth('100');openPanel('image');}}>Insert image</button>
@@ -416,6 +462,11 @@ const RIBBON_CSS = `
 .lesson-format-field { height:28px; border:1px solid #cbd5e1; border-radius:5px; background:white; padding:2px 5px; font-size:12px; color:#334155; }
 .lesson-font-family { width:125px; } .lesson-font-size { width:52px; } .lesson-text-style { width:104px; }
 .lesson-format-icon { display:inline-flex; align-items:center; justify-content:center; width:29px; height:28px; border:1px solid transparent; border-radius:5px; background:transparent; padding:3px; }
+.lesson-colour-control { display:inline-flex; align-items:center; border:1px solid #e2e8f0; border-radius:5px; height:28px; }
+.lesson-colour-control .lesson-format-icon { position:relative; height:26px; padding-bottom:7px; }
+.lesson-colour-line { position:absolute; bottom:3px; left:5px; right:5px; height:3px; border-radius:1px; }
+.lesson-colour-picker { width:20px; height:24px; padding:2px; border:0; border-left:1px solid #e2e8f0; background:transparent; cursor:pointer; }
+.lesson-colour-picker:focus-visible { outline:2px solid #6366f1; outline-offset:1px; }
 .lesson-format-action { display:flex; align-items:center; gap:6px; height:28px; padding:3px 7px; border-radius:5px; background:transparent; border:1px solid transparent; font-size:12px; white-space:nowrap; }
 .lesson-format-tall { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; height:59px; padding:3px 8px; border:1px solid transparent; border-radius:5px; font-size:11px; white-space:nowrap; background:transparent; }
 .lesson-ribbon-formatting button:hover { background:#eef2ff; border-color:#c7d2fe; }
