@@ -368,7 +368,7 @@ export default function Explore() {
     {
       icon: PeopleIcon,
       label: 'Active Learners',
-      value: enrollmentsLoading ? '...' : allEnrollments.length,
+      value: enrollmentsLoading ? '...' : new Set(allEnrollments.map(e => e.created_by_id)).size,
     },
     {
       icon: StarIcon,
