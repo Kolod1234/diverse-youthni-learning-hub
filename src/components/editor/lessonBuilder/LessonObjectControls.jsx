@@ -28,6 +28,19 @@ export default function LessonObjectControls({ editableRef }) {
     measure();
   }, [editableRef, measure]);
 
+  const start = useCallback((e,kind) => {
+    const node=selected.current, editor=editableRef.current;
+    if(!node || !editor || e.button!==0)return;
+    e.preventDefault();e.stopPropagation();
+    const host=objectMode(node)==='free'?documentRoot(editor):node.parentElement;
+    const r=host.getBoundingClientRect();
+    const scale=r.width/(host.offsetWidth||r.width)||1;
+    const box=node.getBoundingClientRect();
+    drag.current={node,kind,pointerId:e.pointerId,x:e.clientX,y:e.clientY,scale,hostWidth:r.width/scale,
+      width:node.offsetWidth||box.width/scale,height:node.offsetHeight||box.height/scale,left:parseFloat(node.style.left)/100*(r.width/scale)||0,
+      top:parseFloat(node.style.top)||0,mode:objectMode(node),transform:node.style.transform,before:editor.innerHTML,moved:false};
+  }, [editableRef]);
+
   useEffect(() => {
     const editor = editableRef.current;
     if (!editor) return;
@@ -36,6 +49,16 @@ export default function LessonObjectControls({ editableRef }) {
       selected.current = object;
       refresh(n=>n+1);
       measure();
+    };
+    // Pressing directly on an image or shape selects it and starts a move at once.
+    const grab = e => {
+      if (e.button !== 0 || !e.target.closest?.('img,svg,[data-lesson-block="shape"]')) return;
+      const object = objectFromTarget(e.target, editor);
+      if (!object) return;
+      selected.current = object;
+      refresh(n=>n+1);
+      measure();
+      start(e,'move');
     };
     const chooseRequested = e => {
       selected.current = documentObjects(editor)[e.detail.index] || null;
@@ -52,6 +75,7 @@ export default function LessonObjectControls({ editableRef }) {
     observer.observe(editor,{childList:true,subtree:true,attributes:true});
     const resize = new ResizeObserver(measure); resize.observe(editor);
     editor.addEventListener('click',choose);
+    editor.addEventListener('pointerdown',grab);
     editor.addEventListener('lesson-select-object',chooseRequested);
     document.addEventListener('pointerdown',clear);
     document.addEventListener('keydown',key);
@@ -60,13 +84,14 @@ export default function LessonObjectControls({ editableRef }) {
     return () => {
       observer.disconnect(); resize.disconnect();
       editor.removeEventListener('click',choose);
+      editor.removeEventListener('pointerdown',grab);
       editor.removeEventListener('lesson-select-object',chooseRequested);
       document.removeEventListener('pointerdown',clear);
       document.removeEventListener('keydown',key);
       window.removeEventListener('scroll',measure,true);
       window.removeEventListener('resize',measure);
     };
-  }, [editableRef,measure]);
+  }, [editableRef,measure,start]);
 
   useEffect(() => {
     const move = e => {
@@ -142,18 +167,6 @@ export default function LessonObjectControls({ editableRef }) {
     return()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel);window.removeEventListener('blur',cancel);drag.current=null;};
   },[editableRef,changed,measure]);
 
-  const start = (e,kind) => {
-    const node=selected.current, editor=editableRef.current;
-    if(!node || !editor || e.button!==0)return;
-    e.preventDefault();e.stopPropagation();
-    const host=objectMode(node)==='free'?documentRoot(editor):node.parentElement;
-    const r=host.getBoundingClientRect();
-    const scale=r.width/(host.offsetWidth||r.width)||1;
-    const box=node.getBoundingClientRect();
-    drag.current={node,kind,pointerId:e.pointerId,x:e.clientX,y:e.clientY,scale,hostWidth:r.width/scale,
-      width:node.offsetWidth||box.width/scale,height:node.offsetHeight||box.height/scale,left:parseFloat(node.style.left)/100*(r.width/scale)||0,
-      top:parseFloat(node.style.top)||0,mode:objectMode(node),transform:node.style.transform,before:editor.innerHTML,moved:false};
-  };
   const apply = fn => {if(selected.current){fn(selected.current);changed();}};
   const changeMode = mode => apply(node=>setObjectMode(node,editableRef.current,mode));
   const changeShape = shape => apply(node=>{
@@ -208,4 +221,3 @@ export default function LessonObjectControls({ editableRef }) {
     </div>
   </div>,document.body);
 }
-
