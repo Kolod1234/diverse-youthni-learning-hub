@@ -1,9 +1,12 @@
-import React, { useCallback, useContext, useEffect, useId, useRef, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useContext, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Bold, Italic, Underline, Strikethrough, Superscript, Subscript, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, RemoveFormatting, Highlighter, Baseline, Square, Plus, SpellCheck } from 'lucide-react';
+import { Bold, Italic, Underline, Strikethrough, Superscript, Subscript, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, RemoveFormatting, Highlighter, Baseline, Square, Plus, SpellCheck, Sigma, FlaskConical } from 'lucide-react';
 import { LessonFormattingContext } from './LessonFormattingContext';
 import { base44 } from '@/api/base44Client';
 import { FONT_FAMILIES } from './fontFamilies';
+
+const ScienceEquationEditor = lazy(() => import('./ScienceEquationEditor'));
+const ChemicalStructureEditor = lazy(() => import('./ChemicalStructureEditor'));
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const SYMBOLS = ['±','×','÷','°','Δ','π','μ','Ω','→','⇌','≤','≥','≈','∞'];
@@ -40,8 +43,8 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
   const [size, setSize] = useState('18');
   const [color, setColor] = useState('#1e293b');
   const [highlight, setHighlight] = useState('#fef08a');
-  const [coefficient, setCoefficient] = useState('3');
-  const [exponent, setExponent] = useState('8');
+  const [scienceInitial, setScienceInitial] = useState(null);
+  const scienceTargetRef = useRef(null);
   const [imageUrl, setImageUrl] = useState('');
   const [imageAlt, setImageAlt] = useState('');
   const [imageWidth, setImageWidth] = useState('100');
@@ -218,6 +221,8 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
   const openPanel = (name) => {
     capture();
     imageTargetRef.current = null;
+    scienceTargetRef.current = null;
+    setScienceInitial(null);
     setMessage('');
     setPanel(name);
   };
@@ -266,6 +271,33 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
     return true;
   };
 
+  const applyScience = ({html}) => {
+    const editor = editableRef.current;
+    const target = scienceTargetRef.current;
+    if (!editor?.isConnected || (target && !editor.contains(target))) {
+      setMessage('The lesson changed. Close this window and select the insertion point again.');
+      return;
+    }
+    if (target) {
+      restore();
+      const holder = document.createElement('div');
+      holder.innerHTML = html;
+      const replacement = holder.firstElementChild;
+      // Retain the placement/size of an edited chemical drawing.
+      if (target.hasAttribute('data-lesson-chemical')) {
+        replacement.style.cssText = target.style.cssText;
+        if (target.hasAttribute('data-lesson-object')) replacement.setAttribute('data-lesson-object',target.getAttribute('data-lesson-object'));
+      }
+      target.replaceWith(replacement);
+      const range = document.createRange();
+      range.setStartAfter(replacement); range.collapse(true);
+      rangeRef.current = range;
+      restore(range);
+      changed();
+    } else if (!insertHtml(html + '&nbsp;')) return;
+    closePanel();
+  };
+
   const uploadImage = async (file) => {
     if (!file) return;
     if (!file.type.startsWith('image/')) { setMessage('Choose an image file.'); return; }
@@ -289,6 +321,20 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
     const editor = editableRef.current;
     if (!editor) return;
     const editImage = (event) => {
+      const scientific = event.target.closest('[data-lesson-equation],[data-lesson-chemical]');
+      if (scientific && editor.contains(scientific)) {
+        try {
+          capture();
+          scienceTargetRef.current = scientific;
+          imageTargetRef.current = null;
+          const chemical = scientific.hasAttribute('data-lesson-chemical');
+          const initial = chemical
+            ? {ket:decodeURIComponent(scientific.getAttribute('data-lesson-chemical')),description:scientific.getAttribute('alt') || 'Chemical structure'}
+            : JSON.parse(decodeURIComponent(scientific.getAttribute('data-lesson-equation')));
+          setScienceInitial(initial); setMessage(''); setPanel(chemical ? 'chemistry' : 'science');
+        } catch { setMessage('This scientific object could not be reopened. Its saved content has been kept.'); }
+        return;
+      }
       if (event.target.tagName !== 'IMG') return;
       capture();
       imageTargetRef.current = event.target;
@@ -344,7 +390,7 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
   const fontTools = [['Bold','bold',Bold],['Italic','italic',Italic],['Underline','underline',Underline],['Strikethrough','strikeThrough',Strikethrough],['Superscript','superscript',Superscript],['Subscript','subscript',Subscript],['Clear formatting','removeFormat',RemoveFormatting]];
   const paragraphTools = [['Align left','justifyLeft',AlignLeft],['Align centre','justifyCenter',AlignCenter],['Align right','justifyRight',AlignRight],['Bullets','insertUnorderedList',List],['Numbered list','insertOrderedList',ListOrdered]];
   const iconButton = ([label, cmd, Icon]) => <button key={cmd} type="button" className="lesson-format-icon" aria-label={label} title={label} onClick={() => command(cmd)}><Icon size={16}/></button>;
-  const panelTitle = {science:'Scientific notation',image:'Image settings',border:'Border settings',grammar:'Grammar review',insert:'Insert into lesson'}[panel];
+  const panelTitle = {science:'Maths and science equations',chemistry:'Chemical structure drawing',image:'Image settings',border:'Border settings',grammar:'Grammar review',insert:'Insert into lesson'}[panel];
 
   return <>
     <div ref={toolbarRef} className="lesson-authoring-tools lesson-ribbon-formatting">
@@ -382,6 +428,11 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
           <button type="button" className="lesson-format-tall" onClick={()=>openPanel('insert')}><Plus size={18}/><span>Insert options</span></button>
           <span className="lesson-format-label">Insert</span>
         </div>
+        <div className="lesson-format-group" role="group" aria-label="Science">
+          <button type="button" className="lesson-format-action" onClick={()=>openPanel('science')}><Sigma size={15}/>Equation</button>
+          <button type="button" className="lesson-format-action" onClick={()=>openPanel('chemistry')}><FlaskConical size={15}/>Structure</button>
+          <span className="lesson-format-label">Science</span>
+        </div>
         <div className="lesson-format-group" role="group" aria-label="Review">
           <button type="button" className="lesson-format-tall" onClick={checkGrammar} disabled={busy}><SpellCheck size={18}/><span>Check grammar</span></button>
           <span className="lesson-format-label">Review</span>
@@ -389,7 +440,7 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
       </fieldset>
       {!panel && message && <p role="status" className="lesson-format-message">{message}</p>}
     </div>
-    {panel && <ToolDialog title={panelTitle} onClose={closePanel} dialogRef={dialogRef}>
+    {panel && <ToolDialog title={panelTitle} onClose={closePanel} dialogRef={dialogRef} width={panel === 'chemistry' ? 1200 : panel === 'science' ? 850 : 680}>
       <div className="flex flex-wrap items-end gap-3">
           {panel === 'insert' && <div className="w-full space-y-4">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -398,19 +449,13 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
               <button type="button" className={BUTTON} onClick={()=>{insertBox('text');closePanel();}}>Text box</button>
               <button type="button" className={BUTTON} onClick={()=>{insertBox('bubble');closePanel();}}>Speech bubble</button>
               <button type="button" className={BUTTON} onClick={()=>{insertHtml('<hr style="border:0;border-top:2px solid #94a3b8;margin:18px 0"><p><br></p>',undefined,false);closePanel();}}>Divider line</button>
-              <button type="button" className={BUTTON} onClick={()=>openPanel('science')}>Scientific notation</button>
+              <button type="button" className={BUTTON} onClick={()=>openPanel('science')}>Maths and science</button>
+              <button type="button" className={BUTTON} onClick={()=>openPanel('chemistry')}>Draw chemical structure</button>
             </div>
             <label className="flex flex-wrap items-center gap-3 text-sm">Scientific symbols<select aria-label="Insert symbol" className={FIELD} defaultValue="" onChange={e=>{command('insertText',e.target.value);closePanel();}}><option value="" disabled>Choose a symbol</option>{SYMBOLS.map(s=><option key={s} value={s}>{s}</option>)}</select></label>
           </div>}
-          {panel === 'science' && <>
-            <label className="text-sm">Coefficient<input autoFocus className={FIELD + ' block w-28'} aria-label="Coefficient" value={coefficient} onChange={e => setCoefficient(e.target.value)} /></label>
-            <span className="pb-2">× 10</span>
-            <label className="text-sm">Exponent<input className={FIELD + ' block w-24'} aria-label="Exponent" value={exponent} onChange={e => setExponent(e.target.value)} /></label>
-            <button type="button" className={BUTTON} onClick={() => {
-              if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(coefficient.trim()) || !/^[+-]?\d+$/.test(exponent.trim())) {setMessage('Enter a number for the coefficient and a whole number for the exponent.');return;}
-              insertHtml('<span>' + escapeHtml(coefficient.trim()) + ' × 10<sup>' + escapeHtml(exponent.trim()) + '</sup></span>&nbsp;');closePanel();
-            }}>Insert notation</button>
-          </>}
+          {panel === 'science' && <Suspense fallback={<p role="status">Loading equation tools…</p>}><ScienceEquationEditor initial={scienceInitial} onInsert={applyScience}/></Suspense>}
+          {panel === 'chemistry' && <Suspense fallback={<p role="status">Loading chemistry tools…</p>}><ChemicalStructureEditor initial={scienceInitial} onInsert={applyScience}/></Suspense>}
           {panel === 'image' && <>
             <label className="text-sm">Image URL<input className={FIELD + ' block w-64 max-w-full'} aria-label="Image URL" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://…" /></label>
             <label className="text-sm">Upload image<input className="block max-w-[220px] text-xs" aria-label="Upload image" type="file" accept="image/*" disabled={busy} onChange={e => uploadImage(e.target.files?.[0])} /></label>
@@ -442,14 +487,14 @@ export function LessonAuthoringToolbarContent({ editableRef, disabled = false })
 // A native modal enters the browser's top layer, outside both the scrolling
 // lesson and its scaled canvas. Escape, focus trapping and background inertness
 // are handled by the browser; closing restores the saved lesson selection.
-export function ToolDialog({ title, onClose, children, dialogRef }) {
+export function ToolDialog({ title, onClose, children, dialogRef, width = 680 }) {
   const titleId=useId();
   useEffect(()=>{
     const dialog=dialogRef.current;
     dialog.showModal();
     return()=>{if(dialog.open)dialog.close();};
   },[]);
-  return createPortal(<dialog ref={dialogRef} className="lesson-tools-dialog lesson-authoring-tools" aria-labelledby={titleId}
+  return createPortal(<dialog ref={dialogRef} className="lesson-tools-dialog lesson-authoring-tools" aria-labelledby={titleId} style={{width:`min(${width}px,calc(100vw - 32px))`}}
     onCancel={e=>{e.preventDefault();onClose();}}
     onClick={e=>{if(e.target!==e.currentTarget)return;const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)onClose();}}>
     <div className="mb-5 flex items-center justify-between gap-4"><h2 id={titleId} className="text-lg font-semibold text-slate-900">{title}</h2><button type="button" className={BUTTON} aria-label="Close dialog" onClick={onClose}>✕</button></div>
