@@ -68,6 +68,14 @@ body {
   user-select: text;
 }
 
+/* Learners must be able to highlight lesson prose so the learning assistant
+   can explain the exact wording they are stuck on. */
+.lesson-rich-content,
+.lesson-rich-content * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* Tailwind Directives */
 @tailwind base;
 @tailwind components;

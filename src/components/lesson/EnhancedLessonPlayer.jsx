@@ -21,6 +21,8 @@ import MathJaxContent from '@/components/lesson/MathJaxContent';
 import TopicQuizModal from '@/components/lesson/TopicQuizModal';
 import WaterPolarityLessonVisual from '@/components/lesson/WaterPolarityLessonVisual';
 import LessonABPanels from '@/components/lesson/LessonABPanels';
+import useTextSelection from '@/components/lesson/useTextSelection';
+import HighlightAssistPopup from '@/components/lesson/HighlightAssistPopup';
 
 const SolarSystem3D = React.lazy(() => import('@/components/lesson/SolarSystem3D'));
 const CrystalLattice3D = React.lazy(() => import('@/components/lesson/CrystalLattice3D'));
@@ -1073,6 +1075,8 @@ export default function EnhancedLessonPlayer({
     user
   });
 
+  const { selection: highlightSelection, clearSelection } = useTextSelection(mainContentRef);
+
   // Get course lessons
   const { data: courseLessons = [] } = useQuery({
     queryKey: ['courseLessons', courseId],
@@ -1896,6 +1900,15 @@ export default function EnhancedLessonPlayer({
         onClose={() => setShowTopicQuiz(false)}
         onContinue={handleTopicQuizContinue}
       />
+
+      {highlightSelection && (
+        <HighlightAssistPopup
+          selection={highlightSelection}
+          lessonTitle={lesson.title}
+          onClose={clearSelection}
+          onSaveToNotes={(text) => saveNote(currentPageKey, [notes[currentPageKey], text].filter(Boolean).join('\n\n'))}
+        />
+      )}
 
       <PointsAnimation show={showPointsAnimation} points={earnedPoints} onComplete={() => setShowPointsAnimation(false)} />
       <BadgeUnlock badges={newBadges} onClose={() => setShowBadges(false)} />
