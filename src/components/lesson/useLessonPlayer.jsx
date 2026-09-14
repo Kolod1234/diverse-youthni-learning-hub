@@ -216,7 +216,7 @@ export default function useLessonPlayer({
   // ── Keyboard Shortcuts ────────────────────────────────────────────────────
   useEffect(() => {
     const handler = (e) => {
-      if (e.shiftKey || e.ctrlKey || e.metaKey || e.target.isContentEditable || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
       switch (e.key) {
         case 'ArrowRight': case 'l': case 'L': onNext?.(); break;
         case 'ArrowLeft':  case 'h': case 'H': onPrev?.(); break;
