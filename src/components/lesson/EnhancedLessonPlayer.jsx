@@ -1188,7 +1188,7 @@ export default function EnhancedLessonPlayer({
   useEffect(() => {
     const handlePageKeys = (event) => {
       const tag = event.target?.tagName;
-      if (showTopicQuiz || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (event.shiftKey || event.ctrlKey || event.metaKey || showTopicQuiz || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (event.key === 'ArrowRight') {
         event.preventDefault();
         if (currentContentSlide < contentSlides.length - 1) {
@@ -1213,8 +1213,9 @@ export default function EnhancedLessonPlayer({
   }, [currentContentSlide, contentSlides.length, onNext, onPrev, showTopicQuiz, topicQuizCompleted]);
 
   useEffect(() => {
+    clearSelection();
     mainContentRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' });
-  }, [currentContentSlide, lesson?.id]);
+  }, [currentContentSlide, lesson?.id, clearSelection]);
 
   // Load one cached topic quiz per lesson. The shared promise prevents duplicate
   // requests when React re-runs effects in development.
@@ -1394,7 +1395,7 @@ export default function EnhancedLessonPlayer({
     const start = touchStartRef.current;
     const touch = event.changedTouches[0];
     touchStartRef.current = null;
-    if (!start || !touch) return;
+    if (!start || !touch || window.getSelection()?.toString().trim()) return;
 
     const deltaX = touch.clientX - start.x;
     const deltaY = touch.clientY - start.y;

@@ -14,7 +14,10 @@ export default function useTextSelection(containerRef, { minLength = 3 } = {}) {
   }, []);
 
   useEffect(() => {
+    let timer;
+    let dragging = false;
     const handleSelection = () => {
+      if (dragging) return;
       const active = window.getSelection();
       if (!active || active.isCollapsed || active.rangeCount === 0) return;
 
@@ -24,7 +27,7 @@ export default function useTextSelection(containerRef, { minLength = 3 } = {}) {
       if (!container.contains(active.anchorNode) || !container.contains(active.focusNode)) return;
 
       const rect = active.getRangeAt(0).getBoundingClientRect();
-      setSelection({
+      setSelection(previous => previous?.text === text ? previous : {
         text,
         x: rect.left + rect.width / 2,
         y: rect.top,
@@ -32,11 +35,21 @@ export default function useTextSelection(containerRef, { minLength = 3 } = {}) {
       });
     };
 
-    document.addEventListener('mouseup', handleSelection);
-    document.addEventListener('touchend', handleSelection);
+    const schedule = () => { clearTimeout(timer); timer = setTimeout(handleSelection, 250); };
+    const start = () => { dragging = true; clearTimeout(timer); };
+    const end = () => { dragging = false; schedule(); };
+    document.addEventListener('pointerdown', start);
+    document.addEventListener('pointerup', end);
+    document.addEventListener('pointercancel', end);
+    document.addEventListener('selectionchange', schedule);
+    document.addEventListener('keyup', schedule);
     return () => {
-      document.removeEventListener('mouseup', handleSelection);
-      document.removeEventListener('touchend', handleSelection);
+      clearTimeout(timer);
+      document.removeEventListener('pointerdown', start);
+      document.removeEventListener('pointerup', end);
+      document.removeEventListener('pointercancel', end);
+      document.removeEventListener('selectionchange', schedule);
+      document.removeEventListener('keyup', schedule);
     };
   }, [containerRef, minLength]);
 
