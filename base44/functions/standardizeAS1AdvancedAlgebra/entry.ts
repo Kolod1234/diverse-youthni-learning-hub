@@ -71,7 +71,7 @@ export default async function(req) {
       if (part !== 1 && part !== 2) return Response.json({ error: 'part must be 1 or 2' }, { status: 400 });
       const start = part === 1 ? 1 : 16;
       const end = part === 1 ? 15 : 30;
-      const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'claude-sonnet-5', prompt: promptFor(lesson, target, start, end), response_json_schema: slidesSchema });
+      const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'automatic', prompt: promptFor(lesson, target, start, end), response_json_schema: slidesSchema });
       const draftSlides = generated.slides || [];
       const previousDrafts = await base44.asServiceRole.entities.ContentVersion.filter({ entity_type: 'lesson', entity_id: lesson_id });
       const versionNumber = previousDrafts.reduce((n, v) => Math.max(n, v.version_number || 0), 0) + part;
@@ -124,8 +124,8 @@ export default async function(req) {
     });
 
     const [first, second] = await Promise.all([
-      base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'claude-sonnet-5', prompt: promptFor(lesson, target, 1, 15), response_json_schema: slidesSchema }),
-      base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'claude-sonnet-5', prompt: promptFor(lesson, target, 16, 30), response_json_schema: slidesSchema })
+      base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'automatic', prompt: promptFor(lesson, target, 1, 15), response_json_schema: slidesSchema }),
+      base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'automatic', prompt: promptFor(lesson, target, 16, 30), response_json_schema: slidesSchema })
     ]);
 
     const slides = [...(first.slides || []), ...(second.slides || [])].map((slide, index) => ({ ...slide, order: index + 1, background: '#fffdf9' }));
