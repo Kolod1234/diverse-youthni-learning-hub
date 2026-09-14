@@ -36,7 +36,7 @@ const slidesSchema = {
 
 function promptFor(lesson, target, start, end) {
   const objectives = (lesson.learning_objectives || []).join('; ');
-  const phase = start === 1
+  const phase = end <= 15
     ? 'foundations, prior knowledge, definitions, causal explanations, core quantitative relationships and the first worked applications'
     : 'higher-tier applications, practical and data skills, misconceptions, mixed practice, complete worked answers and synthesis';
   return `Author pages ${start}-${end} of a 30-page textbook chapter for learners aged 14–16 studying CCEA GCSE Science Double Award (2017), Physics Unit ${target.unit}. Chapter: ${target.title}. Required scope: ${target.focus}. Existing outcomes: ${objectives}. This half covers ${phase}.
@@ -95,42 +95,59 @@ export default async function(req) {
       return Response.json({ lesson_id, title: lesson.title, pages: slides.length, ...auditSlides(slides) });
     }
 
-    if (action === 'generate_part') {
-      if (part !== 1 && part !== 2) return Response.json({ error: 'part must be 1 or 2' }, { status: 400 });
-      const start = part === 1 ? 1 : 16;
-      const end = part === 1 ? 15 : 30;
+    if (action === 'generate_part' || action === 'generate_segment') {
+      const segment = Number(part);
+      const isSegment = action === 'generate_segment';
+      if ((!isSegment && segment !== 1 && segment !== 2) || (isSegment && (segment < 1 || segment > 6))) {
+        return Response.json({ error: isSegment ? 'part must be a segment from 1 to 6' : 'part must be 1 or 2' }, { status: 400 });
+      }
+      const start = isSegment ? ((segment - 1) * 5) + 1 : (segment === 1 ? 1 : 16);
+      const end = isSegment ? segment * 5 : (segment === 1 ? 15 : 30);
+      const pageCount = end - start + 1;
       const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({
         model: 'gpt_5_6_sol',
         prompt: promptFor(lesson, target, start, end),
-        response_json_schema: slidesSchema
+        response_json_schema: {
+          ...slidesSchema,
+          properties: { ...slidesSchema.properties, slides: { ...slidesSchema.properties.slides, minItems: pageCount, maxItems: pageCount } }
+        }
       });
       const draftSlides = generated.slides || [];
       const versions = await base44.asServiceRole.entities.ContentVersion.filter({ entity_type: 'lesson', entity_id: lesson_id });
       const versionNumber = versions.reduce((highest, version) => Math.max(highest, version.version_number || 0), 0) + 1;
+      const draftLabel = isSegment ? `segment ${segment}` : `part ${segment}`;
       await base44.asServiceRole.entities.ContentVersion.create({
         entity_type: 'lesson', entity_id: lesson_id, version_number: versionNumber,
-        content_snapshot: { draft_slides: draftSlides, generated_for: lesson_id, part, standard: 'CCEA Double Award Physics 30-page master standard' },
-        change_summary: `Double Award Physics generated draft part ${part}`,
+        content_snapshot: { draft_slides: draftSlides, generated_for: lesson_id, part: segment, generation_mode: isSegment ? 'segment' : 'part', standard: 'CCEA Double Award Physics 30-page master standard' },
+        change_summary: `Double Award Physics generated draft ${draftLabel}`,
         changed_fields: ['slides'], author_email: user.email, author_name: user.full_name || 'Administrator',
         is_published: false, review_status: 'draft'
       });
-      return Response.json({ generated: true, lesson_id, part, pages: draftSlides.length, total_words: draftSlides.reduce((sum, slide) => sum + words(slide.content), 0), draft_version: versionNumber });
+      return Response.json({ generated: true, lesson_id, mode: isSegment ? 'segment' : 'part', part: segment, pages: draftSlides.length, total_words: draftSlides.reduce((sum, slide) => sum + words(slide.content), 0), draft_version: versionNumber });
     }
 
-    if (action !== 'finalize') return Response.json({ error: 'action must be audit, generate_part or finalize' }, { status: 400 });
+    if (action !== 'finalize') return Response.json({ error: 'action must be audit, generate_part, generate_segment or finalize' }, { status: 400 });
 
     const versions = await base44.asServiceRole.entities.ContentVersion.filter({ entity_type: 'lesson', entity_id: lesson_id });
-    const newestDraft = (partNumber) => versions
-      .filter(version => version.change_summary === `Double Award Physics generated draft part ${partNumber}`)
+    const newestDraft = (label) => versions
+      .filter(version => version.change_summary === `Double Award Physics generated draft ${label}`)
       .sort((a, b) => new Date(b.created_date).getTime() - new Date(a.created_date).getTime())[0];
-    const firstDraft = newestDraft(1);
-    const secondDraft = newestDraft(2);
-    if (!firstDraft || !secondDraft) return Response.json({ error: 'Both generated draft parts are required before finalization' }, { status: 409 });
+    const slidesForHalf = (half) => {
+      const partDraft = newestDraft(`part ${half}`);
+      if (partDraft) return partDraft.content_snapshot?.draft_slides || [];
+      const segmentNumbers = half === 1 ? [1, 2, 3] : [4, 5, 6];
+      const segmentDrafts = segmentNumbers.map(number => newestDraft(`segment ${number}`));
+      if (segmentDrafts.some(draft => !draft)) return [];
+      return segmentDrafts.flatMap(draft => draft.content_snapshot?.draft_slides || []);
+    };
+    const firstHalf = slidesForHalf(1);
+    const secondHalf = slidesForHalf(2);
+    if (firstHalf.length !== 15 || secondHalf.length !== 15) {
+      return Response.json({ error: 'Both complete generated halves are required before finalization' }, { status: 409 });
+    }
 
-    const slides = [
-      ...(firstDraft.content_snapshot?.draft_slides || []),
-      ...(secondDraft.content_snapshot?.draft_slides || [])
-    ].map((slide, index) => ({ ...slide, order: index + 1, background: '#fffdf9' }));
+    const slides = [...firstHalf, ...secondHalf]
+      .map((slide, index) => ({ ...slide, order: index + 1, background: '#fffdf9' }));
     const report = auditSlides(slides);
     if (!report.valid) return Response.json({ updated: false, lesson_id, ...report }, { status: 422 });
 
