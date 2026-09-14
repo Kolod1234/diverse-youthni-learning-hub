@@ -18,12 +18,30 @@ export default function useTextSelection(containerRef, { minLength = 3 } = {}) {
       const active = window.getSelection();
       if (!active || active.isCollapsed || active.rangeCount === 0) return;
 
-      const text = active.toString().replace(/\s+/g, ' ').trim();
       const container = containerRef.current;
-      if (!container || text.length < minLength) return;
+      if (!container) return;
       if (!container.contains(active.anchorNode) || !container.contains(active.focusNode)) return;
 
-      const rect = active.getRangeAt(0).getBoundingClientRect();
+      const range = active.getRangeAt(0);
+      const selectedMath = Array.from(container.querySelectorAll('[data-assistant-math]'))
+        .filter(mathNode => {
+          try {
+            return range.intersectsNode(mathNode);
+          } catch {
+            return false;
+          }
+        })
+        .map(mathNode => mathNode.dataset.assistantMath)
+        .filter(Boolean);
+      const selectedWords = active.toString().replace(/\s+/g, ' ').trim();
+      const text = [selectedWords, ...selectedMath.filter(notation => !selectedWords.includes(notation))]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+      if (!selectedMath.length && text.length < minLength) return;
+      if (!text) return;
+
+      const rect = range.getBoundingClientRect();
       setSelection({
         text,
         x: rect.left + rect.width / 2,

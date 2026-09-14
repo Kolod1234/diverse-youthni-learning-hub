@@ -1,5 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 
+function annotateRenderedMath(node, mathJax) {
+  const containers = Array.from(node.querySelectorAll('mjx-container'));
+  const items = mathJax.startup?.document?.getMathItemsWithin?.(node) || [];
+
+  containers.forEach((container, index) => {
+    const item = items[index];
+    const source = item?.math?.trim();
+    if (!source) return;
+
+    const notation = item.display ? `$$${source}$$` : `$${source}$`;
+    container.dataset.assistantMath = notation;
+    container.setAttribute('aria-label', `Mathematical notation: ${source}`);
+  });
+}
+
 /**
  * Renders lesson HTML and typesets any LaTeX it contains ($...$ / $$...$$).
  * MathJax is provided app-wide by the MathJaxContext in the layout; if it is
@@ -19,7 +34,11 @@ export default function MathJaxContent({ html, className }) {
       const mathJax = window.MathJax;
       if (cancelled || !mathJax?.typesetPromise) return;
       mathJax.typesetClear?.([node]);
-      mathJax.typesetPromise([node]).catch(() => {});
+      mathJax.typesetPromise([node])
+        .then(() => {
+          if (!cancelled) annotateRenderedMath(node, mathJax);
+        })
+        .catch(() => {});
     };
 
     if (window.MathJax?.typesetPromise) {
