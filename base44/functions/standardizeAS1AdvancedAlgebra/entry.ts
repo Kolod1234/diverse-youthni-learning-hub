@@ -57,7 +57,7 @@ export default async function(req) {
     const user = await base44.auth.me();
     if (!user || user.role !== 'admin') return Response.json({ error: 'Admin access required' }, { status: 403 });
 
-    const { lesson_id, visual, audit_only = false } = await req.json();
+    const { lesson_id, visual, audit_only = false, action = 'rebuild', part } = await req.json();
     const target = TARGETS[lesson_id];
     if (!target) return Response.json({ error: 'lesson_id must identify AS1 lesson 31-40' }, { status: 400 });
 
@@ -65,6 +65,51 @@ export default async function(req) {
     const currentSlides = lesson.slides || [];
     if (audit_only) {
       return Response.json({ lesson_id, title: lesson.title, pages: currentSlides.length, words: currentSlides.reduce((n, s) => n + textWords(s.content), 0), images: currentSlides.reduce((n, s) => n + ((String(s.content || '').match(/<img\b/gi) || []).length), 0), answer_pages: currentSlides.filter(s => String(s.content || '').includes('answer-block')).length });
+    }
+
+    if (action === 'generate_part') {
+      if (part !== 1 && part !== 2) return Response.json({ error: 'part must be 1 or 2' }, { status: 400 });
+      const start = part === 1 ? 1 : 16;
+      const end = part === 1 ? 15 : 30;
+      const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'claude-sonnet-5', prompt: promptFor(lesson, target, start, end), response_json_schema: slidesSchema });
+      const draftSlides = generated.slides || [];
+      const previousDrafts = await base44.asServiceRole.entities.ContentVersion.filter({ entity_type: 'lesson', entity_id: lesson_id });
+      const versionNumber = previousDrafts.reduce((n, v) => Math.max(n, v.version_number || 0), 0) + part;
+      await base44.asServiceRole.entities.ContentVersion.create({
+        entity_type: 'lesson', entity_id: lesson_id, version_number: versionNumber,
+        content_snapshot: { draft_slides: draftSlides, generated_for: lesson_id, part },
+        change_summary: `AS1 Advanced Algebra generated draft part ${part}`,
+        changed_fields: ['slides'], author_email: user.email, author_name: user.full_name || 'Administrator',
+        is_published: false, review_status: 'draft'
+      });
+      return Response.json({ generated: true, lesson_id, part, pages: draftSlides.length, words: draftSlides.reduce((n, s) => n + textWords(s.content), 0) });
+    }
+
+    if (action === 'finalize') {
+      const drafts = await base44.asServiceRole.entities.ContentVersion.filter({ entity_type: 'lesson', entity_id: lesson_id });
+      const firstDraft = drafts.filter(v => v.change_summary === 'AS1 Advanced Algebra generated draft part 1').sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
+      const secondDraft = drafts.filter(v => v.change_summary === 'AS1 Advanced Algebra generated draft part 2').sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
+      if (!firstDraft || !secondDraft) return Response.json({ error: 'Both generated draft parts are required' }, { status: 409 });
+      const slides = [...(firstDraft.content_snapshot?.draft_slides || []), ...(secondDraft.content_snapshot?.draft_slides || [])].map((slide, index) => ({ ...slide, order: index + 1, background: '#fffdf9' }));
+      const visualMarkup = figureHtml(visual);
+      if (visualMarkup) {
+        const visualIndex = Math.max(3, Math.min(12, Number(visual.page || 6) - 1));
+        slides[visualIndex].content = visualMarkup + slides[visualIndex].content;
+      }
+      const totalWords = slides.reduce((n, s) => n + textWords(s.content), 0);
+      const sparsePages = slides.filter(s => textWords(s.content) < 105).map(s => s.order);
+      const answerPages = slides.filter(s => String(s.content || '').includes('answer-block')).length;
+      const workedExamples = slides.filter(s => String(s.content || '').includes('worked-example')).length;
+      const banned = slides.filter(s => /\b(clearly|simply|similarly|obviously|after some work)\b/i.test(String(s.content || ''))).map(s => s.order);
+      const valid = slides.length === 30 && slides.every((s, i) => s.order === i + 1) && totalWords >= 3400 && sparsePages.length <= 3 && answerPages >= 8 && workedExamples >= 5 && banned.length === 0;
+      if (!valid) return Response.json({ updated: false, lesson_id, pages: slides.length, total_words: totalWords, sparse_pages: sparsePages, answer_pages: answerPages, worked_examples: workedExamples, banned_pages: banned }, { status: 422 });
+      const previous = drafts;
+      const versionNumber = previous.reduce((n, v) => Math.max(n, v.version_number || 0), 0) + 1;
+      await base44.asServiceRole.entities.ContentVersion.create({ entity_type: 'lesson', entity_id: lesson_id, version_number: versionNumber, content_snapshot: lesson, change_summary: 'Backup before AS1 Advanced Algebra master-standard rebuild', changed_fields: ['slides', 'resources', 'description', 'learning_objectives'], author_email: user.email, author_name: user.full_name || 'Administrator', is_published: false, review_status: 'draft' });
+      const resources = [...(lesson.resources || [])];
+      if (visual?.url && !resources.some(r => r.url === visual.url)) resources.push({ name: visual.name || `${target.title} educational diagram`, url: visual.url, type: 'educational_diagram' });
+      await base44.asServiceRole.entities.Lesson.update(lesson_id, { slides, resources, section: 'AS1: Advanced Algebra', content_type: 'richtext', duration_minutes: 110, description: `Complete CCEA AS 1 textbook chapter on ${target.focus}, with micro-step worked solutions and verified practice.` });
+      return Response.json({ updated: true, lesson_id, title: lesson.title, pages: slides.length, total_words: totalWords, sparse_pages: sparsePages, answer_pages: answerPages, worked_examples: workedExamples, images: visualMarkup ? 1 : 0, backup_version: versionNumber });
     }
 
     const previous = await base44.asServiceRole.entities.ContentVersion.filter({ entity_type: 'lesson', entity_id: lesson_id });
