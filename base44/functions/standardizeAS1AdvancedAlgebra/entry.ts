@@ -31,13 +31,14 @@ const slidesSchema = {
 function promptFor(lesson, target, start, end) {
   const objectives = (lesson.learning_objectives || []).join('; ');
   const phase = start === 1 ? 'foundations, definitions, reasoning and the first worked examples' : 'advanced cases, misconceptions, two practice sets, complete worked answers and synthesis';
+  const requiredAnswerPages = start === 1 ? '4, 7, 10 and 13' : '17, 20, 23, 26, 28 and 30';
   return `Author pages ${start}-${end} of a 30-page textbook chapter for CCEA GCE Further Mathematics Unit AS 1. Chapter: ${target.title}. Required scope: ${target.focus}. Existing outcomes: ${objectives}. This half covers ${phase}.
 
-Write for a first-time AS learner. Each page must contain 125-190 words of substantive teaching, excluding displayed equations. Use connected British English prose, not presentation notes. Define notation and domains before use, explain why every method works, state conditions and restrictions, and connect ideas across pages. Use only original assessment-style questions; never claim official examination provenance.
+Write for a first-time AS learner. EACH page must contain 135-190 words of substantive teaching after HTML tags are removed; equations do not replace prose. Use connected British English prose, not presentation notes. Define notation and domains before use, explain why every method works, state conditions and restrictions, and connect ideas across pages. Use only original assessment-style questions; never claim official examination provenance.
 
-Across the complete chapter include at least five varied worked examples. Every worked example must give the complete question, justify the selected method, show every algebraic transformation as one ordered micro-step, explain the reason before the calculation, and finish with an independent substitution, expansion, recombination, sign or graphical check. Include two substantial practice sets and later full worked answers for every question and subpart. Never use “clearly”, “simply”, “similarly”, “obviously” or “after some work”.
+Pages ${requiredAnswerPages} MUST each contain a visible <div class="answer-block"><ol> with at least four <li> micro-steps. Across the complete chapter include at least six varied worked examples and at least ten answer-block pages. Every worked example must give the complete question, justify the selected method, show every algebraic transformation as one ordered micro-step, explain the reason before the calculation, and finish with an independent substitution, expansion, recombination, sign or graphical check. Pages 14 and 24 must be substantial practice sets; pages 15 and 25-30 must provide full worked answers for every question and subpart. Never use the words clearly, simply, similarly or obviously, or the phrase after some work, even in another context.
 
-Return clean HTML in content. Use <p> for explanation, <h2> or <h3> sparingly, <div class="key-rule"> and <div class="notation-note"> for precise rules, <div class="worked-example"> for complete example questions, <div class="answer-block"><ol><li>…</li></ol></div> for all solutions, and <div class="check-point"> for checks. Use MathJax delimiters $...$ and $$...$$, with stacked fractions written as \\frac{a}{b}. Orders must be exactly ${start} to ${end}. Do not include images; they are inserted after validation.`;
+Return exactly 15 slides as clean HTML in content. Use <p> for explanation, <h2> or <h3> sparingly, <div class="key-rule"> and <div class="notation-note"> for precise rules, <div class="worked-example"> for complete example questions, <div class="answer-block"><ol><li>…</li></ol></div> for every solution, and <div class="check-point"> for checks. Use MathJax delimiters $...$ and $$...$$, with stacked fractions written as \\frac{a}{b}. Orders must be exactly ${start} to ${end}. Before returning, count the prose on every page and expand any page below 135 words. Do not include images; they are inserted after validation.`;
 }
 
 function textWords(html) {
@@ -71,7 +72,7 @@ export default async function(req) {
       if (part !== 1 && part !== 2) return Response.json({ error: 'part must be 1 or 2' }, { status: 400 });
       const start = part === 1 ? 1 : 16;
       const end = part === 1 ? 15 : 30;
-      const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'automatic', prompt: promptFor(lesson, target, start, end), response_json_schema: slidesSchema });
+      const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'gpt_5_6_sol', prompt: promptFor(lesson, target, start, end), response_json_schema: slidesSchema });
       const draftSlides = generated.slides || [];
       const previousDrafts = await base44.asServiceRole.entities.ContentVersion.filter({ entity_type: 'lesson', entity_id: lesson_id });
       const versionNumber = previousDrafts.reduce((n, v) => Math.max(n, v.version_number || 0), 0) + part;
@@ -124,8 +125,8 @@ export default async function(req) {
     });
 
     const [first, second] = await Promise.all([
-      base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'automatic', prompt: promptFor(lesson, target, 1, 15), response_json_schema: slidesSchema }),
-      base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'automatic', prompt: promptFor(lesson, target, 16, 30), response_json_schema: slidesSchema })
+      base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'gpt_5_6_sol', prompt: promptFor(lesson, target, 1, 15), response_json_schema: slidesSchema }),
+      base44.asServiceRole.integrations.Core.InvokeLLM({ model: 'gpt_5_6_sol', prompt: promptFor(lesson, target, 16, 30), response_json_schema: slidesSchema })
     ]);
 
     const slides = [...(first.slides || []), ...(second.slides || [])].map((slide, index) => ({ ...slide, order: index + 1, background: '#fffdf9' }));
