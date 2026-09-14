@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, Sparkles, X, StickyNote, ArrowDownWideNarrow } from 'lucide-react';
 import { toast } from 'sonner';
@@ -17,14 +17,17 @@ const LEVELS = [
 export default function HighlightAssistPopup({ selection, lessonTitle, onClose, onSaveToNotes }) {
   const [level, setLevel] = useState(0);
   const [explanation, setExplanation] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const requestRef = useRef(0);
 
   useEffect(() => {
-    setLevel(0);
     setExplanation(null);
-  }, [selection?.text]);
+    explain(0);
+    return () => { requestRef.current += 1; };
+  }, [selection.text, lessonTitle]);
 
   const explain = async (nextLevel) => {
+    const requestId = ++requestRef.current;
     setLoading(true);
     setLevel(nextLevel);
     try {
@@ -60,11 +63,11 @@ Rules:
           required: ['steps', 'summary']
         }
       });
-      setExplanation(result);
+      if (requestId === requestRef.current) setExplanation(result);
     } catch (error) {
-      toast.error('The explanation could not be created. Please try again.');
+      if (requestId === requestRef.current) toast.error('The explanation could not be created. Please try again.');
     } finally {
-      setLoading(false);
+      if (requestId === requestRef.current) setLoading(false);
     }
   };
 
