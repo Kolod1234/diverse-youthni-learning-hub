@@ -1,0 +1,1315 @@
+{
+  "generatedAt": "2026-09-15T09:26:23.332Z",
+  "courseId": "698338743679f9d974452a4c",
+  "current": [
+    {
+      "key": "69833991fcb4c7d9446e5e11|2|0",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 3,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/b9a980e10_da-bio-microscope.png",
+      "alt": "Labelled light microscope showing eyepiece, objective lenses, stage, focusing knobs and light source",
+      "caption": "Figure: The light microscope. Light passes up through the specimen on the stage; the objective and eyepiece lenses magnify it, and the coarse then fine focusing knobs sharpen the image."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|4|1",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 5,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/2518d91c5_da-bio-prokaryotic-cell-v3.png",
+      "alt": "Rod-shaped bacterial cell in cross section with labels in left and right columns for cell wall, cell membrane, cytoplasm, ribosomes, circular DNA, plasmid and flagella",
+      "caption": "Figure: A bacterial (prokaryotic) cell. There is no nucleus and no mitochondria: the DNA is a single circular chromosome free in the cytoplasm, with extra genes on small plasmids."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|5|2",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 6,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/97ebe6296_da-bio-slidePrep-v2.png",
+      "alt": "Labelled sequence for preparing a temporary microscope slide with specimen, stain, cover slip and filter paper",
+      "caption": "Figure: Preparing a temporary slide. The specimen must be thin enough for light to pass through; the cover slip is lowered at an angle so no air bubbles are trapped."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|5|3",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 6,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/7c9cd0c26_da-bio-specialised-cells-v4.png",
+      "alt": "Four specialised cells in a row — red blood cell, sperm cell, root hair cell and palisade cell — each named by a label directly beneath it",
+      "caption": "Figure: Specialised cells. Each shape serves its function — the biconcave disc gives a large surface area for oxygen, the tail moves the sperm, the hair extension increases water uptake and the packed chloroplasts absorb light."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|8|4",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 9,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/2518d91c5_da-bio-prokaryotic-cell-v3.png",
+      "alt": "Rod-shaped bacterial cell in cross section with labels in left and right columns for cell wall, cell membrane, cytoplasm, ribosomes, circular DNA, plasmid and flagella",
+      "caption": "Figure: Bacterial structure revisited. Compare this with the animal and plant cells on page 3: the missing nucleus and membrane-bound organelles are the defining prokaryotic features."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|9|5",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 10,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/7c9cd0c26_da-bio-specialised-cells-v4.png",
+      "alt": "Four specialised cells in a row — red blood cell, sperm cell, root hair cell and palisade cell — each named by a label directly beneath it",
+      "caption": "Figure: Specialisation in detail. Read each cell as structure → function: identify the adapted feature first, then state the job it makes possible."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|10|6",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 11,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/0b8c4c982_da-bio-organisation.png",
+      "alt": "Labelled sequence from cell to tissue, organ, whole organism and population in a habitat",
+      "caption": "Figure: Levels of organisation. Similar cells form a tissue, tissues form an organ, organs work together in the organism, and organisms of one species form a population."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|17|7",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 18,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/04f8a0eda_da-bio-diffusion.png",
+      "alt": "Labelled diagram of diffusion across a cell membrane showing high and low concentration and net movement",
+      "caption": "Figure: Diffusion. Particles move randomly in all directions, but because more start on the crowded side there is a net movement down the concentration gradient until it is equalised."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|17|8",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 18,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/402139e10_da-bio-osmosis.png",
+      "alt": "Labelled diagram of osmosis showing water crossing a partially permeable membrane while large solute molecules cannot",
+      "caption": "Figure: Osmosis. Water molecules are small enough to cross the partially permeable membrane; the larger solute molecules are not, so water moves towards the more concentrated solution."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|18|9",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 19,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/bf744009b_da-bio-activeTransport.png",
+      "alt": "Labelled diagram of active transport showing a carrier protein moving particles against the concentration gradient using energy from a mitochondrion",
+      "caption": "Figure: Active transport. A carrier protein pumps particles from a low to a high concentration, so unlike diffusion it needs energy released by respiration in mitochondria."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|20|10",
+      "lessonId": "69833991fcb4c7d9446e5e11",
+      "lesson": "1.1 Cells",
+      "lessonOrder": 1,
+      "page": 21,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/00633f989_da-bio-agar.png",
+      "alt": "Labelled agar-cube diffusion practical showing cubes of different sizes in purple potassium manganate(VII) solution and a cut cube with a stained rim",
+      "caption": "Figure: Investigating diffusion. The same depth of dye enters every cube, so the small cube — with the largest surface area to volume ratio — becomes fully stained first."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|3|11",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 4,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/0f93d2cb6_da-bio-limiting-factors.png",
+      "alt": "Three plotted graphs showing rate of photosynthesis against light intensity, carbon dioxide concentration and temperature",
+      "caption": "Figure: Limiting factors. Rate rises with light or carbon dioxide until it plateaus because another factor is now limiting; with temperature the rate falls again above the optimum because the enzymes denature."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|4|12",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 5,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/ad79b25a0_da-bio-leaf-cross-section-v4.png",
+      "alt": "Leaf cross section with labels in left and right columns for waxy cuticle, upper epidermis, palisade mesophyll, spongy mesophyll, air spaces, xylem, phloem, lower epidermis and stoma with guard cells",
+      "caption": "Figure: Cross-section through a leaf. Palisade cells near the upper surface are packed with chloroplasts; air spaces in the spongy layer let carbon dioxide diffuse to them from the stomata below."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|5|13",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 6,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/b9134bcda_da-bio-stomata-v5.png",
+      "alt": "Labelled diagram comparing an open stoma with swollen guard cells and a closed stoma with limp guard cells",
+      "caption": "Figure: Stomata control gas exchange. When guard cells take in water they swell and bow apart, opening the pore; when they lose water they go limp and the pore closes, which limits water loss but also limits carbon dioxide entry."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|7|14",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 8,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/7039fab8f_da-bio-pondweed.png",
+      "alt": "Labelled apparatus for measuring photosynthesis rate using pondweed, a lamp and a ruler",
+      "caption": "Figure: Measuring the rate of photosynthesis. Oxygen bubbles from the pondweed are collected in the test tube; moving the lamp changes light intensity, which is the variable under test."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|8|15",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 9,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/ad79b25a0_da-bio-leaf-cross-section-v4.png",
+      "alt": "Leaf cross section with labels in left and right columns for waxy cuticle, upper epidermis, palisade mesophyll, spongy mesophyll, air spaces, xylem, phloem, lower epidermis and stoma with guard cells",
+      "caption": "Figure: Leaf structure. Every feature serves photosynthesis — the transparent epidermis lets light through to the chloroplast-packed palisade layer, the air spaces let carbon dioxide reach the cells, and the xylem delivers water."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|10|16",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 11,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/68443532f_da-bio-mineral-deficiency-v2.png",
+      "alt": "Three tomato plants compared: full mineral supply, no nitrate showing stunted pale growth, and no magnesium showing yellowing between the veins",
+      "caption": "Figure: Mineral ions and growth. Nitrate is needed to make amino acids and proteins for growth, while magnesium is needed to make chlorophyll — so each deficiency produces its own recognisable symptom."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|16|17",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 17,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/0f93d2cb6_da-bio-limiting-factors.png",
+      "alt": "Three plotted graphs showing rate of photosynthesis against light intensity, carbon dioxide concentration and temperature",
+      "caption": "Figure: Limiting factors. Rate rises with light or carbon dioxide until it plateaus because another factor is now limiting; with temperature the rate falls again above the optimum because the enzymes denature."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|17|18",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 18,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/ad79b25a0_da-bio-leaf-cross-section-v4.png",
+      "alt": "Leaf cross section with labels in left and right columns for waxy cuticle, upper epidermis, palisade mesophyll, spongy mesophyll, air spaces, xylem, phloem, lower epidermis and stoma with guard cells",
+      "caption": "Figure: Leaf structure. Every feature serves photosynthesis — the transparent epidermis lets light through to the chloroplast-packed palisade layer, the air spaces let carbon dioxide reach the cells, and the xylem delivers water."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|18|19",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 19,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/68443532f_da-bio-mineral-deficiency-v2.png",
+      "alt": "Three tomato plants compared: full mineral supply, no nitrate showing stunted pale growth, and no magnesium showing yellowing between the veins",
+      "caption": "Figure: Mineral ions and growth. Nitrate is needed to make amino acids and proteins for growth, while magnesium is needed to make chlorophyll — so each deficiency produces its own recognisable symptom."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|20|20",
+      "lessonId": "69833991fcb4c7d9446e5e12",
+      "lesson": "1.2 Photosynthesis and Plants",
+      "lessonOrder": 2,
+      "page": 21,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/c70ff2f10_da-bio-starch-test-v2.png",
+      "alt": "Labelled four-stage practical for testing a leaf for starch using boiling water, ethanol, rinsing and iodine solution",
+      "caption": "Figure: Testing a leaf for starch. Boiling kills the leaf and makes it permeable, ethanol removes the green chlorophyll so the colour change is visible, and iodine turns blue-black only where starch is present."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|4|21",
+      "lessonId": "69833a4f60d11fde65a2acca",
+      "lesson": "1.3 Food and Diet",
+      "lessonOrder": 3,
+      "page": 5,
+      "src": "https://media.base44.com/images/public/69418fc30769c7d951368216/624aeaf35_generated_image.png",
+      "alt": "Balanced diet plate labelled with nutrient functions",
+      "caption": "Teaching point: A balanced diet supplies suitable proportions of nutrients, fibre and water rather than equal amounts of every food."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|5|22",
+      "lessonId": "69833a4f60d11fde65a2acca",
+      "lesson": "1.3 Food and Diet",
+      "lessonOrder": 3,
+      "page": 6,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/2ced5433e_da-bio-foodTests.png",
+      "alt": "Four test tubes showing positive food-test colours for starch, reducing sugar, protein and fat",
+      "caption": "Figure: Positive food-test results. Iodine turns blue-black with starch, heated Benedict’s solution gives a brick-red precipitate with reducing sugar, biuret turns lilac with protein and the ethanol test gives a cloudy white emulsion with fat."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|10|23",
+      "lessonId": "69833a4f60d11fde65a2acca",
+      "lesson": "1.3 Food and Diet",
+      "lessonOrder": 3,
+      "page": 11,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/782424023_da-bio-food-chain-v3.png",
+      "alt": "Labelled grassland food chain showing grass, grasshopper, small bird and kestrel joined by arrows",
+      "caption": "Figure: A food chain. The arrows point in the direction that energy and biomass are transferred, starting with the producer that captured the light energy by photosynthesis."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|17|24",
+      "lessonId": "69833a4f60d11fde65a2acca",
+      "lesson": "1.3 Food and Diet",
+      "lessonOrder": 3,
+      "page": 18,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/06f5f7ec8_da-bio-food-energy-v4.png",
+      "alt": "Labelled apparatus for measuring the energy content of a food sample by burning it under a boiling tube of water",
+      "caption": "Figure: Food energy. The energy released by the burning food warms a measured mass of water, so the temperature rise lets the energy per gram of food be calculated."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|19|25",
+      "lessonId": "69833a4f60d11fde65a2acca",
+      "lesson": "1.3 Food and Diet",
+      "lessonOrder": 3,
+      "page": 20,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/782424023_da-bio-food-chain-v3.png",
+      "alt": "Labelled grassland food chain showing grass, grasshopper, small bird and kestrel joined by arrows",
+      "caption": "Figure: A food chain. The arrows point in the direction that energy and biomass are transferred, starting with the producer that captured the light energy by photosynthesis."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|20|26",
+      "lessonId": "69833a4f60d11fde65a2acca",
+      "lesson": "1.3 Food and Diet",
+      "lessonOrder": 3,
+      "page": 21,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/06f5f7ec8_da-bio-food-energy-v4.png",
+      "alt": "Labelled apparatus for measuring the energy content of a food sample by burning it under a boiling tube of water",
+      "caption": "Figure: Food energy. The energy released by the burning food warms a measured mass of water, so the temperature rise lets the energy per gram of food be calculated."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|2|27",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 3,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/d051a3296_da-bio-osmosis-membrane-v3.png",
+      "alt": "Diagram of a container divided by a partially permeable membrane, with a dilute solution on the left and a concentrated solution on the right, small water molecules on both sides, large solute molecules mostly on the right, and an arrow showing net water movement to the right",
+      "caption": "Figure: Osmosis. Water molecules cross the membrane in both directions, but because there is a higher proportion of water on the dilute side more move to the right, giving a net movement down the water concentration gradient. The solute molecules are too large to pass through."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|3|28",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 4,
+      "src": "https://media.base44.com/images/public/69418fc30769c7d951368216/ebfeb9b61_generated_image.png",
+      "alt": "Osmosis in plant cells and the root-to-leaf water pathway",
+      "caption": "Teaching point: Water movement changes plant-cell turgor and supplies the transpiration stream through xylem."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|4|29",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 5,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/d051a3296_da-bio-osmosis-membrane-v3.png",
+      "alt": "Diagram of a container divided by a partially permeable membrane, with a dilute solution on the left and a concentrated solution on the right, small water molecules on both sides, large solute molecules mostly on the right, and an arrow showing net water movement to the right",
+      "caption": "Figure: Osmosis. Water molecules cross the membrane in both directions, but because there is a higher proportion of water on the dilute side more move to the right, giving a net movement down the water concentration gradient. The solute molecules are too large to pass through."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|5|30",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 6,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f59d45b58_da-bio-root-hair-v3.png",
+      "alt": "Labelled diagram of a root hair cell among soil particles, showing the long narrow hair, nucleus, vacuole, cell wall and membrane, with arrows for water entering the hair",
+      "caption": "Figure: The root hair cell. Its long, narrow shape gives a very large surface area in contact with soil water, so water can enter rapidly by osmosis while mineral ions are taken in by active transport against their concentration gradient."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|7|31",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 8,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/d63ed2fe2_da-bio-turgor-states.png",
+      "alt": "Three plant cells compared: a turgid cell with the membrane pressed against the wall, a flaccid cell with the contents slightly shrunken, and a plasmolysed cell whose membrane has pulled away from the wall",
+      "caption": "Figure: Turgid, flaccid and plasmolysed cells. The rigid cell wall stops the cell bursting, so a cell in pure water becomes turgid; as the surrounding solution becomes more concentrated water leaves, the cell becomes flaccid, and finally the membrane pulls away from the wall — plasmolysis."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|8|32",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 9,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f59d45b58_da-bio-root-hair-v3.png",
+      "alt": "Labelled diagram of a root hair cell among soil particles, showing the long narrow hair, nucleus, vacuole, cell wall and membrane, with arrows for water entering the hair",
+      "caption": "Figure: The root hair cell. Its long, narrow shape gives a very large surface area in contact with soil water, so water can enter rapidly by osmosis while mineral ions are taken in by active transport against their concentration gradient."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|9|33",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 10,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/48ba725d7_da-bio-plant-transport-v2.png",
+      "alt": "Diagram of a plant stem in section showing a xylem channel with upward arrows and a phloem channel with downward arrows, leaves losing water vapour and roots absorbing water",
+      "caption": "Figure: Xylem and phloem. Xylem carries water and mineral ions upwards only, pulled by evaporation from the leaves; phloem carries dissolved sugars away from the leaves either up or down, which is translocation."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|12|34",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 13,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/2590c49a0_da-bio-transpiration-factors-v2.png",
+      "alt": "Plotted graph with a rising curve that levels off for light, temperature and air movement, and a falling curve for humidity, with a key explaining both",
+      "caption": "Figure: Rate of transpiration. Anything that speeds evaporation from the leaf raises the rate until the stomata are fully open, whereas humid air reduces the concentration gradient out of the leaf and slows transpiration."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|18|35",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 19,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/2590c49a0_da-bio-transpiration-factors-v2.png",
+      "alt": "Plotted graph with a rising curve that levels off for light, temperature and air movement, and a falling curve for humidity, with a key explaining both",
+      "caption": "Figure: Rate of transpiration. Anything that speeds evaporation from the leaf raises the rate until the stomata are fully open, whereas humid air reduces the concentration gradient out of the leaf and slows transpiration."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|20|36",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 21,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f5a5b235f_da-bio-potato-osmosis.png",
+      "alt": "Four beakers of increasing sucrose concentration, each holding a potato cylinder, with the cylinders shown progressively smaller and the mass change stated beneath each",
+      "caption": "Figure: The prescribed practical. Cylinders in dilute solutions gain mass because water enters by osmosis, and cylinders in concentrated solutions lose mass because water leaves; the concentration at which there is no change matches the cell contents."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|21|37",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 22,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f5a5b235f_da-bio-potato-osmosis.png",
+      "alt": "Four beakers of increasing sucrose concentration, each holding a potato cylinder, with the cylinders shown progressively smaller and the mass change stated beneath each",
+      "caption": "Figure: The prescribed practical. Cylinders in dilute solutions gain mass because water enters by osmosis, and cylinders in concentrated solutions lose mass because water leaves; the concentration at which there is no change matches the cell contents."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|28|38",
+      "lessonId": "69833991fcb4c7d9446e5e13",
+      "lesson": "2.1 Osmosis and Plant Transport",
+      "lessonOrder": 4,
+      "page": 29,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/48ba725d7_da-bio-plant-transport-v2.png",
+      "alt": "Diagram of a plant stem in section showing a xylem channel with upward arrows and a phloem channel with downward arrows, leaves losing water vapour and roots absorbing water",
+      "caption": "Figure: Xylem and phloem. Xylem carries water and mineral ions upwards only, pulled by evaporation from the leaves; phloem carries dissolved sugars away from the leaves either up or down, which is translocation."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|2|39",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 3,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f36ac04da_da-bio-digestive-v5.png",
+      "alt": "Labelled human digestive system showing mouth, oesophagus, stomach, liver, pancreas, small intestine, large intestine and rectum",
+      "caption": "Figure: The human digestive system. Food travels from the mouth down the oesophagus to the stomach, then through the small intestine where digestion finishes and absorption happens, and finally through the large intestine to the rectum."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|4|40",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 5,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/5c8b93334_da-bio-lockKey.png",
+      "alt": "Lock-and-key model showing substrate binding to an enzyme active site and products being released",
+      "caption": "Figure: The lock-and-key model. Only a substrate with the matching shape fits the active site; the enzyme is unchanged afterwards and can be used again."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|5|41",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 6,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f8cacdea5_da-bio-enzyme-temp-ph-v3.png",
+      "alt": "Two plotted graphs: rate of reaction against temperature peaking at 37 degrees Celsius, and rate against pH for a stomach protease peaking at pH 2 and an intestinal amylase peaking at pH 8",
+      "caption": "Figure: Enzymes and conditions. Warming speeds the reaction because collisions become more frequent and energetic, but above the optimum the active site changes shape permanently, and each enzyme works fastest at the pH of the region it is secreted into."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|9|42",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 10,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/7c78b3b96_da-bio-bile-v2.png",
+      "alt": "Two beakers compared: oil floating as one large droplet, and the same oil emulsified by bile into many tiny droplets",
+      "caption": "Figure: Emulsification. Bile is not an enzyme — it physically breaks large fat droplets into many small ones, which greatly increases the surface area on which lipase can act, so digestion is faster."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|10|43",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 11,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/8106c1f9d_da-bio-villus-v5.png",
+      "alt": "Labelled villus showing microvilli, one-cell-thick epithelium, capillary network and lacteal",
+      "caption": "Figure: A villus. Its thin wall, huge surface area and rich blood supply make absorption of digested food fast and efficient."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|12|44",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 13,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f8cacdea5_da-bio-enzyme-temp-ph-v3.png",
+      "alt": "Two plotted graphs: rate of reaction against temperature peaking at 37 degrees Celsius, and rate against pH for a stomach protease peaking at pH 2 and an intestinal amylase peaking at pH 8",
+      "caption": "Figure: Enzymes and conditions. Warming speeds the reaction because collisions become more frequent and energetic, but above the optimum the active site changes shape permanently, and each enzyme works fastest at the pH of the region it is secreted into."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|17|45",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 18,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/5c8b93334_da-bio-lockKey.png",
+      "alt": "Diagram of an enzyme and its complementary substrate fitting into the active site",
+      "caption": "Figure: Enzyme specificity. Only a substrate whose shape is complementary to the active site can bind, which is why each digestive enzyme acts on one type of food molecule."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|18|46",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 19,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/7c78b3b96_da-bio-bile-v2.png",
+      "alt": "Two beakers compared: oil floating as one large droplet, and the same oil emulsified by bile into many tiny droplets",
+      "caption": "Figure: Emulsification. Bile is not an enzyme — it physically breaks large fat droplets into many small ones, which greatly increases the surface area on which lipase can act, so digestion is faster."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|19|47",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 20,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/8106c1f9d_da-bio-villus-v5.png",
+      "alt": "Labelled diagram of a villus showing epithelium, blood capillaries and lacteal",
+      "caption": "Figure: Absorption. Villi provide a very large, thin, well-supplied surface, so absorption by diffusion and active transport is rapid."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|20|48",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 21,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f8cacdea5_da-bio-enzyme-temp-ph-v3.png",
+      "alt": "Two plotted graphs: rate of reaction against temperature peaking at 37 degrees Celsius, and rate against pH for a stomach protease peaking at pH 2 and an intestinal amylase peaking at pH 8",
+      "caption": "Figure: Enzymes and conditions. Warming speeds the reaction because collisions become more frequent and energetic, but above the optimum the active site changes shape permanently, and each enzyme works fastest at the pH of the region it is secreted into."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|28|49",
+      "lessonId": "69833a4f60d11fde65a2accb",
+      "lesson": "1.4 The Digestive System",
+      "lessonOrder": 5,
+      "page": 29,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/f36ac04da_da-bio-digestive-v5.png",
+      "alt": "Labelled diagram of the human alimentary canal",
+      "caption": "Figure: The alimentary canal. Each region carries out a specific stage, so food is broken down in the right order before absorption."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|2|50",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 3,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a72c87f26_da-bio-blood-components-v2.png",
+      "alt": "Four labelled panels showing plasma, a red blood cell, a white blood cell and a platelet, each with a note on its structure and function",
+      "caption": "Figure: The components of blood. Plasma is the liquid transport medium, red blood cells carry oxygen using haemoglobin, white blood cells defend against microbes, and platelets help the blood to clot."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|3|51",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 4,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a72c87f26_da-bio-blood-components-v2.png",
+      "alt": "Four labelled panels showing plasma, a red blood cell, a white blood cell and a platelet, each with a note on its structure and function",
+      "caption": "Figure: The components of blood. Plasma is the liquid transport medium, red blood cells carry oxygen using haemoglobin, white blood cells defend against microbes, and platelets help the blood to clot."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|5|52",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 6,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/e47f3be41_da-bio-blood-vessels-v2.png",
+      "alt": "Cross sections of an artery with a thick wall and narrow lumen, a vein with a thin wall and wide lumen, and a capillary with a wall one cell thick",
+      "caption": "Figure: Blood vessels in cross section. The artery wall is thick and muscular to withstand high pressure, the vein has a wide lumen and valves for low-pressure return flow, and the capillary wall is one cell thick so diffusion distances are short."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|6|53",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 7,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a72c87f26_da-bio-blood-components-v2.png",
+      "alt": "Four labelled panels showing plasma, a red blood cell, a white blood cell and a platelet, each with a note on its structure and function",
+      "caption": "Figure: The components of blood. Plasma is the liquid transport medium, red blood cells carry oxygen using haemoglobin, white blood cells defend against microbes, and platelets help the blood to clot."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|7|54",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 8,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a72c87f26_da-bio-blood-components-v2.png",
+      "alt": "Four labelled panels showing plasma, a red blood cell, a white blood cell and a platelet, each with a note on its structure and function",
+      "caption": "Figure: The components of blood. Plasma is the liquid transport medium, red blood cells carry oxygen using haemoglobin, white blood cells defend against microbes, and platelets help the blood to clot."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|8|55",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 9,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/993d3a034_biology-heart-double-circulation-pathway.png",
+      "alt": "Labelled pathway of blood through the heart, lungs and body",
+      "caption": "Teaching point: Double circulation sends deoxygenated blood to the lungs and oxygenated blood to body tissues in separate circuits."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|9|56",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 10,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/5e8be484f_da-bio-heart-structure-v4.png",
+      "alt": "Labelled front view of the heart showing right and left atria and ventricles, the septum, atrioventricular valves, vena cava, pulmonary artery, pulmonary vein and aorta",
+      "caption": "Figure: Heart structure. Valves and the septum make the flow one-way and keep oxygenated and deoxygenated blood separate; the left ventricle wall is thickest because it pumps blood to the whole body."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|10|57",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 11,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/6e095b49c_da-bio-double-circulation-v3.png",
+      "alt": "Flow diagram of lungs, heart and body organs with arrows showing the pulmonary circuit and the systemic circuit",
+      "caption": "Figure: Double circulation. Blood returns to the heart between the two circuits, so it is re-pressurised before travelling to the body organs — this delivers oxygen far faster than a single circulation could."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|11|58",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 12,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/6e095b49c_da-bio-double-circulation-v3.png",
+      "alt": "Flow diagram of lungs, heart and body organs with arrows showing the pulmonary circuit and the systemic circuit",
+      "caption": "Figure: Double circulation. Blood returns to the heart between the two circuits, so it is re-pressurised before travelling to the body organs — this delivers oxygen far faster than a single circulation could."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|12|59",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 13,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a8010f2f8_da-bio-pulse-exercise.png",
+      "alt": "Line graph of pulse rate in beats per minute against time in minutes, rising from a resting value during exercise and falling gradually during recovery",
+      "caption": "Figure: Pulse rate and exercise. The rate rises during exercise because muscles need more oxygen and glucose and must remove more carbon dioxide; the speed of the fall afterwards is a measure of fitness."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|13|60",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 14,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a8010f2f8_da-bio-pulse-exercise.png",
+      "alt": "Line graph of pulse rate in beats per minute against time in minutes, rising from a resting value during exercise and falling gradually during recovery",
+      "caption": "Figure: Pulse rate and exercise. The rate rises during exercise because muscles need more oxygen and glucose and must remove more carbon dioxide; the speed of the fall afterwards is a measure of fitness."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|16|61",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 17,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/b3baca0f4_da-bio-capillary-exchange-v3.png",
+      "alt": "Diagram of a capillary above a block of respiring muscle tissue, with arrows showing oxygen and glucose diffusing out of the blood and carbon dioxide diffusing in",
+      "caption": "Figure: Exchange at a capillary. The one-cell-thick wall, slow blood flow and very large surface area of a capillary bed all shorten diffusion distances and speed up exchange with respiring tissue."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|17|62",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 18,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/5e8be484f_da-bio-heart-structure-v4.png",
+      "alt": "Labelled front view of the heart showing right and left atria and ventricles, the septum, atrioventricular valves, vena cava, pulmonary artery, pulmonary vein and aorta",
+      "caption": "Figure: Heart structure. Valves and the septum make the flow one-way and keep oxygenated and deoxygenated blood separate; the left ventricle wall is thickest because it pumps blood to the whole body."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|18|63",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 19,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a8010f2f8_da-bio-pulse-exercise.png",
+      "alt": "Line graph of pulse rate in beats per minute against time in minutes, rising from a resting value during exercise and falling gradually during recovery",
+      "caption": "Figure: Pulse rate and exercise. The rate rises during exercise because muscles need more oxygen and glucose and must remove more carbon dioxide; the speed of the fall afterwards is a measure of fitness."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|20|64",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 21,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a8010f2f8_da-bio-pulse-exercise.png",
+      "alt": "Line graph of pulse rate in beats per minute against time in minutes, rising from a resting value during exercise and falling gradually during recovery",
+      "caption": "Figure: Pulse rate and exercise. The rate rises during exercise because muscles need more oxygen and glucose and must remove more carbon dioxide; the speed of the fall afterwards is a measure of fitness."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|22|65",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 23,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/e47f3be41_da-bio-blood-vessels-v2.png",
+      "alt": "Cross sections of an artery with a thick wall and narrow lumen, a vein with a thin wall and wide lumen, and a capillary with a wall one cell thick",
+      "caption": "Figure: Blood vessels in cross section. The artery wall is thick and muscular to withstand high pressure, the vein has a wide lumen and valves for low-pressure return flow, and the capillary wall is one cell thick so diffusion distances are short."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|28|66",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 29,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/a72c87f26_da-bio-blood-components-v2.png",
+      "alt": "Four labelled panels showing plasma, a red blood cell, a white blood cell and a platelet, each with a note on its structure and function",
+      "caption": "Figure: The components of blood. Plasma is the liquid transport medium, red blood cells carry oxygen using haemoglobin, white blood cells defend against microbes, and platelets help the blood to clot."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|30|67",
+      "lessonId": "69833991fcb4c7d9446e5e14",
+      "lesson": "2.2 The Circulatory System",
+      "lessonOrder": 6,
+      "page": 31,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/6e095b49c_da-bio-double-circulation-v3.png",
+      "alt": "Flow diagram of lungs, heart and body organs with arrows showing the pulmonary circuit and the systemic circuit",
+      "caption": "Figure: Double circulation. Blood returns to the heart between the two circuits, so it is re-pressurised before travelling to the body organs — this delivers oxygen far faster than a single circulation could."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|2|68",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 3,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/080e9b49f_da-bio-mitochondrion.png",
+      "alt": "Labelled mitochondrion showing outer membrane, inner membrane, cristae and matrix",
+      "caption": "Figure: A mitochondrion, the site of aerobic respiration. The folded inner membrane (cristae) gives a large surface area for the reactions that release energy from glucose."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|4|69",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 5,
+      "src": "https://media.base44.com/images/public/69418fc30769c7d951368216/d73b871dc_generated_image.png",
+      "alt": "Labelled breathing system and enlarged alveolus",
+      "caption": "Teaching point: Alveoli provide a large, thin, moist exchange surface beside capillaries for oxygen and carbon dioxide diffusion."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|5|70",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 6,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/dc0be7001_da-bio-breathing.png",
+      "alt": "Labelled human breathing system showing nasal cavity, larynx, trachea, bronchi, bronchioles, alveoli, lungs, ribs and diaphragm",
+      "caption": "Figure: The human breathing system. Air passes through the trachea and bronchi into ever-smaller bronchioles that end in millions of alveoli."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|9|71",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 10,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/dc0be7001_da-bio-breathing.png",
+      "alt": "Labelled diagram of the human breathing system",
+      "caption": "Figure: The breathing system. Ventilation moves air to and from the alveoli, where the gas exchange that supplies respiration actually happens."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|10|72",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 11,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/d4fa81cda_da-bio-alveolus.png",
+      "alt": "Labelled alveolus with a one-cell-thick wall surrounded by capillaries containing red blood cells",
+      "caption": "Figure: An alveolus. Oxygen diffuses across the thin, moist wall into the blood while carbon dioxide diffuses out; the surrounding capillaries keep the concentration gradient steep."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|11|73",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 12,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/76b1e4a5e_da-bio-exercise-recovery.png",
+      "alt": "Plotted graph of breathing rate in breaths per minute against time, showing a resting rate, a rise during exercise and a gradual fall during recovery",
+      "caption": "Figure: Exercise and recovery. Breathing rate rises to deliver oxygen and remove carbon dioxide faster; it stays raised after exercise stops so the extra oxygen can break down the lactic acid that built up — the oxygen debt."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|12|74",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 13,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/76b1e4a5e_da-bio-exercise-recovery.png",
+      "alt": "Plotted graph of breathing rate in breaths per minute against time, showing a resting rate, a rise during exercise and a gradual fall during recovery",
+      "caption": "Figure: Exercise and recovery. Breathing rate rises to deliver oxygen and remove carbon dioxide faster; it stays raised after exercise stops so the extra oxygen can break down the lactic acid that built up — the oxygen debt."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|18|75",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 19,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/2e00eea53_da-bio-fermentation-v2.png",
+      "alt": "Labelled apparatus for investigating fermentation: yeast and glucose in a sealed flask in a water bath, with a delivery tube leading to limewater",
+      "caption": "Figure: Testing for fermentation. The bung excludes oxygen so the yeast respires anaerobically, and the carbon dioxide produced turns the limewater milky, confirming the reaction."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|20|76",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 21,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/2e00eea53_da-bio-fermentation-v2.png",
+      "alt": "Labelled apparatus for investigating fermentation: yeast and glucose in a sealed flask in a water bath, with a delivery tube leading to limewater",
+      "caption": "Figure: Testing for fermentation. The bung excludes oxygen so the yeast respires anaerobically, and the carbon dioxide produced turns the limewater milky, confirming the reaction."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|21|77",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 22,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/76b1e4a5e_da-bio-exercise-recovery.png",
+      "alt": "Plotted graph of breathing rate in breaths per minute against time, showing a resting rate, a rise during exercise and a gradual fall during recovery",
+      "caption": "Figure: Exercise and recovery. Breathing rate rises to deliver oxygen and remove carbon dioxide faster; it stays raised after exercise stops so the extra oxygen can break down the lactic acid that built up — the oxygen debt."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|27|78",
+      "lessonId": "69833a4f60d11fde65a2accc",
+      "lesson": "1.5 Respiration",
+      "lessonOrder": 7,
+      "page": 28,
+      "src": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/d4fa81cda_da-bio-alveolus.png",
+      "alt": "Labelled diagram of an alveolus and its surrounding capillary showing oxygen and carbon dioxide diffusion",
+      "caption": "Figure: Gas exchange. A thin, moist, well-ventilated and well-supplied surface keeps steep diffusion gradients for both gases."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e15|2|79",
+      "lessonId": "69833991fcb4c7d9446e5e15",
+      "lesson": "2.3 Reproduction, Fertility and Contraception",
+      "lessonOrder": 8,
+      "page": 3,
+      "src": "https://media.base44.com/images/public/69418fc30769c7d951368216/24e01c9b6_generated_image.png",
+      "alt": "Labelled male and female reproductive systems",
+      "caption": "Teaching point: The labelled structures produce and transport gametes and support fertilisation and development."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e16|2|80",
+      "lessonId": "69833991fcb4c7d9446e5e16",
+      "lesson": "2.4 Genome, Chromosomes, Genes, DNA and Genetics",
+      "lessonOrder": 9,
+      "page": 3,
+      "src": "https://media.base44.com/images/public/69418fc30769c7d951368216/f24f753a0_generated_image.png",
+      "alt": "Cell-to-gene hierarchy and a labelled monohybrid Punnett square",
+      "caption": "Teaching point: Genes are sections of DNA carried on chromosomes; the Punnett square predicts possible offspring genotypes."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e17|8|81",
+      "lessonId": "69833991fcb4c7d9446e5e17",
+      "lesson": "2.5 Variation and Natural Selection",
+      "lessonOrder": 10,
+      "page": 9,
+      "src": "https://media.base44.com/images/public/69418fc30769c7d951368216/48f8fa33d_generated_image.png",
+      "alt": "Four-stage diagram of natural selection causing antibiotic resistance",
+      "caption": "Teaching point: Antibiotics select from existing variation: resistant bacteria survive and reproduce rather than changing because they need resistance."
+    }
+  ],
+  "candidateCount": 1091,
+  "mappings": [
+    {
+      "key": "69833991fcb4c7d9446e5e11|2|0",
+      "hash": "b418a9bbe85611fce4bfe8b1a7f3f4c3281ee10a",
+      "confidence": "high",
+      "reason": "This figure provides a comparative overview of light and electron microscopes, which aligns with the educational focus on microscope structure and function."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|4|1",
+      "hash": "50163f8ff80f335574f41bfc10cc49a1e87cf9df",
+      "confidence": "high",
+      "reason": "The OpenStax figure accurately illustrates the key components of a prokaryotic cell including the nucleoid, ribosomes, and lack of membrane-bound organelles."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|5|2",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the provided candidates show the specific laboratory technique of preparing a microscope slide with cover slip and stain."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|5|3",
+      "hash": "1b7dab488c863be867be5db3fc2696a608068fbe",
+      "confidence": "medium",
+      "reason": "This figure illustrates the plant leaf cross-section, which includes palisade cells and stomata, representing specialized plant cell structures and their arrangement."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|8|4",
+      "hash": "50163f8ff80f335574f41bfc10cc49a1e87cf9df",
+      "confidence": "high",
+      "reason": "This figure provides a clear, labeled generalized structure of a prokaryotic cell, suitable for reinforcing the differences between prokaryotic and eukaryotic cells."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|9|5",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the provided candidates depict a collection of diverse human/plant specialized cells side-by-side as requested."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|10|6",
+      "hash": "0efa3270cbc7ea6e9dac481b9ca2523ec08b068f",
+      "confidence": "high",
+      "reason": "This figure displays the hierarchical organization of living things from cells to tissues to organs and systems."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|17|7",
+      "hash": "9936992d1d9048a421ba2a39f2f2edb5c2d96df3",
+      "confidence": "high",
+      "reason": "This diagram clearly demonstrates the concept of diffusion down a concentration gradient across a membrane."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|17|8",
+      "hash": "d985b82f4ac322a5c1b79be395b065d01ba84a72",
+      "confidence": "high",
+      "reason": "This figure specifically labels and illustrates the process of osmosis across a semipermeable membrane."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|18|9",
+      "hash": "62aa684e3a10abaf74e10f639002d38acffd7c0b",
+      "confidence": "high",
+      "reason": "This figure depicts primary active transport using a carrier protein and ATP to move solutes against their gradient."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e11|20|10",
+      "hash": "14ba36d6303880b2bd0105de67916a279cf2b014",
+      "confidence": "high",
+      "reason": "This figure illustrates the concept of surface area-to-volume ratio in the context of cell size and diffusion/transport."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|3|11",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the candidates provide the specific graphs showing the limiting factors of photosynthesis (light, CO2, temperature) in the requested format."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|4|12",
+      "hash": "1b7dab488c863be867be5db3fc2696a608068fbe",
+      "confidence": "high",
+      "reason": "This OpenStax figure provides a clear, accurate cross-section of a leaf illustrating the internal layers (palisade, spongy mesophyll, epidermis, stomata) matching the GCSE teaching requirements."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|5|13",
+      "hash": "10cc3aeeb85928ac6d015c8c04a41283c3668742",
+      "confidence": "high",
+      "reason": "This figure shows stomata and guard cells, which is the correct morphological focus for the mechanism of gas exchange control mentioned in the lesson."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|7|14",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the provided candidates show an experimental apparatus for measuring photosynthesis rate using pondweed. Most candidates focus on molecular pathways or ecological cycles."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|8|15",
+      "hash": "1b7dab488c863be867be5db3fc2696a608068fbe",
+      "confidence": "high",
+      "reason": "The leaf cross-section is the standard, accurate anatomical figure for demonstrating how leaf structure supports the function of photosynthesis."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|10|16",
+      "hash": "d5532c1c6cc8df4363b192abde0b9b42924eeed9",
+      "confidence": "high",
+      "reason": "This figure clearly demonstrates the visual symptoms of mineral deficiencies in plants (such as chlorosis), aligning with the learning objective about nutrient requirements."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|16|17",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the candidates provide a graph illustrating limiting factors (light, CO2, temperature) in photosynthesis; the provided candidates are largely molecular or environmental/biotechnology figures."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|17|18",
+      "hash": "1b7dab488c863be867be5db3fc2696a608068fbe",
+      "confidence": "high",
+      "reason": "This leaf cross-section illustrates the anatomical structure essential to leaf function in photosynthesis."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|18|19",
+      "hash": "d5532c1c6cc8df4363b192abde0b9b42924eeed9",
+      "confidence": "high",
+      "reason": "This figure provides evidence of mineral deficiency symptoms in leaves, matching the curriculum requirements for studying mineral ions and plant health."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e12|20|20",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the candidates depict the step-by-step practical laboratory procedure for testing starch in a leaf using ethanol and iodine."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|4|21",
+      "hash": "b1768fe6b876202739e5680d829b04ca0453acee",
+      "confidence": "high",
+      "reason": "This figure depicts a balanced diet plate, directly correlating with the teaching point of identifying balanced nutrient proportions."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|5|22",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the candidates demonstrate the specific laboratory food test procedures (Benedict's, Biuret, ethanol, etc.) required for identifying food nutrients."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|10|23",
+      "hash": "d2b636a215efb1ec7f1a55221e684d1410da22e3",
+      "confidence": "high",
+      "reason": "This food chain correctly illustrates the flow of energy and nutrients through trophic levels, fitting the required curriculum concept."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|17|24",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the candidates depict food calorimetry apparatus. The candidates provided are related to oxygen dissociation, population genetics, climate cycles, lake turnover, protist life cycles, human pregnancy, proteasome degradation, photosynthesis, homeostasis, and the carbon cycle."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|19|25",
+      "hash": "d2b636a215efb1ec7f1a55221e684d1410da22e3",
+      "confidence": "high",
+      "reason": "This figure clearly displays a multi-trophic food chain within an ecosystem, consistent with the GCSE concept of a food chain starting with a producer."
+    },
+    {
+      "key": "69833a4f60d11fde65a2acca|20|26",
+      "hash": null,
+      "confidence": "none",
+      "reason": "As with the first entry, none of the candidates depict food calorimetry apparatus."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|2|27",
+      "hash": "d985b82f4ac322a5c1b79be395b065d01ba84a72",
+      "confidence": "high",
+      "reason": "This diagram shows osmosis through a semipermeable membrane with water moving down a concentration gradient, matching the GCSE teaching point."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|3|28",
+      "hash": "bc6e2dbc1c7559822f42a0e88cb260bceb185c3c",
+      "confidence": "high",
+      "reason": "This figure demonstrates the cohesion-tension theory of sap ascent, which covers the transpiration stream from roots to leaves through the xylem."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|4|29",
+      "hash": "d985b82f4ac322a5c1b79be395b065d01ba84a72",
+      "confidence": "high",
+      "reason": "The figure illustrates osmosis across a selectively permeable membrane, which is the foundational concept for the requested GCSE topic."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|5|30",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the candidates provide a detailed anatomical diagram of a root hair cell; the candidates focus on molecular transport mechanisms or general cell biology."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|7|31",
+      "hash": "2288c8146bdb1b80ab733f0121f238aefa7c025d",
+      "confidence": "high",
+      "reason": "This figure explicitly shows plant cells in different osmotic states, including how water movement affects the plant cell membrane relative to the cell wall, matching the GCSE concepts of turgid and plasmolysed cells."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|8|32",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the candidates provide a detailed anatomical diagram of a root hair cell; the candidates focus on molecular transport mechanisms."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|9|33",
+      "hash": "328680818e492e6a7171cbae39e3d751231cb263",
+      "confidence": "high",
+      "reason": "This figure effectively shows both xylem (transpiration stream) and phloem (translocation) transport pathways in plants."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|12|34",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the available candidates show a plot of transpiration rate versus environmental factors (humidity, light, etc.)."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|18|35",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the available candidates show a plot of transpiration rate versus environmental factors (humidity, light, etc.)."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|20|36",
+      "hash": "d985b82f4ac322a5c1b79be395b065d01ba84a72",
+      "confidence": "high",
+      "reason": "This image depicts a semipermeable membrane separating two sides with different solute concentrations, demonstrating the movement of water (osmosis) across a membrane down its concentration gradient, which directly matches the teaching concept of the potato cylinder practical."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|21|37",
+      "hash": "d985b82f4ac322a5c1b79be395b065d01ba84a72",
+      "confidence": "high",
+      "reason": "Same as the previous entry, providing an academically accurate representation of the osmosis principles demonstrated by the potato practical."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e13|28|38",
+      "hash": "bc6e2dbc1c7559822f42a0e88cb260bceb185c3c",
+      "confidence": "high",
+      "reason": "This figure clearly shows water moving upwards through the xylem of a plant, illustrating the process of transpiration and water transport, which aligns with the xylem teaching concept."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|2|39",
+      "hash": "d831ca7330b9ec9013a59d6a7aad951c208db642",
+      "confidence": "high",
+      "reason": "This diagram correctly identifies the major organs of the human digestive tract, matching the request for an overview of the digestive system."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|4|40",
+      "hash": "065386871b944db2faf13ef55cbfebddbfba6394",
+      "confidence": "high",
+      "reason": "This illustrates an enzyme-substrate interaction within an active site, accurately reflecting the mechanism where a specific substrate binds to an enzyme."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|5|41",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the provided candidates show graphs of reaction rate versus temperature and pH specifically for digestive enzymes; the provided options are either structural, immune-related, or general protein descriptions."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|9|42",
+      "hash": "19ee4cac04b8a151b6fbbc3f47ed1e15f0998454",
+      "confidence": "medium",
+      "reason": "This figure shows lipids being emulsified by bile within the context of intestinal absorption, which corresponds to the process described in the caption."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|10|43",
+      "hash": "b254e8d30a1adabb91df2c900c119be34e58ddb4",
+      "confidence": "high",
+      "reason": "This figure displays the structure of the small intestine with villi, specifically highlighting their role in increasing surface area for nutrient absorption."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|12|44",
+      "hash": null,
+      "confidence": "none",
+      "reason": "No candidate provided depicts the specific graphs comparing temperature and pH effects on digestive enzymes."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|17|45",
+      "hash": "065386871b944db2faf13ef55cbfebddbfba6394",
+      "confidence": "high",
+      "reason": "This diagram illustrates the enzyme-active site relationship, which is the foundational concept for enzyme specificity in digestion."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|18|46",
+      "hash": "19ee4cac04b8a151b6fbbc3f47ed1e15f0998454",
+      "confidence": "medium",
+      "reason": "This figure identifies the emulsification of lipids by bile in the small intestine, providing a visual link to the required concept."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|19|47",
+      "hash": "b254e8d30a1adabb91df2c900c119be34e58ddb4",
+      "confidence": "high",
+      "reason": "This shows the villi structure within the small intestine, necessary for illustrating the mechanism of food absorption."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|20|48",
+      "hash": null,
+      "confidence": "none",
+      "reason": "The candidate images focus on specific protein digestion processes, induced fit, or specific disease examples, but none provide the required dual-graph comparative analysis of temperature and pH effects on enzyme kinetics as depicted in the original figure."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accb|28|49",
+      "hash": "d9961231646dfaa6c9aef86b9c5e2d654e454fe6",
+      "confidence": "high",
+      "reason": "This image provides a clear anatomical overview of the human digestive tract, which aligns with the pedagogical purpose of illustrating the alimentary canal."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|2|50",
+      "hash": "0440f09b5db38d77c261a8039c29e1e7fd564061",
+      "confidence": "high",
+      "reason": "This figure directly illustrates the different types of cells found in blood (erythrocytes, leukocytes, platelets) alongside plasma, matching the current educational focus on blood components."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|3|51",
+      "hash": "0440f09b5db38d77c261a8039c29e1e7fd564061",
+      "confidence": "high",
+      "reason": "This figure directly illustrates the different types of cells found in blood (erythrocytes, leukocytes, platelets) alongside plasma, matching the current educational focus on blood components."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|5|52",
+      "hash": "90e28ed9ba4edc1fc44f637a0337114178d7eb3c",
+      "confidence": "medium",
+      "reason": "This image shows the structure of arteries, veins, and capillaries, including the structural details like valves and sphincters relevant to the physiological function of blood vessels."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|6|53",
+      "hash": "0440f09b5db38d77c261a8039c29e1e7fd564061",
+      "confidence": "high",
+      "reason": "This figure directly illustrates the different types of cells found in blood (erythrocytes, leukocytes, platelets) alongside plasma, matching the current educational focus on blood components."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|7|54",
+      "hash": "0440f09b5db38d77c261a8039c29e1e7fd564061",
+      "confidence": "high",
+      "reason": "This figure directly illustrates the different types of cells found in blood (erythrocytes, leukocytes, platelets) alongside plasma, matching the current educational focus on blood components."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|8|55",
+      "hash": "4437db7f4cf2e47504059658cbfa0396d87339d8",
+      "confidence": "high",
+      "reason": "This figure clearly depicts the pulmonary and systemic circuits, which is the core concept of double circulation."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|9|56",
+      "hash": "829a536bb7154bdd0b23402c1f8762b776673f99",
+      "confidence": "high",
+      "reason": "This image shows the structure of the human heart, identifying the chambers, valves, and major blood vessels required for teaching heart anatomy."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|10|57",
+      "hash": "4437db7f4cf2e47504059658cbfa0396d87339d8",
+      "confidence": "high",
+      "reason": "This figure clearly depicts the pulmonary and systemic circuits, which is the core concept of double circulation."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|11|58",
+      "hash": "4437db7f4cf2e47504059658cbfa0396d87339d8",
+      "confidence": "high",
+      "reason": "This figure clearly depicts the pulmonary and systemic circuits, which is the core concept of double circulation."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|12|59",
+      "hash": null,
+      "confidence": "none",
+      "reason": "There is no suitable candidate provided that depicts a pulse rate response curve to exercise. The provided graph candidates relate to membrane potential, oxygen dissociation, or simple variable relationships, none of which reflect heart rate recovery curves."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|13|60",
+      "hash": null,
+      "confidence": "none",
+      "reason": "The image is a physiological response graph of heart rate during exercise, whereas OpenStax candidates focus on gas exchange curves, action potentials, or complex behavior patterns."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|16|61",
+      "hash": "054cbac7c3395ccfa5b49e9b4f1fb331707a22ae",
+      "confidence": "high",
+      "reason": "Shows capillary beds and the process of substance exchange (filtration/diffusion) between blood and interstitial fluid, aligning with the concept of capillary gas/nutrient exchange."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|17|62",
+      "hash": "829a536bb7154bdd0b23402c1f8762b776673f99",
+      "confidence": "high",
+      "reason": "Provides a clear anatomical view of the mammalian heart, chambers, and valves, directly matching the teaching point on heart structure."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|18|63",
+      "hash": null,
+      "confidence": "none",
+      "reason": "The image is a physiological response graph of heart rate during exercise, which does not appear in the provided OpenStax candidates."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|20|64",
+      "hash": null,
+      "confidence": "none",
+      "reason": "The image is a physiological response graph of heart rate during exercise, which does not appear in the provided OpenStax candidates."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|22|65",
+      "hash": "90e28ed9ba4edc1fc44f637a0337114178d7eb3c",
+      "confidence": "medium",
+      "reason": "Shows blood vessels and valves, though it is less focused on a comparative cross-section than the original figure, it is the most functionally relevant option."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|28|66",
+      "hash": "0440f09b5db38d77c261a8039c29e1e7fd564061",
+      "confidence": "high",
+      "reason": "Depicts multiple types of blood cells (erythrocytes, leukocytes, platelets), accurately representing the components of blood."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e14|30|67",
+      "hash": "4437db7f4cf2e47504059658cbfa0396d87339d8",
+      "confidence": "high",
+      "reason": "Clearly illustrates the pulmonary and systemic circuits of the double circulatory system."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|2|68",
+      "hash": "00abe6130e466e45f70e9e3b98dca42bdcd1409a",
+      "confidence": "high",
+      "reason": "Provides a clear structural view of the mitochondrion, highlighting the inner membrane and cristae surface area."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|4|69",
+      "hash": "027fd46902d77501e53eb8f3bab7ddd98ab24d91",
+      "confidence": "medium",
+      "reason": "Focuses on the alveolar structure where gas exchange occurs, matching the lesson emphasis on exchange surfaces."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|5|70",
+      "hash": "2e0449d97523e880dd3a354b29331f2a717b846e",
+      "confidence": "high",
+      "reason": "Detailed diagram of the human respiratory tract from nasal cavity to bronchi, matching the required breathing system anatomy."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|9|71",
+      "hash": "26776b591c6ee8a133e6c8a9cb2db13cd4d3dd00",
+      "confidence": "medium",
+      "reason": "Shows the lungs and diaphragm, emphasizing the mechanism of ventilation, which relates to the lesson on the breathing system."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|10|72",
+      "hash": "027fd46902d77501e53eb8f3bab7ddd98ab24d91",
+      "confidence": "high",
+      "reason": "This figure accurately illustrates the anatomical structure of alveoli and their functional role in gas exchange within the lungs, matching the GCSE teaching point."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|11|73",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the provided candidates show a graph of exercise and recovery specifically focusing on breathing rate and lactic acid / oxygen debt in a manner suitable for a GCSE-level figure."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|12|74",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the provided candidates show a graph of exercise and recovery specifically focusing on breathing rate and lactic acid / oxygen debt in a manner suitable for a GCSE-level figure."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|18|75",
+      "hash": "ec54acca15908c206e360c44d1220467405d45c7",
+      "confidence": "medium",
+      "reason": "While this shows industrial fermentation, it highlights the production of carbon dioxide as a byproduct, which is the core concept being tested in the lab apparatus shown."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|20|76",
+      "hash": "ec54acca15908c206e360c44d1220467405d45c7",
+      "confidence": "medium",
+      "reason": "Similar to the previous match, this illustrates the production of carbon dioxide during fermentation, which is the fundamental process occurring in the yeast experiment."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|21|77",
+      "hash": null,
+      "confidence": "none",
+      "reason": "None of the provided candidates show a graph of exercise and recovery specifically focusing on breathing rate and lactic acid / oxygen debt in a manner suitable for a GCSE-level figure."
+    },
+    {
+      "key": "69833a4f60d11fde65a2accc|27|78",
+      "hash": "027fd46902d77501e53eb8f3bab7ddd98ab24d91",
+      "confidence": "high",
+      "reason": "This figure clearly demonstrates the surface area and capillary network necessary for effective gas exchange at the alveoli, matching the GCSE teaching point perfectly."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e16|2|80",
+      "hash": "83af4d98c6e7004c52f95071a357b686d11dc819",
+      "confidence": "high",
+      "reason": "This figure shows a Punnett square predicting offspring genotypes from parent phenotypes, which aligns directly with the requirement to illustrate genetic prediction."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e17|8|81",
+      "hash": "63ff0571e32931f1dd4f0219b6188b64b766a032",
+      "confidence": "high",
+      "reason": "This figure demonstrates antibiotic resistance using inhibition zones in a petri dish, which is the standard illustrative method for natural selection in bacterial populations."
+    }
+  ]
+}
