@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DigestiveDiagramPortals from '@/components/lesson/DigestiveDiagramPortals';
+import LessonImageZoom from '@/components/lesson/LessonImageZoom';
 
 function annotateRenderedMath(node, mathJax) {
   const containers = Array.from(node.querySelectorAll('mjx-container'));
@@ -24,6 +25,7 @@ function annotateRenderedMath(node, mathJax) {
  */
 export default function MathJaxContent({ html, className }) {
   const ref = useRef(null);
+  const [zoomedImage, setZoomedImage] = useState(null);
 
   useEffect(() => {
     const node = ref.current;
@@ -59,5 +61,31 @@ export default function MathJaxContent({ html, className }) {
     return () => { cancelled = true; };
   }, [html]);
 
-  return <><div ref={ref} className={className} dangerouslySetInnerHTML={{ __html: html || '' }} /><DigestiveDiagramPortals containerRef={ref} html={html} /></>;
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return undefined;
+    const images = Array.from(node.querySelectorAll('figure img:not([data-no-zoom])'));
+    images.forEach(image => {
+      image.tabIndex = 0;
+      image.setAttribute('role', 'button');
+      image.setAttribute('aria-label', `Enlarge diagram: ${image.alt || 'lesson image'}`);
+      image.title = 'Select to enlarge';
+    });
+    const openImage = (image) => setZoomedImage({ src: image.currentSrc || image.src, alt: image.alt || 'Lesson diagram' });
+    const onClick = (event) => event.target.matches('figure img:not([data-no-zoom])') && openImage(event.target);
+    const onKeyDown = (event) => {
+      if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('figure img:not([data-no-zoom])')) {
+        event.preventDefault();
+        openImage(event.target);
+      }
+    };
+    node.addEventListener('click', onClick);
+    node.addEventListener('keydown', onKeyDown);
+    return () => {
+      node.removeEventListener('click', onClick);
+      node.removeEventListener('keydown', onKeyDown);
+    };
+  }, [html]);
+
+  return <><div ref={ref} className={className} dangerouslySetInnerHTML={{ __html: html || '' }} /><DigestiveDiagramPortals containerRef={ref} html={html} /><LessonImageZoom image={zoomedImage} onClose={() => setZoomedImage(null)} /></>;
 }

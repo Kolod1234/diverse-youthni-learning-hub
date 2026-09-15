@@ -158,6 +158,18 @@ button:focus-visible {
 }
 
 @layer components {
+  .lesson-rich-content figure:has(> img) {
+    width: 100%;
+    max-width: none;
+  }
+
+  .lesson-rich-content figure > img:not([data-no-zoom]) {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    cursor: zoom-in;
+  }
+
   .lesson-rich-content math[display="block"] {
     display: block math;
     width: fit-content;
