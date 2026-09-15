@@ -45,6 +45,8 @@ import PageSEO from '@/components/seo/PageSEO';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 
+console.log('[Testing] Home module loaded');
+
 // Removed unused eager imports: CategoryFilter, SearchBar, WeatherWidget, ClockWidget,
 // QuoteWidget, StudentOfMonthWidget, CalendarWidget, UpcomingLessonsWidget,
 // FactOfDayWidget, EnhancedFactOfDay, RSSNotificationsWidget, SocialFeedWidget,
