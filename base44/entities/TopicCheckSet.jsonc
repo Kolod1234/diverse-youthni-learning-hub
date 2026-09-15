@@ -1,0 +1,84 @@
+{
+  "name": "TopicCheckSet",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string"
+    },
+    "course_id": {
+      "type": "string"
+    },
+    "fingerprint": {
+      "type": "string"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "correctAnswer": {
+            "type": "integer"
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "concept": {
+            "type": "string"
+          },
+          "source_page": {
+            "type": "integer"
+          },
+          "source_excerpt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "question",
+          "options",
+          "correctAnswer",
+          "explanation",
+          "concept",
+          "source_page",
+          "source_excerpt"
+        ]
+      }
+    }
+  },
+  "required": [
+    "lesson_id",
+    "course_id",
+    "fingerprint",
+    "questions"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
