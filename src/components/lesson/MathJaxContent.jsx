@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import DigestiveDiagramPortals from '@/components/lesson/DigestiveDiagramPortals';
 
 function annotateRenderedMath(node, mathJax) {
   const containers = Array.from(node.querySelectorAll('mjx-container'));
@@ -58,5 +59,5 @@ export default function MathJaxContent({ html, className }) {
     return () => { cancelled = true; };
   }, [html]);
 
-  return <div ref={ref} className={className} dangerouslySetInnerHTML={{ __html: html || '' }} />;
+  return <><div ref={ref} className={className} dangerouslySetInnerHTML={{ __html: html || '' }} /><DigestiveDiagramPortals containerRef={ref} html={html} /></>;
 }
