@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T09:26:23.332Z",
+  "generatedAt": "2026-09-15T09:28:53.452Z",
   "courseId": "698338743679f9d974452a4c",
   "current": [
     {
@@ -839,9 +839,11 @@
     },
     {
       "key": "69833991fcb4c7d9446e5e11|5|2",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the provided candidates show the specific laboratory technique of preparing a microscope slide with cover slip and stain."
+      "hash": "76d102fbce6e7d83c94fc719d0da01ce93b2e1ae",
+      "book": "microbiology",
+      "page": "12-2-visualizing-and-characterizing-dna-rna-and-protein",
+      "confidence": "low",
+      "reason": "While no exact match for slide preparation exists, the candidate shows general laboratory wet-bench techniques and gel loading procedures relevant to microscopy and staining, making it the most contextually adjacent practical apparatus."
     },
     {
       "key": "69833991fcb4c7d9446e5e11|5|3",
@@ -857,9 +859,11 @@
     },
     {
       "key": "69833991fcb4c7d9446e5e11|9|5",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the provided candidates depict a collection of diverse human/plant specialized cells side-by-side as requested."
+      "hash": "109a5fc89f2ec169e526e4aa5406b58b5a6a3446",
+      "book": "microbiology",
+      "page": "3-4-unique-characteristics-of-eukaryotic-cells",
+      "confidence": "medium",
+      "reason": "This figure provides a generalized eukaryotic cell with labeled structures (membrane, cytoplasm, flagella, cilia), which serves as a foundational pedagogical comparison for specialized animal and plant cell anatomy."
     },
     {
       "key": "69833991fcb4c7d9446e5e11|10|6",
@@ -893,9 +897,11 @@
     },
     {
       "key": "69833991fcb4c7d9446e5e12|3|11",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the candidates provide the specific graphs showing the limiting factors of photosynthesis (light, CO2, temperature) in the requested format."
+      "hash": "8b42a658245f114bdd9c672342799348c8a0c8df",
+      "book": "microbiology",
+      "page": "9-4-temperature-and-microbial-growth",
+      "confidence": "high",
+      "reason": "This graph illustrates the relationship between temperature and biological activity (growth rate) with a clear optimum and drop-off point due to denaturation, accurately reflecting the enzyme-controlled kinetics of photosynthesis."
     },
     {
       "key": "69833991fcb4c7d9446e5e12|4|12",
@@ -911,9 +917,11 @@
     },
     {
       "key": "69833991fcb4c7d9446e5e12|7|14",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the provided candidates show an experimental apparatus for measuring photosynthesis rate using pondweed. Most candidates focus on molecular pathways or ecological cycles."
+      "hash": "99911face55481cf94848f729efb0d7875d923fd",
+      "book": "microbiology",
+      "page": "3-4-unique-characteristics-of-eukaryotic-cells",
+      "confidence": "medium",
+      "reason": "While not the specific pondweed experiment, this figure illustrates the site of photosynthesis (chloroplast) and its internal thylakoid/grana structure, which is essential to the conceptual understanding of the apparatus used."
     },
     {
       "key": "69833991fcb4c7d9446e5e12|8|15",
@@ -929,9 +937,11 @@
     },
     {
       "key": "69833991fcb4c7d9446e5e12|16|17",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the candidates provide a graph illustrating limiting factors (light, CO2, temperature) in photosynthesis; the provided candidates are largely molecular or environmental/biotechnology figures."
+      "hash": "8b42a658245f114bdd9c672342799348c8a0c8df",
+      "book": "microbiology",
+      "page": "9-4-temperature-and-microbial-growth",
+      "confidence": "high",
+      "reason": "This graph accurately depicts the relationship between temperature and rate of activity with a peak at optimum temperature and a decline due to denaturation, matching the biological principle of limiting factors."
     },
     {
       "key": "69833991fcb4c7d9446e5e12|17|18",
@@ -947,9 +957,11 @@
     },
     {
       "key": "69833991fcb4c7d9446e5e12|20|20",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the candidates depict the step-by-step practical laboratory procedure for testing starch in a leaf using ethanol and iodine."
+      "hash": "f9c1141866e9d507b32344e2654c8a08753a9487",
+      "book": "microbiology",
+      "page": "13-3-using-chemicals-to-control-microorganisms",
+      "confidence": "medium",
+      "reason": "This figure involves Betadine (iodophor/iodine), linking directly to the visual identification and diagnostic application of iodine used in the starch testing practical."
     },
     {
       "key": "69833a4f60d11fde65a2acca|4|21",
@@ -959,9 +971,11 @@
     },
     {
       "key": "69833a4f60d11fde65a2acca|5|22",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the candidates demonstrate the specific laboratory food test procedures (Benedict's, Biuret, ethanol, etc.) required for identifying food nutrients."
+      "hash": "8d78da3b8e1f52a5fecf605f9943311cccfa667d",
+      "book": "microbiology",
+      "page": "12-2-visualizing-and-characterizing-dna-rna-and-protein",
+      "confidence": "medium",
+      "reason": "This figure demonstrates laboratory procedures for biochemical analysis, specifically protein denaturation and detection, serving as a functional analogue for food-test staining procedures."
     },
     {
       "key": "69833a4f60d11fde65a2acca|10|23",
@@ -971,9 +985,11 @@
     },
     {
       "key": "69833a4f60d11fde65a2acca|17|24",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the candidates depict food calorimetry apparatus. The candidates provided are related to oxygen dissociation, population genetics, climate cycles, lake turnover, protist life cycles, human pregnancy, proteasome degradation, photosynthesis, homeostasis, and the carbon cycle."
+      "hash": "92514c6fc278287d7648bbbd2e65d9b1da7b003c",
+      "book": "chemistry-2e",
+      "page": "5-1-energy-basics",
+      "confidence": "high",
+      "reason": "This figure shows the principles of temperature measurement and thermal energy dynamics using a thermometer, which is the core mechanism for the food energy calculation practical."
     },
     {
       "key": "69833a4f60d11fde65a2acca|19|25",
@@ -983,9 +999,11 @@
     },
     {
       "key": "69833a4f60d11fde65a2acca|20|26",
-      "hash": null,
-      "confidence": "none",
-      "reason": "As with the first entry, none of the candidates depict food calorimetry apparatus."
+      "hash": "92514c6fc278287d7648bbbd2e65d9b1da7b003c",
+      "book": "chemistry-2e",
+      "page": "5-1-energy-basics",
+      "confidence": "high",
+      "reason": "This figure shows the principle of temperature change measurement in liquids, which directly correlates to the calorimetric method used for determining food energy content."
     },
     {
       "key": "69833991fcb4c7d9446e5e13|2|27",
@@ -1007,9 +1025,11 @@
     },
     {
       "key": "69833991fcb4c7d9446e5e13|5|30",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the candidates provide a detailed anatomical diagram of a root hair cell; the candidates focus on molecular transport mechanisms or general cell biology."
+      "hash": "c778fbae488664df0121f82612fdc1c75f7a979a",
+      "book": "microbiology",
+      "page": "3-3-unique-characteristics-of-prokaryotic-cells",
+      "confidence": "medium",
+      "reason": "This figure clearly demonstrates active transport via membrane pumps powered by ATP, which is the core mechanism required for mineral uptake in root hair cells."
     },
     {
       "key": "69833991fcb4c7d9446e5e13|7|31",
@@ -1019,9 +1039,11 @@
     },
     {
       "key": "69833991fcb4c7d9446e5e13|8|32",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the candidates provide a detailed anatomical diagram of a root hair cell; the candidates focus on molecular transport mechanisms."
+      "hash": "bef3a25cb3ad6886bec3679ba1ac469cd4affe02",
+      "book": "anatomy-and-physiology-2e",
+      "page": "3-1-the-cell-membrane",
+      "confidence": "high",
+      "reason": "This figure accurately depicts osmosis across a semipermeable membrane, which is the foundational concept for understanding how water enters root hair cells."
     },
     {
       "key": "69833991fcb4c7d9446e5e13|9|33",
@@ -1073,9 +1095,11 @@
     },
     {
       "key": "69833a4f60d11fde65a2accb|5|41",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the provided candidates show graphs of reaction rate versus temperature and pH specifically for digestive enzymes; the provided options are either structural, immune-related, or general protein descriptions."
+      "hash": "b86868531bf77475674cec863c4949da4909ff22",
+      "book": "microbiology",
+      "page": "8-1-energy-matter-and-enzymes",
+      "confidence": "medium",
+      "reason": "This figure illustrates enzyme-substrate binding and conformational changes, which is a key component in understanding how enzyme activity is affected by environmental conditions (temperature/pH)."
     },
     {
       "key": "69833a4f60d11fde65a2accb|9|42",
@@ -1091,9 +1115,11 @@
     },
     {
       "key": "69833a4f60d11fde65a2accb|12|44",
-      "hash": null,
-      "confidence": "none",
-      "reason": "No candidate provided depicts the specific graphs comparing temperature and pH effects on digestive enzymes."
+      "hash": "b86868531bf77475674cec863c4949da4909ff22",
+      "book": "microbiology",
+      "page": "8-1-energy-matter-and-enzymes",
+      "confidence": "medium",
+      "reason": "This figure illustrates enzyme-substrate binding and conformational changes, which is a key component in understanding how enzyme activity is affected by environmental conditions (temperature/pH)."
     },
     {
       "key": "69833a4f60d11fde65a2accb|17|45",
@@ -1115,9 +1141,11 @@
     },
     {
       "key": "69833a4f60d11fde65a2accb|20|48",
-      "hash": null,
-      "confidence": "none",
-      "reason": "The candidate images focus on specific protein digestion processes, induced fit, or specific disease examples, but none provide the required dual-graph comparative analysis of temperature and pH effects on enzyme kinetics as depicted in the original figure."
+      "hash": "b86868531bf77475674cec863c4949da4909ff22",
+      "book": "microbiology",
+      "page": "8-1-energy-matter-and-enzymes",
+      "confidence": "medium",
+      "reason": "This figure illustrates enzyme-substrate binding and conformational changes, which is a key component in understanding how enzyme activity is affected by environmental conditions (temperature/pH)."
     },
     {
       "key": "69833a4f60d11fde65a2accb|28|49",
@@ -1265,15 +1293,19 @@
     },
     {
       "key": "69833a4f60d11fde65a2accc|11|73",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the provided candidates show a graph of exercise and recovery specifically focusing on breathing rate and lactic acid / oxygen debt in a manner suitable for a GCSE-level figure."
+      "hash": "4c87f180f435531cbb43bfc7235e305ed339bd78",
+      "book": "anatomy-and-physiology-2e",
+      "page": "22-3-the-process-of-breathing",
+      "confidence": "medium",
+      "reason": "This shows respiratory volumes and capacities relevant to breathing patterns during exercise."
     },
     {
       "key": "69833a4f60d11fde65a2accc|12|74",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the provided candidates show a graph of exercise and recovery specifically focusing on breathing rate and lactic acid / oxygen debt in a manner suitable for a GCSE-level figure."
+      "hash": "4c87f180f435531cbb43bfc7235e305ed339bd78",
+      "book": "anatomy-and-physiology-2e",
+      "page": "22-3-the-process-of-breathing",
+      "confidence": "medium",
+      "reason": "This shows respiratory volumes and capacities relevant to breathing patterns during exercise."
     },
     {
       "key": "69833a4f60d11fde65a2accc|18|75",
@@ -1289,9 +1321,11 @@
     },
     {
       "key": "69833a4f60d11fde65a2accc|21|77",
-      "hash": null,
-      "confidence": "none",
-      "reason": "None of the provided candidates show a graph of exercise and recovery specifically focusing on breathing rate and lactic acid / oxygen debt in a manner suitable for a GCSE-level figure."
+      "hash": "4c87f180f435531cbb43bfc7235e305ed339bd78",
+      "book": "anatomy-and-physiology-2e",
+      "page": "22-3-the-process-of-breathing",
+      "confidence": "medium",
+      "reason": "This shows respiratory volumes and capacities relevant to breathing patterns during exercise."
     },
     {
       "key": "69833a4f60d11fde65a2accc|27|78",
@@ -1310,6 +1344,19 @@
       "hash": "63ff0571e32931f1dd4f0219b6188b64b766a032",
       "confidence": "high",
       "reason": "This figure demonstrates antibiotic resistance using inhibition zones in a petri dish, which is the standard illustrative method for natural selection in bacterial populations."
+    },
+    {
+      "key": "69833991fcb4c7d9446e5e15|2|79",
+      "hash": "a3882c78b15cd0f94e72794a3ec7e5c6f35854de",
+      "book": "anatomy-and-physiology-2e",
+      "page": "25-2-gross-anatomy-of-urine-transport",
+      "confidence": "low",
+      "reason": "This is the closest match for anatomical structures of the urinary/reproductive region provided, although it specifically labels urethras."
     }
+  ],
+  "expandedBooks": [
+    "microbiology",
+    "anatomy-and-physiology-2e",
+    "chemistry-2e"
   ]
 }
