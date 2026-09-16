@@ -837,6 +837,12 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Sparkles size={20} /></ListItemIcon>
                       <ListItemText primary="Virtual Laboratory 🧪" />
                     </ListItemButton>
+                    {canAccessPastPaperSolver && (
+                      <ListItemButton component={Link} to={createPageUrl('PastPaperSolver')} onClick={() => setMobileMenuOpen(false)}>
+                        <ListItemIcon><BookOpen size={20} /></ListItemIcon>
+                        <ListItemText primary="DYNI Past Paper Solver" />
+                      </ListItemButton>
+                    )}
 
                     {isCoordinator && !isTutorOrAdmin && (
                       <ListItemButton component={Link} to={createPageUrl('CoordinatorsDashboard')} onClick={() => setMobileMenuOpen(false)}>
