@@ -62,6 +62,7 @@
         "government_politics",
         "religious_studies",
         "life_health_sciences",
+        "sociology",
         "environmental_technology"
       ],
       "description": "Subject category"
@@ -111,7 +112,7 @@
     },
     "exam_board": {
       "type": "string",
-      "description": "Examination board (e.g., CCEA, AQA, Edexcel)"
+      "description": "Examination board (e.g., CCEA, WJEC, Edexcel)"
     },
     "requires_math_pathway": {
       "type": "boolean",
