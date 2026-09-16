@@ -1,9 +1,6 @@
 export async function getParentContext(base44, user) {
   const profiles = await base44.asServiceRole.entities.ParentProfile.filter({ parent_user_id: user.id }, '-created_date', 1);
-  let profile = profiles[0];
-  if (!profile) {
-    profile = await base44.asServiceRole.entities.ParentProfile.create({ parent_user_id: user.id, parent_email: user.email, parent_name: user.full_name || 'Parent', notifications_enabled: true });
-  }
+  const profile = profiles[0] || null;
   const links = await base44.asServiceRole.entities.ParentChildLink.filter({ parent_user_id: user.id }, '-created_date', 100);
   const managedChildren = await base44.asServiceRole.entities.ParentManagedChild.filter({ parent_user_id: user.id }, '-created_date', 100);
   const approvedLinks = links.filter((link) => link.status === 'approved');

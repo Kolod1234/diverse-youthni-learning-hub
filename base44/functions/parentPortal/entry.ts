@@ -10,6 +10,12 @@ export default async function(req) {
     const action = body.action || 'dashboard';
     if (action === 'health') return Response.json({ ok: true });
     const context = await getParentContext(base44, user);
+    if (action === 'setup_parent') {
+      if (!context.profile) await base44.asServiceRole.entities.ParentProfile.create({ parent_user_id: user.id, parent_email: user.email, parent_name: user.full_name || 'Parent', notifications_enabled: true });
+      if (user.role !== 'admin') await base44.auth.updateMe({ account_type: 'parent' });
+      return Response.json({ ready: true });
+    }
+    if (!context.profile) return Response.json({ needs_setup: true, children: [], links: [], managed_children: [], messages: [], notifications: [], tutors: [], schedules: { events: [], sessions: [], bookings: [] } });
     if (action === 'managed_child') {
       if (!body.child_name?.trim() || !body.date_of_birth) return Response.json({ error: 'Child name and date of birth are required' }, { status: 400 });
       const child = await base44.asServiceRole.entities.ParentManagedChild.create({ parent_user_id: user.id, parent_email: user.email, child_name: body.child_name.trim(), date_of_birth: body.date_of_birth, notes: body.notes || '' });
@@ -43,7 +49,6 @@ export default async function(req) {
       const message = await base44.asServiceRole.entities.Message.create({ sender_email: user.email, sender_name: user.full_name || 'Parent', recipient_email: recipient, content, message_type: 'text' });
       return Response.json({ message });
     }
-    await base44.auth.updateMe({ account_type: 'parent' });
     const children = [];
     const courseMap = new Map();
     const allCourses = await base44.asServiceRole.entities.Course.list('-created_date', 1000);
