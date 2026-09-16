@@ -10,10 +10,13 @@ const subjectTerms = {
 };
 const words = (text) => (text || "").toLowerCase().match(/[a-z]{4,}/g) || [];
 const inferredCategory = (solution) => {
+  const selectedCategory = categories[solution.subject];
+  if (selectedCategory) return selectedCategory;
+
   const content = new Set(words(`${solution.question} ${solution.answer}`));
   const scores = Object.entries(subjectTerms).map(([category, terms]) => [category, terms.filter(term => content.has(term)).length]);
   const [category, score] = scores.sort((a, b) => b[1] - a[1])[0];
-  return score >= 2 ? category : categories[solution.subject];
+  return score >= 2 ? category : undefined;
 };
 
 export default function useCourseRecommendations(solution) {
