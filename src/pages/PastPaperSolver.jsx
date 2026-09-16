@@ -51,7 +51,7 @@ const SOLUTION_MODES = [
 ];
 
 const modeInstructions = {
-  full: `You are a friendly, encouraging GCSE tutor helping a 14–16 year old student understand this problem.
+  full: `You are a friendly, encouraging CCEA tutor helping a student understand this problem at their selected qualification level.
 
 IMPORTANT RULES FOR YOUR RESPONSE:
 1. Start with a short "What this question is asking" summary in 1–2 plain English sentences.
@@ -74,11 +74,11 @@ MATHS FORMATTING — THIS IS CRITICAL:
 - Greek letters: \\alpha, \\beta, \\theta, \\pi, \\Delta, \\lambda
 - Do NOT write maths as plain text. Never write "x^2" without dollar signs.`,
 
-  hint: `You are a friendly GCSE tutor. Give ONLY a helpful hint (2–3 sentences) pointing the student in the right direction WITHOUT solving it. Use simple, encouraging language suitable for a 14–16 year old. Do NOT give the full answer.
+  hint: `You are a friendly CCEA tutor working at the selected qualification level. Give ONLY a helpful hint (2–3 sentences) pointing the student in the right direction WITHOUT solving it. Use simple, encouraging language suitable for a 14–16 year old. Do NOT give the full answer.
 
 For any maths in your hint, use LaTeX: inline $...$ or display $$...$$.`,
 
-  mark_scheme: `You are writing an examiner's mark scheme for this GCSE question.
+  mark_scheme: `You are writing a CCEA-style examiner's mark scheme for this question at the selected qualification level. Do not present it as an official CCEA mark scheme.
 
 Format exactly like this:
 - Use bullet points, one per mark point
@@ -89,7 +89,7 @@ Format exactly like this:
 
 Keep language precise and examiner-appropriate.`,
 
-  explain: `You are a friendly GCSE tutor explaining a concept to a 14–16 year old.
+  explain: `You are a friendly CCEA tutor explaining a concept at the selected qualification level.
 
 IMPORTANT RULES:
 1. Start with: "The BIG idea here is..." and explain in plain English.
@@ -157,7 +157,7 @@ function AnswerBlock({ text, blockKey }) {
 // Ask AI for a confidence score (0–100) for a given answer
 async function fetchConfidenceScore(question, answer, subject, qualification) {
   try {
-    const prompt = `You are an AI quality assessor for GCSE exam answers.
+    const prompt = `You are an AI quality assessor for CCEA exam answers.
 
 Given this student question and AI-generated answer, rate your confidence that the answer is CORRECT and COMPLETE on a scale of 0 to 100.
 
@@ -177,7 +177,7 @@ Base your score on:
 
     const result = await base44.integrations.Core.InvokeLLM({
       prompt,
-      model: "gpt_5_mini",
+      model: "automatic",
       response_json_schema: {
         type: "object",
         properties: { confidence: { type: "number" } },
@@ -209,6 +209,7 @@ export default function PastPaperSolver() {
 
   // Full-paper mode
   const [fullPaperSolving, setFullPaperSolving] = useState(false);
+  const [fullPaperProgress, setFullPaperProgress] = useState("");
   const [paperSolutions, setPaperSolutions] = useState(null);
 
   const imageInputRef = useRef();
@@ -300,7 +301,7 @@ CRITICAL FORMATTING REMINDER:
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
         file_urls,
-        model: file_urls ? "gemini_3_pro" : "claude_sonnet_4_6",
+        model: "automatic",
       });
 
       const answerText = typeof response === "string" ? response : response?.text || JSON.stringify(response);
@@ -344,9 +345,10 @@ CRITICAL FORMATTING REMINDER:
     setSolution(null);
 
     try {
-      const extractPrompt = `You are an expert ${qualification} ${subject} examiner.
+      setFullPaperProgress("Reading every question and diagram…");
+      const extractPrompt = `You are an expert CCEA ${qualification} ${subject} examiner.
 
-The attached file is a ${qualification} ${subject} past paper.
+The attached file is a CCEA ${qualification} ${subject} past paper.
 
 Extract EVERY question and sub-question from the document (e.g. 1, 1a, 1b, 2, 2a, 2(i), etc.).
 For each question include:
@@ -359,7 +361,7 @@ Return the result as a JSON object with a single key "questions" containing an a
       const extracted = await base44.integrations.Core.InvokeLLM({
         prompt: extractPrompt,
         file_urls: [uploadedFile.url],
-        model: "gemini_3_pro",
+        model: "automatic",
         response_json_schema: {
           type: "object",
           properties: {
@@ -370,8 +372,9 @@ Return the result as a JSON object with a single key "questions" containing an a
                 properties: {
                   number: { type: "string" },
                   text: { type: "string" },
-                  marks: { type: "number" },
+                  marks: { anyOf: [{ type: "number" }, { type: "null" }] },
                 },
+                required: ["number", "text"],
               },
             },
           },
@@ -385,36 +388,47 @@ Return the result as a JSON object with a single key "questions" containing an a
       }
 
       const results = [];
-      for (const q of questions) {
-        const prompt = `You are a friendly, expert ${qualification} ${subject} tutor helping a student aged 14–16.
+      const batchSize = 3;
+      const solveQuestion = async (q) => {
+        const prompt = `You are a careful CCEA ${qualification} ${subject} examiner and tutor.
 
 Question ${q.number}${q.marks ? ` [${q.marks} marks]` : ""}:
 ${q.text}
 
+The original paper is attached. Inspect it for every diagram, graph, table, source, extract or data item belonging to this question; do not answer from extracted text alone when visual evidence is required.
+
 ${modeInstructions[mode]}
 
+Before finalising, independently check the command word, mark allocation, factual accuracy, calculations, units, significant figures and whether every subpart is answered. Do not call this an official mark scheme. Include a short **Answer check** explaining how the result was verified.
+
 CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
-
-        const ans = await base44.integrations.Core.InvokeLLM({
+        const request = () => base44.integrations.Core.InvokeLLM({
           prompt,
-          model: "claude_sonnet_4_6",
+          file_urls: [uploadedFile.url],
+          model: "automatic",
         });
-
-        const answerText = typeof ans === "string" ? ans : ans?.text || "";
-        results.push({
+        let ans;
+        try { ans = await request(); } catch { ans = await request(); }
+        return {
           number: q.number,
           text: q.text,
           marks: q.marks,
-          answer: answerText,
+          answer: typeof ans === "string" ? ans : ans?.text || "",
           answerKey: Date.now() + Math.random(),
           confidenceScore: null,
           subject,
           qualification,
           mode,
-        });
-      }
+        };
+      };
 
-      setPaperSolutions(results);
+      for (let start = 0; start < questions.length; start += batchSize) {
+        const batch = questions.slice(start, start + batchSize);
+        setFullPaperProgress(`Solving questions ${start + 1}–${Math.min(start + batch.length, questions.length)} of ${questions.length}…`);
+        const solvedBatch = await Promise.all(batch.map(solveQuestion));
+        results.push(...solvedBatch);
+        setPaperSolutions([...results]);
+      }
 
       // Fetch confidence scores for all in background
       results.forEach((q, idx) => {
@@ -432,6 +446,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
       alert("Failed to solve paper: " + (e?.message || "Unknown error"));
     } finally {
       setFullPaperSolving(false);
+      setFullPaperProgress("");
     }
   };
 
@@ -442,7 +457,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
     setFollowUpSolving(true);
     try {
       const prompt = buildPrompt(solution.question, !!solution.uploadedFile, followUp);
-      const response = await base44.integrations.Core.InvokeLLM({ prompt, model: "claude_sonnet_4_6" });
+      const response = await base44.integrations.Core.InvokeLLM({ prompt, model: "automatic" });
       const answer = typeof response === "string" ? response : response?.text || JSON.stringify(response);
       const fuKey = Date.now();
       setSolution((prev) => ({
@@ -624,7 +639,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                   className="flex-1 min-w-[160px] bg-gradient-to-r from-purple-700 to-pink-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
                 >
                   {fullPaperSolving
-                    ? <><Loader2 className="w-5 h-5 animate-spin" />Solving All Questions…</>
+                    ? <><Loader2 className="w-5 h-5 animate-spin" />{fullPaperProgress || "Preparing paper…"}</>
                     : <><Sparkles className="w-5 h-5" />Solve Entire Paper</>}
                 </button>
               )}
@@ -647,6 +662,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                 <h2 className="font-bold text-gray-800 text-lg">Full Paper Solutions</h2>
                 <span className="ml-auto text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{paperSolutions.length} questions</span>
               </div>
+              <p className="px-1 text-xs text-gray-500">AI-generated worked solutions with CCEA-style checks; compare final answers with the official CCEA mark scheme.</p>
               {paperSolutions.map((q, i) => (
                 <div key={i} className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
                   <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3 flex items-center gap-3">
