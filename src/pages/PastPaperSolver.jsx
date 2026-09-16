@@ -22,6 +22,7 @@ const FileText = _w(DescriptionIcon), X = _w(CloseIcon), Upload = _w(UploadIcon)
 import ReactMarkdown from "react-markdown";
 import ConfidenceBadge from "@/components/solver/ConfidenceBadge";
 import AnswerFeedback from "@/components/solver/AnswerFeedback";
+import StudentExtensionPanel from "@/components/solver/StudentExtensionPanel";
 
 const mathJaxConfig = {
   loader: { load: ["[tex]/ams", "input/tex", "output/chtml"] },
@@ -275,7 +276,7 @@ Qualification: ${qualification}${marksLine}
 
 STUDENT QUESTION:
 ${question}
-${fileAttached ? "[See the attached file/image for diagrams, graphs or the paper itself]" : ""}
+${fileAttached ? "[See the attached file/image for diagrams, graphs or the paper itself. Inspect all labels, scales, arrows, spatial relationships, tables and visual evidence before answering. State what visual information you used.]" : ""}
 
 ${modeInstructions[mode]}
 
@@ -493,7 +494,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
             <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">🧠</div>
             <div>
               <h1 className="text-2xl font-bold">Past Paper AI Solver</h1>
-              <p className="text-blue-200 text-sm mt-0.5">Upload a past paper or type a question — step-by-step explanations, powered by AI</p>
+              <p className="text-blue-200 text-sm mt-0.5">Solve text and image questions, draw explanations, test understanding and continue into matching courses</p>
             </div>
           </div>
         </div>
@@ -680,6 +681,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                       }
                     </div>
                     <AnswerBlock text={q.answer} blockKey={q.answerKey} />
+                    <StudentExtensionPanel key={q.answerKey} solution={{ ...q, uploadedFile }} />
                     {/* Feedback */}
                     <div className="border-t border-gray-100 pt-3">
                       <AnswerFeedback solutionMeta={q} />
@@ -730,8 +732,9 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
               </div>
 
               {/* Answer */}
-              <div className="px-6 pt-3 pb-5">
+              <div className="px-6 pt-3 pb-5 space-y-5">
                 <AnswerBlock text={solution.answer} blockKey={solution.answerKey} />
+                <StudentExtensionPanel key={solution.answerKey} solution={solution} />
               </div>
 
               {/* Follow-up Q&As */}

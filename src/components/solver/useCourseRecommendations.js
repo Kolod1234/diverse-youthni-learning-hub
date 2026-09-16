@@ -1,0 +1,26 @@
+import { useEffect, useState } from "react";
+import { base44 } from "@/api/base44Client";
+
+const categories = { Mathematics: "mathematics", Biology: "biology", Chemistry: "chemistry", Physics: "physics", "English Language": "english_language", "English Literature": "english_literature", History: "history", Geography: "geography", "Business Studies": "economics", Economics: "economics", "Religious Studies": "religious_studies", "ICT / Digital Technology": "digital_technology" };
+const words = (text) => (text || "").toLowerCase().match(/[a-z]{4,}/g) || [];
+
+export default function useCourseRecommendations(solution) {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const category = categories[solution.subject];
+      const qualification_type = solution.qualification === "GCSE" ? "gcse" : "alevel";
+      const found = category ? await base44.entities.Course.filter({ category, qualification_type }, "-is_featured", 50) : [];
+      const target = new Set(words(`${solution.question} ${solution.answer}`).filter(w => w.length > 4));
+      const ranked = found.map(course => {
+        const searchable = words(`${course.title} ${course.description} ${(course.tags || []).join(" ")}`);
+        return { ...course, matchScore: searchable.reduce((score, word) => score + (target.has(word) ? 1 : 0), 0) };
+      }).sort((a, b) => b.matchScore - a.matchScore).slice(0, 3);
+      if (active) { setCourses(ranked); setLoading(false); }
+    };
+    load(); return () => { active = false; };
+  }, [solution.answerKey]);
+  return { courses, loading };
+}
