@@ -4,8 +4,10 @@ import { removeGoogleEvent, saveGoogleEvent } from "../../shared/groupStudyCalen
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
+    const body = await req.json();
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+    if (body.dryRun === true) return Response.json({ status: "ready" });
     const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection("6a2ff9b66b58a1afd53c7b4c");
     const memberships = await base44.asServiceRole.entities.StudyGroupMember.filter({ member_email: user.email, status: "active" });
     const sessionMap = new Map();

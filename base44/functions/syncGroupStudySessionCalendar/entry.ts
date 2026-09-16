@@ -5,6 +5,7 @@ export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
+    if (body.dryRun === true) return Response.json({ status: "ready" });
     const changed = body.changed_fields || [];
     if (body.event?.type === "update" && changed.length && changed.every((field) => ["google_calendar_event_id", "calendar_synced_at", "calendar_sync_error"].includes(field))) {
       return Response.json({ status: "metadata_update_skipped" });

@@ -3,6 +3,8 @@ import { createClientFromRequest } from "npm:@base44/sdk@0.8.44";
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
+    const body = await req.json();
+    if (body.dryRun === true) return Response.json({ status: "ready" });
     const now = new Date();
     const deadline = new Date(now.getTime() + 24 * 60 * 60 * 1000);
     const sessions = await base44.asServiceRole.entities.GroupStudySession.filter({
