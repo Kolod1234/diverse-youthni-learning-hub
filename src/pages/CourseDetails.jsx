@@ -516,8 +516,8 @@ export default function CourseDetails() {
 
       {/* Course Content */}
       <Container maxWidth="xl" sx={{ py: 6 }}>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 4 }}>
-          <Box>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'minmax(0, 2fr) minmax(0, 1fr)' }, gap: 4 }}>
+          <Box sx={{ minWidth: 0 }}>
             {isMathPathwayCourse && (
               activeMathPathwayConfig ? (
                 <Card sx={{ mb: 3, p: 3, borderRadius: 4, border: '1px solid #bfdbfe', bgcolor: '#eff6ff' }}>
@@ -547,7 +547,14 @@ export default function CourseDetails() {
                 </Alert>
               )
             )}
-            <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
+            <Tabs
+              value={tabValue}
+              onChange={(e, newValue) => setTabValue(newValue)}
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              sx={{ mb: 3, maxWidth: '100%' }}
+            >
               <Tab label="Curriculum" value="curriculum" />
               <Tab label="Overview" value="overview" />
               <Tab label={`Reviews (${reviews.length})`} value="reviews" />
@@ -861,7 +868,7 @@ export default function CourseDetails() {
               </Box>
             </Card>
 
-            {/* GCSE Syllabus */}
+            {/* Official course specification */}
             {course.syllabus_url && (
               <Card sx={{ p: 3, border: 0, boxShadow: 1, background: 'linear-gradient(to bottom right, #fef3c7, #fed7aa)' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
@@ -869,7 +876,7 @@ export default function CourseDetails() {
                     <BookOpen size={20} color="#d97706" />
                   </Box>
                   <Box>
-                    <Typography fontWeight={600}>GCSE Syllabus</Typography>
+                    <Typography fontWeight={600}>Official Specification</Typography>
                     {course.exam_board && (
                       <Typography variant="caption" color="text.secondary">{course.exam_board}</Typography>
                     )}
