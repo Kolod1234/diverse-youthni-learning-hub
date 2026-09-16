@@ -5,18 +5,19 @@ const categories = { Mathematics: "mathematics", Biology: "biology", Chemistry: 
 const subjectTerms = {
   physics: ["acceleration", "circuit", "current", "energy", "force", "gravity", "mass", "momentum", "resistance", "scalar", "velocity", "voltage", "wave", "weight"],
   chemistry: ["acid", "alkali", "atom", "bond", "catalyst", "compound", "element", "ion", "molecule", "oxidation", "reaction"],
-  biology: ["cell", "chromosome", "enzyme", "gene", "homeostasis", "organism", "photosynthesis", "respiration", "tissue"],
+  biology: ["cell", "chromosome", "dna", "enzyme", "gene", "homeostasis", "magnification", "microscope", "microscopy", "organ", "organism", "photosynthesis", "respiration", "tissue"],
   mathematics: ["algebra", "angle", "equation", "fraction", "gradient", "polygon", "probability", "quadratic", "ratio", "theorem"],
 };
 const words = (text) => (text || "").toLowerCase().match(/[a-z]{4,}/g) || [];
 const inferredCategory = (solution) => {
   const selectedCategory = categories[solution.subject];
-  if (selectedCategory) return selectedCategory;
+  if (selectedCategory && selectedCategory !== "mathematics") return selectedCategory;
 
   const content = new Set(words(`${solution.question} ${solution.answer}`));
   const scores = Object.entries(subjectTerms).map(([category, terms]) => [category, terms.filter(term => content.has(term)).length]);
   const [category, score] = scores.sort((a, b) => b[1] - a[1])[0];
-  return score >= 2 ? category : undefined;
+  if (selectedCategory === "mathematics" && category !== "mathematics" && score >= 2) return category;
+  return selectedCategory || (score >= 2 ? category : undefined);
 };
 
 export default function useCourseRecommendations(solution) {
