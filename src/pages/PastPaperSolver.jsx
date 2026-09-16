@@ -24,6 +24,7 @@ import ConfidenceBadge from "@/components/solver/ConfidenceBadge";
 import AnswerFeedback from "@/components/solver/AnswerFeedback";
 import StudentExtensionPanel from "@/components/solver/StudentExtensionPanel";
 import SolutionExportButton from "@/components/solver/SolutionExportButton";
+import QuestionSourceImage from "@/components/solver/QuestionSourceImage";
 
 const mathJaxConfig = {
   loader: { load: ["[tex]/ams", "input/tex", "output/chtml"] },
@@ -689,6 +690,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                         : <span className="text-xs text-gray-400 italic">Scoring confidence…</span>
                       }
                     </div>
+                    <QuestionSourceImage file={uploadedFile} />
                     <AnswerBlock text={q.answer} blockKey={q.answerKey} />
                     <StudentExtensionPanel key={q.answerKey} solution={{ ...q, uploadedFile }} />
                     {/* Feedback */}
@@ -722,10 +724,8 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
               {(solution.question || solution.uploadedFile) && (
                 <div className="px-6 pt-4 pb-3 bg-gray-50 border-b border-gray-100">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Question</p>
-                  {solution.uploadedFile?.preview && (
-                    <img src={solution.uploadedFile.preview} alt="Uploaded" className="max-h-48 rounded-lg mb-2 border border-gray-200 object-contain" />
-                  )}
-                  {solution.uploadedFile && !solution.uploadedFile.preview && (
+                  <QuestionSourceImage file={solution.uploadedFile} />
+                  {solution.uploadedFile?.type !== "image" && (
                     <div className="flex items-center gap-2 mb-2 text-sm text-gray-600">
                       <FileText className="w-4 h-4 text-red-500" /> {solution.uploadedFile.name}
                     </div>
