@@ -7,6 +7,13 @@ const subjectTerms = {
   chemistry: ["acid", "alkali", "atom", "bond", "catalyst", "compound", "element", "ion", "molecule", "oxidation", "reaction"],
   biology: ["cell", "chromosome", "dna", "enzyme", "gene", "homeostasis", "magnification", "microscope", "microscopy", "organ", "organism", "photosynthesis", "respiration", "tissue"],
   mathematics: ["algebra", "angle", "equation", "fraction", "gradient", "polygon", "probability", "quadratic", "ratio", "theorem"],
+  english_language: ["audience", "discourse", "grammar", "language", "persuasion", "rhetoric", "sentence", "speech", "syntax", "writer"],
+  english_literature: ["character", "drama", "metaphor", "novel", "poem", "poetry", "prose", "quotation", "stanza", "theme"],
+  history: ["century", "conflict", "empire", "historian", "revolution", "treaty", "warfare"],
+  geography: ["climate", "coast", "erosion", "migration", "population", "river", "settlement", "tectonic", "urbanisation", "weather"],
+  economics: ["business", "consumer", "demand", "economy", "inflation", "market", "profit", "revenue", "supply", "unemployment"],
+  religious_studies: ["belief", "christian", "ethics", "faith", "islam", "judaism", "religion", "religious", "worship"],
+  digital_technology: ["algorithm", "binary", "database", "hardware", "network", "programming", "software", "spreadsheet", "storage"],
 };
 const words = (text) => (text || "").toLowerCase().match(/[a-z]{4,}/g) || [];
 const inferredCategory = (solution) => {
