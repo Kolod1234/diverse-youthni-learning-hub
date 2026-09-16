@@ -23,6 +23,7 @@ import ReactMarkdown from "react-markdown";
 import ConfidenceBadge from "@/components/solver/ConfidenceBadge";
 import AnswerFeedback from "@/components/solver/AnswerFeedback";
 import StudentExtensionPanel from "@/components/solver/StudentExtensionPanel";
+import SolutionExportButton from "@/components/solver/SolutionExportButton";
 
 const mathJaxConfig = {
   loader: { load: ["[tex]/ams", "input/tex", "output/chtml"] },
@@ -111,6 +112,23 @@ function cleanMathText(text) {
       if (/[=+\-*/^\\{}]/.test(inner)) return `$${inner}$`;
       return `\`${inner}\``;
     });
+}
+
+const answerText = (response) => typeof response === "string" ? response : response?.text || JSON.stringify(response);
+const modeIsValid = (text, selectedMode) => {
+  if (selectedMode === "hint") return text.split(/\s+/).length <= 120 && !/final answer|the answer is/i.test(text);
+  if (selectedMode === "mark_scheme") return /(^|\n)\s*[-*]\s/.test(text) && /\*\*Total:\s*\d+\s+marks?\*\*/i.test(text);
+  if (selectedMode === "explain") return /The BIG idea here is/i.test(text) && /Top tip:/i.test(text);
+  return true;
+};
+
+async function requestModeAnswer(prompt, fileUrls, selectedMode) {
+  const invoke = (requestPrompt) => base44.integrations.Core.InvokeLLM({ prompt: requestPrompt, file_urls: fileUrls, model: "automatic" });
+  let text = answerText(await invoke(prompt));
+  if (!modeIsValid(text, selectedMode)) {
+    text = answerText(await invoke(`${prompt}\n\nYour previous draft did not follow the selected ${selectedMode} response format. Rewrite it now and obey the response-mode rules exactly.\n\nDRAFT TO REWRITE:\n${text}`));
+  }
+  return text;
 }
 
 function AnswerBlock({ text, blockKey }) {
@@ -254,7 +272,7 @@ export default function PastPaperSolver() {
 
   // ── Build prompt ───────────────────────────────────────────────────────────
 
-  const buildPrompt = (question, fileAttached, followUpQ = null) => {
+  const buildPrompt = (question, fileAttached, followUpQ = null, selectedMode = mode) => {
     const marksLine = marks ? `\nThis question is worth ${marks} mark${marks !== "1" ? "s" : ""} — calibrate the depth of your answer accordingly.` : "";
 
     if (followUpQ) {
@@ -278,7 +296,8 @@ STUDENT QUESTION:
 ${question}
 ${fileAttached ? "[See the attached file/image for diagrams, graphs or the paper itself. Inspect all labels, scales, arrows, spatial relationships, tables and visual evidence before answering. State what visual information you used.]" : ""}
 
-${modeInstructions[mode]}
+RESPONSE MODE: ${SOLUTION_MODES.find((item) => item.id === selectedMode)?.label}. Follow ONLY this response mode; do not fall back to a full solution.
+${modeInstructions[selectedMode]}
 
 CRITICAL FORMATTING REMINDER:
 - EVERY number, variable, formula, equation, unit MUST be in LaTeX.
@@ -295,17 +314,10 @@ CRITICAL FORMATTING REMINDER:
     setSolution(null);
     setPaperSolutions(null);
     try {
-      const prompt = buildPrompt(questionText, !!uploadedFile);
-      const file_urls = uploadedFile ? [uploadedFile.url] : undefined;
-
-      // Run answer generation and confidence scoring in parallel (confidence after answer)
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        file_urls,
-        model: "automatic",
-      });
-
-      const answerText = typeof response === "string" ? response : response?.text || JSON.stringify(response);
+      const selectedMode = mode;
+      const prompt = buildPrompt(questionText, !!uploadedFile, null, selectedMode);
+      const fileUrls = uploadedFile ? [uploadedFile.url] : undefined;
+      const generatedAnswer = await requestModeAnswer(prompt, fileUrls, selectedMode);
       const newKey = Date.now();
 
       // Fetch confidence score concurrently (non-blocking — updates state when done)
@@ -315,8 +327,8 @@ CRITICAL FORMATTING REMINDER:
         subject,
         qualification,
         marks,
-        mode,
-        answer: answerText,
+        mode: selectedMode,
+        answer: generatedAnswer,
         answerKey: newKey,
         confidenceScore: null, // populated after
         followUps: [],
@@ -326,7 +338,7 @@ CRITICAL FORMATTING REMINDER:
       setHistory((prev) => [sol, ...prev.slice(0, 9)]);
 
       // Fetch confidence in background
-      fetchConfidenceScore(questionText, answerText, subject, qualification).then((score) => {
+      fetchConfidenceScore(questionText, generatedAnswer, subject, qualification).then((score) => {
         setSolution((prev) => prev ? { ...prev, confidenceScore: score } : prev);
       });
 
@@ -403,18 +415,12 @@ ${modeInstructions[mode]}
 Before finalising, independently check the command word, mark allocation, factual accuracy, calculations, units, significant figures and whether every subpart is answered. Do not call this an official mark scheme. Include a short **Answer check** explaining how the result was verified.
 
 CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
-        const request = () => base44.integrations.Core.InvokeLLM({
-          prompt,
-          file_urls: [uploadedFile.url],
-          model: "automatic",
-        });
-        let ans;
-        try { ans = await request(); } catch { ans = await request(); }
+        const ans = await requestModeAnswer(prompt, [uploadedFile.url], mode);
         return {
           number: q.number,
           text: q.text,
           marks: q.marks,
-          answer: typeof ans === "string" ? ans : ans?.text || "",
+          answer: ans,
           answerKey: Date.now() + Math.random(),
           confidenceScore: null,
           subject,
@@ -661,7 +667,10 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
               <div className="flex items-center gap-2 px-1">
                 <Sparkles className="w-5 h-5 text-purple-600" />
                 <h2 className="font-bold text-gray-800 text-lg">Full Paper Solutions</h2>
-                <span className="ml-auto text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{paperSolutions.length} questions</span>
+                <div className="ml-auto flex items-center gap-3">
+                  <SolutionExportButton solutions={paperSolutions} subject={subject} qualification={qualification} />
+                  <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{paperSolutions.length} questions</span>
+                </div>
               </div>
               <p className="px-1 text-xs text-gray-500">AI-generated worked solutions with CCEA-style checks; compare final answers with the official CCEA mark scheme.</p>
               {paperSolutions.map((q, i) => (
@@ -703,7 +712,10 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                     <div className="text-blue-200 text-xs">{solution.subject} · {solution.qualification}{solution.marks ? ` · ${solution.marks} marks` : ""}</div>
                   </div>
                 </div>
-                <span className="text-blue-200 text-xs">{solution.timestamp}</span>
+                <div className="flex items-center gap-3">
+                  <SolutionExportButton solutions={[solution]} subject={solution.subject} qualification={solution.qualification} />
+                  <span className="text-blue-200 text-xs">{solution.timestamp}</span>
+                </div>
               </div>
 
               {/* Question recap */}
