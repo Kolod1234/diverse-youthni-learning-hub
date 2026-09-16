@@ -17,8 +17,13 @@ export default async function(req) {
       const consent_token = newConsentToken();
       const deadline_at = new Date(Date.now() + 3 * 86400000).toISOString();
       const updated = await base44.asServiceRole.entities.StudentVerification.update(current.id, { status: 'pending', consent_token, deadline_at, reminder_count: 0, last_reminder_at: new Date().toISOString() });
-      const mail = consentEmail(updated);
-      await base44.asServiceRole.integrations.Core.SendEmail({ to: updated.parent_email, subject: mail.subject, html: mail.html, text: mail.text, from_name: 'Diverse Youth NI' });
+      try {
+        const mail = consentEmail(updated);
+        await base44.asServiceRole.integrations.Core.SendEmail({ to: updated.parent_email, subject: mail.subject, html: mail.html, text: mail.text, from_name: 'Diverse Youth NI' });
+      } catch (error) {
+        await base44.asServiceRole.entities.StudentVerification.update(current.id, { status: 'expired' });
+        throw error;
+      }
       return Response.json({ status: 'pending', deadline_at });
     }
 
