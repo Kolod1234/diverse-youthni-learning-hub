@@ -1,151 +1,148 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 
-Deno.serve(async (req) => {
+const specificationUrl = 'https://ccea.org.uk/downloads/docs/Specifications/GCE/GCE%20Life%20and%20Health%20Sciences%20%282016%29/GCE%20Life%20and%20Health%20Sciences%20%282016%29-specification-Standard_0.pdf';
+
+const asUnits = [
+  ['AS 1', 'Experimental Techniques', 'Compulsory'],
+  ['AS 2', 'Human Body Systems', 'Compulsory'],
+  ['AS 3', 'Aspects of Physical Chemistry in Industrial Processes', 'Compulsory'],
+  ['AS 4', 'Brain Science', 'Double Award compulsory'],
+  ['AS 5', 'Material Science', 'Double Award compulsory'],
+  ['AS 6', 'Medicine, Drugs and Clinical Trials', 'Double Award compulsory'],
+];
+
+const a2Units = [
+  ['A2 1', 'Scientific Method, Investigation, Analysis and Evaluation', 'Compulsory'],
+  ['A2 2', 'Organic Chemistry', 'Compulsory'],
+  ['A2 3', 'Medical Physics', 'Optional group 1'],
+  ['A2 4', 'Sound and Light', 'Optional group 1'],
+  ['A2 5', 'Genetics, Stem Cell Research and Cloning', 'Optional group 1'],
+  ['A2 6', 'Microbiology', 'Double Award optional group 2'],
+  ['A2 7', 'Oral Health and Dentistry', 'Double Award optional group 2'],
+  ['A2 8', 'Histology and Pathology', 'Double Award optional group 2'],
+  ['A2 9', 'Analytical Chemistry Techniques', 'Double Award optional group 2'],
+  ['A2 10', 'Enabling Technology', 'Double Award optional group 2'],
+];
+
+function unitsFor(course) {
+  const doubleAward = /double award/i.test(course.title || '');
+  if (course.alevel_stage === 'as') return doubleAward ? asUnits : asUnits.slice(0, 3);
+  return doubleAward ? a2Units : a2Units.slice(0, 5);
+}
+
+function sectionName(unit) {
+  return `CCEA Unit ${unit[0]}: ${unit[1]} — ${unit[2]}`;
+}
+
+function mappedSection(course, title) {
+  const text = (title || '').toLowerCase();
+  const doubleAward = /double award/i.test(course.title || '');
+  if (course.alevel_stage === 'as') {
+    if (doubleAward && /(pathogen|bacter|viral|infect|transmission|immunity|vaccin|antibiotic|disease prevention|epidemiology)/.test(text)) return sectionName(asUnits[5]);
+    if (/(cell|tissue|organ|enzyme|dna|protein|heart|cardiac|blood|respir|breath|lung|gas|digest|absorption|intestine|liver|nutrition|diet|malnutrition|food|energy balance)/.test(text)) return sectionName(asUnits[1]);
+  } else {
+    if (/(vision|hearing)/.test(text)) return sectionName(a2Units[3]);
+    if (/(radiotherapy|cancer detection)/.test(text)) return sectionName(a2Units[2]);
+    if (/(cancer biology|causes of cancer)/.test(text)) return sectionName(a2Units[4]);
+    if (doubleAward && /(disorder|disease|cancer type|pathology)/.test(text)) return sectionName(a2Units[7]);
+    if (/(drug effect|chemotherapy)/.test(text)) return sectionName(a2Units[1]);
+  }
+  return 'Supplementary foundation content — not a separate CCEA assessment unit';
+}
+
+function guideLesson(course, unit, order) {
+  const routeNote = /double award/i.test(course.title || '')
+    ? (course.alevel_stage === 'as'
+      ? 'This is one of the six compulsory AS units in the Double Award route.'
+      : unit[0] === 'A2 1' || unit[0] === 'A2 2'
+        ? 'This is a compulsory A2 unit in the Double Award route.'
+        : unit[0] === 'A2 3' || unit[0] === 'A2 4' || unit[0] === 'A2 5'
+          ? 'Double Award learners select two units from A2 3–A2 5.'
+          : 'Double Award learners select two units from A2 6–A2 10.')
+    : (course.alevel_stage === 'as'
+      ? 'This is one of the three compulsory AS units in the Single Award route.'
+      : unit[0] === 'A2 1' || unit[0] === 'A2 2'
+        ? 'This is a compulsory A2 unit in the Single Award route.'
+        : 'Single Award learners select one unit from A2 3–A2 5.');
+  return {
+    course_id: course.id,
+    title: `CCEA Unit ${unit[0]} Guide: ${unit[1]}`,
+    description: `${unit[2]} unit guide for the CCEA GCE Life and Health Sciences (2016) specification.`,
+    section: sectionName(unit),
+    order,
+    learning_objectives: [
+      `Identify the official scope of Unit ${unit[0]}: ${unit[1]}`,
+      'Distinguish compulsory content from optional route choices',
+      'Use the official CCEA specification when planning study and assessment',
+    ],
+    content_type: 'richtext',
+    slides: [{
+      title: `Unit ${unit[0]}: ${unit[1]}`,
+      order: 1,
+      content: `<h2>Official CCEA unit structure</h2><p><strong>${unit[1]}</strong> is classified as <strong>${unit[2].toLowerCase()}</strong> in this course pathway.</p><p>${routeNote}</p><p>This guide organises the course; detailed teaching lessons must remain aligned to the current CCEA specification and assessment guidance.</p>`,
+    }],
+    resources: [{ name: 'Official CCEA Life and Health Sciences specification', url: specificationUrl, type: 'specification' }],
+    is_preview: true,
+    duration_minutes: 15,
+  };
+}
+
+export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
+    if (!user || user.role !== 'admin') return Response.json({ error: 'Admin access required' }, { status: 403 });
 
-    if (!user || user.role !== 'admin') {
-      return Response.json({ error: 'Admin access required' }, { status: 403 });
-    }
-
-    const courses = await base44.asServiceRole.entities.Course.filter({
-      qualification_type: 'alevel',
-      category: 'life_health_sciences'
-    });
-
+    const body = await req.json();
+    const confirm = body.confirm === true;
+    const courses = await base44.asServiceRole.entities.Course.filter({ qualification_type: 'alevel', category: 'life_health_sciences' });
     const results = [];
-    
+
     for (const course of courses) {
-      try {
-        const lessons = course.alevel_stage === 'as' ? getLifeHealthSciencesAS() : getLifeHealthSciencesA2();
-        
-        if (!lessons || lessons.length === 0) {
-          results.push({ course: course.title, status: 'no data' });
-          continue;
+      const units = unitsFor(course);
+      const lessons = await base44.asServiceRole.entities.Lesson.filter({ course_id: course.id }, 'order', 200);
+      const guideTitles = new Set(units.map(unit => `CCEA Unit ${unit[0]} Guide: ${unit[1]}`));
+      const existingGuides = lessons.filter(lesson => guideTitles.has(lesson.title));
+      const teachingLessons = lessons.filter(lesson => !/^CCEA Unit (AS|A2) \d+ Guide:/.test(lesson.title || ''));
+      const missingUnits = units.filter(unit => !existingGuides.some(lesson => lesson.title === `CCEA Unit ${unit[0]} Guide: ${unit[1]}`));
+
+      if (confirm) {
+        if (missingUnits.length) {
+          await base44.asServiceRole.entities.Lesson.bulkCreate(missingUnits.map((unit, index) => guideLesson(course, unit, units.findIndex(item => item[0] === unit[0]) + 1)));
         }
-
-        const existing = await base44.entities.Lesson.filter({ course_id: course.id });
-        if (existing.length > 0) {
-          await Promise.all(existing.map(l => base44.asServiceRole.entities.Lesson.delete(l.id)));
+        if (existingGuides.length) {
+          await base44.asServiceRole.entities.Lesson.bulkUpdate(existingGuides.map(lesson => {
+            const unit = units.find(item => lesson.title === `CCEA Unit ${item[0]} Guide: ${item[1]}`);
+            return { id: lesson.id, section: sectionName(unit), order: units.findIndex(item => item[0] === unit[0]) + 1 };
+          }));
         }
-
-        await base44.entities.Lesson.bulkCreate(lessons.map(l => ({
-          course_id: course.id,
-          title: l.t,
-          description: l.d,
-          section: l.s,
-          order: l.o,
-          learning_objectives: l.obj || [],
-          content_type: 'richtext',
-          slides: [],
-          is_preview: l.o <= 3,
-          duration_minutes: 50
-        })));
-
+        if (teachingLessons.length) {
+          await base44.asServiceRole.entities.Lesson.bulkUpdate(teachingLessons.map((lesson, index) => ({
+            id: lesson.id,
+            section: mappedSection(course, lesson.title),
+            order: units.length + index + 1,
+          })));
+        }
         await base44.asServiceRole.entities.Course.update(course.id, {
-          total_lessons: lessons.length
+          total_lessons: lessons.length + missingUnits.length,
         });
-
-        results.push({ course: course.title, lessons: lessons.length, status: 'success' });
-        await new Promise(r => setTimeout(r, 6000));
-
-      } catch (error) {
-        results.push({ course: course.title, status: 'error', error: error.message });
       }
+
+      results.push({
+        course_id: course.id,
+        course: course.title,
+        pathway: /double award/i.test(course.title || '') ? 'Double Award' : 'Single Award',
+        stage: course.alevel_stage,
+        official_units: units.map(unit => ({ code: unit[0], title: unit[1], status: unit[2] })),
+        preserved_lessons: teachingLessons.length,
+        unit_guides_to_create: missingUnits.length,
+      });
     }
 
-    return Response.json({ success: true, results });
+    return Response.json({ success: true, applied: confirm, courses: results });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
-});
-
-function getLifeHealthSciencesAS() {
-  let o = 1;
-  const lessons = [];
-  
-  // AS1: Human Biology and Health
-  
-  // 1.1 Cells and Tissues (10 lessons)
-  lessons.push(
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Cell Structure', d: 'Animal and plant cell components', obj: ['Identify cell organelles', 'Describe nucleus mitochondria ribosomes', 'Compare animal and plant cells'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Cell Membrane', d: 'Structure and function', obj: ['Describe phospholipid bilayer', 'Explain membrane proteins', 'Understand selective permeability'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Cell Transport', d: 'Movement across membranes', obj: ['Explain diffusion osmosis', 'Describe active transport', 'Understand facilitated diffusion'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Cell Division Mitosis', d: 'Cell reproduction', obj: ['Describe mitosis stages', 'Explain chromosome behavior', 'Understand cell cycle'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Cell Specialization', d: 'Differentiated cells', obj: ['Identify specialized cells', 'Relate structure to function', 'Understand red blood cells neurons epithelial'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Tissue Types', d: 'Organization of cells', obj: ['Describe epithelial tissue', 'Explain connective tissue', 'Understand muscle nervous tissue'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Organs and Systems', d: 'Hierarchical organization', obj: ['Define organs organ systems', 'Understand tissue cooperation', 'Identify major organ systems'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Enzymes', d: 'Biological catalysts', obj: ['Explain enzyme action', 'Understand lock and key model', 'Describe factors affecting enzymes'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'DNA Structure', d: 'Genetic material', obj: ['Describe DNA double helix', 'Explain base pairing', 'Understand nucleotide structure'] },
-    { s: 'AS1: Cells Tissues', o: o++, t: 'Protein Synthesis', d: 'Gene expression', obj: ['Explain transcription process', 'Describe translation', 'Understand mRNA tRNA ribosomes'] }
-  );
-  
-  // 1.2 Circulatory System (8 lessons)
-  lessons.push(
-    { s: 'AS1: Circulatory', o: o++, t: 'Heart Structure', d: 'Anatomy of the heart', obj: ['Identify heart chambers', 'Describe valves and vessels', 'Understand coronary circulation'] },
-    { s: 'AS1: Circulatory', o: o++, t: 'Cardiac Cycle', d: 'Heart pumping action', obj: ['Explain systole and diastole', 'Describe pressure changes', 'Understand valve operation'] },
-    { s: 'AS1: Circulatory', o: o++, t: 'Heart Electrical Activity', d: 'Controlling heartbeat', obj: ['Explain pacemaker function', 'Describe conduction system', 'Understand ECG traces'] },
-    { s: 'AS1: Circulatory', o: o++, t: 'Blood Vessels', d: 'Arteries veins capillaries', obj: ['Compare vessel structures', 'Explain vessel functions', 'Understand capillary exchange'] },
-    { s: 'AS1: Circulatory', o: o++, t: 'Blood Composition', d: 'Components of blood', obj: ['Describe plasma composition', 'Identify blood cells', 'Understand clotting process'] },
-    { s: 'AS1: Circulatory', o: o++, t: 'Blood Pressure', d: 'Measuring circulation pressure', obj: ['Understand systolic diastolic pressure', 'Measure blood pressure', 'Identify hypertension hypotension'] },
-    { s: 'AS1: Circulatory', o: o++, t: 'Cardiovascular Disease', d: 'Heart and vessel disorders', obj: ['Explain atherosclerosis', 'Describe coronary heart disease', 'Understand heart attack stroke'] },
-    { s: 'AS1: Circulatory', o: o++, t: 'CVD Risk Factors', d: 'Causes and prevention', obj: ['Identify modifiable risk factors', 'Understand genetic risk factors', 'Explain prevention strategies'] }
-  );
-  
-  // 1.3 Respiratory System (8 lessons)
-  lessons.push(
-    { s: 'AS1: Respiratory', o: o++, t: 'Respiratory Structure', d: 'Anatomy of breathing system', obj: ['Identify respiratory organs', 'Describe trachea bronchi alveoli', 'Understand lung structure'] },
-    { s: 'AS1: Respiratory', o: o++, t: 'Breathing Mechanism', d: 'Ventilation process', obj: ['Explain inspiration expiration', 'Describe diaphragm intercostal action', 'Understand pressure changes'] },
-    { s: 'AS1: Respiratory', o: o++, t: 'Gas Exchange', d: 'Oxygen and carbon dioxide transfer', obj: ['Explain diffusion at alveoli', 'Describe surface area adaptations', 'Understand partial pressure gradients'] },
-    { s: 'AS1: Respiratory', o: o++, t: 'Lung Volumes', d: 'Measuring breathing capacity', obj: ['Define tidal vital residual volume', 'Measure lung capacity', 'Understand spirometry'] },
-    { s: 'AS1: Respiratory', o: o++, t: 'Gas Transport', d: 'Carrying gases in blood', obj: ['Explain oxygen transport by hemoglobin', 'Describe CO2 transport', 'Understand oxygen dissociation curve'] },
-    { s: 'AS1: Respiratory', o: o++, t: 'Control of Breathing', d: 'Regulating ventilation', obj: ['Explain respiratory center', 'Describe chemoreceptor function', 'Understand CO2 regulation'] },
-    { s: 'AS1: Respiratory', o: o++, t: 'Respiratory Disease', d: 'Lung disorders', obj: ['Explain asthma pathology', 'Describe COPD emphysema', 'Understand lung cancer'] },
-    { s: 'AS1: Respiratory', o: o++, t: 'Smoking Effects', d: 'Impact on respiratory health', obj: ['Identify toxic components', 'Explain disease mechanisms', 'Understand addiction'] }
-  );
-  
-  // 1.4 Digestive System (8 lessons)
-  lessons.push(
-    { s: 'AS1: Digestive', o: o++, t: 'Digestive System Structure', d: 'Alimentary canal organs', obj: ['Identify digestive organs', 'Describe alimentary canal', 'Understand accessory organs'] },
-    { s: 'AS1: Digestive', o: o++, t: 'Digestion in Mouth', d: 'Mechanical and chemical breakdown', obj: ['Explain teeth mastication', 'Describe salivary amylase', 'Understand bolus formation'] },
-    { s: 'AS1: Digestive', o: o++, t: 'Stomach Digestion', d: 'Protein breakdown', obj: ['Explain gastric juice secretion', 'Describe pepsin action', 'Understand acidic environment'] },
-    { s: 'AS1: Digestive', o: o++, t: 'Small Intestine Digestion', d: 'Final breakdown', obj: ['Explain pancreatic enzymes', 'Describe bile function', 'Understand intestinal enzymes'] },
-    { s: 'AS1: Digestive', o: o++, t: 'Absorption', d: 'Nutrient uptake', obj: ['Explain villus structure', 'Describe absorption mechanisms', 'Understand lacteal function'] },
-    { s: 'AS1: Digestive', o: o++, t: 'Large Intestine', d: 'Water reabsorption', obj: ['Explain water absorption', 'Describe bacterial role', 'Understand feces formation'] },
-    { s: 'AS1: Digestive', o: o++, t: 'Liver Function', d: 'Metabolic processing', obj: ['Explain detoxification', 'Describe bile production', 'Understand glycogen storage'] },
-    { s: 'AS1: Digestive', o: o++, t: 'Digestive Disorders', d: 'GI tract diseases', obj: ['Explain ulcers', 'Describe IBS', 'Understand celiac disease'] }
-  );
-  
-  // AS2: Health and Lifestyle
-  
-  // 2.1 Nutrition (8 lessons)
-  lessons.push(
-    { s: 'AS2: Nutrition', o: o++, t: 'Macronutrients', d: 'Carbohydrates proteins fats', obj: ['Explain carbohydrate types', 'Describe protein functions', 'Understand lipid roles'] },
-    { s: 'AS2: Nutrition', o: o++, t: 'Micronutrients', d: 'Vitamins and minerals', obj: ['Identify essential vitamins', 'Describe mineral functions', 'Understand deficiency diseases'] },
-    { s: 'AS2: Nutrition', o: o++, t: 'Balanced Diet', d: 'Meeting nutritional needs', obj: ['Apply dietary guidelines', 'Calculate energy requirements', 'Plan balanced meals'] },
-    { s: 'AS2: Nutrition', o: o++, t: 'Malnutrition', d: 'Over and undernutrition', obj: ['Explain obesity causes', 'Describe undernutrition effects', 'Understand eating disorders'] },
-    { s: 'AS2: Nutrition', o: o++, t: 'Diet and Disease', d: 'Nutrition-related conditions', obj: ['Explain diet-heart disease link', 'Describe diabetes nutrition', 'Understand cancer diet relationship'] },
-    { s: 'AS2: Nutrition', o: o++, t: 'Food Labels', d: 'Interpreting nutritional information', obj: ['Read nutrition labels', 'Calculate percentages', 'Make informed choices'] },
-    { s: 'AS2: Nutrition', o: o++, t: 'Special Diets', d: 'Dietary requirements', obj: ['Understand vegetarian vegan diets', 'Explain food allergies', 'Describe dietary restrictions'] },
-    { s: 'AS2: Nutrition', o: o++, t: 'Energy Balance', d: 'Intake vs expenditure', obj: ['Calculate BMI', 'Understand energy balance', 'Apply weight management'] }
-  );
-  
-  // 2.2 Infectious Disease (10 lessons)
-  lessons.push(
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Pathogens', d: 'Disease-causing organisms', obj: ['Classify bacteria viruses fungi parasites', 'Describe pathogen characteristics', 'Understand transmission routes'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Bacterial Infections', d: 'Bacterial diseases', obj: ['Explain bacterial structure', 'Describe tuberculosis pneumonia', 'Understand antibiotic action'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Viral Infections', d: 'Viral diseases', obj: ['Explain virus structure replication', 'Describe influenza HIV', 'Understand antiviral treatments'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Transmission', d: 'Disease spread', obj: ['Explain direct transmission', 'Describe indirect transmission', 'Understand vectors'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Non-Specific Immunity', d: 'Physical and chemical barriers', obj: ['Explain skin mucous barriers', 'Describe inflammatory response', 'Understand phagocytosis'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Specific Immunity', d: 'Adaptive immune response', obj: ['Explain antibody production', 'Describe cell-mediated immunity', 'Understand lymphocyte function'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Vaccination', d: 'Active artificial immunity', obj: ['Explain vaccination principles', 'Describe vaccine types', 'Understand herd immunity'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Antibiotics', d: 'Treating bacterial infections', obj: ['Explain antibiotic mechanisms', 'Understand antibiotic resistance', 'Apply responsible use'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Disease Prevention', d: 'Reducing infection risk', obj: ['Explain hygiene practices', 'Describe sanitation importance', 'Understand public health measures'] },
-    { s: 'AS2: Infectious Disease', o: o++, t: 'Epidemiology', d: 'Disease patterns', obj: ['Understand epidemic pandemic', 'Analyze disease data', 'Apply prevention strategies'] }
-  );
-  
-  return lessons;
 }
 
 function getLifeHealthSciencesA2() {
