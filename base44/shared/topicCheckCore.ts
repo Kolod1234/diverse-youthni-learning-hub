@@ -23,10 +23,14 @@ export async function topicAccess(base44, user, lesson) {
     const units = { m1_m5: ['M1','M5'], m2_m6: ['M2','M6'], m3_m7: ['M3','M7'], m4_m8: ['M4','M8'] }[enrollments[0]?.math_pathway];
     if (units) earlier = earlier.filter(l => !l.ccea_units?.length || l.ccea_units.some(u => units.includes(u)));
   }
-  // Check each preceding taught topic, rather than trusting client-side completion flags.
-  for (const prior of earlier) {
-    const passes = await base44.asServiceRole.entities.TopicCheckAttempt.filter({ user_id: user.id, lesson_id: prior.id, status: 'submitted', passed: true }, '-created_date', 1);
-    if (!passes.length) return { allowed: false, prerequisite: { id: prior.id, title: prior.title, course_id: prior.course_id } };
+  // Read server-graded passes only; browser completion flags cannot unlock topics.
+  const passedIds = new Set();
+  for (let skip = 0; ; skip += 500) {
+    const passes = await base44.asServiceRole.entities.TopicCheckAttempt.filter({ user_id: user.id, course_id: lesson.course_id, status: 'submitted', passed: true }, 'created_date', 500, skip);
+    passes.forEach(p => passedIds.add(p.lesson_id));
+    if (passes.length < 500) break;
   }
+  const prior = earlier.find(l => !passedIds.has(l.id));
+  if (prior) return { allowed: false, prerequisite: { id: prior.id, title: prior.title, course_id: prior.course_id } };
   return { allowed: true, staff: false };
 }

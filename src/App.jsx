@@ -19,14 +19,15 @@ import KahootAnalytics from './pages/KahootAnalytics';
 import AssetLibrary from './pages/AssetLibrary';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import TopicCheckGate from '@/components/lesson/topicCheck/TopicCheckGate';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
 const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}>{children}</Layout>
-  : <>{children}</>;
+  <Layout currentPageName={currentPageName}><TopicCheckGate page={currentPageName}>{children}</TopicCheckGate></Layout>
+  : <TopicCheckGate page={currentPageName}>{children}</TopicCheckGate>;
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();

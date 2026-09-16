@@ -1,6 +1,7 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { prepareTopicCheck } from '../../shared/topicCheckGeneration.ts';
 
-Deno.serve(async (req) => {
+export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
@@ -9,7 +10,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { lessonId, difficulty = 'intermediate', questionTypes = ['multiple_choice'], keywords = [], generationIndex = 0, previousAngles = [], sessionSeed = 0 } = await req.json();
+    const { lessonId, purpose, difficulty = 'intermediate', questionTypes = ['multiple_choice'], keywords = [], generationIndex = 0, previousAngles = [], sessionSeed = 0 } = await req.json();
 
     // Get lesson details
     let lesson;
@@ -25,6 +26,8 @@ Deno.serve(async (req) => {
     if (!lesson) {
       return Response.json({ error: 'Lesson not found' }, { status: 404 });
     }
+
+    if (purpose === 'topic_check') return Response.json(await prepareTopicCheck(base44, user, lesson));
 
     const learningObjectives = lesson.learning_objectives || [];
     const lessonTitle = lesson.title || '';
@@ -360,4 +363,4 @@ ${prompt}`,
       details: error?.message || 'Unknown generation error'
     }, { status });
   }
-});
+}

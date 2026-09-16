@@ -1051,8 +1051,13 @@ export default function EnhancedLessonPlayer({
   const [showMobileOutline, setShowMobileOutline] = useState(false);
   const [aiQuestion, setAiQuestion] = useState('');
   const [defineTerm, setDefineTerm] = useState('');
-  const [interactiveContent, setInteractiveContent] = useState(null);
-  const [loadingInteractives, setLoadingInteractives] = useState(false);
+  const { data: topicStatus } = useQuery({
+    queryKey: ['topic-check-status', lesson?.id, user?.id],
+    enabled: !!lesson?.id && !!user?.id,
+    queryFn: async () => (await base44.functions.invoke('topicCheck', { action: 'status', lessonId: lesson.id })).data,
+    retry: false,
+  });
+  const topicQuizPassed = topicQuizCompleted || topicStatus?.passed === true;
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [showBadges, setShowBadges] = useState(false);
@@ -1193,7 +1198,7 @@ export default function EnhancedLessonPlayer({
         event.preventDefault();
         if (currentContentSlide < contentSlides.length - 1) {
           setCurrentContentSlide(index => index + 1);
-        } else if (contentSlides.length > 0 && !topicQuizCompleted) {
+        } else if (contentSlides.length > 0 && !topicQuizPassed) {
           setShowTopicQuiz(true);
         } else {
           onNext?.();
@@ -1210,80 +1215,19 @@ export default function EnhancedLessonPlayer({
     };
     window.addEventListener('keydown', handlePageKeys);
     return () => window.removeEventListener('keydown', handlePageKeys);
-  }, [currentContentSlide, contentSlides.length, onNext, onPrev, showTopicQuiz, topicQuizCompleted]);
+  }, [currentContentSlide, contentSlides.length, onNext, onPrev, showTopicQuiz, topicQuizPassed]);
 
   useEffect(() => {
     mainContentRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' });
   }, [currentContentSlide, lesson?.id]);
 
-  // Load one cached topic quiz per lesson. The shared promise prevents duplicate
-  // requests when React re-runs effects in development.
-  useEffect(() => {
-    if (!lesson?.id || courseId === AS_BIOLOGY_COURSE_ID || lesson.course_id === AS_BIOLOGY_COURSE_ID) return;
-
-    let cancelled = false;
-    const cacheKey = `lesson_topic_quiz_${lesson.id}_v3`;
-
-    try {
-      const cached = sessionStorage.getItem(cacheKey);
-      if (cached) {
-        setInteractiveContent(JSON.parse(cached));
-        return;
-      }
-    } catch {
-      try {
-        sessionStorage.removeItem(cacheKey);
-      } catch {
-        // Continue without browser storage.
-      }
-    }
-
-    setLoadingInteractives(true);
-
-    let request = lessonInteractiveRequests.get(cacheKey);
-    if (!request) {
-      request = base44.functions.invoke('generateLessonInteractives', {
-        lessonId: lesson.id,
-        difficulty: 'intermediate',
-        questionTypes: ['multiple_choice'],
-        keywords: lesson.learning_objectives || []
-      }).then(response => {
-        if (!response.data?.success) {
-          throw new Error(response.data?.error || 'Interactive content generation failed');
-        }
-        try {
-          sessionStorage.setItem(cacheKey, JSON.stringify(response.data));
-        } catch {
-          // The lesson still works when browser storage is unavailable.
-        }
-        return response.data;
-      }).finally(() => {
-        lessonInteractiveRequests.delete(cacheKey);
-      });
-      lessonInteractiveRequests.set(cacheKey, request);
-    }
-
-    request.then(content => {
-      if (!cancelled) setInteractiveContent(content);
-    }).catch(err => {
-      if (cancelled) return;
-      console.error('Failed to load interactive content:', err);
-      if (err.response?.status === 429) {
-        toast.error('The quiz service is busy. Please try again shortly.');
-      } else {
-        toast.error('Interactive practice could not be loaded. You can still read the lesson.');
-      }
-    }).finally(() => {
-      if (!cancelled) setLoadingInteractives(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [lesson?.id, lesson?.course_id, courseId]);
+  // Topic checks are prepared on opening, from versioned lesson content.
+  // Grading and pass persistence are handled by the topic-check service.
 
   const markCompleteMutation = useMutation({
     mutationFn: async () => {
+      const { data } = await base44.functions.invoke('topicCheck', { action: 'status', lessonId: lesson.id });
+      if (!data.passed) throw new Error('Pass the topic check with at least 70% before completing this lesson.');
       if (!enrollment) return;
       const completedLessons = enrollment.completed_lessons || [];
       if (!completedLessons.includes(lesson.id)) {
@@ -1310,7 +1254,8 @@ export default function EnhancedLessonPlayer({
       queryClient.invalidateQueries({ queryKey: ['enrollment', courseId] });
       onComplete?.();
       toast.success('Lesson completed!');
-    }
+    },
+    onError: error => { toast.error(error.message); setShowTopicQuiz(true); }
   });
 
   if (!lesson) return null;
@@ -1339,8 +1284,7 @@ export default function EnhancedLessonPlayer({
     lesson?.subject
   ].filter(Boolean).join(' '));
   const isBookmarked = bookmarks.includes(currentPageKey);
-  const topicQuizQuestions = interactiveContent?.quizQuestions || [];
-  const canOpenTopicQuiz = isLastPage && hasPages && topicQuizQuestions.length > 0 && !topicQuizCompleted;
+  const canOpenTopicQuiz = isLastPage && hasPages && !topicQuizPassed;
 
   const closeTools = () => {
     setShowAI(false);
@@ -1367,14 +1311,15 @@ export default function EnhancedLessonPlayer({
   const goToNext = () => {
     if (hasPages && currentContentSlide < contentSlides.length - 1) {
       setCurrentContentSlide(index => index + 1);
-    } else if (hasPages && !topicQuizCompleted) {
+    } else if (hasPages && !topicQuizPassed) {
       setShowTopicQuiz(true);
     } else {
       onNext?.();
     }
   };
 
-  const handleTopicQuizContinue = () => {
+  const handleTopicQuizContinue = (result) => {
+    if (!result?.passed) return;
     setTopicQuizCompleted(true);
     setShowTopicQuiz(false);
     if (nextLesson) onNext?.();
@@ -1894,11 +1839,11 @@ export default function EnhancedLessonPlayer({
       <TopicQuizModal
         open={showTopicQuiz}
         lesson={lesson}
-        questions={topicQuizQuestions}
-        loading={loadingInteractives}
         hasNextTopic={!!nextLesson}
         onClose={() => setShowTopicQuiz(false)}
         onContinue={handleTopicQuizContinue}
+        onRepeat={() => { setCurrentContentSlide(0); setShowTopicQuiz(false); }}
+        onReviewPage={index => { setCurrentContentSlide(index); setShowTopicQuiz(false); }}
       />
 
       {highlightSelection && (
