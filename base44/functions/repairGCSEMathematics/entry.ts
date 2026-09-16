@@ -20,7 +20,7 @@ const lessonSchema = {
             type: 'array', minItems: 8, maxItems: 8,
             items: {
               type: 'object',
-              properties: { title: { type: 'string' }, content: { type: 'string', minLength: 1100 }, order: { type: 'number' } },
+              properties: { title: { type: 'string' }, content: { type: 'string', minLength: 1600 }, order: { type: 'number' } },
               required: ['title', 'content', 'order']
             }
           }
@@ -60,7 +60,7 @@ function generationPrompt(targets) {
 
 Return exactly one chapter for each target, preserving its id. Its ccea_units identify the official assessment units it supports; do not add topics outside the supplied title and unit scope. Completion units are cumulative, but teach the named topic at the appropriate demand. Use British English. Never claim original questions are official examination questions.
 
-Each chapter must have exactly 8 substantive navigation pages and at least 1,800 words in total; every page must contain at least 180 words after HTML is removed: 1 purpose, prerequisites and definitions; 2 core method with micro-steps; 3 representations and reasoning; 4 two complete worked examples; 5 applications and misconceptions; 6 mixed examination-style practice; 7 complete worked answers to every question and subpart; 8 retrieval, checks and pathway links. Define symbols and domains before use. Show substitutions, algebra, conversions, units, signs, restrictions, intermediate calculations, exact and approximate forms, and a check of every result. Explain why each method applies. Use MathJax delimiters $...$ and $$...$$ with stacked fractions. Include at least five complete worked examples overall and at least eight original practice questions with full answers.
+Each chapter must have exactly 8 substantive navigation pages and at least 2,000 words in total; every page must contain at least 220 words after HTML is removed: 1 purpose, prerequisites and definitions; 2 core method with micro-steps; 3 representations and reasoning; 4 two complete worked examples; 5 applications and misconceptions; 6 mixed examination-style practice; 7 complete worked answers to every question and subpart; 8 retrieval, checks and pathway links. Define symbols and domains before use. Show substitutions, algebra, conversions, units, signs, restrictions, intermediate calculations, exact and approximate forms, and a check of every result. Explain why each method applies. Use MathJax delimiters $...$ and $$...$$ with stacked fractions. Include at least five complete worked examples overall and at least eight original practice questions with full answers.
 
 Use clean HTML only: h2, h3, p, ul, ol, table, strong, em, details, summary, and div classes worked-example, method-steps, practice-block, key-rule, notation-note, check-point and answer-block. No markdown, SVG, images, links, scripts, placeholders, filler, or the words clearly, simply, similarly, obviously, or after some work.
 
