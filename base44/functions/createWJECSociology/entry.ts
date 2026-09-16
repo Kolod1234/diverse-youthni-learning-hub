@@ -85,7 +85,7 @@ function courseData(stage) {
 function generationPrompt(stage, selected) {
   return `Create complete textbook-quality lessons for WJEC ${stage.toUpperCase()} Sociology learners aged 16–18. Use ONLY the official scope supplied below and accurate established sociology. The WJEC specification is taught from 2015, version 3 June 2020. It requires contemporary society and reference to Wales where applicable. Politics is obsolete and must not appear as a current Unit 3 option.
 
-For EACH requested lesson, return exactly one lesson with the exact title. Create 7 substantive navigation pages in slides: (1) orientation and prior knowledge; (2) connected explanation of core concepts; (3) mechanisms, processes and causal reasoning; (4) named theoretical perspectives compared fairly; (5) evidence, methods, limitations and Wales/England application where relevant; (6) a complete original worked examination-style task with an annotated model response; (7) original practice questions followed by complete worked/model answers and transparent assessment criteria. Write at least 220 words on every page and at least 1,500 words across each lesson. Each page must contain coherent teaching prose, not bullet-note slides. Define terms before using them, distinguish evidence from interpretation, explain competing arguments and limitations, and avoid deterministic claims. Use accessible HTML only: h2, h3, p, ul, ol, table, strong, em, blockquote, details and summary. Do not include markdown, scripts, SVG, image placeholders, fabricated quotations, invented study findings, or claims that original questions are official WJEC examination questions. British English only.
+For EACH requested lesson, return exactly one lesson with the exact title. Create 7 substantive navigation pages in slides: (1) orientation and prior knowledge; (2) connected explanation of core concepts; (3) mechanisms, processes and causal reasoning; (4) named theoretical perspectives compared fairly; (5) evidence, methods, limitations and Wales/England application where relevant; (6) a complete original worked examination-style task with an annotated model response; (7) original practice questions followed by complete worked/model answers and transparent assessment criteria. Write at least 240 words on every page and at least 1,700 words across each lesson; check the completed word count before returning the response. Each page must contain coherent teaching prose, not bullet-note slides. Define terms before using them, distinguish evidence from interpretation, explain competing arguments and limitations, and avoid deterministic claims. Use accessible HTML only: h2, h3, p, ul, ol, table, strong, em, blockquote, details and summary. Do not include markdown, scripts, SVG, image placeholders, fabricated quotations, invented study findings, or claims that original questions are official WJEC examination questions. British English only.
 
 Requested lessons:\n${selected.map((item, index) => `${index + 1}. SECTION: ${item[0]}\nEXACT TITLE: ${item[1]}\nOFFICIAL SCOPE: ${item[2]}`).join('\n\n')}`;
 }
@@ -107,8 +107,12 @@ export default async function(req) {
     const matches = await base44.asServiceRole.entities.Course.filter({ title });
     const course = matches[0] || await base44.asServiceRole.entities.Course.create(courseData(stage));
     const existing = await base44.asServiceRole.entities.Lesson.filter({ course_id: course.id }, 'order', 100);
-    const missing = selected.filter(item => !existing.some(lesson => lesson.title === item[1]));
-    if (!missing.length) return Response.json({ success: true, course_id: course.id, created: 0, skipped: selected.length });
+    const lessonWordCount = (lesson) => (lesson.slides || []).reduce((sum, slide) => sum + String(slide.content || '').replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length, 0);
+    const missing = selected.filter(item => {
+      const lesson = existing.find(record => record.title === item[1]);
+      return !lesson || (body.repairShallow === true && lessonWordCount(lesson) < 1500);
+    });
+    if (!missing.length) return Response.json({ success: true, course_id: course.id, created: 0, updated: 0, skipped: selected.length });
 
     const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: generationPrompt(stage, missing),
@@ -121,8 +125,10 @@ export default async function(req) {
       const outline = missing[index];
       if (lesson.title !== outline[1] || !Array.isArray(lesson.slides) || lesson.slides.length !== 7) throw new Error(`Lesson validation failed for ${outline[1]}`);
       const wordCount = lesson.slides.reduce((sum, slide) => sum + slide.content.replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length, 0);
-      if (wordCount < 1200) throw new Error(`Lesson is too short for publication: ${outline[1]} (${wordCount} words)`);
+      if (wordCount < 1500) throw new Error(`Lesson is too short for publication: ${outline[1]} (${wordCount} words)`);
+      const existingLesson = existing.find(record => record.title === outline[1]);
       return {
+        ...(existingLesson ? { id: existingLesson.id } : {}),
         course_id: course.id, title: lesson.title, description: lesson.description, learning_objectives: lesson.learning_objectives,
         section: outline[0], order: outlines[stage].findIndex(item => item[1] === outline[1]) + 1,
         content_type: 'richtext', duration_minutes: 90, is_preview: start === 0 && index === 0,
@@ -130,9 +136,12 @@ export default async function(req) {
         slides: lesson.slides.map((slide, slideIndex) => ({ title: slide.title, content: slide.content, order: slideIndex + 1 })),
       };
     });
-    await base44.asServiceRole.entities.Lesson.bulkCreate(records);
+    const updates = records.filter(record => record.id);
+    const creates = records.filter(record => !record.id);
+    if (creates.length) await base44.asServiceRole.entities.Lesson.bulkCreate(creates);
+    if (updates.length) await base44.asServiceRole.entities.Lesson.bulkUpdate(updates);
     await base44.asServiceRole.entities.Course.update(course.id, { total_lessons: outlines[stage].length });
-    return Response.json({ success: true, course_id: course.id, course: title, created: records.length, titles: records.map(record => record.title) });
+    return Response.json({ success: true, course_id: course.id, course: title, created: creates.length, updated: updates.length, titles: records.map(record => record.title) });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
