@@ -76,6 +76,7 @@ import { PERMISSIONS } from '@/components/permissions/permissions';
 import AppUpdateBanner from '@/components/app/AppUpdateBanner';
 import SupportChatWidget from '@/components/support/SupportChatWidget';
 import GlobalSearch from '@/components/search/GlobalSearch';
+import usePastPaperSolverAccess from '@/components/solver/usePastPaperSolverAccess';
 
 // Pages where tutors should NOT be auto-redirected (i.e., tutor-specific pages)
 const TUTOR_PAGES = [
@@ -156,6 +157,7 @@ function LayoutContent({ children, currentPageName }) {
     staleTime: 30000, // 30 seconds
     retry: false,
   });
+  const { canAccess: canAccessPastPaperSolver } = usePastPaperSolverAccess(user);
 
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content'],
@@ -461,10 +463,12 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
                   <ListItemText primary="CCEA Past Papers" />
                 </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('PastPaperSolver')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><BookOpen size={20} color="#4f46e5" /></ListItemIcon>
-                  <ListItemText primary="Past Paper Solver 🧠" />
-                </MenuItem>
+                {canAccessPastPaperSolver && (
+                  <MenuItem component={Link} to={createPageUrl('PastPaperSolver')} onClick={() => setMoreMenuAnchor(null)}>
+                    <ListItemIcon><BookOpen size={20} color="#4f46e5" /></ListItemIcon>
+                    <ListItemText primary="DYNI Past Paper Solver 🧠" />
+                  </MenuItem>
+                )}
                 <MenuItem component={Link} to={createPageUrl('Sessions')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><Video size={20} color="#dc2626" /></ListItemIcon>
                   <ListItemText primary="Live Sessions" />

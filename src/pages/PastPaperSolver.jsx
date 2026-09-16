@@ -25,6 +25,7 @@ import AnswerFeedback from "@/components/solver/AnswerFeedback";
 import StudentExtensionPanel from "@/components/solver/StudentExtensionPanel";
 import SolutionExportButton from "@/components/solver/SolutionExportButton";
 import QuestionSourceImage from "@/components/solver/QuestionSourceImage";
+import SolverAccessGate from "@/components/solver/SolverAccessGate";
 
 const mathJaxConfig = {
   loader: { load: ["[tex]/ams", "input/tex", "output/chtml"] },
@@ -492,6 +493,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
   const hasInput = questionText.trim() || uploadedFile;
 
   return (
+    <SolverAccessGate>
     <MathJaxContext config={mathJaxConfig}>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
 
@@ -500,7 +502,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
           <div className="max-w-4xl mx-auto flex items-center gap-4">
             <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">🧠</div>
             <div>
-              <h1 className="text-2xl font-bold">Past Paper AI Solver</h1>
+              <h1 className="text-2xl font-bold">DYNI Past Paper Solver</h1>
               <p className="text-blue-200 text-sm mt-0.5">Solve text and image questions, draw explanations, test understanding and continue into matching courses</p>
             </div>
           </div>
@@ -836,5 +838,6 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
         </div>
       </div>
     </MathJaxContext>
+    </SolverAccessGate>
   );
 }
