@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
 
 const ageFromDob = (value) => {
   if (!value) return null;
@@ -13,6 +14,7 @@ const ageFromDob = (value) => {
 };
 
 export default function AgeVerificationForm({ user, onComplete }) {
+  const navigate = useNavigate();
   const [name, setName] = useState(user?.full_name || '');
   const [dob, setDob] = useState('');
   const [parentEmail, setParentEmail] = useState('');
@@ -31,7 +33,7 @@ export default function AgeVerificationForm({ user, onComplete }) {
     } finally { setSaving(false); }
   };
   return <div className="fixed inset-0 z-[210] overflow-y-auto bg-background p-4"><form onSubmit={submit} className="mx-auto my-8 w-full max-w-lg rounded-2xl border bg-card p-7 shadow-xl">
-    <h1 className="text-2xl font-bold">Age verification</h1><p className="mt-2 text-sm text-muted-foreground">Students under 18 need consent from a parent or legal guardian.</p>
+    <h1 className="text-2xl font-bold">Age verification</h1><p className="mt-2 text-sm text-muted-foreground">Students under 18 need consent from a parent or legal guardian.</p><Button type="button" variant="outline" className="mt-4 w-full" onClick={() => navigate('/parent-dashboard')}>I am a parent — open parent dashboard</Button>
     <label className="mt-6 block text-sm font-medium">Student name</label><Input value={name} onChange={e => setName(e.target.value)} maxLength={120} required />
     <label className="mt-4 block text-sm font-medium">Date of birth</label><Input type="date" value={dob} onChange={e => setDob(e.target.value)} max={new Date().toISOString().slice(0, 10)} required />
     {under18 && <><label className="mt-4 block text-sm font-medium">Parent or guardian email</label><Input type="email" value={parentEmail} onChange={e => setParentEmail(e.target.value)} required /><p className="mt-2 text-xs text-muted-foreground">They will receive a secure consent link and daily reminders. They have three days to respond.</p></>}

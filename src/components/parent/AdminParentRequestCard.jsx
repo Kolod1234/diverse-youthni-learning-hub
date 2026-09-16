@@ -1,0 +1,6 @@
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+export default function AdminParentRequestCard({ request, learners, onDecide }){
+ const [childId,setChildId]=useState('');
+ return <div className="rounded-2xl border bg-card p-5"><div className="flex flex-wrap justify-between gap-3"><div><h3 className="font-semibold">{request.parent_email}</h3><p className="text-sm text-muted-foreground">Requests access to {request.child_name} ({request.child_email})</p><p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">{request.relationship||'Parent or guardian'} · {request.status}</p></div>{request.status==='pending'&&<div className="flex min-w-72 flex-col gap-2"><select className="h-10 rounded-md border bg-background px-3 text-sm" value={childId} onChange={e=>setChildId(e.target.value)}><option value="">Select verified learner</option>{learners.map(item=><option key={item.id} value={item.id}>{item.name} — {item.email}</option>)}</select><div className="flex gap-2"><Button disabled={!childId} onClick={()=>onDecide(request.id,'approved',childId)}>Approve link</Button><Button variant="outline" onClick={()=>onDecide(request.id,'rejected','')}>Reject</Button></div></div>}</div></div>;
+}

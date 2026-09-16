@@ -1,0 +1,9 @@
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+export default function ParentMessages({ messages, tutors, onSend }) {
+ const recipients=[{email:'info@diverseyouthni.com',name:'Diverse Youth NI Admin'},...(tutors||[])];
+ const [recipient,setRecipient]=useState(recipients[0].email),[content,setContent]=useState(''),[saving,setSaving]=useState(false);
+ const send=async()=>{if(!content.trim())return;setSaving(true);await onSend(recipient,content);setContent('');setSaving(false);};
+ return <div className="grid gap-6 lg:grid-cols-2"><section className="rounded-2xl border bg-card p-6"><h2 className="text-lg font-semibold">Messages</h2><div className="mt-4 max-h-96 space-y-3 overflow-auto">{messages?.length?messages.map(item=><div key={item.id} className="rounded-xl bg-muted p-4"><div className="flex justify-between gap-2 text-sm"><span className="font-medium">{item.sender_name||item.sender_email}</span><span className="text-muted-foreground">{new Date(item.created_date).toLocaleDateString('en-GB')}</span></div><p className="mt-2 text-sm">{item.content}</p></div>):<p className="text-sm text-muted-foreground">No messages yet.</p>}</div></section><section className="rounded-2xl border bg-card p-6"><h2 className="text-lg font-semibold">Contact the team</h2><select className="mt-4 h-10 w-full rounded-md border bg-background px-3 text-sm" value={recipient} onChange={e=>setRecipient(e.target.value)}>{recipients.map(item=><option key={item.email} value={item.email}>{item.name}</option>)}</select><Textarea className="mt-3 min-h-32" value={content} onChange={e=>setContent(e.target.value)} placeholder="Write your message…"/><Button className="mt-3" disabled={saving||!content.trim()} onClick={send}>Send message</Button></section></div>;
+}

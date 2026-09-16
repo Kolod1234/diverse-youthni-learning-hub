@@ -635,6 +635,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
                       <ListItemText primary="Teaching Requests" />
                     </MenuItem>
+                    <MenuItem component={Link} to="/admin-parent-links" onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><UserCheck size={20} color="#0d9488" /></ListItemIcon>
+                      <ListItemText primary="Parent Verification" />
+                    </MenuItem>
                     <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
                       <ListItemText primary="Manage Coordinators" />
@@ -754,6 +758,10 @@ function LayoutContent({ children, currentPageName }) {
                 <MenuItem component={Link} to={createPageUrl('Dashboard')} onClick={() => setUserMenuAnchor(null)}>
                   <ListItemIcon><User size={18} /></ListItemIcon>
                   <ListItemText primary="My Dashboard" />
+                </MenuItem>
+                <MenuItem component={Link} to="/parent-dashboard" onClick={() => setUserMenuAnchor(null)}>
+                  <ListItemIcon><Users size={18} /></ListItemIcon>
+                  <ListItemText primary="Parent Dashboard" />
                 </MenuItem>
                 <MenuItem onClick={() => { navigate(createPageUrl('WelcomeCover'), { state: { forceShow: true } }); setUserMenuAnchor(null); }}>
                   <ListItemIcon><Home size={18} /></ListItemIcon>

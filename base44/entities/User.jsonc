@@ -26,6 +26,14 @@
       "type": "boolean",
       "default": false,
       "description": "If true, this user will not receive inactivity re-engagement emails"
+    },
+    "account_type": {
+      "type": "string",
+      "enum": [
+        "learner",
+        "parent"
+      ],
+      "description": "Optional portal type selected by the user"
     }
   }
 }

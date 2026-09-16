@@ -1,0 +1,7 @@
+import React from 'react';
+import { Progress } from '@/components/ui/progress';
+
+export default function ChildProgressPanel({ child }) {
+  if (!child) return <div className="rounded-2xl border bg-card p-8 text-center text-muted-foreground">Add or link a child to view progress.</div>;
+  return <div className="grid gap-6 lg:grid-cols-2"><section className="rounded-2xl border bg-card p-6"><h2 className="text-lg font-semibold">Course progress</h2><div className="mt-5 space-y-5">{child.course_progress?.length ? child.course_progress.map(course => <div key={course.id}><div className="mb-2 flex justify-between gap-3 text-sm"><span className="font-medium">{course.title}</span><span>{course.percent}%</span></div><Progress value={course.percent}/></div>) : <p className="text-sm text-muted-foreground">No course activity yet.</p>}</div></section><section className="rounded-2xl border bg-card p-6"><h2 className="text-lg font-semibold">Outstanding assignments</h2><div className="mt-4 space-y-3">{child.outstanding_assignments?.length ? child.outstanding_assignments.map(item => <div key={item.id} className="rounded-xl bg-muted p-4"><p className="font-medium">{item.title}</p><p className="mt-1 text-sm text-muted-foreground">Due {item.due_date ? new Date(item.due_date).toLocaleDateString('en-GB') : 'date not set'}</p></div>) : <p className="text-sm text-muted-foreground">Nothing outstanding.</p>}</div></section></div>;
+}

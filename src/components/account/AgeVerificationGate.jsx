@@ -5,7 +5,8 @@ import AgeVerificationForm from './AgeVerificationForm';
 import VerificationSuspended from './VerificationSuspended';
 
 export default function AgeVerificationGate({ user, children }) {
-  const isStudent = user && user.role !== 'admin' && !user.is_tutor && !user.is_coordinator;
+  const isParentPortal = window.location.pathname === '/parent-dashboard';
+  const isStudent = user && !isParentPortal && user.account_type !== 'parent' && user.role !== 'admin' && !user.is_tutor && !user.is_coordinator;
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['age-verification', user?.id],
     queryFn: async () => (await base44.functions.invoke('getAgeVerificationStatus', {})).data,

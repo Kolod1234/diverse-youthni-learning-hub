@@ -1,0 +1,65 @@
+{
+  "name": "ParentCalendarSync",
+  "type": "object",
+  "properties": {
+    "parent_user_id": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "event",
+        "class",
+        "booking"
+      ]
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "google_event_id": {
+      "type": "string"
+    },
+    "synced_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "parent_user_id",
+    "source_type",
+    "source_id",
+    "google_event_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.parent_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.parent_user_id": "{{user.id}}"
+    },
+    "update": {
+      "data.parent_user_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.parent_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

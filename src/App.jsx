@@ -17,6 +17,8 @@ import KahootHost from './pages/KahootHost';
 import KahootPlay from './pages/KahootPlay';
 import KahootAnalytics from './pages/KahootAnalytics';
 import AssetLibrary from './pages/AssetLibrary';
+import ParentDashboard from './pages/ParentDashboard';
+import AdminParentLinks from './pages/AdminParentLinks';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import TopicCheckGate from '@/components/lesson/topicCheck/TopicCheckGate';
@@ -85,6 +87,8 @@ const AuthenticatedApp = () => {
       <Route path="/kahoot-play" element={<LayoutWrapper currentPageName="KahootPlay"><KahootPlay /></LayoutWrapper>} />
       <Route path="/kahoot-analytics" element={<LayoutWrapper currentPageName="KahootAnalytics"><KahootAnalytics /></LayoutWrapper>} />
       <Route path="/asset-library" element={<LayoutWrapper currentPageName="AssetLibrary"><AssetLibrary /></LayoutWrapper>} />
+      <Route path="/parent-dashboard" element={<LayoutWrapper currentPageName="ParentDashboard"><ParentDashboard /></LayoutWrapper>} />
+      <Route path="/admin-parent-links" element={<LayoutWrapper currentPageName="AdminParentLinks"><AdminParentLinks /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </UsernameSetupGate>

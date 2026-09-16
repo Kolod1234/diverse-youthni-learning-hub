@@ -1,0 +1,7 @@
+import React from 'react';
+import { CalendarDays, Video } from 'lucide-react';
+
+export default function ParentSchedule({ schedules }) {
+  const items = [...(schedules?.events || []).map(x => ({ ...x, when: x.date, kind: 'Event' })), ...(schedules?.sessions || []).map(x => ({ ...x, when: x.scheduled_date, kind: 'Class' })), ...(schedules?.bookings || []).map(x => ({ ...x, title: x.subject || x.course_title || 'Tutoring class', when: x.booking_date, kind: 'Class' }))].sort((a,b) => a.when.localeCompare(b.when));
+  return <section className="rounded-2xl border bg-card p-6"><div className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-primary"/><h2 className="text-lg font-semibold">Upcoming events and classes</h2></div><div className="mt-4 divide-y">{items.length ? items.slice(0,12).map(item => <div key={`${item.kind}-${item.id}`} className="flex items-center gap-4 py-4"><div className="rounded-xl bg-primary/10 p-2"><Video className="h-4 w-4 text-primary"/></div><div className="min-w-0 flex-1"><p className="truncate font-medium">{item.title}</p><p className="text-sm text-muted-foreground">{new Date(`${item.when}T12:00:00`).toLocaleDateString('en-GB')} · {item.kind}</p></div></div>) : <p className="py-6 text-sm text-muted-foreground">No upcoming items.</p>}</div></section>;
+}
