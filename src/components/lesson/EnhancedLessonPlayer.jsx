@@ -1227,7 +1227,7 @@ export default function EnhancedLessonPlayer({
   const markCompleteMutation = useMutation({
     mutationFn: async () => {
       const { data } = await base44.functions.invoke('topicCheck', { action: 'status', lessonId: lesson.id });
-      if (!data.passed) throw new Error('Pass the topic check with at least 70% before completing this lesson.');
+      if (lesson.slides?.length && !data.passed) throw new Error('Pass the topic check with at least 70% before completing this lesson.');
       if (!enrollment) return;
       const completedLessons = enrollment.completed_lessons || [];
       if (!completedLessons.includes(lesson.id)) {

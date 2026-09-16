@@ -148,15 +148,15 @@ export default function LessonPlayerClassic() {
     user,
   });
 
-  // Load user XP and update streak (with retry logic and debouncing)
+  // Staff previews must not write learner streaks.
   useEffect(() => {
-    if (!user) return;
+    if (!user || user.role === 'admin' || user.is_tutor) return;
 
     let timeoutId;
     const updateStreak = async (retries = 3) => {
       try {
         const today = new Date().toISOString().split('T')[0];
-        const streaks = await base44.entities.StudyStreak.list();
+        const streaks = await base44.entities.StudyStreak.filter({ created_by_id: user.id });
         const streak = streaks[0];
         
         if (streak) {

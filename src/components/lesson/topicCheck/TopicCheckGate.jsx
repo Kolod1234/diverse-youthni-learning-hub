@@ -8,7 +8,7 @@ const players = new Set(['LessonPlayer', 'LessonPlayerClassic', 'LessonPlayerPow
 export default function TopicCheckGate({ page, children }) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const id = params.get('lesson') || params.get('lessonId');
+  const id = page === 'LessonPlayerRise' ? params.get('lessonId') || params.get('lesson') : params.get('lesson');
   const enabled = players.has(page) && !!id;
   const check = useQuery({ queryKey: ['topic-access', id], enabled, queryFn: async () => (await base44.functions.invoke('topicCheck', { action: 'access', lessonId: id })).data, staleTime: 0, retry: false });
   if (!enabled) return children;
