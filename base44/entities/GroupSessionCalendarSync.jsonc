@@ -1,0 +1,29 @@
+{
+  "name": "GroupSessionCalendarSync",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string",
+      "format": "email"
+    },
+    "google_event_id": {
+      "type": "string"
+    },
+    "synced_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "session_id",
+    "user_id",
+    "user_email",
+    "google_event_id"
+  ]
+}

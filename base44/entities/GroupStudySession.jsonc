@@ -63,6 +63,28 @@
         "cancelled"
       ],
       "default": "scheduled"
+    },
+    "google_calendar_event_id": {
+      "type": "string",
+      "description": "Event ID on the shared organiser calendar"
+    },
+    "calendar_synced_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "calendar_sync_error": {
+      "type": "string"
+    },
+    "email_reminder_recipients": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "email_reminder_sent_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [
