@@ -46,7 +46,7 @@ export default function AppUpdateBanner() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -40 }}
         transition={{ duration: 0.3 }}
-        style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}
+        style={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 9999 }}
       >
         <Box sx={{
           display: 'flex',
