@@ -1098,6 +1098,9 @@ export default function EnhancedLessonPlayer({
     m4_m8: ['M4', 'M8'],
   };
   const selectedMathUnits = mathPathwayUnits[enrollment?.math_pathway] || [];
+  const selectedMathPathwayLabel = selectedMathUnits.length === 2
+    ? `${selectedMathUnits[0]} + ${selectedMathUnits[1]} pathway`
+    : null;
   const hasMappedMathLessons = courseLessons.some(lessonItem => lessonItem.ccea_units?.length > 0);
   const pathwayLessons = course?.requires_math_pathway && enrollment?.math_pathway && hasMappedMathLessons
     ? courseLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => selectedMathUnits.includes(unitCode)))
@@ -1402,6 +1405,11 @@ export default function EnhancedLessonPlayer({
           <span>
             <span className="block text-[11px] uppercase tracking-[0.16em] text-slate-400">CCEA course</span>
             <span className="mt-1 block text-sm font-semibold leading-5 text-white">{course?.title || 'Course'}</span>
+            {selectedMathPathwayLabel && (
+              <span className="mt-2 inline-flex rounded-md border border-orange-400/40 bg-orange-400/10 px-2 py-1 text-[11px] font-bold text-orange-300">
+                {selectedMathPathwayLabel}
+              </span>
+            )}
           </span>
         </button>
         <div className="mb-2 flex items-center justify-between text-xs text-slate-300">
@@ -1444,6 +1452,9 @@ export default function EnhancedLessonPlayer({
                   {filtered.map((item, index) => {
                     const completed = completedIds.includes(item.id);
                     const current = item.id === lesson.id;
+                    const relevantUnitCodes = selectedMathUnits.length > 0
+                      ? (item.ccea_units || []).filter(unitCode => selectedMathUnits.includes(unitCode))
+                      : (item.ccea_units || []);
                     return (
                       <button
                         type="button"
@@ -1456,7 +1467,18 @@ export default function EnhancedLessonPlayer({
                         <span className={'inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold ' + (completed ? 'border-emerald-400 bg-emerald-500 text-white' : current ? 'border-orange-400 text-orange-300' : 'border-slate-600 text-slate-400')}>
                           {completed ? <Check className="h-3.5 w-3.5" /> : index + 1}
                         </span>
-                        <span className="line-clamp-2 flex-1 leading-5">{item.title}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="line-clamp-2 block leading-5">{item.title}</span>
+                          {relevantUnitCodes.length > 0 && (
+                            <span className="mt-1 flex flex-wrap gap-1" aria-label={`CCEA pathway units ${relevantUnitCodes.join(', ')}`}>
+                              {relevantUnitCodes.map(unitCode => (
+                                <span key={unitCode} className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-orange-300">
+                                  {unitCode}
+                                </span>
+                              ))}
+                            </span>
+                          )}
+                        </span>
                       </button>
                     );
                   })}
