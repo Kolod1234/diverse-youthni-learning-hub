@@ -11,11 +11,20 @@ export default async function(req) {
     let websiteConsent = false;
     let photographyConsent = false;
     if (req.method === 'POST') {
-      const form = await req.formData();
-      token = String(form.get('token') || '');
-      decision = String(form.get('decision') || '');
-      websiteConsent = form.get('website_consent') === 'yes';
-      photographyConsent = form.get('photography_consent') === 'yes';
+      const contentType = req.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const payload = await req.json();
+        token = String(payload.token || '');
+        decision = String(payload.decision || '');
+        websiteConsent = payload.website_consent === 'yes';
+        photographyConsent = payload.photography_consent === 'yes';
+      } else {
+        const form = await req.formData();
+        token = String(form.get('token') || '');
+        decision = String(form.get('decision') || '');
+        websiteConsent = form.get('website_consent') === 'yes';
+        photographyConsent = form.get('photography_consent') === 'yes';
+      }
     }
     if (!token) return page('Invalid consent link', '<p>This parental consent link is incomplete.</p>');
     const records = await base44.asServiceRole.entities.StudentVerification.filter({ consent_token: token }, '-created_date', 1);
