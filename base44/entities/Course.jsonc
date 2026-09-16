@@ -44,6 +44,7 @@
       "type": "string",
       "enum": [
         "mathematics",
+        "further_mathematatics",
         "further_mathematics",
         "english_language",
         "english_literature",
@@ -62,6 +63,9 @@
         "government_politics",
         "religious_studies",
         "life_health_sciences",
+        "health_social_care",
+        "psychology",
+        "criminology",
         "sociology",
         "environmental_technology"
       ],
