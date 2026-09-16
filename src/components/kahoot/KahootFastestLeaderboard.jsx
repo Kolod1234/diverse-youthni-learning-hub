@@ -15,7 +15,7 @@ export default function KahootFastestLeaderboard({ game }) {
       .map((player) => {
         const answer = (player.answers || []).find((entry) => entry.question_index === qi);
         return {
-          name: player.name,
+          name: player.username || 'Learner',
           score: player.score || 0,
           is_correct: answer?.is_correct,
           time_taken_ms: answer?.time_taken_ms,

@@ -2,6 +2,21 @@
   "name": "User",
   "type": "object",
   "properties": {
+    "username": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 20,
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "description": "Unique public username shown instead of the user's real name"
+    },
+    "username_normalized": {
+      "type": "string",
+      "description": "Lowercase username used for uniqueness checks"
+    },
+    "username_set_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "last_inactivity_email_at": {
       "type": "string",
       "format": "date-time",

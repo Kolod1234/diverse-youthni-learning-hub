@@ -14,6 +14,11 @@ export default function KahootJoin({ onJoined }) {
   const [joining, setJoining] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
+  const { data: currentUser } = useQuery({
+    queryKey: ['auth-me'],
+    queryFn: () => base44.auth.me(),
+  });
+
   const { data: lobbyGames = [] } = useQuery({
     queryKey: ['kahoot-lobby-games'],
     queryFn: () => base44.entities.KahootGame.filter({ status: 'lobby' }, '-created_date', 100),
@@ -42,21 +47,17 @@ export default function KahootJoin({ onJoined }) {
       return;
     }
     setGame(exactMatch);
+    setName(currentUser?.username || '');
     setStep('name');
     setJoining(false);
   };
 
   const handleJoin = async () => {
-    if (!name.trim()) return;
+    const publicName = currentUser?.username || name.trim();
+    if (!publicName) return;
     setJoining(true);
 
-    let userEmail;
-    try {
-      const me = await base44.auth.me();
-      userEmail = me.email;
-    } catch {
-      userEmail = `guest_${Date.now()}@kahoot.local`;
-    }
+    const userEmail = currentUser?.email || `guest_${Date.now()}@kahoot.local`;
 
     // Check not already joined
     const existing = (game.participants || []).find(p => p.email === userEmail);
@@ -64,7 +65,8 @@ export default function KahootJoin({ onJoined }) {
       const updatedParticipants = [
         ...(game.participants || []),
         {
-          name: name.trim(),
+          name: publicName,
+          username: publicName,
           email: userEmail,
           score: 0,
           coins: 150,
@@ -77,7 +79,7 @@ export default function KahootJoin({ onJoined }) {
       await base44.entities.KahootGame.update(game.id, { participants: updatedParticipants });
     }
 
-    onJoined(game.id, { name: name.trim(), email: userEmail });
+    onJoined(game.id, { name: publicName, email: userEmail });
     setJoining(false);
   };
 
@@ -170,13 +172,14 @@ export default function KahootJoin({ onJoined }) {
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#dbeafe] text-[#1368ce]">
                   <User2 className="h-7 w-7" />
                 </div>
-                <h2 className="text-3xl font-black text-gray-900">What’s your name?</h2>
-                <p className="mt-2 text-sm font-medium text-gray-500">You’ll appear on the live leaderboard</p>
+                <h2 className="text-3xl font-black text-gray-900">Join with your username</h2>
+                <p className="mt-2 text-sm font-medium text-gray-500">Your real name stays private on the live leaderboard</p>
               </div>
               <input
                 className="mb-4 w-full rounded-3xl border-2 border-gray-200 px-5 py-4 text-center text-2xl font-black text-gray-900 focus:border-[#6f4298] focus:outline-none"
-                placeholder="Your name"
+                placeholder="Public username"
                 value={name}
+                readOnly={!!currentUser}
                 autoFocus
                 onChange={e => setName(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && name.trim() && handleJoin()}

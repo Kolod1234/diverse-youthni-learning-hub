@@ -42,8 +42,7 @@ export default function ChallengePlayer() {
       
       return base44.entities.ChallengeParticipant.create({
         challenge_id: challengeId,
-        participant_name: user.full_name,
-        participant_avatar: user.avatar,
+        participant_name: user.username || 'Learner',
         status: 'completed',
         score: data.score,
         time_taken_seconds: timeTaken,

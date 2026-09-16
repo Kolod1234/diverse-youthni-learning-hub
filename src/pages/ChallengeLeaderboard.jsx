@@ -27,12 +27,8 @@ export default function ChallengeLeaderboard() {
   const { data: participants = [] } = useQuery({
     queryKey: ['challenge-participants', challengeId],
     queryFn: async () => {
-      const parts = await base44.entities.ChallengeParticipant.filter(
-        { challenge_id: challengeId, status: 'completed' },
-        '-score',
-        100
-      );
-      return parts.map((p, index) => ({ ...p, rank: index + 1 }));
+      const response = await base44.functions.invoke('publicScoreboardData', { type: 'challenge', scopeId: challengeId });
+      return (response.data.entries || []).map((entry, index) => ({ ...entry, rank: index + 1 }));
     },
     enabled: !!challengeId
   });
@@ -85,11 +81,10 @@ export default function ChallengeLeaderboard() {
                 <div className={`bg-gradient-to-br ${getRankColor(p?.rank)} text-white rounded-lg p-6 mb-2`}>
                   <div className="mb-2">{getRankIcon(p?.rank)}</div>
                   <Avatar className="w-16 h-16 mx-auto mb-2 border-4 border-white">
-                    <AvatarImage src={p?.participant_avatar} />
-                    <AvatarFallback>{p?.participant_name?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{p?.username?.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <p className="font-bold">{p?.participant_name}</p>
-                  <p className="text-2xl font-bold mt-2">{p?.score}</p>
+                  <p className="font-bold">{p?.username}</p>
+                  <p className="text-2xl font-bold mt-2">{p?.points}</p>
                   <p className="text-xs opacity-80">points</p>
                 </div>
               </motion.div>
@@ -120,22 +115,21 @@ export default function ChallengeLeaderboard() {
                 </div>
 
                 <Avatar className="w-10 h-10">
-                  <AvatarImage src={participant.participant_avatar} />
-                  <AvatarFallback>{participant.participant_name?.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{participant.username?.charAt(0) || 'L'}</AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1">
-                  <p className="font-semibold">{participant.participant_name}</p>
+                  <p className="font-semibold">{participant.username}</p>
                   <div className="flex items-center gap-3 text-xs opacity-80">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      {Math.floor(participant.time_taken_seconds / 60)}:{String(participant.time_taken_seconds % 60).padStart(2, '0')}
+                      {Math.floor(participant.time / 60)}:{String(participant.time % 60).padStart(2, '0')}
                     </span>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <p className="text-2xl font-bold">{participant.score}</p>
+                  <p className="text-2xl font-bold">{participant.points}</p>
                   <p className="text-xs opacity-80">points</p>
                 </div>
               </motion.div>

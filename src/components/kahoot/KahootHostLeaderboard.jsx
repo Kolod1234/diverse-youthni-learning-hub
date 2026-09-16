@@ -23,7 +23,7 @@ export default function KahootHostLeaderboard({ game, onNext, isLast }) {
             style={{ backgroundColor: i === 0 ? '#fbbf24' : i === 1 ? '#d1d5db' : i === 2 ? '#cd7c39' : 'rgba(255,255,255,0.15)' }}
           >
             <span className="text-2xl">{MEDALS[i] || `#${i + 1}`}</span>
-            <span className={`flex-1 font-black text-lg ${i < 3 ? 'text-gray-900' : 'text-white'}`}>{p.name}</span>
+            <span className={`flex-1 font-black text-lg ${i < 3 ? 'text-gray-900' : 'text-white'}`}>{p.username || 'Learner'}</span>
             <span className={`font-black text-xl ${i < 3 ? 'text-gray-800' : 'text-white'}`}>{p.score || 0}</span>
           </div>
         ))}

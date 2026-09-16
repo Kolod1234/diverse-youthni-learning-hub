@@ -113,6 +113,10 @@
           "name": {
             "type": "string"
           },
+          "username": {
+            "type": "string",
+            "description": "Public username displayed on live scoreboards"
+          },
           "email": {
             "type": "string"
           },

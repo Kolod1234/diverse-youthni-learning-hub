@@ -20,6 +20,7 @@ import AssetLibrary from './pages/AssetLibrary';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import TopicCheckGate from '@/components/lesson/topicCheck/TopicCheckGate';
+import UsernameSetupGate from '@/components/account/UsernameSetupGate';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -30,7 +31,7 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   : <TopicCheckGate page={currentPageName}>{children}</TopicCheckGate>;
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { user, isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, checkAppState } = useAuth();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -54,6 +55,7 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <UsernameSetupGate user={user} refreshUser={checkAppState}>
     <Routes>
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
@@ -83,6 +85,7 @@ const AuthenticatedApp = () => {
       <Route path="/asset-library" element={<LayoutWrapper currentPageName="AssetLibrary"><AssetLibrary /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </UsernameSetupGate>
   );
 };
 

@@ -32,7 +32,7 @@ export default function KahootLobby({ game, isHost, onStart }) {
         <div className="flex flex-wrap gap-2 justify-center mb-6">
           {participants.map((p, i) => (
             <div key={i} className="bg-white/20 text-white px-4 py-2 rounded-xl font-semibold text-sm">
-              {p.name}
+              {p.username || 'Learner'}
             </div>
           ))}
         </div>

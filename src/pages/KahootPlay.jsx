@@ -199,7 +199,7 @@ export default function KahootPlay() {
           <div className="mt-8 w-full max-w-xl space-y-3 rounded-[36px] bg-white/14 p-5 shadow-2xl backdrop-blur-md md:p-6">
             {sorted.slice(0, 5).map((p, i) => (
               <div key={p.email} className={`flex items-center justify-between rounded-3xl px-5 py-4 font-bold shadow-lg ${p.email === playerInfo.email ? 'bg-yellow-400 text-yellow-900' : 'bg-white/14 text-white'}`}>
-                <span>#{i + 1} {p.name}</span>
+                <span>#{i + 1} {p.username || 'Learner'}</span>
                 <span>{p.score || 0} pts</span>
               </div>
             ))}

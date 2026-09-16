@@ -11,18 +11,8 @@ export default function Leaderboard({ limit = 10 }) {
   const { data: leaderboard = [], isLoading } = useQuery({
     queryKey: ['leaderboard', limit],
     queryFn: async () => {
-      const allProgress = await base44.entities.UserProgress.list('-points', limit);
-      const users = await base44.entities.User.list('id', 1000);
-      const userMap = users.reduce((acc, user) => {
-        acc[user.email] = user;
-        return acc;
-      }, {});
-
-      return allProgress.map((progress, index) => ({
-        ...progress,
-        rank: index + 1,
-        user: userMap[progress.created_by] || { full_name: 'Anonymous', email: progress.created_by }
-      }));
+      const response = await base44.functions.invoke('publicScoreboardData', { type: 'points', limit });
+      return (response.data.entries || []).map((entry, index) => ({ ...entry, rank: index + 1 }));
     }
   });
 
@@ -68,24 +58,21 @@ export default function Leaderboard({ limit = 10 }) {
                 {entry.rank > 3 && <Typography variant="h6" fontWeight={700} sx={{ color: '#9ca3af' }}>#{entry.rank}</Typography>}
               </Box>
 
-              <Avatar
-                src={entry.user.avatar}
-                sx={{ width: 48, height: 48, bgcolor: highlight ? 'rgba(255,255,255,0.2)' : '#e5e7eb', color: highlight ? 'white' : '#374151' }}
-              >
-                {(entry.user.full_name || 'U').charAt(0)}
+              <Avatar sx={{ width: 48, height: 48, bgcolor: highlight ? 'rgba(255,255,255,0.2)' : '#e5e7eb', color: highlight ? 'white' : '#374151' }}>
+                {(entry.username || 'L').charAt(0)}
               </Avatar>
 
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography fontWeight={600} noWrap>{entry.user.full_name || 'Anonymous'}</Typography>
+                <Typography fontWeight={600} noWrap>{entry.username || 'Learner'}</Typography>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography variant="caption" sx={{ opacity: highlight ? 0.9 : 1, color: highlight ? 'inherit' : 'text.secondary' }}>
                     Level {entry.level || 1}
                   </Typography>
-                  {entry.streak_days > 0 && (
+                  {entry.streak > 0 && (
                     <>
                       <Typography variant="caption">•</Typography>
                       <Typography variant="caption" sx={{ opacity: highlight ? 0.9 : 1, color: highlight ? 'inherit' : '#ea580c' }}>
-                        🔥 {entry.streak_days} day streak
+                        🔥 {entry.streak} day streak
                       </Typography>
                     </>
                   )}

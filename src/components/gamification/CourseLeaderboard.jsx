@@ -11,45 +11,14 @@ import { motion } from 'framer-motion';
 export default function CourseLeaderboard({ courseId }) {
   const [timeRange, setTimeRange] = useState('all-time');
 
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ['course-enrollments', courseId],
-    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId }, '-progress_percent', 100),
+  const { data: leaderboardData = [] } = useQuery({
+    queryKey: ['public-course-scoreboard', courseId],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('publicScoreboardData', { type: 'course', scopeId: courseId });
+      return response.data.entries || [];
+    },
     enabled: !!courseId,
   });
-
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list('-created_date', 500),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: userProgress = [] } = useQuery({
-    queryKey: ['user-progress-list'],
-    queryFn: () => base44.entities.UserProgress.list('-points', 100),
-  });
-
-  const leaderboardData = enrollments
-    .map(enrollment => {
-      const user = users.find(u => u.email === enrollment.created_by);
-      const progress = userProgress.find(p => p.created_by === enrollment.created_by);
-      
-      // Get name from enrollment.created_by if user not found
-      let displayName = user?.full_name || 'Unknown';
-      if (displayName === 'Unknown' && enrollment.created_by) {
-        // Extract name from email (before @)
-        displayName = enrollment.created_by.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-      }
-      
-      return {
-        ...enrollment,
-        name: displayName,
-        avatar: user?.avatar,
-        points: progress?.points || 0,
-        streak: progress?.streak_days || 0,
-        level: progress?.level || 1,
-      };
-    })
-    .sort((a, b) => b.progress_percent - a.progress_percent);
 
   const getRankIcon = (rank) => {
     if (rank === 1) return <Trophy className="w-5 h-5 text-yellow-500" />;
@@ -108,24 +77,20 @@ export default function CourseLeaderboard({ courseId }) {
                       </div>
                       
                       <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                        {entry.avatar ? (
-                          <img src={entry.avatar} alt={entry.name} className="w-10 h-10 rounded-full object-cover" />
-                        ) : (
-                          <span className="text-indigo-600 font-semibold">{entry.name?.charAt(0)}</span>
-                        )}
+                        <span className="text-indigo-600 font-semibold">{entry.username?.charAt(0) || 'L'}</span>
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 truncate">{entry.name}</p>
+                        <p className="font-semibold text-gray-900 truncate">{entry.username}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <div className="flex-1 bg-gray-200 rounded-full h-1.5">
                             <div 
                               className="bg-indigo-600 h-1.5 rounded-full" 
-                              style={{ width: `${entry.progress_percent}%` }}
+                              style={{ width: `${entry.progress}%` }}
                             />
                           </div>
                           <span className="text-xs text-gray-500 w-10 text-right">
-                            {entry.progress_percent}%
+                            {entry.progress}%
                           </span>
                         </div>
                       </div>
@@ -154,15 +119,11 @@ export default function CourseLeaderboard({ courseId }) {
                       </div>
                       
                       <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                        {entry.avatar ? (
-                          <img src={entry.avatar} alt={entry.name} className="w-10 h-10 rounded-full object-cover" />
-                        ) : (
-                          <span className="text-indigo-600 font-semibold">{entry.name?.charAt(0)}</span>
-                        )}
+                        <span className="text-indigo-600 font-semibold">{entry.username?.charAt(0) || 'L'}</span>
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 truncate">{entry.name}</p>
+                        <p className="font-semibold text-gray-900 truncate">{entry.username}</p>
                         <p className="text-xs text-gray-500">Level {entry.level}</p>
                       </div>
 
@@ -195,16 +156,12 @@ export default function CourseLeaderboard({ courseId }) {
                       </div>
                       
                       <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                        {entry.avatar ? (
-                          <img src={entry.avatar} alt={entry.name} className="w-10 h-10 rounded-full object-cover" />
-                        ) : (
-                          <span className="text-indigo-600 font-semibold">{entry.name?.charAt(0)}</span>
-                        )}
+                        <span className="text-indigo-600 font-semibold">{entry.username?.charAt(0) || 'L'}</span>
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 truncate">{entry.name}</p>
-                        <p className="text-xs text-gray-500">{entry.progress_percent}% complete</p>
+                        <p className="font-semibold text-gray-900 truncate">{entry.username}</p>
+                        <p className="text-xs text-gray-500">{entry.progress}% complete</p>
                       </div>
 
                       <div className="text-right flex items-center gap-2">

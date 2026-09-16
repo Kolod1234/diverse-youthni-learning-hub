@@ -36,7 +36,7 @@ export default function KahootFinished({ game, isHost, playerInfo, onClose }) {
                 }`}
               >
                 <span className="text-2xl">{MEDALS[i] || `#${i + 1}`}</span>
-                <span className="flex-1 font-black text-lg">{p.name}</span>
+                <span className="flex-1 font-black text-lg">{p.username || 'Learner'}</span>
                 <div className="text-right">
                   <span className="font-black text-xl">{p.score || 0}</span>
                   <span className="text-xs opacity-70 ml-1">pts</span>

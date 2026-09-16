@@ -7,30 +7,13 @@ import { Trophy, Medal, Zap, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function GroupLeaderboard({ groupId }) {
-  const { data: members = [] } = useQuery({
-    queryKey: ['group-members', groupId],
-    queryFn: () => base44.entities.StudyGroupMember.filter({ group_id: groupId, status: 'active' })
-  });
-
   const { data: leaderboard = [] } = useQuery({
-    queryKey: ['group-leaderboard', groupId],
+    queryKey: ['public-group-scoreboard', groupId],
     queryFn: async () => {
-      // Get XP for each member
-      const memberEmails = members.map(m => m.member_email);
-      const streaks = await base44.entities.StudyStreak.list();
-      
-      const leaderboardData = members.map(member => {
-        const streak = streaks.find(s => s.created_by === member.member_email);
-        return {
-          ...member,
-          xp: streak?.total_xp || 0,
-          streak: streak?.current_streak || 0
-        };
-      });
-
-      return leaderboardData.sort((a, b) => b.xp - a.xp).map((m, i) => ({ ...m, rank: i + 1 }));
+      const response = await base44.functions.invoke('publicScoreboardData', { type: 'group', scopeId: groupId });
+      return (response.data.entries || []).map((entry, index) => ({ ...entry, rank: index + 1 }));
     },
-    enabled: members.length > 0
+    enabled: !!groupId
   });
 
   const getRankIcon = (rank) => {
@@ -63,19 +46,18 @@ export default function GroupLeaderboard({ groupId }) {
             </div>
 
             <Avatar className="w-10 h-10">
-              <AvatarImage src={member.member_avatar} />
-              <AvatarFallback>{member.member_name?.charAt(0)}</AvatarFallback>
+              <AvatarFallback>{member.username?.charAt(0) || 'L'}</AvatarFallback>
             </Avatar>
 
             <div className="flex-1">
-              <p className="font-semibold">{member.member_name}</p>
+              <p className="font-semibold">{member.username}</p>
               <div className="flex items-center gap-2 text-xs text-gray-600">
                 <span>🔥 {member.streak} day streak</span>
               </div>
             </div>
 
             <div className="text-right">
-              <p className="font-bold text-blue-600">{member.xp}</p>
+              <p className="font-bold text-blue-600">{member.points}</p>
               <p className="text-xs text-gray-500">XP</p>
             </div>
           </motion.div>
