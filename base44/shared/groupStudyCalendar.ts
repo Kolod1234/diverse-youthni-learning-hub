@@ -12,14 +12,15 @@ export function groupSessionEvent(session) {
 }
 
 export async function saveGoogleEvent(accessToken, session, eventId) {
-  const url = eventId
-    ? `https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(eventId)}`
-    : "https://www.googleapis.com/calendar/v3/calendars/primary/events";
-  const response = await fetch(url, {
-    method: eventId ? "PUT" : "POST",
+  const save = (id) => fetch(id
+    ? `https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(id)}`
+    : "https://www.googleapis.com/calendar/v3/calendars/primary/events", {
+    method: id ? "PUT" : "POST",
     headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
     body: JSON.stringify(groupSessionEvent(session))
   });
+  let response = await save(eventId);
+  if (eventId && (response.status === 404 || response.status === 410)) response = await save(null);
   if (!response.ok) throw new Error(`Google Calendar sync failed (${response.status})`);
   return await response.json();
 }

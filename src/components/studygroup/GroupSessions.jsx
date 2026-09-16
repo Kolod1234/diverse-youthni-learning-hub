@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Users, Plus, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
+import GroupCalendarSyncCard from '@/components/studygroup/GroupCalendarSyncCard';
 
 export default function GroupSessions({ groupId }) {
   const [showCreate, setShowCreate] = useState(false);
@@ -39,9 +40,10 @@ export default function GroupSessions({ groupId }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['group-sessions', groupId]);
+      base44.functions.invoke('syncMyGroupStudySessions', {}).catch(() => {});
       setShowCreate(false);
       setSession({ title: '', description: '', scheduled_time: '', duration_minutes: 60 });
-      toast.success('Session scheduled!');
+      toast.success('Session scheduled and calendar sync started!');
     }
   });
 
@@ -62,6 +64,7 @@ export default function GroupSessions({ groupId }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['group-sessions', groupId]);
+      base44.functions.invoke('syncMyGroupStudySessions', {}).catch(() => {});
       toast.success('Response updated!');
     }
   });
@@ -76,6 +79,7 @@ export default function GroupSessions({ groupId }) {
 
   return (
     <div className="space-y-4">
+      <GroupCalendarSyncCard />
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-bold">Study Sessions</h3>
         <Dialog open={showCreate} onOpenChange={setShowCreate}>
