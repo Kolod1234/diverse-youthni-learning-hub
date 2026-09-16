@@ -24,6 +24,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import TopicCheckGate from '@/components/lesson/topicCheck/TopicCheckGate';
 import UsernameSetupGate from '@/components/account/UsernameSetupGate';
 import AgeVerificationGate from '@/components/account/AgeVerificationGate';
+import AccountAccessGate from '@/components/account/AccountAccessGate';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -58,6 +59,7 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <AccountAccessGate user={user} refreshUser={checkAppState}>
     <AgeVerificationGate user={user}>
     <UsernameSetupGate user={user} refreshUser={checkAppState}>
     <Routes>
@@ -93,6 +95,7 @@ const AuthenticatedApp = () => {
     </Routes>
     </UsernameSetupGate>
     </AgeVerificationGate>
+    </AccountAccessGate>
   );
 };
 

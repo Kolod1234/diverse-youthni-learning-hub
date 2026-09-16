@@ -14,6 +14,7 @@ import {
 import { motion } from 'framer-motion';
 import TutorGoogleConnect from '@/components/tutor/TutorGoogleConnect';
 import { classifySessions, getTodayActiveSessions } from '@/components/tutor/sessionClassifier';
+import TutorSafeguardingReminder from '@/components/compliance/TutorSafeguardingReminder';
 
 
 export default function TutorDashboardOverview() {
@@ -148,6 +149,7 @@ export default function TutorDashboardOverview() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <TutorSafeguardingReminder />
       {/* Hero Header */}
       <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

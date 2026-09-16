@@ -9,7 +9,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const { email, data } = await req.json();
+    const { email, data, action } = await req.json();
+    if (action === 'health') return Response.json({ ok: true });
 
     if (!email || !data) {
       return Response.json({ error: 'email and data are required' }, { status: 400 });
@@ -18,6 +19,9 @@ Deno.serve(async (req) => {
     const users = await base44.asServiceRole.entities.User.filter({ email });
     if (users.length === 0) {
       return Response.json({ error: 'User not found' }, { status: 404 });
+    }
+    if (Object.prototype.hasOwnProperty.call(data, 'account_banned') && users[0].role === 'admin') {
+      return Response.json({ error: 'Administrator accounts cannot be banned here' }, { status: 400 });
     }
 
     const updated = await base44.asServiceRole.entities.User.update(users[0].id, data);

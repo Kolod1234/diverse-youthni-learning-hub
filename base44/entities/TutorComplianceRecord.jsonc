@@ -1,0 +1,83 @@
+{
+  "name": "TutorComplianceRecord",
+  "type": "object",
+  "properties": {
+    "tutor_user_id": {
+      "type": "string"
+    },
+    "tutor_email": {
+      "type": "string",
+      "format": "email"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "next_due_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "safeguarding_understood": {
+      "type": "boolean"
+    },
+    "online_safety_understood": {
+      "type": "boolean"
+    },
+    "has_issues": {
+      "type": "boolean"
+    },
+    "issues_details": {
+      "type": "string"
+    },
+    "happy_with_subjects": {
+      "type": "boolean"
+    },
+    "course_change_request": {
+      "type": "string"
+    },
+    "declaration": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "tutor_user_id",
+    "tutor_email",
+    "completed_at",
+    "next_due_at",
+    "safeguarding_understood",
+    "online_safety_understood",
+    "has_issues",
+    "happy_with_subjects",
+    "declaration"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.tutor_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

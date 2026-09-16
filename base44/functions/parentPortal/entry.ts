@@ -17,9 +17,14 @@ export default async function(req) {
     }
     if (!context.profile) return Response.json({ needs_setup: true, children: [], links: [], managed_children: [], messages: [], notifications: [], tutors: [], schedules: { events: [], sessions: [], bookings: [] } });
     if (action === 'managed_child') {
-      if (!body.child_name?.trim() || !body.date_of_birth) return Response.json({ error: 'Child name and date of birth are required' }, { status: 400 });
-      const child = await base44.asServiceRole.entities.ParentManagedChild.create({ parent_user_id: user.id, parent_email: user.email, child_name: body.child_name.trim(), date_of_birth: body.date_of_birth, notes: body.notes || '' });
+      const required = ['child_name', 'gender', 'date_of_birth', 'city', 'country', 'state_county', 'emergency_contact_details'];
+      if (required.some((field) => !String(body[field] || '').trim())) return Response.json({ error: 'Complete all required child registration fields.' }, { status: 400 });
+      const child = await base44.asServiceRole.entities.ParentManagedChild.create({ parent_user_id: user.id, parent_email: user.email, child_name: body.child_name.trim(), gender: body.gender, date_of_birth: body.date_of_birth, city: body.city.trim(), country: body.country.trim(), state_county: body.state_county.trim(), allergy_report: body.allergy_report?.trim() || '', has_medical_condition: !!body.has_medical_condition, medical_condition_details: body.medical_condition_details?.trim() || '', gp_contact_details: body.gp_contact_details?.trim() || '', emergency_contact_details: body.emergency_contact_details.trim(), medication_history: body.medication_history?.trim() || '', disability_report: body.disability_report?.trim() || '', photography_consent: !!body.photography_consent, online_data_consent: !!body.online_data_consent, registration_status: 'registered_pending_admin', safeguarding_notice_shown_at: new Date().toISOString() });
       return Response.json({ child });
+    }
+    if (action === 'safeguarding_request') {
+      const message = await base44.asServiceRole.entities.Message.create({ sender_email: user.email, sender_name: user.full_name || 'Parent', recipient_email: 'info@diverseyouthni.com', content: 'Please send me the current safeguarding reporting procedure and online safety regulations.', message_type: 'text' });
+      return Response.json({ message });
     }
     if (action === 'invite_child') {
       const email = body.child_email?.trim().toLowerCase();

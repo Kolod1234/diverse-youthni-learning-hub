@@ -1,11 +1,6 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-const empty={child_name:'',child_email:'',date_of_birth:'',relationship:'Parent or guardian'};
-export default function ParentChildForms({ onAction }) {
- const [form,setForm]=useState(empty),[saving,setSaving]=useState(false),[message,setMessage]=useState('');
- const submit=async(action)=>{setSaving(true);setMessage('');try{await onAction(action,form);setForm(empty);setMessage(action==='invite_child'?'Invitation sent.':'Saved successfully.');}catch(e){setMessage(e.response?.data?.error||e.message);}finally{setSaving(false);}};
- const field=(key,placeholder,type='text')=><Input type={type} placeholder={placeholder} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})}/>;
- return <section className="rounded-2xl border bg-card p-6"><h2 className="text-lg font-semibold">Add or connect a child</h2><Tabs defaultValue="invite" className="mt-4"><TabsList className="grid w-full grid-cols-3"><TabsTrigger value="invite">Invite</TabsTrigger><TabsTrigger value="managed">Managed profile</TabsTrigger><TabsTrigger value="existing">Existing account</TabsTrigger></TabsList><TabsContent value="invite" className="space-y-3 pt-3">{field('child_name','Child’s full name')}{field('child_email','Child’s email','email')}<Button disabled={saving} onClick={()=>submit('invite_child')}>Invite child</Button></TabsContent><TabsContent value="managed" className="space-y-3 pt-3">{field('child_name','Child’s full name')}{field('date_of_birth','Date of birth','date')}<Button disabled={saving} onClick={()=>submit('managed_child')}>Create managed profile</Button></TabsContent><TabsContent value="existing" className="space-y-3 pt-3">{field('child_name','Child’s full name')}{field('child_email','Email used on their account','email')}<p className="text-sm text-muted-foreground">For safeguarding verification, contact info@diverseyouthni.com, 028 9013 8615 (Office), or +44 7555 009784 (Safeguarding Lead).</p><Button disabled={saving} onClick={()=>submit('request_link')}>Send verification request</Button></TabsContent></Tabs>{message&&<p className="mt-3 text-sm">{message}</p>}</section>;
+import React from 'react';
+import ChildRegistrationForm from '@/components/parent/ChildRegistrationForm';
+export default function ParentChildForms({ onAction, onRegistered }) {
+ const register=async(form)=>{const result=await onAction('managed_child',form);onRegistered?.(result?.child);};
+ return <section className="rounded-2xl border bg-card p-6"><h2 className="text-lg font-semibold">Add your child</h2><p className="mt-1 text-sm text-muted-foreground">Register the child’s information. An administrator can create their login later.</p><ChildRegistrationForm onSubmit={register}/></section>;
 }

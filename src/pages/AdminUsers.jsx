@@ -52,6 +52,12 @@ export default function AdminUsers() {
     },
   });
 
+  const banMutation = useMutation({
+    mutationFn: ({ user, banned }) => base44.functions.invoke('adminUpdateUser', { email: user.email, data: { account_banned: banned, ban_reason: banned ? 'Your account has been restricted by an administrator.' : '', ...(banned ? { banned_at: new Date().toISOString() } : {}) } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['all-users'] }),
+    onError: (error) => alert(`Unable to update access: ${error.response?.data?.error || error.message}`),
+  });
+
   const sendEmailMutation = useMutation({
     mutationFn: async (data) => {
       await base44.integrations.Core.SendEmail({
@@ -294,6 +300,7 @@ export default function AdminUsers() {
                         <Box sx={{ display: 'flex', gap: 0.5 }}>
                           {user.is_tutor && <Chip label="Tutor" size="small" variant="outlined" />}
                           {user.is_coordinator && <Chip label="Coordinator" size="small" variant="outlined" />}
+                          {user.account_banned && <Chip label="Banned" size="small" color="error" />}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
@@ -307,6 +314,7 @@ export default function AdminUsers() {
                           >
                             View Profile
                           </Button>
+                          {user.role !== 'admin' && <Button size="small" color={user.account_banned ? 'success' : 'error'} variant="outlined" onClick={() => { if (window.confirm(`${user.account_banned ? 'Restore' : 'Restrict'} access for ${user.full_name || user.email}?`)) banMutation.mutate({ user, banned: !user.account_banned }); }}>{user.account_banned ? 'Unban' : 'Ban'}</Button>}
                           <IconButton size="small" onClick={() => setMessageUser(user)} sx={{ border: 1, borderColor: 'divider' }}>
                             <SendIcon sx={{ fontSize: 16 }} />
                           </IconButton>

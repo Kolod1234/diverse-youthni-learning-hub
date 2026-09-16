@@ -34,6 +34,31 @@
         "parent"
       ],
       "description": "Optional portal type selected by the user"
+    },
+    "account_banned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Administrative account restriction"
+    },
+    "ban_reason": {
+      "type": "string",
+      "description": "Reason shown to the restricted user"
+    },
+    "banned_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tutor_compliance_due_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tutor_compliance_last_completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tutor_compliance_notice_for_due": {
+      "type": "string",
+      "format": "date-time"
     }
   }
 }

@@ -21,11 +21,12 @@ export default async function(req) {
       }
       await base44.asServiceRole.entities.Notification.create({ recipient_email: request.parent_email, title: `Child link ${body.decision}`, message: body.decision === 'approved' ? `Access to ${request.child_name}'s learning report is now available.` : 'Your parent-child link request could not be approved. Please contact the safeguarding team.', type: 'general', action_url: '/parent-dashboard', sent_by: user.email });
     }
-    const [requests, users] = await Promise.all([
+    const [requests, users, registeredChildren] = await Promise.all([
       base44.asServiceRole.entities.ParentChildLink.list('-created_date', 500),
-      base44.asServiceRole.entities.User.list('-created_date', 1000)
+      base44.asServiceRole.entities.User.list('-created_date', 1000),
+      base44.asServiceRole.entities.ParentManagedChild.list('-created_date', 500)
     ]);
-    return Response.json({ requests, learners: users.filter((item) => item.role !== 'admin' && !item.is_tutor && item.account_type !== 'parent').map((item) => ({ id: item.id, email: item.email, name: item.full_name || item.email })) });
+    return Response.json({ requests, registered_children: registeredChildren, learners: users.filter((item) => item.role !== 'admin' && !item.is_tutor && item.account_type !== 'parent').map((item) => ({ id: item.id, email: item.email, name: item.full_name || item.email })) });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

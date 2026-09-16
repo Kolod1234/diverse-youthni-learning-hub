@@ -12,19 +12,74 @@
     "child_name": {
       "type": "string"
     },
+    "gender": {
+      "type": "string"
+    },
     "date_of_birth": {
       "type": "string",
       "format": "date"
     },
-    "notes": {
+    "city": {
       "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "state_county": {
+      "type": "string"
+    },
+    "allergy_report": {
+      "type": "string"
+    },
+    "has_medical_condition": {
+      "type": "boolean"
+    },
+    "medical_condition_details": {
+      "type": "string"
+    },
+    "gp_contact_details": {
+      "type": "string"
+    },
+    "emergency_contact_details": {
+      "type": "string"
+    },
+    "medication_history": {
+      "type": "string"
+    },
+    "disability_report": {
+      "type": "string"
+    },
+    "photography_consent": {
+      "type": "boolean",
+      "default": false
+    },
+    "online_data_consent": {
+      "type": "boolean",
+      "default": false
+    },
+    "registration_status": {
+      "type": "string",
+      "enum": [
+        "registered_pending_admin",
+        "account_created"
+      ],
+      "default": "registered_pending_admin"
+    },
+    "safeguarding_notice_shown_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [
     "parent_user_id",
     "parent_email",
     "child_name",
-    "date_of_birth"
+    "gender",
+    "date_of_birth",
+    "city",
+    "country",
+    "state_county",
+    "emergency_contact_details"
   ],
   "rls": {
     "read": {
