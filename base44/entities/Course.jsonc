@@ -44,7 +44,6 @@
       "type": "string",
       "enum": [
         "mathematics",
-        "further_mathematatics",
         "further_mathematics",
         "english_language",
         "english_literature",
