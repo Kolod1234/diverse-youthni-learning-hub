@@ -38,6 +38,7 @@ import PersonalizedSubjects from '@/components/dashboard/PersonalizedSubjects';
 import StudentReminders from '@/components/dashboard/StudentReminders';
 import StudentAssignments from '@/components/dashboard/StudentAssignments';
 import StudentQuizzes from '@/components/dashboard/StudentQuizzes';
+import ParentalConsentCountdown from '@/components/dashboard/ParentalConsentCountdown';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -214,6 +215,8 @@ export default function Dashboard() {
             </Box>
           </Box>
         </motion.div>
+
+        <ParentalConsentCountdown user={user} />
 
         {enrollments.length === 0 ? (
           <motion.div 

@@ -1,0 +1,89 @@
+{
+  "name": "StudentVerification",
+  "type": "object",
+  "properties": {
+    "student_user_id": {
+      "type": "string",
+      "description": "Built-in user ID for the student"
+    },
+    "student_name": {
+      "type": "string",
+      "description": "Student name supplied for parental verification"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "parent_email": {
+      "type": "string",
+      "format": "email"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "adult_verified",
+        "pending",
+        "approved",
+        "declined",
+        "expired"
+      ],
+      "description": "Current age or parental-consent verification state"
+    },
+    "website_consent": {
+      "type": "boolean",
+      "default": false
+    },
+    "photography_consent": {
+      "type": "boolean",
+      "default": false
+    },
+    "consent_token": {
+      "type": "string",
+      "description": "Private random token used by the parent decision link"
+    },
+    "deadline_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_reminder_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reminder_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "student_user_id",
+    "student_name",
+    "date_of_birth",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
