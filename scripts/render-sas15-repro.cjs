@@ -399,7 +399,7 @@ function renderGametes() {
   tagLabel(ctx, 1000, 1350, 'Cytoplasm', 'a large food store for the first days of growth', [1700, 1430], 560);
   tagLabel(ctx, 1000, 1520, 'Nucleus', 'carries the 23 chromosomes', [1785, 1315], 560);
 
-  drawBlock(ctx, 'Both cells are drawn far larger than life. A real egg cell is about 20 times wider than a sperm\u2019s head — yet is still only just big enough to see with the unaided eye.', 1200, 1640, 1500, 'italic 28px Helvetica, Arial, sans-serif', GREY, 34);
+  drawBlock(ctx, 'Both cells are drawn far larger than life. A real egg cell is about 20 times wider than a sperm\u2019s head — yet is still only just big enough to see with the unaided eye.', 1200, 1600, 1500, 'italic 28px Helvetica, Arial, sans-serif', GREY, 34);
 
   return { canvas: c, file: 'sas-repro-gametes.png' };
 }
@@ -467,7 +467,7 @@ function renderPlacenta() {
 
   drawBlock(ctx, 'Umbilical cord — two arteries carry the baby\u2019s blood to the placenta; one vein returns it', 1990, 620, 720, '30px Helvetica, Arial, sans-serif', INK, 36);
   arrow(ctx, 1990, 760, 1990, 800, '#64748b', 6, 18);
-  drawBlock(ctx, 'to and from the baby', 2270, 1000, 380, 'italic 30px Helvetica, Arial, sans-serif', GREY, 36);
+  drawBlock(ctx, 'to and from the baby', 2160, 1000, 380, 'italic 30px Helvetica, Arial, sans-serif', GREY, 36);
 
   // Bottom note pill
   roundRect(ctx, 350, 1420, 1700, 150, 75);
@@ -1141,9 +1141,16 @@ function renderSeed() {
 }
 
 /* ------------------------------------------------------------------ */
+const RENDERERS = { male: renderMale, female: renderFemale, gametes: renderGametes, placenta: renderPlacenta, menstrual: renderMenstrualGraph, flower: renderFlower, pollination: renderPollination, pollentube: renderPollenTube, seed: renderSeed };
+const only = (process.env.RENDER_ONLY || '').split(',').filter(Boolean);
+const names = only.length ? only : Object.keys(RENDERERS);
 const results = [];
-for (const render of [renderMale, renderFemale, renderGametes, renderPlacenta, renderMenstrualGraph, renderFlower, renderPollination, renderPollenTube, renderSeed]) {
+for (const name of names) {
+  const render = RENDERERS[name];
+  console.error('rendering ' + name);
+  const t0 = Date.now();
   const { canvas, file } = render();
+  console.error(name + ' drawn in ' + (Date.now() - t0) + 'ms');
   const bad = edgeCheck(canvas);
   const out = path.join(OUT_DIR, file);
   fs.writeFileSync(out, canvas.toBuffer('image/png'));
