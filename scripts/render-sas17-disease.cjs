@@ -1016,7 +1016,7 @@ function renderAntibiotics(results) {
 /* 8. Aseptic technique — four practical panels                        */
 
 function renderAseptic(results) {
-  const W = 2400, H = 1780;
+  const W = 2400, H = 1880;
   const { canvas, ctx } = newCanvas(W, H);
   titleBlock(ctx, 'Growing microorganisms safely \u2014 aseptic technique', W / 2, 70);
   const pw = 1060, ph = 680, px = [110, 1230], py = [250, 1000];
@@ -1146,7 +1146,7 @@ function renderAseptic(results) {
     p.draw(x + pw / 2, y + 320);
     drawBlock(ctx, p.d, x + pw / 2, y + 500, pw - 110, '27px Helvetica, Arial, sans-serif', GREY, 34);
   });
-  drawBlock(ctx, 'Every step either sterilises equipment or stops microorganisms entering or leaving the plate \u2014 that is what \u201c aseptic\u201d means.', W / 2, 1720, 2000, 'bold 30px Helvetica, Arial, sans-serif', GREY, 38);
+  drawBlock(ctx, 'Every step either sterilises equipment or stops microorganisms entering or leaving the plate \u2014 that is aseptic technique.', W / 2, 1800, 2100, 'bold 30px Helvetica, Arial, sans-serif', GREY, 38);
   save(canvas, 'sas17-aseptic-technique.png', results);
 }
 
