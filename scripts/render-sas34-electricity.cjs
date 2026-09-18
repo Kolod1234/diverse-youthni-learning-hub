@@ -321,8 +321,8 @@ const renderers = {
     text(x, 'voltage raised', 400, 572, { size: 19, color: BLUE });
     text(x, 'transmission lines (pylons)', 700, 540, { size: 20, bold: true });
     text(x, 'about 400 000 V — a very small current', 700, 572, { size: 19, color: BLUE });
-    text(x, 'step-down transformers', 1030, 540, { size: 20, bold: true });
-    text(x, 'voltage lowered stage by stage', 1030, 572, { size: 19, color: BLUE });
+    text(x, 'step-down transformers', 1010, 540, { size: 20, bold: true });
+    text(x, 'lowered stage by stage', 1010, 572, { size: 19, color: BLUE });
     text(x, 'homes', 1180, 540, { size: 20, bold: true });
     text(x, '230 V', 1180, 572, { size: 20, bold: true, color: BLUE });
     box(x, 60, 640, 1180, 150, { fill: '#f8fafc' });
