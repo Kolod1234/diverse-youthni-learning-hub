@@ -197,8 +197,8 @@ const renderers = {
     const boxes = [
       [60, 110, 300, 140, (cx, cy) => battery(x, cx, cy), 'chemical energy', 'stored in the battery'],
       [440, 110, 300, 140, (cx, cy) => { x.strokeStyle = C.ink; x.lineWidth = 4; x.beginPath(); x.moveTo(cx - 34, cy); for (let i = 0; i < 6; i++) x.lineTo(cx - 24 + i * 10, cy + (i % 2 ? -12 : 12)); x.lineTo(cx + 34, cy); x.stroke(); }, 'electrical energy', 'carried by the current'],
-      [860, 60, 290, 140, (cx, cy) => bulb(x, cx, cy), 'light energy', 'useful — what we want'],
-      [860, 330, 290, 140, (cx, cy) => flame(x, cx, cy, 24), 'heat energy', 'wasted — spreads away'],
+      [830, 60, 330, 140, (cx, cy) => bulb(x, cx, cy), 'light energy', 'the output we want'],
+      [830, 330, 330, 140, (cx, cy) => flame(x, cx, cy, 24), 'heat energy', 'spreads into the air'],
     ];
     boxes.forEach(([tx, ty, w, h, icon, label, cap]) => {
       box(x, tx, ty, w, h);
@@ -209,8 +209,8 @@ const renderers = {
     arrow(x, 360, 180, 440, 180, { lw: 4, len: 16 });
     line(x, 740, 180, 790, 180, { lw: 4 });
     line(x, 790, 130, 790, 400, { lw: 4 });
-    arrow(x, 790, 130, 860, 130, { lw: 4, len: 16 });
-    arrow(x, 790, 400, 860, 400, { lw: 4, len: 16 });
+    arrow(x, 790, 130, 830, 130, { lw: 4, len: 16 });
+    arrow(x, 790, 400, 830, 400, { lw: 4, len: 16 });
     text(x, 'The energy leaving the torch (light + heat) equals the energy that left the battery.', 600, 560, { size: 22, color: C.soft });
     text(x, 'Energy is never used up — it is only transferred from one form to another.', 600, 600, { size: 22, color: C.soft });
     save(c, 'sas-phys-energy-transfer-chain.png', DIR);
@@ -219,15 +219,15 @@ const renderers = {
   sankey(x, c) {
     const W = 1240, H = 760;
     text(x, 'A Sankey diagram: a filament lamp', 620, 40, { size: 30, bold: true });
-    const X0 = 160, XS = 600, XE = 1000, YM = 400;
+    const X0 = 420, XS = 760, XE = 1000, YM = 400;
     const tMain = 240, tLight = 24, tHeat = 216;
     const yTop = YM - tMain / 2, ySplit = yTop + tLight;
     x.fillStyle = SKY; x.strokeStyle = BLUE; x.lineWidth = 2;
     x.fillRect(X0, yTop, XS - X0, tMain); x.strokeRect(X0, yTop, XS - X0, tMain);
     x.beginPath(); x.moveTo(XS, yTop); x.lineTo(XE, 190 - tLight / 2); x.lineTo(XE, 190 + tLight / 2); x.lineTo(XS, ySplit); x.closePath(); x.fill(); x.stroke();
     x.beginPath(); x.moveTo(XS, ySplit); x.lineTo(XE, 620 - tHeat / 2); x.lineTo(XE, 620 + tHeat / 2); x.lineTo(XS, yTop + tMain); x.closePath(); x.fill(); x.stroke();
-    text(x, 'electrical energy in:', 148, 385, { size: 22, align: 'right' });
-    text(x, '100 J every second', 148, 418, { size: 22, bold: true, align: 'right' });
+    text(x, 'electrical energy in:', 400, 385, { size: 22, align: 'right' });
+    text(x, '100 J every second', 400, 418, { size: 22, bold: true, align: 'right' });
     text(x, 'useful light out:', 1060, 165, { size: 22, align: 'left', color: GREEN });
     text(x, '10 J', 1060, 195, { size: 22, bold: true, align: 'left', color: GREEN });
     text(x, 'wasted heat out:', 1060, 640, { size: 22, align: 'left', color: RED });
