@@ -414,30 +414,32 @@ function renderPhotosynthesis() {
     ctx.stroke();
   }
 
-  // sun
-  drawSun(ctx, 440, 330, 80);
-  arrow(ctx, 560, 400, 720, 560, AMBER, 8, 24);
-  drawBlock(ctx, 'light energy', 560, 470, 320, 'bold 34px Helvetica, Arial, sans-serif', AMBER, 40);
+  // sun (top-left)
+  drawSun(ctx, 400, 320, 80);
+  arrow(ctx, 520, 400, 680, 600, AMBER, 8, 24);
+  drawBlock(ctx, 'light energy', 330, 470, 240, 'bold 34px Helvetica, Arial, sans-serif', AMBER, 40);
 
-  // CO2 in from air
-  arrow(ctx, 1500, 560, 1080, 660, CORAL, 8, 24);
-  drawBlock(ctx, 'carbon dioxide\n(from the air)', 1520, 520, 420, 'bold 34px Helvetica, Arial, sans-serif', CORAL, 40);
+  // CO2 in from air (top-right, clear of the equation panel)
+  drawBlock(ctx, 'carbon dioxide', 1450, 240, 380, 'bold 34px Helvetica, Arial, sans-serif', CORAL, 40);
+  drawBlock(ctx, '(from the air)', 1450, 284, 380, '28px Helvetica, Arial, sans-serif', CORAL, 34);
+  arrow(ctx, 1300, 340, 1000, 640, CORAL, 8, 24);
 
-  // water up from roots
-  arrow(ctx, 640, 1230, 780, 1010, BLUE, 8, 24);
-  drawBlock(ctx, 'water\n(from the soil, up the roots)', 500, 1250, 460, 'bold 34px Helvetica, Arial, sans-serif', BLUE, 40);
+  // water up from roots (bottom-left)
+  arrow(ctx, 600, 1240, 770, 1040, BLUE, 8, 24);
+  drawBlock(ctx, 'water', 380, 1270, 300, 'bold 34px Helvetica, Arial, sans-serif', BLUE, 40);
+  drawBlock(ctx, '(from the soil, up the roots)', 380, 1318, 460, '28px Helvetica, Arial, sans-serif', BLUE, 34);
 
-  // O2 out
-  arrow(ctx, 1080, 800, 1560, 880, TEAL, 8, 24);
-  drawBlock(ctx, 'oxygen (given out)', 1620, 850, 420, 'bold 34px Helvetica, Arial, sans-serif', TEAL, 40);
+  // O2 out (mid-right, below the chlorophyll note)
+  arrow(ctx, 1000, 760, 1450, 800, TEAL, 8, 24);
+  drawBlock(ctx, 'oxygen (given out)', 1750, 770, 340, 'bold 34px Helvetica, Arial, sans-serif', TEAL, 40);
 
-  // glucose away down the plant
-  arrow(ctx, 800, 760, 800, 1000, GRASS, 8, 24);
-  drawBlock(ctx, 'glucose — food made, energy stored', 800, 940, 560, 'bold 34px Helvetica, Arial, sans-serif', GRASS, 40);
+  // glucose down the plant
+  arrow(ctx, 800, 820, 800, 990, GRASS, 8, 24);
+  drawBlockLeft(ctx, 'glucose — food made, energy stored', 860, 860, 460, 'bold 32px Helvetica, Arial, sans-serif', GRASS, 38);
 
   // chloroplast note
-  leader(ctx, 930, 700, 1010, 700);
-  drawBlock(ctx, 'chlorophyll in the leaf absorbs the light energy', 1340, 680, 620, '28px Helvetica, Arial, sans-serif', GREY, 34);
+  leader(ctx, 940, 710, 1030, 710);
+  drawBlock(ctx, 'chlorophyll in the leaf absorbs the light energy', 1360, 692, 640, '28px Helvetica, Arial, sans-serif', GREY, 34);
 
   // equation band
   panel(ctx, 1700, 120, 600, 520);
@@ -491,8 +493,16 @@ function renderLimitingFactors() {
     leader(ctx, ox + 120, oy - 160, ox + 30, oy - 330);
     drawBlockLeft(ctx, p.steep, p.x + 60, oy - 420, 330, '26px Helvetica, Arial, sans-serif', GREY, 32);
     const last = p.pts[p.pts.length - 1];
-    leader(ctx, ox + last[0], oy - last[1], ox + Math.min(last[0] + 90, 300), oy - last[1] + 20);
-    drawBlockLeft(ctx, p.flat, p.x + 330, oy + 40, 320, '26px Helvetica, Arial, sans-serif', GREY, 32);
+    // dashed guide from the far end of the curve down to the caption below the axis
+    ctx.strokeStyle = LEADER;
+    ctx.lineWidth = 3;
+    ctx.setLineDash([8, 8]);
+    ctx.beginPath();
+    ctx.moveTo(ox + last[0] * 0.6, oy - last[1]);
+    ctx.lineTo(ox + last[0] * 0.6, oy + 70);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    drawBlock(ctx, p.flat, p.x + 350, oy + 120, 620, '26px Helvetica, Arial, sans-serif', GREY, 32);
     if (p.title.startsWith('3')) {
       // optimum marker
       ctx.strokeStyle = CORAL;
@@ -623,11 +633,12 @@ function renderPyramids() {
   // Left: pyramid of numbers
   panel(ctx, 120, 220, 1020, 1120);
   drawBlock(ctx, 'Pyramid of numbers', 630, 270, 900, 'bold 40px Helvetica, Arial, sans-serif', INK, 48);
+  // bars are drawn bottom-up, so the producer sits at the bottom of the stack
   const barsNum = [
-    { w: 120, label: '2 sparrowhawks', note: 'top level' },
-    { w: 160, label: '50 blue tits', note: '' },
-    { w: 780, label: '5,000 caterpillars', note: '' },
-    { w: 110, label: '1 oak tree', note: 'one huge tree = one individual!' },
+    { w: 110, label: '1 oak tree', side: true },
+    { w: 780, label: '5,000 caterpillars', side: false },
+    { w: 160, label: '50 blue tits', side: true },
+    { w: 120, label: '2 sparrowhawks', side: true },
   ];
   let yNum = 1120;
   for (const b of barsNum) {
@@ -639,13 +650,16 @@ function renderPyramids() {
     ctx.fill();
     ctx.stroke();
     ctx.font = 'bold 30px Helvetica, Arial, sans-serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(b.label, 630, yNum - 55);
-    if (b.note) {
-      leader(ctx, 630 + b.w / 2, yNum - 55, 860, yNum - 190);
-      drawBlockLeft(ctx, b.note, 700, yNum - 230, 320, '26px Helvetica, Arial, sans-serif', CORAL, 32);
+    if (b.side) {
+      // narrow bar: label sits beside it in ink, not inside in white
+      ctx.fillStyle = INK;
+      ctx.textAlign = 'left';
+      ctx.fillText(b.label, 630 + b.w / 2 + 24, yNum - 55);
+    } else {
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(b.label, 630, yNum - 55);
     }
     yNum -= 130;
   }
@@ -655,10 +669,10 @@ function renderPyramids() {
   panel(ctx, 1260, 220, 1020, 1120);
   drawBlock(ctx, 'Pyramid of biomass', 1770, 270, 900, 'bold 40px Helvetica, Arial, sans-serif', INK, 48);
   const barsBio = [
-    { w: 150, label: '0.5 kg sparrowhawk', note: '' },
-    { w: 250, label: '5 kg blue tits', note: '' },
-    { w: 480, label: '50 kg caterpillars', note: '' },
-    { w: 830, label: '500 kg oak tree', note: 'biomass = dry mass of living material' },
+    { w: 830, label: '500 kg oak tree', side: false },
+    { w: 480, label: '50 kg caterpillars', side: false },
+    { w: 250, label: '5 kg blue tits', side: true },
+    { w: 150, label: '0.5 kg sparrowhawks', side: true },
   ];
   let yBio = 1120;
   for (const b of barsBio) {
@@ -670,17 +684,19 @@ function renderPyramids() {
     ctx.fill();
     ctx.stroke();
     ctx.font = 'bold 30px Helvetica, Arial, sans-serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(b.label, 1770, yBio - 55);
-    if (b.note) {
-      leader(ctx, 1770 + b.w / 2, yBio - 55, 2080, yBio - 200);
-      drawBlockLeft(ctx, b.note, 1900, yBio - 250, 320, '26px Helvetica, Arial, sans-serif', GREY, 32);
+    if (b.side) {
+      ctx.fillStyle = INK;
+      ctx.textAlign = 'left';
+      ctx.fillText(b.label, 1770 + b.w / 2 + 24, yBio - 55);
+    } else {
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(b.label, 1770, yBio - 55);
     }
     yBio -= 130;
   }
-  drawBlock(ctx, 'Measured by living mass, every level is about one tenth of the one below —\nthe losses between levels (page 9) build the taper', 1770, 370, 940, '28px Helvetica, Arial, sans-serif', GREY, 34);
+  drawBlock(ctx, 'Measured by living mass (biomass = dry mass of living material), every level is about one tenth of the one below it', 1770, 370, 940, '28px Helvetica, Arial, sans-serif', GREY, 34);
 
   drawBlock(ctx, 'Biomass pyramids tell the true story of an ecosystem: the producer level is always the largest, because every level above it keeps only about 10% of what it eats.', 1200, 1390, 2100, '30px Helvetica, Arial, sans-serif', GREY, 38);
 
@@ -693,7 +709,8 @@ function renderEnergyLoss() {
 
   drawSun(ctx, 260, 420, 70);
   arrow(ctx, 380, 480, 620, 620, AMBER, 8, 24);
-  drawBlock(ctx, 'sunlight energy\nentering the food chain', 330, 540, 360, '28px Helvetica, Arial, sans-serif', AMBER, 34);
+  drawBlock(ctx, 'sunlight energy', 250, 640, 340, 'bold 30px Helvetica, Arial, sans-serif', AMBER, 36);
+  drawBlock(ctx, 'entering the food chain', 250, 682, 340, '28px Helvetica, Arial, sans-serif', AMBER, 34);
 
   const levels = [
     { y: 620, label: 'Producer — oak leaves', biomass: '1,000 kJ available' },
@@ -867,7 +884,7 @@ function renderQuadrat() {
   ctx.fillStyle = '#365314';
   roundRect(ctx, 1330, 400, 120, 560, 16);
   ctx.fill();
-  drawBlock(ctx, 'hedge\n(shade, moist)', 1390, 380, 200, '26px Helvetica, Arial, sans-serif', '#ffffff', 32);
+  drawBlock(ctx, 'hedge (shade, moist soil)', 1450, 330, 300, '26px Helvetica, Arial, sans-serif', INK, 32);
   ctx.fillStyle = '#eef7df';
   ctx.fillRect(1450, 400, 560, 560);
   ctx.fillStyle = '#d6d3d1';
@@ -881,15 +898,16 @@ function renderQuadrat() {
   ctx.lineTo(2120, 680);
   ctx.stroke();
   // quadrats along the line
-  for (const qx of [1470, 1660, 1850]) {
+  const quads = [{ qx: 1470, d: '0 m' }, { qx: 1660, d: '5 m' }, { qx: 1850, d: '10 m' }];
+  for (const q of quads) {
     ctx.strokeStyle = INK;
     ctx.lineWidth = 6;
-    ctx.strokeRect(qx, 560, 130, 240);
-    ctx.font = '26px Helvetica, Arial, sans-serif';
-    ctx.fillStyle = GREY;
+    ctx.strokeRect(q.qx, 560, 130, 240);
+    ctx.font = 'bold 26px Helvetica, Arial, sans-serif';
+    ctx.fillStyle = INK;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText('0 m', 1450 + 10, 810);
+    ctx.fillText(q.d, q.qx + 65, 815);
   }
   drawBlock(ctx, 'record what you find at regular intervals along the line', 1765, 980, 950, '28px Helvetica, Arial, sans-serif', INK, 34);
   drawBlock(ctx, 'The species change along the transect: shade-lovers near the hedge, then grasses, then daisy rosettes on the worn centre — the living community tracks the conditions.', 1765, 1040, 950, '28px Helvetica, Arial, sans-serif', GREY, 34);
@@ -944,8 +962,9 @@ function renderIndicators() {
     drawBlock(ctx, t.label, t.x + 180, 690, 380, 'bold 30px Helvetica, Arial, sans-serif', INK, 36);
     drawBlock(ctx, t.note, t.x + 180, 740, 380, '26px Helvetica, Arial, sans-serif', GREY, 32);
   }
-  arrow(ctx, 1900, 520, 2250, 520, TEAL, 8, 24);
-  drawBlock(ctx, 'cleaner air \u2192', 2060, 560, 300, 'bold 30px Helvetica, Arial, sans-serif', TEAL, 36);
+  arrow(ctx, 675, 495, 845, 495, TEAL, 8, 24);
+  arrow(ctx, 1235, 495, 1405, 495, TEAL, 8, 24);
+  drawBlock(ctx, 'cleaner air \u2192', 400, 290, 240, 'bold 30px Helvetica, Arial, sans-serif', TEAL, 36);
 
   /* Water: invertebrates */
   panel(ctx, 120, 940, 2160, 640);
@@ -1025,8 +1044,9 @@ function renderIndicators() {
     drawBlock(ctx, t.animal, t.x + 180, 1440, 380, 'bold 28px Helvetica, Arial, sans-serif', TEAL, 34);
     drawBlock(ctx, t.note, t.x + 180, 1480, 380, '26px Helvetica, Arial, sans-serif', GREY, 32);
   }
-  arrow(ctx, 1900, 1230, 2250, 1230, TEAL, 8, 24);
-  drawBlock(ctx, 'more pollution \u2192', 2060, 1270, 300, 'bold 30px Helvetica, Arial, sans-serif', TEAL, 36);
+  arrow(ctx, 675, 1210, 845, 1210, TEAL, 8, 24);
+  arrow(ctx, 1235, 1210, 1405, 1210, TEAL, 8, 24);
+  drawBlock(ctx, 'more pollution \u2192', 250, 1010, 300, 'bold 30px Helvetica, Arial, sans-serif', TEAL, 36);
 
   drawBlock(ctx, 'Lichens absorb gases straight through their surface, so they cannot filter out air pollution. Mayfly nymphs need oxygen-rich water; bloodworms do not. What lives there tells you what it is like there.', 1200, 1600, 2100, '30px Helvetica, Arial, sans-serif', GREY, 38);
 
