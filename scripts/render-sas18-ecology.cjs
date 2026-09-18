@@ -972,7 +972,7 @@ function renderIndicators() {
   const water = [
     { x: 300, label: 'Clean water', animal: 'Mayfly nymph', note: 'high dissolved oxygen —\nonly clean, well-oxygenated rivers', draw: 'nymph' },
     { x: 860, label: 'Slightly polluted', animal: 'Freshwater shrimp', note: 'tolerates moderate pollution', draw: 'shrimp' },
-    { x: 1420, label: 'Polluted water', animal: 'Bloodworms and sludge worms', note: 'survive very low oxygen —\ndominate below sewage or slurry', draw: 'worm' },
+    { x: 1420, label: 'Polluted water', animal: 'Sludge and bloodworms', note: 'survive very low oxygen — dominate in rivers below sewage or slurry', draw: 'worm' },
   ];
   for (const t of water) {
     // water band
