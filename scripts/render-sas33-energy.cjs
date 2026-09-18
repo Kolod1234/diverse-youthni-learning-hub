@@ -197,7 +197,7 @@ const renderers = {
     const boxes = [
       [60, 110, 300, 140, (cx, cy) => battery(x, cx, cy), 'chemical energy', 'stored in the battery'],
       [440, 110, 300, 140, (cx, cy) => { x.strokeStyle = C.ink; x.lineWidth = 4; x.beginPath(); x.moveTo(cx - 34, cy); for (let i = 0; i < 6; i++) x.lineTo(cx - 24 + i * 10, cy + (i % 2 ? -12 : 12)); x.lineTo(cx + 34, cy); x.stroke(); }, 'electrical energy', 'carried by the current'],
-      [860, 60, 290, 140, bulb, 'light energy', 'useful — what we want'],
+      [860, 60, 290, 140, (cx, cy) => bulb(x, cx, cy), 'light energy', 'useful — what we want'],
       [860, 330, 290, 140, (cx, cy) => flame(x, cx, cy, 24), 'heat energy', 'wasted — spreads away'],
     ];
     boxes.forEach(([tx, ty, w, h, icon, label, cap]) => {
@@ -360,13 +360,13 @@ const renderers = {
     text(x, 'Non-renewable — will run out', 970, 135, { size: 26, bold: true, color: RED });
     const cells = [
       [95, 175, (cx, cy) => turbine(x, cx, cy, 1.2), 'wind', 'moving air turns', 'the blades'],
-      [345, 175, solarPanel, 'solar', 'sunlight makes', 'electricity in cells'],
-      [95, 480, dam, 'hydroelectric', 'falling water spins', 'the turbines'],
-      [345, 480, waveBob, 'wave', 'sea movement drives', 'floating generators'],
-      [675, 175, coalHeap, 'coal', 'burned in power', 'stations'],
-      [925, 175, oilBarrel, 'oil', 'refined into petrol', 'and heating oil'],
+      [345, 175, (cx, cy) => solarPanel(x, cx, cy), 'solar', 'sunlight makes', 'electricity in cells'],
+      [95, 480, (cx, cy) => dam(x, cx, cy), 'hydroelectric', 'falling water spins', 'the turbines'],
+      [345, 480, (cx, cy) => waveBob(x, cx, cy), 'wave', 'sea movement drives', 'floating generators'],
+      [675, 175, (cx, cy) => coalHeap(x, cx, cy), 'coal', 'burned in power', 'stations'],
+      [925, 175, (cx, cy) => oilBarrel(x, cx, cy), 'oil', 'refined into petrol', 'and heating oil'],
       [675, 480, (cx, cy) => flame(x, cx, cy, 26, '#0284c7'), 'natural gas', 'burned in homes and', 'power stations'],
-      [925, 480, nuclearTower, 'nuclear', 'uranium atoms are', 'split in reactors'],
+      [925, 480, (cx, cy) => nuclearTower(x, cx, cy), 'nuclear', 'uranium atoms are', 'split in reactors'],
     ];
     cells.forEach(([tx, ty, icon, name, cap1, cap2]) => {
       box(x, tx, ty, 230, 280, { fill: '#ffffff' });
