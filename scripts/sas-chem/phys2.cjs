@@ -1,0 +1,55 @@
+const K=require('./common.cjs'); const {make,save,text,circle,line,arrow,C}=K;
+module.exports=function(dir){
+{ const W=1500,H=780; const [c,x]=make(W,H);
+  text(x,'Inside a three-pin plug',750,40,{size:32,bold:true}); x.translate(175,0);
+  x.fillStyle='#f1f5f9'; x.strokeStyle=C.ink; x.lineWidth=5;
+  x.beginPath(); x.roundRect(210,90,560,560,40); x.fill(); x.stroke();
+  const pin=(px,py,w,h)=>{ x.fillStyle='#94a3b8'; x.strokeStyle=C.ink; x.lineWidth=4; x.beginPath(); x.roundRect(px,py,w,h,8); x.fill(); x.stroke(); };
+  pin(455,120,70,110);
+  pin(255,300,60,90);
+  pin(665,300,60,90);
+  x.fillStyle='#fde68a'; x.strokeStyle=C.ink; x.lineWidth=4; x.beginPath(); x.roundRect(640,400,110,46,10); x.fill(); x.stroke();
+  text(x,'fuse',695,423,{size:22,bold:true});
+  const wire=(pts,col,w=10)=>{ x.beginPath(); x.moveTo(pts[0][0],pts[0][1]); pts.slice(1).forEach(p=>x.lineTo(p[0],p[1])); x.strokeStyle=col; x.lineWidth=w; x.lineCap='round'; x.stroke(); };
+  wire([[490,230],[490,420],[490,560]],'#16a34a');
+  wire([[285,390],[285,470],[420,560]],'#2563eb');
+  wire([[695,390],[695,400]],'#7f1d1d');
+  wire([[695,446],[695,500],[560,560]],'#7f1d1d');
+  for(let y=240;y<400;y+=26){ line(x,484,y,496,y+12,{color:'#facc15',lw:6}); }
+  x.fillStyle='#64748b'; x.fillRect(400,560,180,36); text(x,'cable grip',490,578,{size:20,color:'#fff',bold:true});
+  x.strokeStyle='#334155'; x.lineWidth=26; x.lineCap='round'; x.beginPath(); x.moveTo(490,596); x.lineTo(490,700); x.stroke();
+  const lab=(s,tx,ty,px,py,al)=>{ line(x,tx,ty,px,py,{lw:2,color:C.soft}); text(x,s,tx+(al==='right'?-12:12),ty,{size:24,align:al||'left'}); };
+  lab('earth wire: green and yellow',800,250,500,300);
+  lab('live wire: brown',800,500,700,480);
+  lab('neutral wire: blue',180,470,300,470,'right');
+  lab('neutral pin',180,330,255,345,'right');
+  lab('live pin',940,330,725,345);
+  text(x,'The fuse is always in the LIVE wire.',490,745,{size:24,bold:true,color:C.red});
+  save(c,'sas-phys-three-pin-plug.png',dir); }
+{ const W=1200,H=620; const [c,x]=make(W,H);
+  text(x,'Earthing a metal case',320,40,{size:28,bold:true});
+  text(x,'Double insulation',890,40,{size:28,bold:true});
+  x.strokeStyle=C.ink; x.lineWidth=5; x.fillStyle='#e2e8f0';
+  x.beginPath(); x.roundRect(120,120,380,280,20); x.fill(); x.stroke();
+  text(x,'metal case',310,150,{size:22,color:C.soft});
+  line(x,150,300,470,300,{color:'#7f1d1d',lw:9});
+  text(x,'live wire touching the case (fault)',310,272,{size:21,color:'#7f1d1d'});
+  line(x,310,300,310,430,{color:'#16a34a',lw:9});
+  line(x,220,430,400,430,{color:'#16a34a',lw:9});
+  text(x,'earth wire',310,462,{size:22,color:'#15803d',bold:true});
+  arrow(x,340,300,340,420,{color:'#15803d',lw:4});
+  text(x,'A large current flows to earth,',320,512,{size:22,color:C.soft});
+  text(x,'the fuse melts and the circuit breaks,',320,540,{size:22,color:C.soft});
+  text(x,'so the case cannot give a shock.',320,568,{size:22,color:C.soft});
+  x.strokeStyle=C.ink; x.lineWidth=5; x.fillStyle='#fef9c3';
+  x.beginPath(); x.roundRect(700,120,380,280,20); x.fill(); x.stroke();
+  text(x,'plastic (insulating) case',890,150,{size:22,color:C.soft});
+  line(x,730,300,1050,300,{color:'#7f1d1d',lw:9});
+  text(x,'live wire cannot make the case live',890,272,{size:20,color:C.soft});
+  x.strokeStyle=C.ink; x.lineWidth=5; x.strokeRect(840,380,100,70); x.strokeRect(858,395,64,40);
+  text(x,'double insulation symbol',890,480,{size:22,color:C.soft});
+  text(x,'No earth wire is needed:',890,522,{size:22,color:C.soft});
+  text(x,'the case is an insulator, so it can',890,550,{size:22,color:C.soft});
+  text(x,'never become live.',890,578,{size:22,color:C.soft});
+  save(c,'sas-phys-earthing-double-insulation.png',dir); }
+};
