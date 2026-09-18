@@ -159,16 +159,16 @@ const renderers = {
   induction(x, c) {
     text(x, 'Electromagnetic induction: moving a magnet near a coil', 620, 40, { size: 30, bold: true });
     const panels = [
-      { px: 40, capA: 'magnet moving into the coil', capB: 'needle flicks to the right', deflect: 0.5, mag: -90, arr: [75, 125] },
+      { px: 40, capA: 'magnet moving into the coil', capB: 'needle flicks to the right', deflect: 0.5, mag: -90, arr: [-40, -10] },
       { px: 450, capA: 'magnet stationary inside the coil', capB: 'no current at all', deflect: 0, mag: 55, arr: null },
-      { px: 860, capA: 'magnet moving out of the coil', capB: 'needle flicks the other way', deflect: -0.5, mag: 20, arr: [115, 65] },
+      { px: 860, capA: 'magnet moving out of the coil', capB: 'needle flicks the other way', deflect: -0.5, mag: -45, arr: [-25, -100] },
     ];
     for (const p of panels) {
       const cx = p.px + 185;
       box(x, p.px, 90, 370, 560);
       const coilX = cx + 55;
       coil(x, coilX, 230);
-      if (p.arr) arrow(x, p.arr[0], 295, p.arr[1], 295, { lw: 4, len: 14 });
+      if (p.arr) arrow(x, cx + p.arr[0], 295, cx + p.arr[1], 295, { lw: 4, len: 14 });
       if (p.mag !== 55) barMagnet(x, cx + p.mag, 230);
       line(x, coilX - 34, 264, coilX - 40, 420, { lw: 3 });
       line(x, coilX + 34, 264, coilX + 40, 420, { lw: 3 });
@@ -318,7 +318,7 @@ const renderers = {
     text(x, 'power station', 160, 540, { size: 20, bold: true });
     text(x, 'about 25 000 V', 160, 572, { size: 20, bold: true, color: BLUE });
     text(x, 'step-up transformer', 400, 540, { size: 20, bold: true });
-    text(x, 'voltage raised to about 400 000 V', 400, 572, { size: 19, color: BLUE });
+    text(x, 'voltage raised', 400, 572, { size: 19, color: BLUE });
     text(x, 'transmission lines (pylons)', 700, 540, { size: 20, bold: true });
     text(x, 'about 400 000 V — a very small current', 700, 572, { size: 19, color: BLUE });
     text(x, 'step-down transformers', 1030, 540, { size: 20, bold: true });
