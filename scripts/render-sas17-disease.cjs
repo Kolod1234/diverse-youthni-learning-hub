@@ -258,10 +258,10 @@ function drawPhagocyteBlob(ctx, cx, cy, rx, ry, color, stroke) {
 }
 
 function drawYAntibody(ctx, x, y, s, color) {
-  // Y-shaped antibody, stem at (x, y+s*1.5), tips at top
+  // Y-shaped antibody, stem at (x, y+s*1.5), tips at top; s = arm length in px
   ctx.strokeStyle = color || CORAL;
   ctx.fillStyle = color || CORAL;
-  ctx.lineWidth = 12 * s;
+  ctx.lineWidth = Math.max(7, s * 0.13);
   ctx.lineCap = 'round';
   ctx.beginPath();
   ctx.moveTo(x, y + s * 1.5);
@@ -818,7 +818,7 @@ function renderAntibodies(results) {
     const bx = mx + Math.cos(ang) * 46, by = my + Math.sin(ang) * 46;
     drawYAntibody(ctx, bx, by, 46, CORAL);
   }
-  drawPhagocyteBlob(ctx, 2680 - 500, 1020, 120, 90);
+  drawPhagocyteBlob(ctx, 2140, 1020, 120, 90);
   arrow(ctx, 2260, 1000, 2100, 960, LEADER, 6, 18);
   drawBlock(ctx, 'Each antibody has two binding sites, so pathogens are stuck together in clumps \u2014 far easier for a phagocyte to engulf.', 1760, 1130, 960, '27px Helvetica, Arial, sans-serif', GREY, 33);
   // bottom strip
