@@ -1040,9 +1040,10 @@ function renderIndicators() {
       ctx.quadraticCurveTo(t.x + 180, 1350, t.x + 260, 1300);
       ctx.stroke();
     }
-    drawBlock(ctx, t.label, t.x + 180, 1390, 380, 'bold 30px Helvetica, Arial, sans-serif', INK, 36);
-    drawBlock(ctx, t.animal, t.x + 180, 1440, 380, 'bold 28px Helvetica, Arial, sans-serif', TEAL, 34);
-    drawBlock(ctx, t.note, t.x + 180, 1480, 380, '26px Helvetica, Arial, sans-serif', GREY, 32);
+    // dynamic spacing: each block starts below wherever the previous one actually ended
+    const lEnd = drawBlock(ctx, t.label, t.x + 180, 1385, 440, 'bold 30px Helvetica, Arial, sans-serif', INK, 34);
+    const aEnd = drawBlock(ctx, t.animal, t.x + 180, lEnd + 8, 440, 'bold 28px Helvetica, Arial, sans-serif', TEAL, 34);
+    drawBlock(ctx, t.note, t.x + 180, aEnd + 10, 400, '26px Helvetica, Arial, sans-serif', GREY, 32);
   }
   arrow(ctx, 675, 1210, 845, 1210, TEAL, 8, 24);
   arrow(ctx, 1235, 1210, 1405, 1210, TEAL, 8, 24);
