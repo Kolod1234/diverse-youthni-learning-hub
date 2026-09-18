@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,8 +14,39 @@ export default function NotificationBell() {
   const [user, setUser] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const prevUnreadRef = useRef(0);
+  const panelRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  // Close the panel when the user navigates to another page
+  useEffect(() => {
+    setShowNotifications(false);
+  }, [location.pathname]);
+
+  // Close the panel when tapping anywhere outside it. The previous full-screen
+  // backdrop was a fixed-position element inside the header, whose
+  // backdrop-filter traps fixed descendants — so it only covered the top bar
+  // and taps on the page never dismissed the panel. A document-level listener
+  // works regardless of stacking contexts.
+  useEffect(() => {
+    if (!showNotifications) return;
+    const handlePointerDown = (event) => {
+      const target = event.target;
+      const insideBell = panelRef.current && panelRef.current.contains(target);
+      const insidePanel = dropdownRef.current && dropdownRef.current.contains(target);
+      if (!insideBell && !insidePanel) {
+        setShowNotifications(false);
+      }
+    };
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [showNotifications]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -93,7 +125,7 @@ export default function NotificationBell() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={panelRef}>
       <Button
         variant="ghost"
         size="icon"
@@ -108,39 +140,38 @@ export default function NotificationBell() {
         )}
       </Button>
 
-      {showNotifications && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setShowNotifications(false)}
-          />
-          <Card className="absolute right-0 top-12 w-96 max-h-[500px] overflow-hidden flex flex-col z-50 shadow-2xl">
-           <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
-             <h3 className="font-semibold text-gray-900">Notifications</h3>
-             <div className="flex items-center gap-2">
-               {unreadCount > 0 && (
-                 <Button
-                   size="sm"
-                   variant="ghost"
-                   onClick={markAllAsRead}
-                   className="text-xs"
-                 >
-                   Mark all read
-                 </Button>
-               )}
-               <Button
-                 size="sm"
-                 variant="ghost"
-                 onClick={() => {
-                   setShowNotifications(false);
-                   navigate(createPageUrl('NotificationCenter'));
-                 }}
-                 className="h-6 w-6 p-0"
-               >
-                 <Settings className="w-4 h-4" />
-               </Button>
-             </div>
-           </div>
+      {showNotifications && createPortal(
+        <Card
+          ref={dropdownRef}
+          className="fixed right-2 w-[min(24rem,calc(100vw-1.5rem))] max-h-[70vh] overflow-hidden flex flex-col z-[1150] shadow-2xl"
+          style={{ top: `${(panelRef.current?.getBoundingClientRect().bottom || 72) + 6}px` }}
+        >
+            <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900">Notifications</h3>
+              <div className="flex items-center gap-2">
+                {unreadCount > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={markAllAsRead}
+                    className="text-xs"
+                  >
+                    Mark all read
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setShowNotifications(false);
+                    navigate(createPageUrl('NotificationCenter'));
+                  }}
+                  className="h-6 w-6 p-0"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
 
             <div className="flex-1 overflow-y-auto">
               {notifications.length > 0 ? (
@@ -187,8 +218,8 @@ export default function NotificationBell() {
                 </div>
               )}
             </div>
-          </Card>
-        </>
+          </Card>,
+        document.body
       )}
     </div>
   );
