@@ -143,7 +143,6 @@ export default function TutorDashboardOverview() {
     { label: 'Manage Bookings', icon: Calendar, href: createPageUrl('TutorBookingManager'), color: 'bg-emerald-600 hover:bg-emerald-700 text-white' },
     { label: 'Lesson Editor', icon: FileText, href: createPageUrl('LessonEditor'), color: 'bg-amber-600 hover:bg-amber-700 text-white' },
     { label: 'Quiz Generator', icon: Zap, href: createPageUrl('QuizGenerator'), color: 'bg-pink-600 hover:bg-pink-700 text-white' },
-    { label: 'Unlock Lessons', icon: Key, href: createPageUrl('TutorDashboard') + '?view=unlock', color: 'bg-indigo-600 hover:bg-indigo-700 text-white' },
     { label: 'Messages', icon: MessageSquare, href: createPageUrl('MessageCenter'), color: 'bg-slate-700 hover:bg-slate-800 text-white', badge: messages.length || null },
   ];
 
@@ -529,7 +528,6 @@ export default function TutorDashboardOverview() {
                   { label: 'Availability & Calendar', href: createPageUrl('TutorSetup'), icon: Calendar },
                   { label: 'Booking Manager', href: createPageUrl('TutorBookingManager'), icon: CheckCircle2 },
                   { label: 'Grade Students', href: createPageUrl('TutorDashboard') + '?view=grades', icon: Award },
-                  { label: 'Unlock Lessons', href: createPageUrl('TutorDashboard') + '?view=unlock', icon: Key },
                   { label: 'Course Analytics', href: createPageUrl('CourseAnalytics'), icon: BarChart3 },
                   { label: 'Message Center', href: createPageUrl('MessageCenter'), icon: MessageSquare },
                 ].map(item => {
