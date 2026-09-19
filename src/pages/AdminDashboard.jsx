@@ -17,7 +17,6 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import CurriculumImporter from '@/components/admin/CurriculumImporter';
-import LessonKeyManager from '@/components/admin/LessonKeyManager';
 import PaginationBar from '@/components/ui/PaginationBar';
 
 export default function AdminDashboard() {
@@ -266,7 +265,6 @@ export default function AdminDashboard() {
             <Tab label="Attendance" value="attendance" />
             <Tab label="Contact Info" value="contact" />
             <Tab label="Site Content" value="content" />
-            <Tab label="Unlock Keys" value="unlock-keys" />
             <Tab label="Page Builder" value="page-builder" />
             <Tab label="About Us" value="about-us" />
           </Tabs>
@@ -294,7 +292,6 @@ export default function AdminDashboard() {
             {selectedTab === 'attendance' && <AttendanceManagement attendanceRecords={attendanceRecords} users={allUsers} />}
             {selectedTab === 'contact' && <ContactInfoManagement contactInfo={contactInfo[0]} />}
             {selectedTab === 'content' && <SiteContentManagement siteContent={siteContent} />}
-            {selectedTab === 'unlock-keys' && <LessonKeyManager />}
             {selectedTab === 'page-builder' && (
               <Card>
                 <CardContent>
