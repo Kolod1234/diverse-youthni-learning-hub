@@ -37,7 +37,6 @@ import { Button } from '@mui/material';
 import { toast } from 'sonner';
 import GlobalSearch from '@/components/search/GlobalSearch';
 import AdvancedFilters from '@/components/search/AdvancedFilters';
-import UnlockLessonsView from '@/components/tutor/UnlockLessonsView';
 
 
 export default function TutorDashboard() {
@@ -120,7 +119,6 @@ export default function TutorDashboard() {
     { icon: MessageSquare, label: 'Discussions', view: 'discussions' },
     { icon: HelpCircle, label: 'Quizzes', view: 'quizzes' },
     { icon: Target, label: 'Learning Outcomes', view: 'outcomes' },
-    { icon: FileCheck, label: 'Unlock Lessons', view: 'unlock' },
     { icon: BarChart, label: 'Analytics', view: 'analytics' },
     { icon: Calendar, label: 'Attendance', view: 'attendance' },
   ];
@@ -241,7 +239,6 @@ export default function TutorDashboard() {
               {currentView === 'discussions' && <DiscussionsView course={selectedCourse} />}
               {currentView === 'quizzes' && <QuizzesView course={selectedCourse} />}
               {currentView === 'outcomes' && <OutcomesView course={selectedCourse} />}
-              {currentView === 'unlock' && <UnlockLessonsView courses={courses} />}
               {currentView === 'attendance' && <AttendanceView course={selectedCourse} />}
             </div>
 
