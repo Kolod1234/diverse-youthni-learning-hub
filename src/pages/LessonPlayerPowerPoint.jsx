@@ -184,9 +184,9 @@ export default function LessonPlayerPowerPoint() {
     if (user && (user.role === 'admin' || user.is_tutor)) { setIsLessonLocked(false); return; }
     const sorted = [...courseLessons].sort((a, b) => a.order - b.order);
     if (sorted[0]?.id === lessonId) { setIsLessonLocked(false); return; }
-    const unlockData = (enrollment.unlocked_lessons || []).find(ul => ul.lesson_id === lessonId);
-    if (!unlockData) { setIsLessonLocked(true); return; }
-    setIsLessonLocked(new Date() > new Date(unlockData.expires_at));
+    // Unlock keys retired: lesson access is open and progression is gated by
+    // the 70% study check instead.
+    setIsLessonLocked(false);
   }, [lesson, enrollment, courseLessons, lessonId, user]);
 
   // ── Mark complete mutation ─────────────────────────────────────────────────
