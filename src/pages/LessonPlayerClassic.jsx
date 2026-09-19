@@ -410,19 +410,17 @@ export default function LessonPlayerClassic() {
     const unlockedLessons = enrollment.unlocked_lessons || [];
     const unlockData = unlockedLessons.find(ul => ul.lesson_id === lessonId);
     
+    // Unlock keys retired: lesson access is open and progression is gated by
+    // the 70% study check instead.
     if (!unlockData) {
-      setIsLessonLocked(true);
+      setIsLessonLocked(false);
       return;
     }
 
     const now = new Date();
     const expiryDate = new Date(unlockData.expires_at);
     
-    if (now > expiryDate) {
-      setIsLessonLocked(true);
-    } else {
-      setIsLessonLocked(false);
-    }
+    setIsLessonLocked(false);
   }, [lesson, enrollment, sortedLessons, lessonId, user]);
 
   const { data: quizzes = [] } = useQuery({
