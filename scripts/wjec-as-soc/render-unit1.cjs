@@ -377,10 +377,158 @@ function d_lookingGlass() {
   return { file: 'wjec-soc-looking-glass-self.png', w: W, h: H };
 }
 
+// ---------- 10. Family forms gallery (Lesson 4, page 2) ----------
+function d_familyForms() {
+  const [c, x] = make(W, H);
+  title2(x, 'Family forms in Britain today');
+  sub2(x, 'the main forms of England and Wales — none rare enough to dismiss, none the norm alone');
+  function person(cx, cy, col) {
+    circle(x, cx, cy - 26, 13, { fill: col, stroke: false });
+    x.fillStyle = col;
+    x.beginPath(); x.moveTo(cx - 15, cy + 34); x.quadraticCurveTo(cx, cy - 6, cx + 15, cy + 34); x.closePath(); x.fill();
+  }
+  const forms = [
+    ['NUCLEAR', 'couple with dependent children — still the most common family type with children, but usually with both adults in paid work', BLUE,
+      (bx, by) => { person(bx + 36, by + 60, BLUE); person(bx + 72, by + 60, BLUE); circle(x, bx + 52, by + 96, 9, { fill: '#93c5fd', stroke: false }); }],
+    ['EXTENDED', 'kin beyond the household — three generations or nearby aunts, uncles, cousins; strongest where housing and income make it practical', GREEN,
+      (bx, by) => { person(bx + 28, by + 58, GREEN); person(bx + 56, by + 58, GREEN); person(bx + 84, by + 58, GREEN); circle(x, bx + 56, by + 96, 9, { fill: '#86efac', stroke: false }); }],
+    ['RECONSTITUTED (STEPFAMILY)', 'a household formed after separation — most commonly natural mother and stepfather; children may hold two households', PURPLE,
+      (bx, by) => { person(bx + 30, by + 60, PURPLE); person(bx + 66, by + 60, PURPLE); circle(x, bx + 48, by + 96, 9, { fill: '#c4b5fd', stroke: false }); circle(x, bx + 78, by + 88, 7, { fill: '#c4b5fd', stroke: false }); }],
+    ['LONE-PARENT', 'about one family in seven with dependent children — headed by a mother in roughly nine cases in ten; largest route in is partnership breakdown', RED,
+      (bx, by) => { person(bx + 48, by + 56, RED); circle(x, bx + 48, by + 96, 9, { fill: '#fca5a5', stroke: false }); }],
+    ['SAME-SEX COUPLE FAMILY', 'civil partnerships from 2005, same-sex marriage in England and Wales from March 2014 — legally recognised, with and without children', AMBER,
+      (bx, by) => { person(bx + 40, by + 58, AMBER); person(bx + 74, by + 58, AMBER); circle(x, bx + 57, by + 96, 9, { fill: '#fcd34d', stroke: false }); }],
+    ['L.A.T. and BEANPOLE', 'living-apart-together couples keep two homes; beanpole families run four to five living generations deep but narrow — fewer siblings and cousins', GREY,
+      (bx, by) => { person(bx + 24, by + 96, GREY); person(bx + 78, by + 96, GREY); circle(x, bx + 51, by + 40, 8, { fill: '#cbd5e1', stroke: false }); }],
+  ];
+  const cw = 426, chh = 330, gap = (W - 120 - 3 * cw) / 2;
+  forms.forEach((f, i) => {
+    const bx = 60 + (i % 3) * (cw + gap), by = 150 + Math.floor(i / 3) * (chh + 46);
+    box(x, bx, by, cw, chh, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
+    x.fillStyle = f[2]; x.fillRect(bx, by, cw, 8);
+    text(x, f[0], bx + cw / 2, by + 46, { size: 21, bold: true, color: f[2] });
+    f[3](bx + cw / 2 - 55, by + 58);
+    wrap(x, f[1], bx + 20, bx + cw - 20, by + 208, { size: 18, lh: 25 });
+  });
+  text(x, 'the Rapoports\u2019 point: diversity is not a list of exceptions — it is the normal condition of family life in a modern society', W / 2, H - 48, { size: 20, color: GREY });
+  return { file: 'wjec-soc-family-forms.png', w: W, h: H };
+}
+
+// ---------- 11. Marriage and divorce trends chart (Lesson 4, page 4) ----------
+function d_familyTrends() {
+  const [c, x] = make(W, H);
+  title2(x, 'Marriage and divorce: the two lines to read together');
+  sub2(x, 'England and Wales, approximate rounded ONS figures (not to exact scale)');
+  const cx0 = 120, cy0 = 880, cw = 720, chh = 660;   // plot area
+  const yMax = 500;
+  function py(v) { return cy0 - (v / yMax) * chh; }
+  const years = [1960, 1972, 1980, 1990, 2000, 2010, 2019, 2023];
+  function px(yr) { return cx0 + ((yr - 1960) / (2023 - 1960)) * cw; }
+  // gridlines
+  for (let v = 0; v <= yMax; v += 100) {
+    line(x, cx0, py(v), cx0 + cw, py(v), { color: '#e2e8f0', lw: v === 0 ? 3 : 1 });
+    text(x, v + 'k', cx0 - 34, py(v), { size: 17, color: GREY });
+  }
+  years.forEach(yr => text(x, String(yr), px(yr), cy0 + 34, { size: 17, color: GREY }));
+  // marriages series
+  const mar = [[1960, 340], [1972, 480], [1980, 370], [1990, 340], [2000, 300], [2010, 280], [2019, 213], [2023, 210]];
+  x.strokeStyle = BLUE; x.lineWidth = 5; x.beginPath();
+  mar.forEach((p, i) => { const X = px(p[0]), Y = py(p[1]); i ? x.lineTo(X, Y) : x.moveTo(X, Y); });
+  x.stroke();
+  mar.forEach(p => circle(x, px(p[0]), py(p[1]), 7, { fill: BLUE, stroke: false }));
+  // divorces series
+  const div = [[1960, 25], [1972, 110], [1980, 148], [1993, 165], [2000, 141], [2010, 120], [2019, 107], [2023, 100]];
+  x.strokeStyle = RED; x.lineWidth = 5; x.beginPath();
+  div.forEach((p, i) => { const X = px(p[0]), Y = py(p[1]); i ? x.lineTo(X, Y) : x.moveTo(X, Y); });
+  x.stroke();
+  div.forEach(p => circle(x, px(p[0]), py(p[1]), 7, { fill: RED, stroke: false }));
+  // annotations
+  text(x, '1972: about 480,000 marriages', px(1972) + 10, py(480) - 26, { size: 18, bold: true, align: 'left', color: BLUE });
+  text(x, '1993 peak: 165,018 divorces', px(1993) - 16, py(165) - 30, { size: 18, bold: true, align: 'left', color: RED });
+  text(x, '2019: about 213,000 marriages', px(2019) - 6, py(213) + 44, { size: 18, bold: true, align: 'left', color: BLUE });
+  text(x, 'about 100,000', px(2023) - 8, py(100) - 30, { size: 18, bold: true, align: 'left', color: RED });
+  text(x, 'pandemic year 2020: about 86,000 marriages (not plotted)', cx0 + cw / 2, H - 76, { size: 17, color: GREY });
+  // right panel
+  const pxr = 950;
+  box(x, pxr, 180, 440, 660, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
+  text(x, 'READ IT LIKE THIS', pxr + 220, 226, { size: 23, bold: true, color: PURPLE });
+  const pts = [
+    'weddings have roughly halved since 1972 \u2014 but cohabitation is the fastest-growing family type, so partnership has not',
+    'divorce peaked in 1993 and has eased \u2014 the married population is smaller, later and more selective',
+    '2023 divorce rate: about 8.6 per 1,000 married adults \u2014 and no-fault divorce arrived in April 2022',
+    'marriage is now a marker of an established partnership, not the gate through which partnership begins',
+  ];
+  let yy = 286;
+  pts.forEach(t => { circle(x, pxr + 34, yy - 7, 6, { fill: PURPLE, stroke: false }); yy = wrap(x, t, pxr + 62, pxr + 412, yy, { size: 19, lh: 26 }) + 18; });
+  return { file: 'wjec-soc-family-trends.png', w: W, h: H };
+}
+
+// ---------- 12. Demographic change panels (Lesson 4, page 6) ----------
+function d_demographicChange() {
+  const [c, x] = make(W, H);
+  title2(x, 'Fewer babies, longer lives: the arithmetic behind family change');
+  sub2(x, 'England and Wales, approximate rounded ONS figures');
+  // left: TFR chart
+  const cx0 = 100, cy0 = 620, cw = 600, chh = 420;
+  const yMax = 3.2;
+  function py(v) { return cy0 - (v / yMax) * chh; }
+  function px(yr) { return cx0 + ((yr - 1960) / (2023 - 1960)) * cw; }
+  box(x, cx0, 140, cw + 60, 560, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
+  text(x, 'TOTAL FERTILITY RATE (children per woman)', cx0 + cw / 2 + 10, 176, { size: 21, bold: true, color: BLUE });
+  for (let v = 0; v <= 3; v++) {
+    line(x, cx0, py(v), cx0 + cw, py(v), { color: '#e2e8f0', lw: v === 0 ? 3 : 1 });
+    text(x, v.toFixed(0), cx0 - 28, py(v), { size: 17, color: GREY });
+  }
+  // replacement dashed line
+  x.strokeStyle = AMBER; x.lineWidth = 3; x.setLineDash([12, 10]);
+  x.beginPath(); x.moveTo(cx0, py(2.1)); x.lineTo(cx0 + cw, py(2.1)); x.stroke(); x.setLineDash([]);
+  text(x, 'replacement level 2.1', cx0 + cw - 8, py(2.1) - 22, { size: 17, bold: true, color: AMBER, align: 'right' });
+  const tfr = [[1964, 2.9], [1978, 1.6], [1990, 1.8], [2000, 1.6], [2010, 2.0], [2020, 1.6], [2023, 1.44]];
+  x.strokeStyle = BLUE; x.lineWidth = 5; x.beginPath();
+  tfr.forEach((p, i) => { const X = px(p[0]), Y = py(p[1]); i ? x.lineTo(X, Y) : x.moveTo(X, Y); });
+  x.stroke();
+  tfr.forEach(p => circle(x, px(p[0]), py(p[1]), 7, { fill: BLUE, stroke: false }));
+  [1964, 1980, 2000, 2023].forEach(yr => text(x, String(yr), px(yr), cy0 + 34, { size: 17, color: GREY }));
+  text(x, '2023: 1.44 \u2014 lowest ever recorded', px(2023) - 10, py(1.44) + 46, { size: 19, bold: true, align: 'right', color: BLUE });
+  // right: ageing panel
+  const pxr = 820;
+  box(x, pxr, 140, W - pxr - 60, 560, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
+  text(x, 'LONGER LIVES, OLDER POPULATION', pxr + (W - pxr - 60) / 2, 176, { size: 21, bold: true, color: GREEN });
+  const apts = [
+    ['life expectancy at birth', 'around 79 years for men and 83 for women \u2014 about a decade more than in the early 1970s'],
+    ['share aged 65 and over', 'about 18 per cent of the population (2021 Census) \u2014 and rising'],
+    ['average age of first-time mothers', 'about thirty \u2014 fertility in the thirties now exceeds the twenties'],
+    ['one-person households', 'roughly a quarter of all households \u2014 the fastest-growing type, concentrated among older adults'],
+  ];
+  let yy = 234;
+  apts.forEach(a => {
+    text(x, a[0], pxr + 40, yy, { size: 20, bold: true, align: 'left', color: GREEN });
+    yy = wrap(x, a[1], pxr + 40, pxr + (W - pxr - 100), yy + 34, { size: 18, lh: 24 }) + 22;
+  });
+  // bottom band: consequences
+  const by2 = 760;
+  box(x, 60, by2, W - 120, 250, { fill: '#fff', stroke: LIGHT, lw: 2 });
+  x.fillStyle = PURPLE; x.fillRect(60, by2, W - 120, 8);
+  text(x, 'WHAT THE ARITHMETIC DOES TO FAMILIES', 60 + (W - 120) / 2, by2 + 46, { size: 23, bold: true, color: PURPLE });
+  const cons = [
+    ['BEANPOLE FAMILIES', 'four or five living generations \u2014 but fewer siblings, aunts and cousins: the tree grows vertically while narrowing'],
+    ['SANDWICH GENERATION', 'mid-life adults caring up (ageing parents) and down (dependent children) at the same time'],
+    ['MORE SOLO-LIVING PENSIONERS', 'longevity and widowhood \u2014 not family breakdown \u2014 drive the fastest-growing household type'],
+  ];
+  const cw2 = 424, gap2 = (W - 120 - 3 * cw2) / 2;
+  cons.forEach((cn, i) => {
+    const bx = 60 + i * (cw2 + gap2);
+    text(x, cn[0], bx + cw2 / 2, by2 + 96, { size: 20, bold: true, color: PURPLE });
+    wrap(x, cn[1], bx + 16, bx + cw2 - 16, by2 + 140, { size: 18, lh: 25 });
+  });
+  return { file: 'wjec-soc-demographic-change.png', w: W, h: H };
+}
+
 (async () => {
   fs.mkdirSync(DIR, { recursive: true });
   const renderers = [d_cultureComponents, d_statusRoles, d_natureNurture, d_socialisationAgencies,
-    d_sanctionsGrid, d_socialControlCycle, d_identityWheel, d_intersectionality, d_lookingGlass];
+    d_sanctionsGrid, d_socialControlCycle, d_identityWheel, d_intersectionality, d_lookingGlass,
+    d_familyForms, d_familyTrends, d_demographicChange];
   const only = (process.env.RENDER_ONLY || '').split(',').map(s => s.trim()).filter(Boolean);
   const results = [];
   for (const r of renderers) {
