@@ -266,7 +266,6 @@ const GUIDE_SECTIONS = [
       { icon: Users, label: 'Booking Manager', desc: 'Set availability, review booking requests, and manage your calendar.' },
       { icon: MessageSquare, label: 'Messaging & Chat', desc: 'Communicate with students directly through the platform\'s message center.' },
       { icon: ClipboardCheck, label: 'Assignment & Grading', desc: 'Set assignments, review submissions, and provide detailed feedback.' },
-      { icon: Lock, label: 'Lesson Unlock Keys', desc: 'Control access to lessons with unlock keys for gated or premium content.' },
     ],
   },
 ];
