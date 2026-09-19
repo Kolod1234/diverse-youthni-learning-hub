@@ -25,10 +25,10 @@ function box(x, tx, ty, w, h, o = {}) {
 }
 function title2(x, s) { text(x, s, W / 2, 46, { size: 32, bold: true }); }
 function sub2(x, s) { text(x, s, W / 2, 88, { size: 20, color: GREY }); }
-function panelHeader(x, px, py, num, name, col) {
+function panelHeader(x, px, py, num, name, col, nameSize) {
   circle(x, px + 52, py, 20, { fill: col || BLUE, stroke: false });
   text(x, String(num), px + 52, py + 1, { size: 22, bold: true, color: '#fff' });
-  text(x, name, px + 62, py, { size: 26, bold: true, align: 'left' });
+  text(x, name, px + 62, py, { size: nameSize || 26, bold: true, align: 'left' });
 }
 // centred wrapped paragraph text inside [x0,x1]; returns next y
 function wrap(x, s, x0, x1, y, o = {}) {
@@ -129,7 +129,7 @@ function d_natureNurture() {
   sub2(x, 'biology supplies the capacities — socialisation supplies the content');
   const py = 130, ph = 560;
   box(x, 60, py, 640, ph, { fill: '#f8fafc', stroke: LIGHT });
-  panelHeader(x, 60, py + 50, 1, 'THE NATURE CLAIM: behaviour is inborn', RED);
+  panelHeader(x, 60, py + 50, 1, 'THE NATURE CLAIM \u2014 behaviour is inborn', RED, 23);
   const n1 = [
     'humans are animals: we must eat, sleep, mature and die',
     'the capacity for speech rests on an evolved larynx and brain',
@@ -139,7 +139,7 @@ function d_natureNurture() {
   let yy = py + 120;
   n1.forEach(t => { circle(x, 110, yy - 7, 6, { fill: RED, stroke: false }); yy = wrap(x, t, 140, 670, yy, { size: 21 }) + 16; });
   box(x, 748, py, 640, ph, { fill: '#f8fafc', stroke: LIGHT });
-  panelHeader(x, 748, py + 50, 2, 'THE NURTURE EVIDENCE: behaviour is learned', BLUE);
+  panelHeader(x, 748, py + 50, 2, 'THE NURTURE EVIDENCE \u2014 behaviour is learned', BLUE, 23);
   const n2 = [
     'isolated children: denied socialisation, almost no culture develops — Genie (reported 1970), the Czech twins (Koluchová), Harlow\u2019s monkeys',
     'cross-cultural variation: diets, greetings, family forms and manners differ sharply between societies — instincts do not',
@@ -227,10 +227,10 @@ function d_sanctionsGrid() {
   // axis labels
   text(x, 'INFORMAL — unofficial, applied by people around us', gx + gw / 2, gy - 42, { size: 21, bold: true, color: SOFT });
   text(x, 'FORMAL — official, applied by organisations and the state', gx + gw * 1.5 + gap + gap / 2, gy - 42, { size: 21, bold: true, color: SOFT });
-  const vy = gy + 2 * gh + gap + 70;
-  box(x, 150, vy, W - 300, 150, { fill: '#fffbeb', stroke: '#fde68a', lw: 2 });
-  x.fillStyle = AMBER; x.fillRect(150, vy, 8, 150);
-  wrap(x, 'Most social control is done by the INFORMAL sanctions — constant, subtle, and costing nothing to administer. Formal sanctions exist for the residue that informal disapproval never reached.', 200, W - 170, vy + 56, { size: 22 });
+  const vy = gy + 2 * gh + gap + 20;
+  box(x, 150, vy, W - 300, 130, { fill: '#fffbeb', stroke: '#fde68a', lw: 2 });
+  x.fillStyle = AMBER; x.fillRect(150, vy, 8, 130);
+  wrap(x, 'Most social control is done by the INFORMAL sanctions — constant, subtle, and costing nothing to administer. Formal sanctions exist for the residue informal disapproval never reached.', 200, W - 170, vy + 52, { size: 21, lh: 30 });
   return { file: 'wjec-soc-sanctions-grid.png', w: W, h: H };
 }
 
