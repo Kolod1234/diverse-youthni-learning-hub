@@ -138,9 +138,9 @@ function d_householdPower() {
   panelHeader(x, px2, py + 52, 2, 'WHO CONTROLS THE MONEY', PURPLE);
   wrap(x, 'Pahl (1989): four money-management systems', px2 + 40, px2 + pw - 40, py + 104, { size: 20, color: GREY });
   const sys = [
-    ['WHOLE WAGE', 'one partner manages all income — historically often the wife, handed the pay packet'],
+    ['WHOLE WAGE', 'all income managed by one partner — historically often the wife'],
     ['HOUSEKEEPING ALLOWANCE', 'a fixed sum for the home; the other partner keeps the rest'],
-    ['POOLING', 'a joint pot — the most common today, but a shared account is not a shared say'],
+    ['POOLING', 'a joint pot, the most common — but a joint account is not a shared say'],
     ['INDEPENDENT MANAGEMENT', 'each keeps their own income and contributes by arrangement'],
   ];
   sys.forEach((s, i) => {
