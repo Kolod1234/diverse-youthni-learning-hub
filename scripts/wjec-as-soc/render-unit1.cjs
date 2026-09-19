@@ -161,23 +161,26 @@ function d_socialisationAgencies() {
   const [c, x] = make(W, H);
   title2(x, 'Agencies of socialisation: who teaches us what, and when');
   sub2(x, 'primary socialisation first, secondary socialisation for the rest of life');
-  // primary band
+  // primary band — bullets laid out in two columns to avoid any overlap
   const py1 = 140;
-  box(x, 60, py1, W - 120, 250, { fill: '#eff6ff', stroke: '#bfdbfe', lw: 2 });
+  box(x, 60, py1, W - 120, 240, { fill: '#eff6ff', stroke: '#bfdbfe', lw: 2 });
   x.fillStyle = BLUE; x.fillRect(60, py1, W - 120, 8);
   text(x, 'PRIMARY SOCIALISATION — the family, from birth to about age 5', 60 + (W - 120) / 2, py1 + 50, { size: 25, bold: true, color: BLUE });
   const fam = [
-    'language — the first and deepest gift',
-    'basic norms: right and wrong, sharing, politeness',
-    'values and identity: gender, class, belonging',
-    'emotional attachment — the base for all later learning',
+    ['language — the first and deepest gift', 100, 640],
+    ['basic norms: right and wrong, sharing, politeness', 760, 1340],
+    ['values and identity: gender, class, belonging', 100, 640],
+    ['emotional attachment — the base for all later learning', 760, 1340],
   ];
-  let yy = py1 + 100;
-  fam.forEach(t => { circle(x, 300, yy - 7, 6, { fill: BLUE, stroke: false }); yy = wrap(x, t, 330, 820, yy, { size: 21 }) + 12; });
-  text(x, 'lifelong effects: children deprived of primary socialisation rarely recover fully — it is the foundation', 300, py1 + 218, { size: 19, color: GREY, align: 'left' });
+  fam.forEach((f, i) => {
+    const yy = py1 + 92 + (i >> 1) * 58;
+    circle(x, f[1] + 10, yy - 7, 6, { fill: BLUE, stroke: false });
+    wrap(x, f[0], f[1] + 40, f[2], yy, { size: 21, lh: 28 });
+  });
+  text(x, 'lifelong effects: children deprived of primary socialisation rarely recover fully — it is the foundation', 724, py1 + 212, { size: 19, color: GREY });
   // arrow down
-  arrow(x, W / 2, py1 + 250, W / 2, py1 + 290, { color: GREY, lw: 4, len: 16 });
-  text(x, 'from about age 5, the agencies multiply', W / 2, py1 + 272, { size: 18, color: GREY });
+  arrow(x, W / 2, py1 + 245, W / 2, py1 + 293, { color: GREY, lw: 4, len: 16 });
+  text(x, 'from about age 5, the agencies multiply', W / 2 + 30, py1 + 272, { size: 18, color: GREY, align: 'left' });
   // secondary band
   const py2 = 450;
   box(x, 60, py2, W - 120, 560, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
