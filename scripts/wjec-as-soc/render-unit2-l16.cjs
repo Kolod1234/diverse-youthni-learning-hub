@@ -98,7 +98,7 @@ function d_revisionMap() {
   const [c, x] = make(W, HEIGHT);
   title2(x, 'The whole course, one map: what to retrieve, and what connects');
   sub2(x, 'retrieval practice organised around the joints \u2014 because the connections are the marks');
-  const pw = 428, ph = 540;
+  const pw = 428, ph = 520;
   const cells = [
     [60, 130, 'UNIT 1: SOCIALISATION AND CULTURE', BLUE,
       ['\u2022 Culture, socialisation, identity (Lessons 1\u20133).',
@@ -117,19 +117,19 @@ function d_revisionMap() {
        '\u2022 Media: the chain, the ladder, the effects map, panics, platforms (Lesson 13).',
        '\u2022 Religion: the theories, the debate\u2019s two-clause verdict, organisations, fundamentalism (Lesson 14).',
        '\u2022 RETRIEVE BY: the five sentences of each lesson\u2019s final page \u2014 they were written for this moment.']],
-    [60, 710, 'THE JOINTS (RETRIEVE DAILY)', PURPLE,
+    [60, 690, 'THE JOINTS (RETRIEVE DAILY)', PURPLE,
       ['\u2022 Labelling: deviance, attainment, frames.',
        '\u2022 Amplification: panics, platform outrage.',
        '\u2022 The dark figure and constructed measures everywhere.',
        '\u2022 Compensation and the deprived: sects, subcultures, Pentecostalism.',
        '\u2022 Believing without belonging as identity measurement.']],
-    [510, 710, 'THE SKILLS (BUILD WEEKLY)', AMBER,
+    [510, 690, 'THE SKILLS (BUILD WEEKLY)', AMBER,
       ['\u2022 The six moves, the four jobs (Lesson 15).',
        '\u2022 Name-date-finding-weight citation.',
        '\u2022 Steel-manning with the surviving concession.',
        '\u2022 The audit: circle, underline, star.',
        '\u2022 Timed plans: three lines, then the four moves.']],
-    [960, 710, 'THE METHOD OF REVISION', DARK,
+    [960, 690, 'THE METHOD OF REVISION', DARK,
       ['\u2022 Space it: retrieve each lesson a day apart, then a week \u2014 cramming builds recall that lasts days.',
        '\u2022 Test, don\u2019t re-read: closed-book page summaries, then check.',
        '\u2022 Rotate: one Unit 1, one core, one option, one skills drill per cycle.',
