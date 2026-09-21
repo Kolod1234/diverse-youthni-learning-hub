@@ -82,8 +82,8 @@ function d_observationGrid() {
     });
   });
   // axis labels
-  text(x, 'PARTICIPANT', 80, 320, { size: 17, bold: true, color: GREY });
-  text(x, 'NON-PARTICIPANT', 80, 676, { size: 17, bold: true, color: GREY });
+  text(x, 'PARTICIPANT', 80, 320, { size: 14, bold: true, color: GREY });
+  text(x, 'NON-PARTICIPANT', 80, 676, { size: 14, bold: true, color: GREY });
   text(x, 'OVERT', 455, 128, { size: 17, bold: true, color: GREY });
   text(x, 'COVERT', 1049, 128, { size: 17, bold: true, color: GREY });
   band(x, 866, 160, 'THE DIAGONAL RULE',
