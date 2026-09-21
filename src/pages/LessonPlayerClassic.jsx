@@ -79,6 +79,9 @@ import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFami
 
 const AS_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dc';
 
+// Keep the component identity stable when saved course progress is refreshed.
+const EnhancedLessonPlayer = React.lazy(() => import('@/components/lesson/EnhancedLessonPlayer'));
+
 export default function LessonPlayerClassic() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -654,7 +657,7 @@ export default function LessonPlayerClassic() {
   const slideUrl = getSlideEmbedUrl();
 
   // Use Enhanced player (modern with AI & quizzes)
-  const EnhancedLessonPlayer = React.lazy(() => import('@/components/lesson/EnhancedLessonPlayer'));
+
   
   return (
     <React.Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
