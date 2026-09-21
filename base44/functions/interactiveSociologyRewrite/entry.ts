@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { splitTopLevelBlocks, topLevelBlockRanges } from '../../shared/lessonBlocks.ts';
 
 const REWRITE_RULES = `You are an expert WJEC AS Sociology tutor and educational editor. Rewrite the HTML page below so it reads as a lively, one-to-one tutoring session instead of academic prose, while preserving every piece of sociological substance.
 
@@ -11,7 +12,7 @@ STYLE RULES (mandatory):
 
 PRESERVATION RULES (mandatory):
 6. Keep ALL sociological content: every theorist name, study, date, statistic, definition, example, evaluation point, and cross-reference such as "(page 7)" or "(Lesson 11)". Teaching depth must not shrink.
-7. IMAGE SLOTS. The input contains placeholder tokens like [IMG-SLOT-1] standing for the page's diagrams. Keep every token EXACTLY as written, in the same position inside its <figure> block. Do not delete, reorder or alter tokens, and do not invent new ones. Keep each <figure> wrapper; you may reword the caption to remove any dash while keeping its meaning.
+7. IMAGE SLOTS. The input contains placeholder tokens like [IMG-SLOT-1] standing for the page's diagrams. Keep every token EXACTLY as written, in the same position inside its <figure> block. Do not delete, reorder or alter tokens, and do not invent new ones. Keep each <figure> wrapper; you may reword the caption to remove any dash while keeping its meaning. Tokens like [CP-SLOT-1] stand for interactive tutor checkpoint dialogue boxes: keep each one EXACTLY as written in the same position, never rewrite around or inside them.
 8. Keep the existing block structures EXACTLY, copying every style attribute VERBATIM, one for one (callout divs, worked-example, practice-block, answer-block, key-rule blocks, tables, lists). Only rewrite the wording inside them. Keep practice questions and their full answers complete.
 9. The output must be between 90% and 130% of the input length.
 10. Return ONLY JSON of the shape {"content": "..."} containing the complete rewritten HTML. No markdown fences, no commentary.`;
@@ -104,6 +105,12 @@ function validate(original, next) {
   const oldStyles = countMatches(original, /style="/g);
   const newStyles = countMatches(next, /style="/g);
   if (newStyles < oldStyles * 0.8) problems.push('styled blocks were dropped: the original has ' + oldStyles + ' style attributes but your rewrite has ' + newStyles + '. Copy every style attribute VERBATIM, one for one.');
+  // 8. tutor checkpoint dialogue boxes survive untouched
+  const oldCps = countMatches(original, /<div class="tutor-checkpoint"/g);
+  const newCps = countMatches(next, /<div class="tutor-checkpoint"/g);
+  if (newCps < oldCps) {
+    problems.push('tutor checkpoint dialogue boxes were lost or altered. Keep every [CP-SLOT-n] token exactly where it stands; it is an interactive dialogue box that must not be rewritten.');
+  }
   // 7. key terms guard: proper nouns survive
   const tokens = new Set(
     (stripTags(original).match(/\b[A-Z][a-z]{3,}\b/g) || []).filter(
@@ -119,51 +126,7 @@ function validate(original, next) {
   return problems;
 }
 
-const VOID_TAGS = new Set(['img', 'br', 'hr', 'input', 'meta', 'link', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr']);
 
-// Split an HTML page into its top-level blocks (paragraphs, divs, figures, tables).
-function splitTopLevelBlocks(html) {
-  const tokenRe = /<\/?[a-zA-Z][^>]*>/g;
-  const blocks = [];
-  let depth = 0;
-  let blockStart = -1;
-  let firstStart = -1;
-  let lastEnd = 0;
-  let m;
-  while ((m = tokenRe.exec(html)) !== null) {
-    const tag = m[0];
-    const nameM = tag.match(/^<\s*\/?\s*([a-zA-Z0-9]+)/);
-    const name = nameM ? nameM[1].toLowerCase() : '';
-    const closing = /^<\s*\//.test(tag);
-    if (!name || VOID_TAGS.has(name)) continue;
-    if (!closing) {
-      if (depth === 0) {
-        blockStart = m.index;
-        if (firstStart < 0) firstStart = m.index;
-      }
-      depth++;
-    } else {
-      depth--;
-      if (depth === 0 && blockStart >= 0) {
-        blocks.push({ start: blockStart, end: m.index + tag.length });
-        blockStart = -1;
-        lastEnd = m.index + tag.length;
-      }
-    }
-  }
-  const out = [];
-  if (firstStart > 0) {
-    const lead = html.slice(0, firstStart).trim();
-    if (lead) out.push(lead);
-  }
-  for (const b of blocks) out.push(html.slice(b.start, b.end));
-  if (blocks.length && lastEnd < html.length) {
-    const trail = html.slice(lastEnd).trim();
-    if (trail) out.push(trail);
-  }
-  if (!out.length) out.push(html.trim());
-  return out;
-}
 
 // Group blocks into rewrite chunks of at most maxLen characters.
 function chunkBlocks(blocks, maxLen) {
@@ -257,10 +220,49 @@ export default async function (req) {
       const original = slide.content || '';
       // Protect the image tags: swap each for a short slot token, splice back after.
       const imgTags = original.match(IMG_RE) || [];
-      const working = imgTags.reduce(
+      let working = imgTags.reduce(
         (acc, tag, i) => acc.replace(tag, '[IMG-SLOT-' + (i + 1) + ']'),
         original
       );
+      // Protect the tutor checkpoint dialogue boxes the same way, as whole blocks.
+      // Also record each checkpoint's ordinal position (how many non-checkpoint
+      // top-level blocks precede it) so a fallback rewrite can splice them back
+      // structurally even if the model keeps losing the slot tokens.
+      const cpBlocks = [];
+      const cpInfo = [];
+      let nonCpSoFar = 0;
+      const cpRanges = topLevelBlockRanges(working).ranges;
+      for (const r of cpRanges) {
+        const slice = working.slice(r.start, r.end);
+        if (slice.startsWith('<div class="tutor-checkpoint"')) {
+          cpInfo.push({ html: slice, blockIndexBefore: nonCpSoFar });
+        } else {
+          nonCpSoFar++;
+        }
+      }
+      cpRanges.slice().reverse().forEach((r) => {
+        const slice = working.slice(r.start, r.end);
+        if (slice.startsWith('<div class="tutor-checkpoint"')) {
+          cpBlocks.unshift(slice);
+          working = working.slice(0, r.start) + '[CP-SLOT-' + cpBlocks.length + ']' + working.slice(r.end);
+        }
+      });
+      // Checkpoint-free variants for the fallback path: img-slot input and the
+      // matching validation baseline (real img tags, no checkpoints).
+      let workingClean = working;
+      topLevelBlockRanges(workingClean).ranges.slice().reverse().forEach((r) => {
+        const slice = workingClean.slice(r.start, r.end);
+        if (slice.startsWith('<div class="tutor-checkpoint"')) {
+          workingClean = workingClean.slice(0, r.start) + workingClean.slice(r.end);
+        }
+      });
+      let baselineClean = original;
+      topLevelBlockRanges(baselineClean).ranges.slice().reverse().forEach((r) => {
+        const slice = baselineClean.slice(r.start, r.end);
+        if (slice.startsWith('<div class="tutor-checkpoint"')) {
+          baselineClean = baselineClean.slice(0, r.start) + baselineClean.slice(r.end);
+        }
+      });
       let attempts = 0;
       let lastProblems = [];
       let ok = false;
@@ -271,40 +273,66 @@ export default async function (req) {
         required: ['content'],
       };
       const preferChunks = working.length > 5500;
+      const invoke = async (input, feedback, chunkMode) => {
+        if (!chunkMode) {
+          const res = await base44.integrations.Core.InvokeLLM({
+            prompt: buildPrompt(lesson.title, slide.title, page, slides.length, input, feedback),
+            response_json_schema: schema,
+          });
+          return res && res.content ? res.content : '';
+        }
+        const sections = chunkBlocks(splitTopLevelBlocks(input), 3200);
+        const parts = [];
+        for (let ci = 0; ci < sections.length; ci++) {
+          const res = await base44.integrations.Core.InvokeLLM({
+            prompt: buildChunkPrompt(lesson.title, slide.title, page, slides.length, ci + 1, sections.length, sections[ci], feedback),
+            response_json_schema: schema,
+          });
+          parts.push(res && res.content ? res.content : '');
+        }
+        return parts.join('\n');
+      };
       for (let attempt = 1; attempt <= 3 && !ok; attempt++) {
         attempts = attempt;
         const feedback = attempt > 1 ? lastProblems : null;
         let chunkMode = preferChunks;
         if (attempt === 2) chunkMode = !preferChunks;
-        let raw = '';
-        if (chunkMode) {
-          const sections = chunkBlocks(splitTopLevelBlocks(working), 3200);
-          const parts = [];
-          for (let ci = 0; ci < sections.length; ci++) {
-            const res = await base44.integrations.Core.InvokeLLM({
-              prompt: buildChunkPrompt(lesson.title, slide.title, page, slides.length, ci + 1, sections.length, sections[ci], feedback),
-              response_json_schema: schema,
-            });
-            parts.push(res && res.content ? res.content : '');
-          }
-          raw = parts.join('\n');
-        } else {
-          const res = await base44.integrations.Core.InvokeLLM({
-            prompt: buildPrompt(lesson.title, slide.title, page, slides.length, working, feedback),
-            response_json_schema: schema,
-          });
-          raw = res && res.content ? res.content : '';
-        }
-        // splice the protected image tags back, then enforce byte-exact imgs
+        const raw = await invoke(working, feedback, chunkMode);
+        // splice the protected image tags and checkpoint blocks back, then enforce byte-exact imgs
         let candidate = raw;
         imgTags.forEach((tag, i) => {
           candidate = candidate.replace('[IMG-SLOT-' + (i + 1) + ']', tag);
+        });
+        cpBlocks.forEach((block, i) => {
+          candidate = candidate.replace('[CP-SLOT-' + (i + 1) + ']', block);
         });
         candidate = enforceOriginalImgs(original, candidate);
         lastProblems = validate(original, candidate);
         if (!lastProblems.length && candidate) {
           content = candidate;
           ok = true;
+        }
+      }
+      // Fallback for pages whose checkpoints keep getting lost: rewrite the page
+      // with the checkpoints removed entirely, then splice them back byte-for-byte
+      // at their original ordinal positions. The baseline for validation is the
+      // checkpoint-free original so guards stay consistent.
+      if (!ok && cpInfo.length && lastProblems.some((p) => p.includes('checkpoint'))) {
+        for (let attempt = 4; attempt <= 5 && !ok; attempt++) {
+          attempts = attempt;
+          const feedback = lastProblems;
+          const chunkMode = attempt === 4 ? preferChunks : !preferChunks;
+          const raw = await invoke(workingClean, feedback, chunkMode);
+          let candidate = raw;
+          imgTags.forEach((tag, i) => {
+            candidate = candidate.replace('[IMG-SLOT-' + (i + 1) + ']', tag);
+          });
+          candidate = enforceOriginalImgs(baselineClean, candidate);
+          lastProblems = validate(baselineClean, candidate);
+          if (!lastProblems.length && candidate) {
+            content = reinsertCheckpoints(candidate, cpInfo);
+            ok = true;
+          }
         }
       }
       if (ok) {

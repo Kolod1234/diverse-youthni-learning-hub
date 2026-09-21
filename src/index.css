@@ -312,6 +312,118 @@ button:focus-visible {
     vector-effect: non-scaling-stroke;
   }
 
+  /* Tutor checkpoint dialogue boxes (inserted into lesson HTML by
+     insertTutorCheckpoints; interactivity lives in tutorCheckpoint.js) */
+  .tutor-checkpoint {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem 1.25rem;
+    border: 1px solid hsl(var(--border));
+    border-left: 4px solid hsl(var(--primary));
+    border-radius: 0.875rem;
+    background: hsl(var(--muted) / 0.55);
+  }
+
+  .tutor-checkpoint-label {
+    display: inline-block;
+    margin-bottom: 0.6rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary));
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .tutor-checkpoint-question {
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .tutor-checkpoint-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 999px;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .tutor-checkpoint-option:hover:not(:disabled) {
+    border-color: hsl(var(--primary));
+  }
+
+  .tutor-checkpoint-option:disabled {
+    cursor: default;
+    opacity: 0.9;
+  }
+
+  .tutor-checkpoint-option:not(.is-correct):not(.is-wrong):not(.is-reveal):disabled {
+    opacity: 0.55;
+  }
+
+  .tutor-checkpoint-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary));
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex: none;
+  }
+
+  .tutor-checkpoint-option.is-correct,
+  .tutor-checkpoint-option.is-reveal {
+    border-color: rgb(22 163 74);
+    background: rgb(22 163 74 / 0.1);
+  }
+
+  .tutor-checkpoint-option.is-wrong {
+    border-color: rgb(220 38 38);
+    background: rgb(220 38 38 / 0.08);
+  }
+
+  .tutor-checkpoint-feedback {
+    margin-top: 0.75rem;
+    padding: 0.7rem 1rem;
+    border-radius: 0.625rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .tutor-checkpoint-feedback.is-correct {
+    background: rgb(22 163 74 / 0.1);
+    color: rgb(21 128 61);
+  }
+
+  .tutor-checkpoint-feedback.is-wrong {
+    background: rgb(220 38 38 / 0.08);
+    color: rgb(185 28 28);
+  }
+
+  .dark .tutor-checkpoint-feedback.is-correct {
+    color: rgb(134 239 172);
+  }
+
+  .dark .tutor-checkpoint-feedback.is-wrong {
+    color: rgb(252 165 165);
+  }
+
   @keyframes lesson-text-slide-in {
     from {
       opacity: 0;

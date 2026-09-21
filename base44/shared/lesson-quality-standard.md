@@ -93,6 +93,27 @@ across every subject, curriculum and qualification level.
   function, which validates every rewritten page (image tags, classes, styles,
   length, key names, question count, zero em dashes) before saving.
 
+## 7. Interactive tutor checkpoint dialogues (owner's standing requirement, Sept 2026)
+- Directly after a block that finishes teaching a concept, definition, study or
+  finding, insert a small "Tutor check-in" dialogue box: a multiple-choice
+  question in the tutor's voice (e.g. "Which of these do you think is not
+  material culture?") with 4 options, exactly one correct, drawn from the page's
+  material or common misconceptions.
+- The widget answers the student instantly: a correct choice earns warm praise
+  plus a one-to-two-sentence explanation of why it is right; every wrong choice
+  gets its own "Not quite." feedback naming the correct option and explaining
+  both why the chosen one is wrong and why the right one is right.
+- Checkpoints sit alongside, and never replace, the page's thinking questions,
+  practice questions and worked answers. One or two per page, only after new
+  concepts have actually been taught; no checkpoints on pages that are purely
+  practice, answers or diagrams without new teaching.
+- Implementation in this app: the insertTutorCheckpoints function splices
+  validated `.tutor-checkpoint` blocks into the lesson HTML at block boundaries
+  (existing content, images and answers are never altered), and the front end
+  renders them as interactive dialogue boxes via the delegated handler in
+  src/components/lesson/tutorCheckpoint.js. New lessons in all subsequent
+  courses must include checkpoints in this format from the start.
+
 ## App conventions
 - Course: GCSE Single Award Science (CCEA) — 15 substantive pages per lesson,
   exam-style practice with hidden answers, misconception callouts, custom
