@@ -114,6 +114,21 @@ across every subject, curriculum and qualification level.
   src/components/lesson/tutorCheckpoint.js. New lessons in all subsequent
   courses must include checkpoints in this format from the start.
 
+## Course plan: WJEC A2 Criminology (Diploma Extension, from Sept 2026)
+- Qualification: WJEC Level 3 Applied Diploma in Criminology, Diploma
+  Extension course (Units 3 and 4). Unit 3 Crime Scene to Courtroom is
+  internally assessed (controlled assignment); Unit 4 Crime and Punishment is
+  externally examined. Author against the current WJEC specification PDF
+  (wjec-applied-diploma-in-criminology-spec).
+- Lesson outline lives in scripts/wjec-a2-crim/outline.cjs (16 lessons:
+  8 for Unit 3, 8 for Unit 4). Lessons follow the 15-page structure
+  (6,000+ words), tutor voice, thinking questions, hand-authored
+  .tutor-checkpoint blocks (markup per section 7), hidden-answer practice,
+  and Canvas PNG diagrams in public/lesson-assets/wjec-a2-criminology/
+  rendered via scripts/wjec-a2-crim/diagram-helpers.cjs + render-unit3-lN.cjs.
+- Apply lesson pages to the course with the scripts/wjec-a2-crim/lN-pages-M.cjs
+  files (never regenerate authored pages with the LLM).
+
 ## App conventions
 - Course: GCSE Single Award Science (CCEA) — 15 substantive pages per lesson,
   exam-style practice with hidden answers, misconception callouts, custom
