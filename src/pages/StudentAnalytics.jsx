@@ -13,6 +13,7 @@ const ArrowLeft = _w(ArrowBackIcon), TrendingUp = _w(TrendingUpIcon), Clock = _w
 const Award = _w(EmojiEventsIcon), CheckCircle = _w(CheckCircleIcon);
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import PointsBreakdownPanel from '@/components/students/PointsBreakdownPanel';
 
 export default function StudentAnalytics() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -105,6 +106,14 @@ export default function StudentAnalytics() {
             );
           })}
         </div>
+
+        <Card className="p-6 mb-6">
+          <h3 className="font-semibold mb-1">Ranking Points Breakdown</h3>
+          <p className="text-gray-500 text-sm mb-4">
+            Best-score topic-check points, saved pass status and reading progress across courses.
+          </p>
+          <PointsBreakdownPanel email={studentEmail} />
+        </Card>
 
         <div className="grid md:grid-cols-2 gap-6">
           <Card className="p-6">

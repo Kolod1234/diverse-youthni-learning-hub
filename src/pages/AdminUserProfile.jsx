@@ -15,6 +15,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MailIcon from '@mui/icons-material/Mail';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import PointsBreakdownPanel from '@/components/students/PointsBreakdownPanel';
 
 export default function AdminUserProfile() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -142,6 +143,7 @@ export default function AdminUserProfile() {
           <Tab value="enrollments" label={`Enrollments (${enrollments.length})`} />
           <Tab value="certificates" label={`Certificates (${certificates.length})`} />
           <Tab value="reviews" label={`Reviews (${reviews.length})`} />
+          <Tab value="points" label="Points Breakdown" />
           <Tab value="activity" label="Activity" />
         </Tabs>
 
@@ -246,6 +248,16 @@ export default function AdminUserProfile() {
               </Card>
             )}
           </Stack>
+        )}
+
+        {tab === 'points' && (
+          <Card sx={{ p: 3 }}>
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+              <EmojiEventsIcon sx={{ fontSize: 22, color: '#ea580c' }} />
+              <Typography fontWeight={700}>Ranking Points Breakdown</Typography>
+            </Stack>
+            <PointsBreakdownPanel userId={userId} />
+          </Card>
         )}
 
         {tab === 'activity' && (
