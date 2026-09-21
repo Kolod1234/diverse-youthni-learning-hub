@@ -19,7 +19,7 @@ function communityToolkit() {
       'The most used sentence in the system: means adjusted money punishment, proportionate without institutional damage. The risk: weak enforcement turns it into a price, denouncing nothing, deterring only the poor, with default imprisonment punishing poverty.'],
     ['The community order: the menu', BLUE,
       'One sentence, composed from requirements: unpaid work, curfew and tagging, exclusion, programmes, drug and alcohol treatment, supervision. Punishment, rehabilitation and reparation served in a single instrument, with bonds intact.'],
-    ['The suspended sentence: the boundary', PURPLE,
+    ['The suspended sentence', PURPLE,
       'Custody imposed but suspended on conditions: the sword of Damocles sentence, community in operation, custodial in threat. The instrument that lets the court calibrate just below the custody threshold, if breach reliably activates.'],
     ['The discharge: the nominal sentence', GREEN,
       'Absolute and conditional discharges: conviction recorded, sentence nominal, the conditional variety with resentencing for further offending. The boundary between sentence and no sentence, for cases where punishment is already delivered.'],
