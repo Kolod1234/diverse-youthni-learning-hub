@@ -16,7 +16,7 @@ function cpsStructure() {
   const cols = [60, 516, 972], PW = 416, rows = [120, 490], PH = 330;
   const panels = [
     ['The Attorney General', 'The chief legal adviser to the government, with overall superintendence of the CPS. Does not direct individual charging decisions, but answers for the prosecution system and issues guidance such as the disclosure guidelines.', BLUE],
-    ['Director of Public Prosecutions', 'Head of the CPS. Sets national policy and standards, handles the most sensitive decisions personally, and may take over private prosecutions to continue or stop them.', RED],
+    ['Director of Public Prosecutions', 'Head of the CPS. Sets national policy and standards, handles the most sensitive decisions personally, and may take over private prosecutions to continue or stop them.', RED, 19],
     ['Chief Crown Prosecutor', 'Leads one of the regional CPS Areas. Owns every prosecution decision taken in that Area and manages the prosecutors and caseworkers who make them.', AMBER],
     ['Crown Prosecutor', 'A CPS lawyer who reviews the police file against the Full Code Test, makes charging decisions, prepares cases and prosecutes in the magistrates court.', GREEN],
     ['CPS Direct', 'Duty prosecutors available around the clock. Advise police in custody suites by phone or video and take urgent charging decisions before a full file exists.', PURPLE],
@@ -25,7 +25,7 @@ function cpsStructure() {
   panels.forEach((p, i) => {
     const px = cols[i % 3], py = rows[Math.floor(i / 3)];
     box(x, px, py, PW, PH);
-    panelHeader(x, px + 20, py + 44, i + 1, p[0], p[2], 21);
+    panelHeader(x, px + 20, py + 44, i + 1, p[0], p[2], p[3] || 21);
     wrap(x, p[1], px + 26, px + PW - 26, py + 92, { size: 18, lh: 26 });
   });
   band(x, 866, 196, 'Why independence matters',
