@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { displayCurriculumSection } from '@/lib/curriculumSections';
 import { 
   Button, Card, CardContent, CardMedia, Chip, Box, Typography, Container,
   Accordion, AccordionSummary, AccordionDetails, Tabs, Tab, Avatar, Breadcrumbs,
@@ -239,7 +240,7 @@ export default function CourseDetails() {
 
   // Group pathway-visible lessons by section
   const sections = visibleLessons.reduce((acc, lesson) => {
-    const section = lesson.section || 'Getting Started';
+    const section = displayCurriculumSection(lesson.section, course) || 'Getting Started';
     if (!acc[section]) acc[section] = [];
     acc[section].push(lesson);
     return acc;

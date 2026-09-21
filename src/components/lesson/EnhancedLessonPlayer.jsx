@@ -11,6 +11,7 @@ import {
   Download, Send, Loader2, Brain
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { displayCurriculumSection } from '@/lib/curriculumSections';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
 import ManusSlidePlayer from '@/components/lesson/ManusSlidePlayer';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
@@ -1187,9 +1188,9 @@ export default function EnhancedLessonPlayer({
 
   useEffect(() => {
     if (lesson?.section) {
-      setExpandedSections(prev => ({ ...prev, [lesson.section]: true }));
+      setExpandedSections(prev => ({ ...prev, [displayCurriculumSection(lesson.section, course) || lesson.section]: true }));
     }
-  }, [lesson?.id, lesson?.section]);
+  }, [lesson?.id, lesson?.section, course?.id]);
 
   useEffect(() => {
     const handlePageKeys = (event) => {
@@ -1242,7 +1243,7 @@ export default function EnhancedLessonPlayer({
   if (!lesson) return null;
 
   const groupedLessons = sortedLessons.reduce((acc, lesson) => {
-    const section = lesson.section || 'Lessons';
+    const section = displayCurriculumSection(lesson.section, course) || 'Lessons';
     if (!acc[section]) acc[section] = [];
     acc[section].push(lesson);
     return acc;
@@ -1430,8 +1431,13 @@ export default function EnhancedLessonPlayer({
                   {filtered.map((item, index) => {
                     const completed = completedIds.includes(item.id);
                     const current = item.id === lesson.id;
-                    const relevantUnitCodes = selectedMathUnits.length > 0
-                      ? (item.ccea_units || []).filter(unitCode => selectedMathUnits.includes(unitCode))
+                    // Unit badges narrow to the learner's pathway pair, or to
+                    // the tier's own units before a pathway is chosen.
+                    const badgeUnits = selectedMathUnits.length > 0
+                      ? selectedMathUnits
+                      : (course?.requires_math_pathway && tierUnitCodes ? tierUnitCodes : []);
+                    const relevantUnitCodes = badgeUnits.length > 0
+                      ? (item.ccea_units || []).filter(unitCode => badgeUnits.includes(unitCode))
                       : (item.ccea_units || []);
                     return (
                       <button
@@ -1515,7 +1521,7 @@ export default function EnhancedLessonPlayer({
               <ChevronLeft className="h-5 w-5 shrink-0 text-slate-300" />
               <span className="hidden min-w-0 xl:block">
                 <span className="block truncate text-sm font-semibold">{course?.title || 'Course'}</span>
-                <span className="block truncate text-xs text-slate-400">{lesson.section || 'Lesson'}</span>
+                <span className="block truncate text-xs text-slate-400">{displayCurriculumSection(lesson.section, course) || 'Lesson'}</span>
               </span>
             </button>
           </div>
@@ -1601,7 +1607,7 @@ export default function EnhancedLessonPlayer({
                 <div className="lesson-page-meta mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-600">
-                      Page {currentContentSlide + 1} of {contentSlides.length} <span className="mx-1.5 text-slate-300">•</span> {lesson.section || 'Lesson'}
+                      Page {currentContentSlide + 1} of {contentSlides.length} <span className="mx-1.5 text-slate-300">•</span> {displayCurriculumSection(lesson.section, course) || 'Lesson'}
                     </p>
                     <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
                       <Clock className="h-4 w-4" /> About {estimatedMinutes} min for this lesson
