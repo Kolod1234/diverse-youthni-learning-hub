@@ -63,6 +63,22 @@ function enforceOriginalImgs(original, candidate) {
   return out;
 }
 
+// Splice checkpoint dialogue boxes back into a rewritten page at their original
+// ordinal positions (how many non-checkpoint top-level blocks preceded them).
+function reinsertCheckpoints(html, cps) {
+  let out = html;
+  const sorted = cps.slice().sort((a, b) => a.blockIndexBefore - b.blockIndexBefore);
+  let shift = 0;
+  for (const cp of sorted) {
+    const { ranges } = topLevelBlockRanges(out);
+    const b = cp.blockIndexBefore + shift;
+    const pos = b < ranges.length ? ranges[b].start : out.length;
+    out = out.slice(0, pos) + '\n' + cp.html + '\n' + out.slice(pos);
+    shift++;
+  }
+  return out;
+}
+
 function validate(original, next) {
   const problems = [];
   // 1. images preserved exactly
@@ -320,7 +336,10 @@ export default async function (req) {
       if (!ok && cpInfo.length && lastProblems.some((p) => p.includes('checkpoint'))) {
         for (let attempt = 4; attempt <= 5 && !ok; attempt++) {
           attempts = attempt;
-          const feedback = lastProblems;
+          // Checkpoint problems cannot be fixed here (checkpoints are not in the
+          // input); only feed back the remaining, actionable issues.
+          const cleanedFeedback = lastProblems.filter((p) => !p.includes('checkpoint'));
+          const feedback = cleanedFeedback.length ? cleanedFeedback : null;
           const chunkMode = attempt === 4 ? preferChunks : !preferChunks;
           const raw = await invoke(workingClean, feedback, chunkMode);
           let candidate = raw;
