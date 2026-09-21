@@ -1140,7 +1140,9 @@ export default function EnhancedLessonPlayer({
     ? `<figure class='page-visual'><img src='${a2GeneratedVisualPath}' alt='Teaching diagram aligned to this biology page.' loading='lazy' /><figcaption>Biology process diagram aligned to this page.</figcaption></figure>${activeContentSlide.content || ''}`
     : (activeContentSlide?.content || '');
   // Solutions render as dedicated step-by-step blocks, not inline prose.
-  const renderedSlideHtml = expandSolutionSteps(baseSlideHtml);
+  // Prose "Example N" sections get the same step display in maths lessons.
+  const isMathsCourse = course?.category === 'mathematics' || course?.category === 'further_mathematics';
+  const renderedSlideHtml = expandSolutionSteps(baseSlideHtml, { exampleHeadings: isMathsCourse });
   const isWaterPolarityPage = lesson?.id === WATER_INTERACTIVE_LESSON_ID
     && activeContentSlide?.notes === WATER_POLARITY_MARKER;
   const asBiologyPanelPageIndex = contentSlides.length > 1 ? 1 : 0;

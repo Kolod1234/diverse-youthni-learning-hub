@@ -4,13 +4,13 @@ import { mathTokensKey, invokeWithRetry, mapWithLimit } from '../../shared/lesso
 const OL_STYLE = 'margin:12px 0 12px 22px;line-height:1.75;font-size:1.06em;color:#24343d;';
 const LI_STYLE = 'margin:6px 0;';
 
-const RULES = `You restructure CCEA AS Mathematics lesson HTML so dense explanatory prose becomes easy-to-follow steps.
+const RULES = `You restructure CCEA mathematics lesson HTML so dense explanatory prose becomes easy-to-follow steps.
 
 CONVERT: any <p> containing multi-step reasoning, a derivation, a chain of "since/so/therefore/and combining", or 2+ sentences of sequential explanation -> an ordered list <ol style="${OL_STYLE}"> with <li style="${LI_STYLE}">one step each</li>.
 Use <ul style="${OL_STYLE}"> instead when the items are parallel facts rather than sequential steps.
 
 DO NOT TOUCH:
-- [SVG_n] placeholders (keep them exactly, in the same position)
+- [SVG_n] and [MEDIA_n] placeholders (keep them exactly, in the same position)
 - display maths paragraphs ($$...$$)
 - existing <ul>/<ol>/<table>
 - short single-sentence paragraphs, and one-line Key idea / Note / Question box text
@@ -23,31 +23,94 @@ ABSOLUTE RULES:
 - British English spelling.
 - Return the FULL slide HTML. If a slide needs no change, return it byte-identical.`;
 
+// Extracts every balanced <div class="..."> block matched by `re` into
+// `store` as [MEDIA_n] tokens, so the model cannot reword its contents.
+function extractClassDivs(src: string, re: RegExp, store: string[]): string {
+  let out = '';
+  let pos = 0;
+  re.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(src)) !== null) {
+    const after = m.index + m[0].length;
+    const tagRe = /<(\/?)div\b[^>]*?(\/?)>/gi;
+    tagRe.lastIndex = after;
+    let depth = 1;
+    let endIdx = -1;
+    let t: RegExpExecArray | null;
+    while ((t = tagRe.exec(src)) !== null) {
+      if (t[1]) depth -= 1;
+      else if (!t[2]) depth += 1;
+      if (depth === 0) { endIdx = t.index + t[0].length; break; }
+    }
+    if (endIdx === -1) continue;
+    store.push(src.slice(m.index, endIdx));
+    out += src.slice(pos, m.index) + `[MEDIA_${store.length - 1}]`;
+    pos = endIdx;
+    re.lastIndex = endIdx;
+  }
+  return out + src.slice(pos);
+}
+
 async function convertSlide(base44, content) {
   const svgs = [];
-  const masked = content.replace(/<svg[\s\S]*?<\/svg>/g, (m) => {
+  const media = [];
+  // Images, interactive checkpoints, practice questions and hidden answers are
+  // masked so the model cannot reword or drop them; each token is restored
+  // byte-for-byte and its presence is validated afterwards.
+  let masked = content.replace(/<svg[\s\S]*?<\/svg>/g, (m) => {
     svgs.push(m);
     return `[SVG_${svgs.length - 1}]`;
   });
+  masked = extractClassDivs(masked, /<div[^>]*\bclass="[^"]*\btutor-checkpoint\b[^"]*"[^>]*>/gi, media);
+  masked = extractClassDivs(masked, /<div[^>]*\bclass="[^"]*\bpractice-block\b[^"]*"[^>]*>/gi, media);
+  masked = masked
+    .replace(/<details[\s\S]*?<\/details>/gi, (m) => {
+      media.push(m);
+      return `[MEDIA_${media.length - 1}]`;
+    })
+    .replace(/<figure[\s\S]*?<\/figure>/gi, (m) => {
+      media.push(m);
+      return `[MEDIA_${media.length - 1}]`;
+    })
+    .replace(/<img[^>]*>/gi, (m) => {
+      media.push(m);
+      return `[MEDIA_${media.length - 1}]`;
+    });
 
-  let res;
-  try {
-    res = await invokeWithRetry(base44, `${RULES}\n\nSLIDE HTML:\n${masked}`);
-  } catch (err) {
-    return { content, changed: false, reason: 'llm error: ' + err.message };
+  let out = '';
+  let changedFlag = false;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    let res;
+    const reminder = attempt === 0
+      ? ''
+      : '\n\nREMINDER: your previous attempt altered the mathematics. Every LaTeX expression must be copied character-for-character, including $ signs. Convert only the prose structure and return the slide again.';
+    try {
+      res = await invokeWithRetry(base44, `${RULES}${reminder}\n\nSLIDE HTML:\n${masked}`);
+    } catch (err) {
+      return { content, changed: false, reason: 'llm error: ' + err.message };
+    }
+    const candidate = res && res.html ? res.html : '';
+    if (!candidate) return { content, changed: false, reason: 'empty response' };
+    if (mathTokensKey(masked) !== mathTokensKey(candidate)) continue;
+    out = candidate;
+    changedFlag = res.changed === true && candidate !== content;
+    break;
   }
-
-  let out = res && res.html ? res.html : '';
-  if (!out) return { content, changed: false, reason: 'empty response' };
-  if (mathTokensKey(masked) !== mathTokensKey(out)) return { content, changed: false, reason: 'maths mismatch' };
+  if (!out) return { content, changed: false, reason: 'maths mismatch' };
 
   for (let i = 0; i < svgs.length; i++) {
     if (!out.includes(`[SVG_${i}]`)) return { content, changed: false, reason: 'svg lost' };
-    out = out.replace(`[SVG_${i}]`, svgs[i]);
+    out = out.replace(`[SVG_${i}]`, () => svgs[i]);
   }
   if (/\[SVG_\d+\]/.test(out)) return { content, changed: false, reason: 'stray svg token' };
 
-  return { content: out, changed: res.changed === true && out !== content };
+  for (let i = 0; i < media.length; i++) {
+    if (!out.includes(`[MEDIA_${i}]`)) return { content, changed: false, reason: 'media lost' };
+    out = out.replace(`[MEDIA_${i}]`, () => media[i]);
+  }
+  if (/\[MEDIA_\d+\]/.test(out)) return { content, changed: false, reason: 'stray media token' };
+
+  return { content: out, changed: changedFlag };
 }
 
 export default async function (req: Request): Promise<Response> {
