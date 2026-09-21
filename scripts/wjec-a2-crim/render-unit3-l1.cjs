@@ -20,7 +20,7 @@ function personnel() {
     ['Detective (CID)', 'Runs the person side of the enquiry: takes accounts, identifies suspects, plans interviews and lines of enquiry, and builds the case file that a prosecution can be built on.', AMBER],
     ['Senior investigating officer', 'Leads major investigations such as murder or kidnap. Sets the strategy, directs specialists and teams, and owns the big decisions that courts will later test against the evidence actually gathered.', GREEN],
     ['Forensic scientist', 'Analyses recovered items in the laboratory: DNA profiles, fibres, marks and ballistics. Interprets what results mean and reports findings in a form the court can test.', PURPLE],
-    ['Pathologist and digital specialists', 'A Home Office registered forensic pathologist examines the body in suspicious deaths to establish cause and time of death. Digital specialists recover and examine data from phones, computers and networks.', DARK],
+    ['Pathologist and specialists', 'A Home Office registered forensic pathologist examines the body in suspicious deaths to establish cause and time of death. Digital specialists recover and examine data from phones, computers and networks.', DARK],
   ];
   panels.forEach((p, i) => {
     const px = cols[i % 3], py = rows[Math.floor(i / 3)];
