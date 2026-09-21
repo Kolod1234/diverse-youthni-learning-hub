@@ -76,12 +76,12 @@ function d_amplificationSpiral() {
     wrap(x, body, bx + 90, bx + bw - 26, by + 44, { size: 16, lh: 23 });
   });
   // loop arrows: down the left column, across the bottom, up the right column, back across the top
-  arrow(x, LX + bw / 2, LY[0] + bh + 6, LY[1] - 6, { color: GREY });
-  arrow(x, LX + bw / 2, LY[1] + bh + 6, LY[2] - 6, { color: GREY });
-  arrow(x, LX + bw + 8, LY[2] + bh / 2, RX - 8, { color: GREY });
-  arrow(x, RX + bw / 2, RY[0] - 6, RY[1] + bh + 6, { color: GREY });
-  arrow(x, RX + bw / 2, RY[1] - 6, RY[2] + bh + 6, { color: GREY });
-  arrow(x, RX - 8, RY[2] + bh / 2, LX + bw + 8, { color: GREY });
+  arrow(x, LX + bw / 2, LY[0] + bh + 6, LX + bw / 2, LY[1] - 6, { color: GREY });
+  arrow(x, LX + bw / 2, LY[1] + bh + 6, LX + bw / 2, LY[2] - 6, { color: GREY });
+  arrow(x, LX + bw + 8, LY[2] + bh / 2, RX - 8, LY[2] + bh / 2, { color: GREY });
+  arrow(x, RX + bw / 2, RY[0] - 6, RX + bw / 2, RY[1] + bh + 6, { color: GREY });
+  arrow(x, RX + bw / 2, RY[1] - 6, RX + bw / 2, RY[2] + bh + 6, { color: GREY });
+  arrow(x, RX - 8, RY[2] + bh / 2, LX + bw + 8, RY[2] + bh / 2, { color: GREY });
   wrap(x, 'the next bank holiday begins where the last one\u2019s headlines ended', LX + bw + 20, RX - 20, RY[2] + bh / 2 - 24, { size: 13, color: GREY });
   const byy = 920;
   box(x, 60, byy, W - 120, 130, { fill: '#fffbeb', stroke: '#fde68a', lw: 2 });
