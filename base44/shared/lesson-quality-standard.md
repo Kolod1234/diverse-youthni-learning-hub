@@ -76,6 +76,23 @@ across every subject, curriculum and qualification level.
   verify final assets visually before publication, audit for label overlaps and
   artefacts, and keep British English spelling throughout.)
 
+## 6. Interactive tutor writing style (owner's standing requirement, Sept 2026)
+- Lessons must read as a one-to-one tutoring session, not academic prose. Address
+  the student as "you"; weave in a short thinking or prediction question roughly
+  every 150 to 250 words ("Pause and predict...", "Your turn...", "Quick check...")
+  and let the following text answer it. Vary the phrasing; never repeat the same
+  prompt twice; do not convert teaching pages into quizzes.
+- Never join or bracket clauses with an em dash (—) or en dash (–). Use full
+  stops, commas, colons or brackets. Rewrite ranges as "1945 to 1955".
+- No bold UPPERCASE labels run into a paragraph. Every label becomes a proper
+  sentence-case <h4> subheading on its own line, followed by the paragraph.
+- Short clear sentences (12 to 25 words), one idea per paragraph, no paragraph
+  over ~110 words. British English throughout.
+- These rules apply to all subjects from the 15-page AS/A-level and GCSE sets
+  onward; sociology lessons are being converted via the interactiveSociologyRewrite
+  function, which validates every rewritten page (image tags, classes, styles,
+  length, key names, question count, zero em dashes) before saving.
+
 ## App conventions
 - Course: GCSE Single Award Science (CCEA) — 15 substantive pages per lesson,
   exam-style practice with hidden answers, misconception callouts, custom
