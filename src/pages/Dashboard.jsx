@@ -109,6 +109,12 @@ export default function Dashboard() {
     staleTime: 2 * 60 * 1000,
   });
 
+  const { data: topicPoints } = useQuery({
+    queryKey: ['topic-points', user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => (await base44.functions.invoke('publicScoreboardData', { type: 'points', qualification: 'gcse', limit: 1 })).data.totals,
+  });
+
   const { data: upcomingSessions = [] } = useQuery({
     queryKey: ['upcoming-sessions', user?.email],
     queryFn: async () => {
@@ -207,10 +213,11 @@ export default function Dashboard() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <PointsDisplay 
-                  points={userProgress?.points || 0} 
-                  level={userProgress?.level || 1}
-                />
+                <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
+                  <Typography fontWeight={700}>Topic-check points</Typography>
+                  <Typography>GCSE: {topicPoints?.gcse?.toLocaleString() ?? '—'} · A-level: {topicPoints?.alevel?.toLocaleString() ?? '—'}</Typography>
+                  <Typography variant="caption" color="text.secondary">Best score per topic</Typography>
+                </Box>
               </motion.div>
             </Box>
           </Box>

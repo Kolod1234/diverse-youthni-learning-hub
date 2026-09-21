@@ -1,0 +1,22 @@
+/* Portalled dialogs stay inside the visual layout on narrow screens.
+   Animation translations must match the centred resting position. */
+.viewport-dialog {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  --tw-enter-translate-x: -50%;
+  --tw-enter-translate-y: -50%;
+  --tw-exit-translate-x: -50%;
+  --tw-exit-translate-y: -50%;
+}
+.viewport-dialog > * { min-width: 0; }
+@media (max-width: 639px) {
+  .viewport-dialog {
+    left: 50% !important;
+    top: 50% !important;
+    right: auto !important;
+    width: calc(100vw - 1.5rem) !important;
+    max-width: calc(100vw - 1.5rem) !important;
+    max-height: calc(100dvh - 1.5rem) !important;
+    transform: translate(-50%, -50%) !important;
+  }
+}

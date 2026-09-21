@@ -30,6 +30,8 @@ export async function topicAccess(base44, user, lesson) {
     passes.forEach(p => passedIds.add(p.lesson_id));
     if (passes.length < 500) break;
   }
+  // A saved pass permanently permits revision, even if earlier topics are added later.
+  if (passedIds.has(lesson.id)) return { allowed: true, staff: false };
   const prior = earlier.find(l => !passedIds.has(l.id));
   if (prior) return { allowed: false, prerequisite: { id: prior.id, title: prior.title, course_id: prior.course_id } };
   return { allowed: true, staff: false };

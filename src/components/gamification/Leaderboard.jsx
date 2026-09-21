@@ -1,99 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card, Box, Typography, Avatar, Stack, Skeleton } from '@mui/material';
+import { Card, Box, Typography, Stack, Skeleton, Tabs, Tab, Button, Alert } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 export default function Leaderboard({ limit = 10 }) {
-  const { data: leaderboard = [], isLoading } = useQuery({
-    queryKey: ['leaderboard', limit],
-    queryFn: async () => {
-      const response = await base44.functions.invoke('publicScoreboardData', { type: 'points', limit });
-      return (response.data.entries || []).map((entry, index) => ({ ...entry, rank: index + 1 }));
-    }
+  const [qualification, setQualification] = useState('gcse');
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ['leaderboard', qualification, limit],
+    queryFn: async () => (await base44.functions.invoke('publicScoreboardData', { type: 'points', qualification, limit })).data
   });
-
-  if (isLoading) {
-    return (
-      <Card sx={{ p: 3, borderRadius: 3, boxShadow: 1 }}>
-        <Stack spacing={2}>
-          {[0, 1, 2, 3, 4].map((index) => (
-            <Skeleton key={index} variant="rounded" height={64} />
-          ))}
-        </Stack>
-      </Card>
-    );
-  }
-
-  return (
-    <Card sx={{ p: 3, borderRadius: 3, boxShadow: 1, background: 'linear-gradient(to bottom right, #fef9c3, #ffedd5)' }}>
-      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 3 }}>
-        <EmojiEventsIcon sx={{ fontSize: 32, color: '#ca8a04' }} />
-        <Box>
-          <Typography variant="h6" fontWeight={700} sx={{ color: '#1f2937' }}>Leaderboard</Typography>
-          <Typography variant="caption" color="text.secondary">Top performers this month</Typography>
-        </Box>
-      </Stack>
-
+  const entries = data?.entries || [];
+  return <Card sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, minWidth: 0 }}>
+    <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+      <EmojiEventsIcon color="warning" /><Typography variant="h6" fontWeight={700}>Student rankings</Typography>
+    </Stack>
+    <Tabs value={qualification} onChange={(_, value) => setQualification(value)} variant="fullWidth" aria-label="Ranking qualification">
+      <Tab value="gcse" label="GCSE" /><Tab value="alevel" label="A-level" />
+    </Tabs>
+    <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
+      All-time points: your best percentage on each topic check. Only improvements add points. Usernames only.
+    </Typography>
+    {isPending ? <Skeleton variant="rounded" height={180} /> : isError ?
+      <Alert severity="error" action={<Button onClick={() => refetch()}>Retry</Button>}>Rankings could not be loaded.</Alert> :
       <Stack spacing={1.5}>
-        {leaderboard.map((entry) => {
-          const highlight = entry.rank <= 3;
-          let rowSx = { bgcolor: 'background.paper', color: 'text.primary' };
-          if (entry.rank === 1) rowSx = { background: 'linear-gradient(to right, #fbbf24, #eab308)', color: 'white', boxShadow: 3 };
-          else if (entry.rank === 2) rowSx = { background: 'linear-gradient(to right, #d1d5db, #9ca3af)', color: '#1f2937', boxShadow: 2 };
-          else if (entry.rank === 3) rowSx = { background: 'linear-gradient(to right, #fb923c, #f97316)', color: 'white', boxShadow: 2 };
-
-          return (
-            <Box
-              key={entry.id || `${entry.created_by}-${entry.rank}`}
-              sx={{ display: 'flex', alignItems: 'center', gap: 2, borderRadius: 3, p: 2, transition: 'all 0.2s', ...rowSx }}
-            >
-              <Box sx={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                {entry.rank === 1 && <EmojiEventsIcon sx={{ fontSize: 32 }} />}
-                {entry.rank === 2 && <MilitaryTechIcon sx={{ fontSize: 32 }} />}
-                {entry.rank === 3 && <WorkspacePremiumIcon sx={{ fontSize: 32 }} />}
-                {entry.rank > 3 && <Typography variant="h6" fontWeight={700} sx={{ color: '#9ca3af' }}>#{entry.rank}</Typography>}
-              </Box>
-
-              <Avatar sx={{ width: 48, height: 48, bgcolor: highlight ? 'rgba(255,255,255,0.2)' : '#e5e7eb', color: highlight ? 'white' : '#374151' }}>
-                {(entry.username || 'L').charAt(0)}
-              </Avatar>
-
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography fontWeight={600} noWrap>{entry.username || 'Learner'}</Typography>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography variant="caption" sx={{ opacity: highlight ? 0.9 : 1, color: highlight ? 'inherit' : 'text.secondary' }}>
-                    Level {entry.level || 1}
-                  </Typography>
-                  {entry.streak > 0 && (
-                    <>
-                      <Typography variant="caption">•</Typography>
-                      <Typography variant="caption" sx={{ opacity: highlight ? 0.9 : 1, color: highlight ? 'inherit' : '#ea580c' }}>
-                        🔥 {entry.streak} day streak
-                      </Typography>
-                    </>
-                  )}
-                </Stack>
-              </Box>
-
-              <Box sx={{ textAlign: 'right' }}>
-                <Typography variant="h6" fontWeight={700}>{entry.points?.toLocaleString() || 0}</Typography>
-                <Typography variant="caption" sx={{ opacity: highlight ? 0.9 : 1, color: highlight ? 'inherit' : 'text.secondary' }}>points</Typography>
-              </Box>
-            </Box>
-          );
-        })}
-      </Stack>
-
-      {leaderboard.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 6 }}>
-          <TrendingUpIcon sx={{ fontSize: 64, color: '#d1d5db', mb: 2 }} />
-          <Typography color="text.secondary">No learners yet. Be the first to earn points!</Typography>
-        </Box>
-      )}
-    </Card>
-  );
+        {data?.current_user && <Typography variant="body2">Your rank: #{data.current_user.rank} · {data.current_user.points.toLocaleString()} points</Typography>}
+        {entries.map(entry => <Box key={entry.id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, border: 1, borderColor: 'divider', borderRadius: 2, minWidth: 0 }}>
+          <Typography fontWeight={700} sx={{ flexShrink: 0 }}>#{entry.rank}</Typography>
+          <Typography fontWeight={600} sx={{ flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>{entry.username}</Typography>
+          <Box sx={{ textAlign: 'right', flexShrink: 0 }}><Typography fontWeight={700}>{entry.points.toLocaleString()}</Typography><Typography variant="caption">points</Typography></Box>
+        </Box>)}
+        {!entries.length && <Typography color="text.secondary" sx={{ py: 3 }}>No topic-check scores yet for {qualification === 'gcse' ? 'GCSE' : 'A-level'}.</Typography>}
+      </Stack>}
+  </Card>;
 }

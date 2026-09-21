@@ -45,6 +45,18 @@ export default function MUIThemeProvider({ children }) {
       borderRadius: 12,
     },
     components: {
+      MuiDialog: {
+        styleOverrides: { paper: { minWidth: 0, overflowWrap: 'anywhere',
+          '@media (max-width: 600px)': { margin: 12, maxWidth: 'calc(100vw - 24px)', maxHeight: 'calc(100dvh - 24px)' } } },
+      },
+      MuiPopover: {
+        defaultProps: { marginThreshold: 12 },
+        styleOverrides: { paper: { maxWidth: 'calc(100vw - 24px)', overflowWrap: 'anywhere' } },
+      },
+      MuiMenu: {
+        defaultProps: { marginThreshold: 12 },
+        styleOverrides: { paper: { maxWidth: 'calc(100vw - 24px)' } },
+      },
       MuiButton: {
         styleOverrides: {
           root: {

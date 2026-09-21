@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
@@ -9,13 +9,12 @@ import { Trophy, Medal, Award, TrendingUp, Flame, Zap, BookOpen } from 'lucide-r
 import { motion } from 'framer-motion';
 
 export default function CourseLeaderboard({ courseId }) {
-  const [timeRange, setTimeRange] = useState('all-time');
 
   const { data: leaderboardData = [] } = useQuery({
     queryKey: ['public-course-scoreboard', courseId],
     queryFn: async () => {
       const response = await base44.functions.invoke('publicScoreboardData', { type: 'course', scopeId: courseId });
-      return response.data.entries || [];
+      return (response.data.entries || []).sort((a, b) => b.progress - a.progress || b.points - a.points);
     },
     enabled: !!courseId,
   });
@@ -44,6 +43,7 @@ export default function CourseLeaderboard({ courseId }) {
         </Badge>
       </div>
 
+      <p className="mb-3 text-sm text-muted-foreground">Course points use your best topic-check scores. Retakes add only improvements.</p>
       <Tabs defaultValue="progress" className="w-full">
         <TabsList className="w-full bg-gray-100">
           <TabsTrigger value="progress" className="flex-1">

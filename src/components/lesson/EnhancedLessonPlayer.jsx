@@ -1,3 +1,4 @@
+import useReadingPosition from '@/components/lesson/topicCheck/useReadingPosition';
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -1030,7 +1031,6 @@ export default function EnhancedLessonPlayer({
   lesson,
   course,
   isCompleted,
-  onComplete,
   onNext,
   onPrev,
   user,
@@ -1062,7 +1062,7 @@ export default function EnhancedLessonPlayer({
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [showBadges, setShowBadges] = useState(false);
   const [newBadges, setNewBadges] = useState([]);
-  const [currentContentSlide, setCurrentContentSlide] = useState(0);
+  const { page: currentContentSlide, setPage: setCurrentContentSlide, saveState: readingSaveState, retrySave } = useReadingPosition(lesson, user);
   const containerRef = useRef(null);
   const mainContentRef = useRef(null);
   const touchStartRef = useRef(null);
@@ -1134,22 +1134,9 @@ export default function EnhancedLessonPlayer({
     && currentContentSlide === asBiologyPanelPageIndex;
 
   useEffect(() => {
-    if (!lesson?.id) return;
-
-    const savedPage = Number.parseInt(sessionStorage.getItem('lesson-player-page:' + lesson.id), 10);
-    const restoredPage = Number.isInteger(savedPage) && savedPage >= 0 && savedPage < contentSlides.length
-      ? savedPage
-      : 0;
-
-    setCurrentContentSlide(restoredPage);
     setShowTopicQuiz(false);
     setTopicQuizCompleted(false);
-  }, [lesson?.id, contentSlides.length]);
-
-  useEffect(() => {
-    if (!lesson?.id || contentSlides.length === 0) return;
-    sessionStorage.setItem('lesson-player-page:' + lesson.id, String(currentContentSlide));
-  }, [lesson?.id, contentSlides.length, currentContentSlide]);
+  }, [lesson?.id]);
 
   useEffect(() => {
     const previousHtmlOverscroll = document.documentElement.style.overscrollBehaviorY;
@@ -1229,34 +1216,14 @@ export default function EnhancedLessonPlayer({
 
   const markCompleteMutation = useMutation({
     mutationFn: async () => {
-      const { data } = await base44.functions.invoke('topicCheck', { action: 'status', lessonId: lesson.id });
-      if (lesson.slides?.length && !data.passed) throw new Error('Pass the topic check with at least 70% before completing this lesson.');
-      if (!enrollment) return;
-      const completedLessons = enrollment.completed_lessons || [];
-      if (!completedLessons.includes(lesson.id)) {
-        await base44.entities.Enrollment.update(enrollment.id, {
-          completed_lessons: [...completedLessons, lesson.id],
-          progress_percent: Math.round(((completedLessons.length + 1) / Math.max(sortedLessons.length, 1)) * 100)
-        });
-        
-        const response = await base44.functions.invoke('awardPoints', {
-          action: 'complete_lesson'
-        });
-        
-        if (response.data.success) {
-          setEarnedPoints(response.data.pointsEarned);
-          setShowPointsAnimation(true);
-          if (response.data.newBadges?.length > 0) {
-            setNewBadges(response.data.newBadges);
-            setShowBadges(true);
-          }
-        }
-      }
+      const { data } = await base44.functions.invoke('topicCheck', { action: 'complete', lessonId: lesson.id });
+      if (!data.passed) throw new Error('Pass the topic check with at least 70% before completing this lesson.');
+      return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['enrollment', courseId] });
-      onComplete?.();
-      toast.success('Lesson completed!');
+      queryClient.invalidateQueries({ queryKey: ['enrollment'] });
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+      toast.success('Topic pass and course progress saved.');
     },
     onError: error => { toast.error(error.message); setShowTopicQuiz(true); }
   });
@@ -1322,7 +1289,7 @@ export default function EnhancedLessonPlayer({
   };
 
   const handleTopicQuizContinue = (result) => {
-    if (!result?.passed) return;
+    if (!result?.passed && !result?.ever_passed && !topicQuizPassed) return;
     setTopicQuizCompleted(true);
     setShowTopicQuiz(false);
     if (nextLesson) onNext?.();
@@ -1815,7 +1782,9 @@ export default function EnhancedLessonPlayer({
           <div className="min-w-0 flex-1">
             <div className="mb-1.5 flex items-center justify-between text-[11px] font-semibold text-slate-500">
               <span>{hasPages ? 'Page ' + (currentContentSlide + 1) + ' of ' + contentSlides.length : 'Lesson'}</span>
-              <span className="sm:hidden">Swipe or tap</span>
+              {readingSaveState === 'error' || readingSaveState === 'restore-error'
+                ? <button onClick={retrySave} className="text-red-700 underline">Retry save</button>
+                : <span className="sm:hidden">{readingSaveState === 'saving' ? 'Saving…' : readingSaveState === 'saved' ? 'Saved' : 'Swipe or tap'}</span>}
               <span className="hidden sm:inline">Use ← / → to navigate</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
@@ -1823,6 +1792,12 @@ export default function EnhancedLessonPlayer({
             </div>
           </div>
 
+          {topicQuizPassed && hasPages && isLastPage && (
+            <button type="button" onClick={() => setShowTopicQuiz(true)} title="Optional retake: your pass and best score are kept"
+              className="h-11 shrink-0 rounded-lg border border-slate-300 px-2 text-xs font-semibold sm:px-3 sm:text-sm">
+              Retake
+            </button>
+          )}
           {hasPages && (
             <select
               value={currentContentSlide}
@@ -1834,7 +1809,7 @@ export default function EnhancedLessonPlayer({
             </select>
           )}
 
-          {(!isCompleted && isLastPage) && (
+          {(!isCompleted && isLastPage && !topicQuizPassed) && (
             <button
               type="button"
               onClick={() => markCompleteMutation.mutate()}
@@ -1862,6 +1837,7 @@ export default function EnhancedLessonPlayer({
         open={showTopicQuiz}
         lesson={lesson}
         hasNextTopic={!!nextLesson}
+        alreadyPassed={topicQuizPassed}
         onClose={() => setShowTopicQuiz(false)}
         onContinue={handleTopicQuizContinue}
         onRepeat={() => { setCurrentContentSlide(0); setShowTopicQuiz(false); }}

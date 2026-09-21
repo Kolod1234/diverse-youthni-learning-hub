@@ -24,7 +24,7 @@ export default function useTopicCheckSession(lesson, open) {
       const { data } = await base44.functions.invoke('topicCheck', { action: 'submit', lessonId: lesson.id, attemptId: attempt, answers });
       setResult(data);
       await client.invalidateQueries({ queryKey: ['topic-check-status', lesson.id] });
-      await client.invalidateQueries({ queryKey: ['topic-access'] });
+      await Promise.all(['topic-access', 'enrollment', 'enrollments', 'leaderboard', 'topic-points', 'public-course-scoreboard', 'lesson-progress'].map(key => client.invalidateQueries({ queryKey: [key] })));
     } catch (err) { setError(err.response?.data?.error || 'Your result was not saved. Please submit again.'); }
     finally { setBusy(false); }
   };
