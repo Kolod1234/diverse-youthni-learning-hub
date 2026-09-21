@@ -16,7 +16,7 @@ function d_religionTheories() {
   const cells = [
     [60, 130, 'FUNCTIONALISM: SOLIDARITY', BLUE,
       ['DURKHEIM: the sacred and the profane \u2014 religions classify; totems stand for the group itself, so worship is society celebrating itself: the collective conscience renewed.',
-       'MALINOWSKI: religion consoles where life is uncertain \u2014 death and disaster rituals manage the anxiety no practical action can (the \u201clisty\u201d functions of shared ceremonies).',
+       'MALINOWSKI: religion consoles where life is uncertain \u2014 death and disaster rituals manage the anxiety no practical action can (the liturgical functions of shared ceremonies).',
        'PARSONS: religion carries the values society cannot justify from within \u2014 meaning for what happens to us that no institution can guarantee.',
        'PREDICTS: shared belief wherever society holds; its test is whether modern societies still share (page 7\u2019s record).']],
     [510, 130, 'MARXISM: CONSOLATION AS CONTROL', RED,

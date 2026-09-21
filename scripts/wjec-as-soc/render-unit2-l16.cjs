@@ -55,7 +55,7 @@ function d_examStrategy() {
   title2(x, 'The examination\u2019s economy: minutes as marks');
   sub2(x, 'time allocation, the plan-first discipline, and the band ladder every question is climbed on');
   // left: time economy
-  box(x, 60, 130, 620, 480, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
+  box(x, 60, 130, 620, 600, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
   x.fillStyle = BLUE; x.fillRect(60, 130, 620, 8);
   text(x, 'TIME ALLOCATION', 370, 176, { size: 22, bold: true, color: BLUE });
   const rows = [
@@ -71,7 +71,7 @@ function d_examStrategy() {
     y = wrap(x, r[1], 100, 640, y + 25, { size: 15, lh: 21 }) + 16;
   });
   // right: band ladder
-  box(x, 738, 130, 620, 480, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
+  box(x, 738, 130, 620, 600, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
   x.fillStyle = PURPLE; x.fillRect(738, 130, 620, 8);
   text(x, 'THE BAND LADDER', 1048, 176, { size: 22, bold: true, color: PURPLE });
   const ladder = [
@@ -86,7 +86,7 @@ function d_examStrategy() {
     text(x, r[0], 778, ly, { size: 16, bold: true, color: GREY, align: 'left' });
     ly = wrap(x, r[1], 778, 1318, ly + 25, { size: 15, lh: 21 }) + 16;
   });
-  band(x, 642, 170, 'THE STRATEGY IN ONE PARAGRAPH',
+  band(x, 762, 170, 'THE STRATEGY IN ONE PARAGRAPH',
     'Read the whole paper first; answer your strongest question first (confidence is a resource); plan every extended answer in moves and joints before writing; write paragraphs that do their four jobs; keep the clock honest with minutes-per-mark; bank the last five minutes for the audit. ' +
     'The strategy is not exam-craft bolted on to sociology \u2014 it is Lesson 15\u2019s machine, run against a clock.',
     { size: 15.5, bodyY: 52 });
