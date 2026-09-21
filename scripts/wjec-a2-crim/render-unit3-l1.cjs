@@ -60,11 +60,11 @@ function evidenceTypes() {
     box(x, px, PY, PW, PH);
     panelHeader(x, px + 20, PY + 44, i + 1, p[0], p[1], 23);
     let y = wrap(x, p[2], px + 26, px + PW - 26, PY + 92, { size: 18, lh: 26 });
-    text(x, 'Examples', (px + PW) / 2, y + 24, { size: 18, bold: true, color: p[1] });
+    text(x, 'Examples', px + PW / 2, y + 24, { size: 18, bold: true, color: p[1] });
     y = wrap(x, p[3], px + 26, px + PW - 26, y + 62, { size: 17, lh: 24, color: SOFT });
-    text(x, 'What it does best', (px + PW) / 2, y + 24, { size: 17, bold: true, color: GREEN });
+    text(x, 'What it does best', px + PW / 2, y + 24, { size: 17, bold: true, color: GREEN });
     y = wrap(x, p[4], px + 26, px + PW - 26, y + 58, { size: 17, lh: 24, color: SOFT });
-    text(x, 'Limitation', (px + PW) / 2, y + 24, { size: 17, bold: true, color: RED });
+    text(x, 'Limitation', px + PW / 2, y + 24, { size: 17, bold: true, color: RED });
     wrap(x, p[5], px + 26, px + PW - 26, y + 58, { size: 17, lh: 24, color: SOFT });
   });
   band(x, 806, 250, 'Class characteristics or individual characteristics: how strong is the match?',

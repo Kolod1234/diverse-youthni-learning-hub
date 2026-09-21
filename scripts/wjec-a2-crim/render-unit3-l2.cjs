@@ -64,9 +64,9 @@ function modeOfTrial() {
     box(x, px, PY, PW, PH);
     panelHeader(x, px + 20, PY + 44, i + 1, p[0], p[1], 23);
     let y = wrap(x, p[2], px + 26, px + PW - 26, PY + 92, { size: 18, lh: 26 });
-    text(x, 'Where it is tried', (px + PW) / 2, y + 28, { size: 18, bold: true, color: GREEN });
+    text(x, 'Where it is tried', px + PW / 2, y + 28, { size: 18, bold: true, color: GREEN });
     y = wrap(x, p[3], px + 26, px + PW - 26, y + 64, { size: 16, lh: 22 });
-    text(x, 'Typical examples', (px + PW) / 2, y + 28, { size: 18, bold: true, color: GREEN });
+    text(x, 'Typical examples', px + PW / 2, y + 28, { size: 18, bold: true, color: GREEN });
     wrap(x, p[4], px + 26, px + PW - 26, y + 64, { size: 16, lh: 22 });
   });
   arrow(x, 620, 226, 268, PY - 6, { color: GREY, lw: 4 });
@@ -104,7 +104,7 @@ function disclosureFlow() {
     box(x, px, PY, PW, PH);
     panelHeader(x, px + 16, PY + 44, i + 1, s[0], s[1], 20);
     const y = wrap(x, s[2], px + 22, px + PW - 22, PY + 90, { size: 17, lh: 24 });
-    text(x, 'The risk', (px + PW) / 2, y + 30, { size: 17, bold: true, color: RED });
+    text(x, 'The risk', px + PW / 2, y + 30, { size: 17, bold: true, color: RED });
     wrap(x, s[3], px + 22, px + PW - 22, y + 64, { size: 16, lh: 22, color: RED });
   });
   arrow(x, cols[0] + PW + 4, 260, cols[1] - 4, 260, { color: GREY, lw: 4 });
