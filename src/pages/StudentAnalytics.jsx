@@ -14,6 +14,7 @@ const Award = _w(EmojiEventsIcon), CheckCircle = _w(CheckCircleIcon);
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import PointsBreakdownPanel from '@/components/students/PointsBreakdownPanel';
+import PerformanceTrendChart from '@/components/students/PerformanceTrendChart';
 
 export default function StudentAnalytics() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -106,6 +107,8 @@ export default function StudentAnalytics() {
             );
           })}
         </div>
+
+        <PerformanceTrendChart email={studentEmail} />
 
         <Card className="p-6 mb-6">
           <h3 className="font-semibold mb-1">Ranking Points Breakdown</h3>
