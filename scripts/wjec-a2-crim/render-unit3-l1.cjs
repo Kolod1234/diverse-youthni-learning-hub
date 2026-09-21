@@ -70,7 +70,7 @@ function evidenceTypes() {
   band(x, 806, 250, 'Class characteristics or individual characteristics: how strong is the match?',
     'A class characteristic narrows the field: a right footmark of a common trainer size tells you the wearer is one of many thousands. An individual characteristic points to one likely source: a full DNA profile, a fingerprint with enough detail, or a tool mark shaped by accidental damage. When you assess evidence in a case review, ask which kind of characteristic each item carries, because the answer decides how much weight the evidence can safely bear.',
     { bodyY: 60 });
-  return { file: 'crim-invest-evidence-types.png' };
+  return { file: 'crim-invest-evidence-types-v2.png' };
 }
 
 /* ---------- Page 10: evidence journey ---------- */
