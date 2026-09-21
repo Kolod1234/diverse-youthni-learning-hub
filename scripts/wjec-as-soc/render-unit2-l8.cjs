@@ -143,10 +143,10 @@ function d_methodChoice() {
 
 const renderers = [d_researchCycle, d_perspectives, d_methodChoice];
 
-module.exports = { run };
+module.exports = { run: (only) => run(renderers, only) };
 
 if (require.main === module) {
   let only = [];
   try { only = String(process.env.RENDER_ONLY || '').split(',').map(s => s.trim()).filter(Boolean); } catch (e) { only = []; }
-  run(only).then(files => console.log(JSON.stringify({ rendered: files })));
+  run(renderers, only).then(files => console.log(JSON.stringify({ rendered: files })));
 }
