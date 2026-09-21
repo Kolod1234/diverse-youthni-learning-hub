@@ -69,17 +69,17 @@ export async function syncCourseCompletion(base44, user, lesson) {
   if (!isStudent(user)) return;
   const db = base44.asServiceRole.entities;
   const [enrollments, lessons, course, attempts] = await Promise.all([
-    allRows(db.Enrollment, { course_id: lesson.course_id, created_by_id: user.id }),
+    allRows(db.Enrollment, { course_id: lesson.course_id }),
     allRows(db.Lesson, { course_id: lesson.course_id }),
     db.Course.get(lesson.course_id),
     allRows(db.TopicCheckAttempt, { user_id: user.id, course_id: lesson.course_id, status: 'submitted' })
   ]);
   const passed = new Set(bestTopicScores(attempts).filter(score => score.points >= 70).map(score => score.lesson_id));
-  for (const enrollment of enrollments) {
+  for (const enrollment of enrollments.filter(row => row.created_by_id === user.id || row.created_by === user.email)) {
     const relevant = lessonsForPathway(lessons, course, enrollment);
-    // Existing completion of legacy non-slide lessons is preserved.
+    // Preserve existing completion records during rollout; access still requires a saved topic-check pass.
     const completed = relevant.filter(item => passed.has(item.id) ||
-      (!item.slides?.length && enrollment.completed_lessons?.includes(item.id))).map(item => item.id);
+      enrollment.completed_lessons?.includes(item.id)).map(item => item.id);
     const percent = relevant.length ? Math.round(completed.length * 100 / relevant.length) : 0;
     const done = relevant.length > 0 && completed.length === relevant.length;
     if (JSON.stringify([...(enrollment.completed_lessons || [])].sort()) !== JSON.stringify([...completed].sort()) ||

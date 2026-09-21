@@ -16,6 +16,7 @@ export default async function(req) {
     const db = base44.asServiceRole.entities;
     if (action === 'status') {
       const summary = topicSummary(await allRows(db.TopicCheckAttempt, { user_id: user.id, lesson_id: lesson.id, status: 'submitted' }));
+      if (summary.passed) await syncCourseCompletion(base44, user, lesson);
       return Response.json(summary);
     }
     const access = await topicAccess(base44, user, lesson);

@@ -1056,6 +1056,12 @@ export default function EnhancedLessonPlayer({
     retry: false,
   });
   const topicQuizPassed = topicQuizCompleted || topicStatus?.passed === true;
+  useEffect(() => {
+    if (topicStatus?.passed) {
+      queryClient.invalidateQueries({ queryKey: ['enrollment'] });
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+    }
+  }, [lesson?.id, topicStatus?.passed, queryClient]);
   const { page: currentContentSlide, setPage: setCurrentContentSlide, saveState: readingSaveState, retrySave } = useReadingPosition(lesson, user);
   const containerRef = useRef(null);
   const mainContentRef = useRef(null);
