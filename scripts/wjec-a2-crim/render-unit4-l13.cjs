@@ -26,7 +26,7 @@ function communityToolkit() {
     ['Restorative justice: the process', RED,
       'The facilitated conference where the offender faces the victim and repair is agreed: the only disposal centred on the harmed person, on two load-bearing conditions (victim consent, offender admission) that no policy can remove.'],
     ['Probation: the delivery backbone', DARK,
-      'Every requirement and every conference depends on the assessment, supervision and enforcement capacity of the probation service: the toolkit's advantages are conditional on its delivery, and under-resourcing is the standing critique.'],
+      'Every requirement and every conference depends on the assessment, supervision and enforcement capacity of the probation service, and the toolkit advantages are conditional on its delivery: under-resourcing is the standing critique.'],
   ];
   panels.forEach((p, i) => {
     const px = cols[i % 3], py = rows[Math.floor(i / 3)];
