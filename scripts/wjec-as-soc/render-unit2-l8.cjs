@@ -4,7 +4,7 @@
  * Output: public/lesson-assets/wjec-as-sociology/. RENDER_ONLY env filter when run directly.
  */
 const H = require('./diagram-helpers.cjs');
-const { make, box, title2, sub2, panelHeader, wrap, band, run, arrow, W, H: HEIGHT,
+const { make, box, title2, sub2, panelHeader, wrap, band, run, arrow, text, W, H: HEIGHT,
         BLUE, RED, AMBER, GREY, LIGHT, SOFT, GREEN, PURPLE, DARK } = H;
 
 // ---------- 1. The sociological research cycle (Lesson 8, page 7) ----------
