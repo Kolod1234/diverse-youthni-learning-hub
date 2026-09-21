@@ -18,6 +18,7 @@ import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
 import MathJaxContent from '@/components/lesson/MathJaxContent';
+import { expandSolutionSteps } from '@/components/lesson/solutionStepBlocks';
 import TopicQuizModal from '@/components/lesson/TopicQuizModal';
 import WaterPolarityLessonVisual from '@/components/lesson/WaterPolarityLessonVisual';
 import LessonABPanels from '@/components/lesson/LessonABPanels';
@@ -1135,9 +1136,11 @@ export default function EnhancedLessonPlayer({
   const a2GeneratedVisualPath = needsA2GeneratedVisual
     ? `/a2-biology/a2-${String(a2GeneratedVisualLesson).padStart(3, '0')}-p${String(currentContentSlide + 1).padStart(2, '0')}.png`
     : null;
-  const renderedSlideHtml = a2GeneratedVisualPath
+  const baseSlideHtml = a2GeneratedVisualPath
     ? `<figure class='page-visual'><img src='${a2GeneratedVisualPath}' alt='Teaching diagram aligned to this biology page.' loading='lazy' /><figcaption>Biology process diagram aligned to this page.</figcaption></figure>${activeContentSlide.content || ''}`
     : (activeContentSlide?.content || '');
+  // Solutions render as dedicated step-by-step blocks, not inline prose.
+  const renderedSlideHtml = expandSolutionSteps(baseSlideHtml);
   const isWaterPolarityPage = lesson?.id === WATER_INTERACTIVE_LESSON_ID
     && activeContentSlide?.notes === WATER_POLARITY_MARKER;
   const asBiologyPanelPageIndex = contentSlides.length > 1 ? 1 : 0;

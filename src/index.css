@@ -424,6 +424,95 @@ button:focus-visible {
     color: rgb(252 165 165);
   }
 
+  /* Dedicated step-by-step solution display (solutionStepBlocks.js rewrites
+     worked-example / answer-block boxes into these blocks at render time) */
+  .lesson-rich-content .solution-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin: 0.9rem 0 0.25rem;
+  }
+
+  .lesson-rich-content .solution-question {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgb(147 197 253);
+    border-left: 4px solid rgb(59 130 246);
+    border-radius: 0.625rem;
+    background: hsl(0 0% 100%);
+    font-weight: 600;
+  }
+
+  .lesson-rich-content .solution-question > :last-child {
+    margin-bottom: 0;
+  }
+
+  .lesson-rich-content .solution-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.8rem 0.95rem;
+    border: 1px solid rgb(203 213 225);
+    border-radius: 0.75rem;
+    background: hsl(0 0% 100%);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+  }
+
+  .lesson-rich-content .solution-step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-top: 0.1rem;
+    border-radius: 9999px;
+    background: rgb(79 70 229);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .lesson-rich-content .solution-step-body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .lesson-rich-content .solution-step-body > :last-child {
+    margin-bottom: 0;
+  }
+
+  .lesson-rich-content .solution-step-body p {
+    margin-bottom: 0.4rem;
+  }
+
+  .lesson-rich-content .solution-step-body math[display="block"] {
+    margin: 0.6rem 0 0.25rem 0.5rem;
+  }
+
+  .lesson-rich-content .solution-step.is-check {
+    border-color: rgb(134 239 172);
+    background: rgb(236 253 245);
+  }
+
+  .lesson-rich-content .solution-step.is-check .solution-step-number {
+    background: rgb(4 120 87);
+  }
+
+  .dark .lesson-rich-content .solution-question {
+    border-color: rgb(51 65 85);
+    background: rgb(30 58 138 / 0.25);
+  }
+
+  .dark .lesson-rich-content .solution-step {
+    border-color: rgb(51 65 85);
+    background: rgb(30 41 59 / 0.5);
+  }
+
+  .dark .lesson-rich-content .solution-step.is-check {
+    border-color: rgb(6 95 70);
+    background: rgb(6 78 59 / 0.3);
+  }
+
   @keyframes lesson-text-slide-in {
     from {
       opacity: 0;
