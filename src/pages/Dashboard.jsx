@@ -29,7 +29,6 @@ import StatsOverview from '@/components/dashboard/StatsOverview';
 import ProgressCard from '@/components/dashboard/ProgressCard';
 import AchievementBadge from '@/components/dashboard/AchievementBadge';
 import CourseProgressWidget from '@/components/dashboard/CourseProgressWidget';
-import PointsDisplay from '@/components/gamification/PointsDisplay';
 import Leaderboard from '@/components/gamification/Leaderboard';
 import StreakTracker from '@/components/gamification/StreakTracker';
 import UpcomingSessionsWidget from '@/components/sessions/UpcomingSessionsWidget';

@@ -14,8 +14,6 @@ import { toast } from 'sonner';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
 import ManusSlidePlayer from '@/components/lesson/ManusSlidePlayer';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
-import PointsAnimation from '@/components/gamification/PointsAnimation';
-import BadgeUnlock from '@/components/gamification/BadgeUnlock';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
 import MathJaxContent from '@/components/lesson/MathJaxContent';
@@ -1058,10 +1056,6 @@ export default function EnhancedLessonPlayer({
     retry: false,
   });
   const topicQuizPassed = topicQuizCompleted || topicStatus?.passed === true;
-  const [showPointsAnimation, setShowPointsAnimation] = useState(false);
-  const [earnedPoints, setEarnedPoints] = useState(0);
-  const [showBadges, setShowBadges] = useState(false);
-  const [newBadges, setNewBadges] = useState([]);
   const { page: currentContentSlide, setPage: setCurrentContentSlide, saveState: readingSaveState, retrySave } = useReadingPosition(lesson, user);
   const containerRef = useRef(null);
   const mainContentRef = useRef(null);
@@ -1853,8 +1847,6 @@ export default function EnhancedLessonPlayer({
         />
       )}
 
-      <PointsAnimation show={showPointsAnimation} points={earnedPoints} onComplete={() => setShowPointsAnimation(false)} />
-      <BadgeUnlock badges={newBadges} onClose={() => setShowBadges(false)} />
       <LessonUnlockDialog
         open={showUnlockDialog}
         onOpenChange={setShowUnlockDialog}
