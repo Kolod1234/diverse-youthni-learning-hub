@@ -55,19 +55,19 @@ function d_observationGrid() {
   sub2(x, 'participation and disclosure are two separate decisions \u2014 the grid\u2019s diagonals are where the ethics and the evidence are made');
   const cw = 590, ch = 330;
   const cells = [
-    [140, 150, 'OVERT PARTICIPANT', GREEN,
+    [160, 150, 'OVERT PARTICIPANT', GREEN,
       ['joins the group, identity known, consent given.',
        'WHY: natural behaviour with the group\u2019s trust; the researcher can ask about what happens as it happens.',
        'EXAMPLE: Whyte\u2019s Street Corner Society (1937\u201343) \u2014 three years in Boston\u2019s Cornerville, introduced by \u201cDoc\u201d, notebook in the open.']],
-    [734, 150, 'COVERT PARTICIPANT', RED,
+    [754, 150, 'COVERT PARTICIPANT', RED,
       ['joins the group, identity hidden.',
        'WHY: removes the researcher effect entirely \u2014 the group cannot perform for a sociologist it cannot see.',
        'EXAMPLES: James Patrick\u2019s A Glasgow Gang Observed (1973); Humphreys\u2019 Tearoom Trade (1970) \u2014 no consent, no withdrawal, hard cases (Lesson 8, page 12).']],
-    [140, 506, 'OVERT NON-PARTICIPANT', BLUE,
+    [160, 506, 'OVERT NON-PARTICIPANT', BLUE,
       ['watches without joining, presence known.',
        'WHY: distance keeps analysis clean; schedules and categories can be applied systematically.',
        'EXAMPLE: classroom observation with the class\u2019s knowledge \u2014 the education context\u2019s standard instrument, and the weakest for meaning.']],
-    [734, 506, 'COVERT NON-PARTICIPANT', AMBER,
+    [754, 506, 'COVERT NON-PARTICIPANT', AMBER,
       ['watches without joining, presence not known.',
        'WHY: public behaviour needs no consent to be seen \u2014 queues, crowds, street interaction are already public.',
        'EXAMPLE: observing public-space behaviour unannounced \u2014 the least intrusive position, and the least able to reach meaning.']],
@@ -82,10 +82,10 @@ function d_observationGrid() {
     });
   });
   // axis labels
-  text(x, 'PARTICIPANT', 60, 320, { size: 17, bold: true, color: GREY });
-  text(x, 'NON-PARTICIPANT', 46, 676, { size: 17, bold: true, color: GREY });
-  text(x, 'OVERT', 435, 128, { size: 17, bold: true, color: GREY });
-  text(x, 'COVERT', 1029, 128, { size: 17, bold: true, color: GREY });
+  text(x, 'PARTICIPANT', 80, 320, { size: 17, bold: true, color: GREY });
+  text(x, 'NON-PARTICIPANT', 80, 676, { size: 17, bold: true, color: GREY });
+  text(x, 'OVERT', 455, 128, { size: 17, bold: true, color: GREY });
+  text(x, 'COVERT', 1049, 128, { size: 17, bold: true, color: GREY });
   band(x, 866, 160, 'THE DIAGONAL RULE',
     'as participation deepens, the researcher effect falls and the access rises \u2014 while consent becomes harder to obtain. The grid\u2019s two decisions therefore trade each other: ' +
     'covert participant observation is the most valid position on the page and the least ethical; overt non-participation is the most ethical and the thinnest. Every observation study\u2019s justification is an answer to this diagonal.',
