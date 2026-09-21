@@ -91,6 +91,7 @@ const TUTOR_PAGES = [
   'AdminRSSFeed', 'AdminAttendance', 'AdminYouthWork', 'AdminLibrary',
   'PathwayManager', 'DataPresentation', 'Templates', 'SimulationAuthor',
   'VideoSession', 'CourseAnalytics', 'TutorDashboardCanvas', 'TutorSessionsDashboard',
+  'TutorLeaderboard',
 ];
 
 // Pull-to-refresh hook (mobile only)
@@ -691,6 +692,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
                       <ListItemText primary="Notification Centre" />
                     </MenuItem>
+                    <MenuItem component={Link} to="/tutor-leaderboard" onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                      <ListItemText primary="Student Leaderboard" />
+                    </MenuItem>
                     <MenuItem component={Link} to={createPageUrl('AdminSupportChats')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><MessageSquare size={20} color="#0ea5e9" /></ListItemIcon>
                       <ListItemText primary="Support Chats" />
@@ -716,6 +721,10 @@ function LayoutContent({ children, currentPageName }) {
                     <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                       <ListItemText primary="Send Student Messages" />
+                    </MenuItem>
+                    <MenuItem component={Link} to="/tutor-leaderboard" onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                      <ListItemText primary="Student Leaderboard" />
                     </MenuItem>
                   </>
                 )}
