@@ -36,7 +36,7 @@ export default function AdminUserProfile() {
   const { data: targetUser } = useQuery({
     queryKey: ['user-profile', userId],
     queryFn: async () => {
-      const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+      const users = await base44.entities.User.filter({ id: userId });
       return users[0];
     },
     enabled: !!userId,
@@ -44,7 +44,7 @@ export default function AdminUserProfile() {
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['user-enrollments', targetUser?.email],
-    queryFn: () => base44.asServiceRole.entities.Enrollment.filter({ created_by: targetUser.email }),
+    queryFn: () => base44.entities.Enrollment.filter({ created_by: targetUser.email }),
     enabled: !!targetUser?.email,
   });
 
