@@ -92,16 +92,20 @@ export default function CourseDetails() {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Tier dashboards (Foundation/Higher Mathematics) draw their curriculum from
+  // the shared lesson pool of their content source course, so each tier course
+  // only ever lists the units relevant to its pathways.
+  const contentSourceCourseId = course?.content_source_course_id || courseId;
   const { data: lessons = [] } = useQuery({
-    queryKey: ['lessons', courseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 500),
+    queryKey: ['lessons', courseId, contentSourceCourseId],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: contentSourceCourseId }, 'order', 500),
     enabled: !!courseId && !!course,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: allQuizzes = [] } = useQuery({
-    queryKey: ['quizzes', courseId],
-    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId }),
+    queryKey: ['quizzes', courseId, contentSourceCourseId],
+    queryFn: () => base44.entities.Quiz.filter({ course_id: contentSourceCourseId }),
     enabled: !!courseId && !!course,
     staleTime: 5 * 60 * 1000,
   });
@@ -163,7 +167,7 @@ export default function CourseDetails() {
 
   const { data: lessonKeys = [] } = useQuery({
     queryKey: ['lesson-keys', courseId],
-    queryFn: () => base44.entities.LessonUnlockKey.filter({ course_id: courseId }),
+    queryFn: () => base44.entities.LessonUnlockKey.filter({ course_id: contentSourceCourseId }),
     enabled: !!courseId && !!course && !!user,
     staleTime: 2 * 60 * 1000,
   });
@@ -213,9 +217,16 @@ export default function CourseDetails() {
     ? [activeMathPathwayConfig.first_unit, activeMathPathwayConfig.completion_unit]
     : [];
   const hasMappedMathLessons = lessons.some(lesson => lesson.ccea_units?.length > 0);
-  const visibleLessons = isMathPathwayCourse && activeMathPathway && hasMappedMathLessons
-    ? lessons.filter(lesson => !lesson.ccea_units?.length || lesson.ccea_units.some(unitCode => pathwayUnitCodes.includes(unitCode)))
+  // A tier dashboard (Foundation/Higher Mathematics) first restricts the shared
+  // curriculum to the units of its own tier, then narrows it to the learner's
+  // chosen pathway pair.
+  const tierUnitCodes = [...new Set(mathPathways.flatMap(pathway => [pathway.first_unit, pathway.completion_unit]))];
+  const tierLessons = isMathPathwayCourse && hasMappedMathLessons
+    ? lessons.filter(lesson => !lesson.ccea_units?.length || lesson.ccea_units.some(unitCode => tierUnitCodes.includes(unitCode)))
     : lessons;
+  const visibleLessons = isMathPathwayCourse && activeMathPathway && hasMappedMathLessons
+    ? tierLessons.filter(lesson => !lesson.ccea_units?.length || lesson.ccea_units.some(unitCode => pathwayUnitCodes.includes(unitCode)))
+    : tierLessons;
 
   useEffect(() => {
     if (enrollment?.math_pathway) {

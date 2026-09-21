@@ -103,6 +103,11 @@
       "type": "boolean",
       "default": false
     },
+    "is_published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the course is visible in the course catalog. Unpublished courses remain fully accessible to already-enrolled learners."
+    },
     "tags": {
       "type": "array",
       "items": {
@@ -154,6 +159,10 @@
           }
         }
       }
+    },
+    "content_source_course_id": {
+      "type": "string",
+      "description": "Course id whose lesson and quiz pool this course's curriculum is drawn from. Used by tier dashboards (e.g. Foundation/Higher Mathematics) so content is maintained in one place while each tier only exposes its own units."
     },
     "assigned_tutors": {
       "type": "array",

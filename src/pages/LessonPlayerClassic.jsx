@@ -292,15 +292,18 @@ export default function LessonPlayerClassic() {
     retry: false
   });
 
+  // Tier dashboards draw their curriculum from the shared lesson pool of their
+  // content source course, then filter it down to the learner's pathway units.
+  const contentSourceCourseId = course?.content_source_course_id || courseId;
   const { data: courseLessons = [] } = useQuery({
-    queryKey: ['courseLessons', courseId],
+    queryKey: ['courseLessons', courseId, contentSourceCourseId],
     queryFn: () => {
       if (!courseId || courseId === 'null' || courseId === 'undefined') {
         return [];
       }
-      return base44.entities.Lesson.filter({ course_id: courseId }, 'order', 500);
+      return base44.entities.Lesson.filter({ course_id: contentSourceCourseId }, 'order', 500);
     },
-    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined',
+    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined' && !!course,
     retry: 3,
     staleTime: 5 * 60 * 1000
   });
@@ -327,9 +330,18 @@ export default function LessonPlayerClassic() {
   };
   const selectedMathUnits = mathPathwayUnits[enrollment?.math_pathway] || [];
   const hasMappedMathLessons = courseLessons.some(lessonItem => lessonItem.ccea_units?.length > 0);
-  const pathwayLessons = course?.requires_math_pathway && enrollment?.math_pathway && hasMappedMathLessons
-    ? courseLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => selectedMathUnits.includes(unitCode)))
+  // A tier dashboard (Foundation/Higher Mathematics) first restricts the shared
+  // curriculum to the units of its own tier, then narrows it to the learner's
+  // chosen pathway pair.
+  const tierUnitCodes = course?.math_pathways?.length
+    ? [...new Set(course.math_pathways.flatMap(p => [p.first_unit, p.completion_unit]))]
+    : null;
+  const tierLessons = course?.requires_math_pathway && tierUnitCodes && hasMappedMathLessons
+    ? courseLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => tierUnitCodes.includes(unitCode)))
     : courseLessons;
+  const pathwayLessons = course?.requires_math_pathway && enrollment?.math_pathway && hasMappedMathLessons
+    ? tierLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => selectedMathUnits.includes(unitCode)))
+    : tierLessons;
 
   // Progress auto-save hook (after enrollment is defined)
   const { getLastProgress, clearProgress } = useProgressAutoSave(lessonId);
@@ -427,13 +439,13 @@ export default function LessonPlayerClassic() {
   }, [lesson, enrollment, sortedLessons, lessonId, user]);
 
   const { data: quizzes = [] } = useQuery({
-    queryKey: ['lessonQuizzes', lessonId, courseId],
+    queryKey: ['lessonQuizzes', lessonId, courseId, contentSourceCourseId],
     queryFn: async () => {
       if (!courseId || courseId === 'null' || courseId === 'undefined') {
         return [];
       }
-      // Get all quizzes for this course
-      const allQuizzes = await base44.entities.Quiz.filter({ course_id: courseId });
+      // Get all quizzes from the course (or its shared content source)
+      const allQuizzes = await base44.entities.Quiz.filter({ course_id: contentSourceCourseId });
       // Filter for lesson-specific or course-level quizzes
       return allQuizzes.filter(q => 
         q.lesson_id === lessonId || !q.lesson_id || q.lesson_id === 'null'

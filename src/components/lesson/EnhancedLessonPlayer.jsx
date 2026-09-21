@@ -1082,10 +1082,12 @@ export default function EnhancedLessonPlayer({
 
   const { selection: highlightSelection, clearSelection } = useTextSelection(mainContentRef);
 
-  // Get course lessons
+  // Get course lessons. Tier dashboards (Foundation/Higher Mathematics) draw
+  // their curriculum from the shared lesson pool of their content source course.
+  const contentSourceCourseId = course?.content_source_course_id || courseId;
   const { data: courseLessons = [] } = useQuery({
-    queryKey: ['courseLessons', courseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 500),
+    queryKey: ['courseLessons', courseId, contentSourceCourseId],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: contentSourceCourseId }, 'order', 500),
     enabled: !!courseId,
     retry: 3,
     staleTime: 5 * 60 * 1000
@@ -1102,9 +1104,18 @@ export default function EnhancedLessonPlayer({
     ? `${selectedMathUnits[0]} + ${selectedMathUnits[1]} pathway`
     : null;
   const hasMappedMathLessons = courseLessons.some(lessonItem => lessonItem.ccea_units?.length > 0);
-  const pathwayLessons = course?.requires_math_pathway && enrollment?.math_pathway && hasMappedMathLessons
-    ? courseLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => selectedMathUnits.includes(unitCode)))
+  // A tier dashboard (Foundation/Higher Mathematics) first restricts the shared
+  // curriculum to the units of its own tier, then narrows it to the learner's
+  // chosen pathway pair.
+  const tierUnitCodes = course?.math_pathways?.length
+    ? [...new Set(course.math_pathways.flatMap(p => [p.first_unit, p.completion_unit]))]
+    : null;
+  const tierLessons = course?.requires_math_pathway && tierUnitCodes && hasMappedMathLessons
+    ? courseLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => tierUnitCodes.includes(unitCode)))
     : courseLessons;
+  const pathwayLessons = course?.requires_math_pathway && enrollment?.math_pathway && hasMappedMathLessons
+    ? tierLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => selectedMathUnits.includes(unitCode)))
+    : tierLessons;
   const sortedLessons = [...pathwayLessons].sort((a, b) => a.order - b.order);
   const currentLessonIndex = sortedLessons.findIndex(l => l.id === lesson?.id);
   const nextLesson = sortedLessons[currentLessonIndex + 1];
