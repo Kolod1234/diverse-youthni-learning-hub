@@ -98,49 +98,49 @@ function d_revisionMap() {
   const [c, x] = make(W, HEIGHT);
   title2(x, 'The whole course, one map: what to retrieve, and what connects');
   sub2(x, 'retrieval practice organised around the joints \u2014 because the connections are the marks');
-  const pw = 428, ph = 520;
+  const pw = 428, ph1 = 424, ph2 = 452;
   const cells = [
-    [60, 130, 'UNIT 1: SOCIALISATION AND CULTURE', BLUE,
+    [60, 128, ph1, 'UNIT 1: SOCIALISATION AND CULTURE', BLUE,
       ['\u2022 Culture, socialisation, identity (Lessons 1\u20133).',
        '\u2022 Family and its patterns (Lesson 4\u20135).',
        '\u2022 Youth cultures: CCCS, bricolage, incorporation (Lesson 6).',
        '\u2022 Youth deviance: strain, subcultures, labelling, the curve\u2019s caveat, moral panics (Lesson 7).',
        '\u2022 RETRIEVE BY: the joints \u2014 the curve\u2019s dark figure, the spiral, Cohen\u2019s two appearances.']],
-    [510, 130, 'UNIT 2 CORE: METHODS OF ENQUIRY', GREEN,
+    [510, 128, ph1, 'UNIT 2 CORE: METHODS OF ENQUIRY', GREEN,
       ['\u2022 Planning: hypotheses, operationalisation, sampling, ethics (Lesson 8).',
        '\u2022 Quantitative: questionnaires, statistics, experiments, content analysis (Lesson 9).',
        '\u2022 Qualitative: interviews, observation, trustworthiness (Lesson 10).',
        '\u2022 Evaluation: the four validities, the three rivals, the synopsis machine (Lesson 11).',
        '\u2022 RETRIEVE BY: the checklist and the three piles \u2014 they run every item question.']],
-    [960, 130, 'UNIT 2 OPTIONS', RED,
+    [960, 128, ph1, 'UNIT 2 OPTIONS', RED,
       ['\u2022 Education: theories, the gap\u2019s four facts, the labelling chain, policy (Lesson 12).',
        '\u2022 Media: the chain, the ladder, the effects map, panics, platforms (Lesson 13).',
        '\u2022 Religion: the theories, the debate\u2019s two-clause verdict, organisations, fundamentalism (Lesson 14).',
        '\u2022 RETRIEVE BY: the five sentences of each lesson\u2019s final page \u2014 they were written for this moment.']],
-    [60, 690, 'THE JOINTS (RETRIEVE DAILY)', PURPLE,
+    [60, 572, ph2, 'THE JOINTS (RETRIEVE DAILY)', PURPLE,
       ['\u2022 Labelling: deviance, attainment, frames.',
        '\u2022 Amplification: panics, platform outrage.',
        '\u2022 The dark figure and constructed measures everywhere.',
        '\u2022 Compensation and the deprived: sects, subcultures, Pentecostalism.',
        '\u2022 Believing without belonging as identity measurement.']],
-    [510, 690, 'THE SKILLS (BUILD WEEKLY)', AMBER,
+    [510, 572, ph2, 'THE SKILLS (BUILD WEEKLY)', AMBER,
       ['\u2022 The six moves, the four jobs (Lesson 15).',
        '\u2022 Name-date-finding-weight citation.',
        '\u2022 Steel-manning with the surviving concession.',
        '\u2022 The audit: circle, underline, star.',
        '\u2022 Timed plans: three lines, then the four moves.']],
-    [960, 690, 'THE METHOD OF REVISION', DARK,
+    [960, 572, ph2, 'THE METHOD OF REVISION', DARK,
       ['\u2022 Space it: retrieve each lesson a day apart, then a week \u2014 cramming builds recall that lasts days.',
        '\u2022 Test, don\u2019t re-read: closed-book page summaries, then check.',
        '\u2022 Rotate: one Unit 1, one core, one option, one skills drill per cycle.',
        '\u2022 Prioritise the faulty joint: audit finds it; the joint gets the next cycle.']],
   ];
-  cells.forEach(([bx, by, hd, col, parts]) => {
+  cells.forEach(([bx, by, ph, hd, col, parts]) => {
     box(x, bx, by, pw, ph, { fill: '#f8fafc', stroke: LIGHT, lw: 2 });
     x.fillStyle = col; x.fillRect(bx, by, pw, 8);
-    text(x, hd, bx + pw / 2, by + 40, { size: 16, bold: true, color: col });
-    let y = by + 72;
-    parts.forEach(p => { y = wrap(x, p, bx + 22, bx + pw - 22, y, { size: 14.5, lh: 20 }) + 11; });
+    text(x, hd, bx + pw / 2, by + 38, { size: 15.5, bold: true, color: col });
+    let y = by + 64;
+    parts.forEach(p => { y = wrap(x, p, bx + 20, bx + pw - 20, y, { size: 14, lh: 19 }) + 9; });
   });
   return { file: 'wjec-soc-revision-map.png', w: W, h: HEIGHT };
 }
