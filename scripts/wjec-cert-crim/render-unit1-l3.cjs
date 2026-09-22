@@ -5,7 +5,7 @@
  * Run: node render-unit1-l3.cjs  (RENDER_ONLY=name.png to render one)
  */
 const H = require('./diagram-helpers.cjs');
-const { make, box, title2, sub2, panelHeader, wrap, band, text, W,
+const { make, box, title2, sub2, panelHeader, wrap, band, text, circle, W,
         BLUE, RED, AMBER, GREY, LIGHT, SOFT, GREEN, PURPLE, DARK } = H;
 
 /* ---------- Page 3: news values applied to crime ---------- */
