@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { mathTokensKey, invokeTextWithRetry, mapWithLimit, decodeEntities } from '../../shared/lessonHtml.ts';
+import { mathTokensKey, invokeTextWithRetry, mapWithLimit, canonicaliseMathSpans } from '../../shared/lessonHtml.ts';
 
 const OL_STYLE = 'margin:12px 0 12px 22px;line-height:1.75;font-size:1.06em;color:#24343d;';
 const LI_STYLE = 'margin:6px 0;';
@@ -49,20 +49,6 @@ function extractClassDivs(src: string, re: RegExp, store: string[]): string {
     re.lastIndex = endIdx;
   }
   return out + src.slice(pos);
-}
-
-// Rewrites each maths span into the stored canonical form: decode HTML
-// entities, then re-escape raw < and > so the browser never parses them as
-// markup at render time (matches the escapeMathOperators convention).
-// Spans that contain HTML tags are skipped: they are not real maths (an
-// unpaired currency "$" pairing across markup) and escaping their tags
-// would corrupt the HTML.
-function canonicaliseMathSpans(html: string): string {
-  return html.replace(/\$\$?[^$]+\$\$?/g, (span) => {
-    const decoded = decodeEntities(span);
-    if (/<\/?[a-zA-Z!]/.test(decoded)) return span;
-    return decoded.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  });
 }
 
 // Detects slides that still contain dense explanatory prose worth

@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { mathTokens, invokeWithRetry, mapWithLimit } from '../../shared/lessonHtml.ts';
+import { invokeWithRetry, mapWithLimit, lostMathTokens } from '../../shared/lessonHtml.ts';
 import {
   findBoxes,
   isAnswerBox,
@@ -36,40 +36,6 @@ PRESERVE
 - British English spelling. Use \\times, \\div, \\left( \\right) as in the existing content.
 - Return ONLY the rewritten box HTML, complete from its opening <div> to its closing </div>.`;
 
-const normalise = (s: string) =>
-  s
-    .replace(/\\left|\\right/g, '')
-    .replace(/\\dfrac|\\tfrac/g, '\\frac')
-    .replace(/\\text|\\mathrm|\\operatorname/g, '')
-    .replace(/\\[,;:!]|~/g, '')
-    .replace(/[{}\s]/g, '')
-    .replace(/\(\d+(s\.f\.|d\.p\.|sf|dp)\)/gi, '');
-
-// The rewritten box, with HTML tags removed, so a value that legitimately moves
-// between maths mode and surrounding text (e.g. "$6$ cm" for "$6\text{cm}$")
-// is still recognised.
-const plainBlob = (html: string) => normalise(html.replace(/<[^>]+>/g, ' '));
-// Last resort comparison: LaTeX commands and grouping punctuation dropped, so
-// only the numbers, letters and operators of the result have to survive.
-const looseBlob = (blob: string) => blob.replace(/\\[a-zA-Z]+/g, '').replace(/[()[\]$,]/g, '');
-
-// A LaTeX token survives if it reappears verbatim, or - because a chain such as
-// $a = b = c$ is legitimately split across steps - if its RESULT (the final
-// term of the relation chain) still appears anywhere in the rewritten box.
-function preservedIn(blob: string, tokenSet: Set<string>, token: string) {
-  if (tokenSet.has(token)) return true;
-  const parts = token
-    .replace(/^\$\$?/, '')
-    .replace(/\$\$?$/, '')
-    .split(/=|<|>|\\leq?(?![a-zA-Z])|\\geq?(?![a-zA-Z])|\\Rightarrow|\\to(?![a-zA-Z])/)
-    .map(normalise)
-    .filter(Boolean);
-  const result = parts[parts.length - 1];
-  if (!result) return false;
-  if (blob.includes(result)) return true;
-  return looseBlob(blob).includes(looseBlob(result));
-}
-
 async function rewriteBox(base44, question: string, box: SlideBox) {
   const svgs: string[] = [];
   const masked = box.html.replace(/<svg[\s\S]*?<\/svg>/g, (m) => {
@@ -96,9 +62,7 @@ async function rewriteBox(base44, question: string, box: SlideBox) {
   }
   if (!hasStepList(out)) return { changed: false, reason: 'no step list added' };
 
-  const afterSet = new Set(mathTokens(out));
-  const afterBlob = plainBlob(out);
-  const lost = mathTokens(masked).filter((t) => !preservedIn(afterBlob, afterSet, t));
+  const lost = lostMathTokens(masked, out);
   if (lost.length > 0) return { changed: false, reason: 'maths lost: ' + lost[0] };
 
   for (let i = 0; i < svgs.length; i++) {

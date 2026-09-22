@@ -30,6 +30,64 @@ export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Rewrites each maths span into the stored canonical form: decode HTML
+// entities, then re-escape raw < and > so the browser never parses them as
+// markup at render time (matches the escapeMathOperators convention).
+// Spans that contain HTML tags are skipped: they are not real maths (an
+// unpaired currency "$" pairing across markup) and escaping their tags
+// would corrupt the HTML.
+export function canonicaliseMathSpans(html: string): string {
+  return (html || '').replace(/\$\$?[^$]+\$\$?/g, (span) => {
+    const decoded = decodeEntities(span);
+    if (/<\/?[a-zA-Z!]/.test(decoded)) return span;
+    return decoded.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  });
+}
+
+// --- Micro-step rewrite preservation checks ---
+// A rewrite that legitimately splits a relation chain such as $a=b=c$ across
+// separate steps must not be rejected just because the full chain no longer
+// appears verbatim: a token survives if it reappears verbatim, or if the
+// RESULT of its chain still appears somewhere in the rewritten HTML.
+export const normaliseMath = (s: string) =>
+  decodeEntities(s || '')
+    .replace(/\\left|\\right/g, '')
+    .replace(/\\dfrac|\\tfrac/g, '\\frac')
+    .replace(/\\text|\\mathrm|\\operatorname/g, '')
+    .replace(/\\[,;:!]|~/g, '')
+    .replace(/[{}\s]/g, '')
+    .replace(/\(\d+(s\.f\.|d\.p\.|sf|dp)\)/gi, '');
+
+// The rewritten HTML, with tags removed, so a value that legitimately moves
+// between maths mode and surrounding text (e.g. "$6$ cm" for "$6\text{cm}$")
+// is still recognised.
+export const mathPlainBlob = (html: string) => normaliseMath(html.replace(/<[^>]+>/g, ' '));
+
+// Last resort comparison: LaTeX commands and grouping punctuation dropped, so
+// only the numbers, letters and operators of the result have to survive.
+export const mathLooseBlob = (blob: string) => blob.replace(/\\[a-zA-Z]+/g, '').replace(/[()[\]$,]/g, '');
+
+// Returns the original maths tokens that the rewritten HTML no longer
+// preserves (verbatim, via their chain results, or loosely). Empty = safe.
+export function lostMathTokens(original: string, rewritten: string): string[] {
+  const tokenSet = new Set(mathTokens(rewritten));
+  const blob = mathPlainBlob(rewritten);
+  const loose = mathLooseBlob(blob);
+  return mathTokens(original).filter((t) => {
+    if (tokenSet.has(t)) return false;
+    const parts = t
+      .replace(/^\$\$?/, '')
+      .replace(/\$\$?$/, '')
+      .split(/=|<|>|\\leq?(?![a-zA-Z])|\\geq?(?![a-zA-Z])|\\Rightarrow|\\to(?![a-zA-Z])/)
+      .map(normaliseMath)
+      .filter(Boolean);
+    const result = parts[parts.length - 1];
+    if (!result) return true;
+    if (blob.includes(result)) return false;
+    return !loose.includes(mathLooseBlob(result));
+  });
+}
+
 export async function invokeWithRetry(base44, prompt: string, model?: string) {
   let lastError = null;
   for (let attempt = 0; attempt < 4; attempt++) {
