@@ -84,10 +84,11 @@ async function rewriteBlock(base44, block: WorkedBlock) {
     });
 
   let out = '';
+  let lastReject = 'no valid response';
   for (let attempt = 0; attempt < 2; attempt++) {
     const reminder = attempt === 0
       ? ''
-      : '\n\nREMINDER: your previous attempt lost or altered some mathematics. Keep every number and LaTeX command exactly as given, including $ signs and backslash commands such as \\frac and \\times. You may split a chain of working across steps, but no value may change. Return the block again.';
+      : `\n\nREMINDER: your previous attempt was rejected (${lastReject}). Keep every number and LaTeX command exactly as given, including $ signs and backslash commands such as \\frac and \\times. You may split a chain of working across steps, but no value may change. Start your output with <div class="worked-example and end it with </div>. Return the block again.`;
     let res;
     try {
       res = await invokeTextWithRetry(base44, `${RULES}${reminder}\n\nWORKED EXAMPLE HTML:\n${masked}`, 'claude_sonnet_4_6');
@@ -97,16 +98,16 @@ async function rewriteBlock(base44, block: WorkedBlock) {
     let candidate = (res || '').trim();
     const fence = candidate.match(/^```[a-zA-Z]*\s*\n([\s\S]*?)\n?```$/);
     if (fence) candidate = fence[1].trim();
-    if (!candidate.startsWith('<div class="worked-example')) continue;
-    if (!candidate.endsWith('</div>')) continue;
-    if (!/<h3[\s>]/i.test(candidate)) continue;
-    if (!/<ol[\s>]/i.test(candidate)) continue;
+    if (!candidate.startsWith('<div class="worked-example')) { lastReject = 'output not a worked-example block'; continue; }
+    if (!candidate.endsWith('</div>')) { lastReject = 'output truncated'; continue; }
+    if (!/<h3[\s>]/i.test(candidate)) { lastReject = 'heading missing'; continue; }
+    if (!/<ol[\s>]/i.test(candidate)) { lastReject = 'step list missing'; continue; }
     const lost = lostMathTokens(masked, candidate);
-    if (lost.length > 0) continue;
+    if (lost.length > 0) { lastReject = 'maths lost: ' + lost[0]; continue; }
     out = candidate;
     break;
   }
-  if (!out) return { changed: false, reason: 'rewrite rejected' };
+  if (!out) return { changed: false, reason: 'rewrite rejected - ' + lastReject };
 
   out = canonicaliseMathSpans(out);
 
@@ -116,7 +117,7 @@ async function rewriteBlock(base44, block: WorkedBlock) {
   }
   if (/\[SVG_\d+\]/.test(out)) return { changed: false, reason: 'stray media token' };
 
-  if (out.length < block.html.length) return { changed: false, reason: 'output shorter than original' };
+  if (out.length < block.html.length) return { changed: false, reason: 'output shorter than original (' + out.length + ' < ' + block.html.length + ')' };
 
   // Stamp the block so future sweeps leave it alone.
   out = out.replace(/^(<div class="worked-example[^"]*")/, '$1 data-microsteps="1"');
