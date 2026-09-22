@@ -116,13 +116,16 @@ async function convertSlide(base44, content) {
     if (!candidate) return { content, changed: false, reason: 'empty response' };
     // Reject commentary-wrapped responses: slide HTML always starts with a tag.
     if (!candidate.startsWith('<')) continue;
-    if (mathTokensKey(masked) !== mathTokensKey(candidate)) continue;
-    out = candidate;
-    changedFlag = candidate !== content;
+    // Canonicalise BEFORE comparing so raw < / > inside maths spans are
+    // escaped to entities exactly like the stored content, instead of
+    // breaking span extraction and producing a false mismatch.
+    const norm = canonicaliseMathSpans(candidate);
+    if (mathTokensKey(masked) !== mathTokensKey(norm)) continue;
+    out = norm;
+    changedFlag = norm !== content;
     break;
   }
   if (!out) return { content, changed: false, reason: 'maths mismatch' };
-  out = canonicaliseMathSpans(out);
 
   for (let i = 0; i < svgs.length; i++) {
     if (!out.includes(`[SVG_${i}]`)) return { content, changed: false, reason: 'svg lost' };
