@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { mathTokensKey, invokeWithRetry, mapWithLimit, decodeEntities } from '../../shared/lessonHtml.ts';
+import { mathTokensKey, invokeTextWithRetry, mapWithLimit, decodeEntities } from '../../shared/lessonHtml.ts';
 
 const OL_STYLE = 'margin:12px 0 12px 22px;line-height:1.75;font-size:1.06em;color:#24343d;';
 const LI_STYLE = 'margin:6px 0;';
@@ -21,7 +21,7 @@ ABSOLUTE RULES:
 - Never add new mathematical claims and never delete content. You may split sentences and add minimal connective words only.
 - Keep all style attributes exactly as given for reused elements.
 - British English spelling.
-- Return the FULL slide HTML. If a slide needs no change, return it byte-identical.`;
+- Return the FULL slide HTML and nothing else: no commentary and no markdown code fences. If a slide needs no change, return it byte-identical.`;
 
 // Extracts every balanced <div class="..."> block matched by `re` into
 // `store` as [MEDIA_n] tokens, so the model cannot reword its contents.
@@ -117,17 +117,22 @@ async function convertSlide(base44, content) {
     let res;
     const reminder = attempt === 0
       ? ''
-      : '\n\nREMINDER: your previous attempt altered the mathematics. Every LaTeX expression must be copied character-for-character, including $ signs. Convert only the prose structure and return the slide again.';
+      : '\n\nREMINDER: your previous attempt altered the mathematics. Every LaTeX expression must be copied character-for-character, including $ signs and backslash commands such as \\frac and \\le. Convert only the prose structure and return the slide again.';
     try {
-      res = await invokeWithRetry(base44, `${RULES}${reminder}\n\nSLIDE HTML:\n${masked}`);
+      res = await invokeTextWithRetry(base44, `${RULES}${reminder}\n\nSLIDE HTML:\n${masked}`);
     } catch (err) {
       return { content, changed: false, reason: 'llm error: ' + err.message };
     }
-    const candidate = res && res.html ? res.html : '';
+    let candidate = (res || '').trim();
+    // The model is told to return raw HTML; tolerate a stray markdown fence.
+    const fence = candidate.match(/^```[a-zA-Z]*\s*\n([\s\S]*?)\n?```$/);
+    if (fence) candidate = fence[1].trim();
     if (!candidate) return { content, changed: false, reason: 'empty response' };
+    // Reject commentary-wrapped responses: slide HTML always starts with a tag.
+    if (!candidate.startsWith('<')) continue;
     if (mathTokensKey(masked) !== mathTokensKey(candidate)) continue;
     out = candidate;
-    changedFlag = res.changed === true && candidate !== content;
+    changedFlag = candidate !== content;
     break;
   }
   if (!out) return { content, changed: false, reason: 'maths mismatch' };

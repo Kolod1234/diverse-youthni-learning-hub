@@ -50,6 +50,26 @@ export async function invokeWithRetry(base44, prompt: string, model?: string) {
   throw lastError;
 }
 
+// Plain-text LLM invocation for HTML rewriting. Avoids response_json_schema:
+// JSON string escaping silently corrupts LaTeX backslash commands when the
+// model under-escapes (\frac decodes to a form feed, eating the backslash).
+export async function invokeTextWithRetry(base44, prompt: string, model?: string): Promise<string> {
+  let lastError: any = null;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const res = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt,
+        ...(model ? { model } : {})
+      });
+      return typeof res === 'string' ? res : ((res && (res.text || res.html)) || String(res));
+    } catch (err) {
+      lastError = err;
+      await sleep(1500 * (attempt + 1));
+    }
+  }
+  throw lastError;
+}
+
 export async function mapWithLimit(items, limit: number, worker) {
   const results = new Array(items.length);
   let next = 0;
