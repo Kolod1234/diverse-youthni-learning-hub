@@ -14,7 +14,7 @@ const RULES = `You are a CCEA GCSE Mathematics tutor rewriting a WORKED EXAMPLE 
 You are given one worked-example block of lesson HTML. Rewrite ONLY this block.
 
 REQUIRED FORMAT
-- Keep the opening <div class="worked-example"> wrapper, the <h3> example heading and the question <p> EXACTLY as given.
+- Keep the opening <div class="worked-example"> wrapper, the example heading if there is one, and the question <p> EXACTLY as given.
 - Replace the working with <ol style="${OL_STYLE}"> and <li style="${LI_STYLE}"> steps.
 - Each step does exactly ONE thing. Where it applies, follow this order: state the method or formula in words first, then substitute the numbers into it, then carry out one line of arithmetic, then interpret what the result means.
 - Never combine substitution and evaluation in the same step. Split any step that chains several operations (for example $F-A=42-48=-6$) into its separate moves on separate steps.
@@ -100,7 +100,7 @@ async function rewriteBlock(base44, block: WorkedBlock) {
     if (fence) candidate = fence[1].trim();
     if (!candidate.startsWith('<div class="worked-example')) { lastReject = 'output not a worked-example block'; continue; }
     if (!candidate.endsWith('</div>')) { lastReject = 'output truncated'; continue; }
-    if (!/<h3[\s>]/i.test(candidate)) { lastReject = 'heading missing'; continue; }
+    if (/<h3[\s>]/i.test(masked) && !/<h3[\s>]/i.test(candidate)) { lastReject = 'heading missing'; continue; }
     if (!/<ol[\s>]/i.test(candidate)) { lastReject = 'step list missing'; continue; }
     const lost = lostMathTokens(masked, candidate);
     if (lost.length > 0) { lastReject = 'maths lost: ' + lost[0]; continue; }
