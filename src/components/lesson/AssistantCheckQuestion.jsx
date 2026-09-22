@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, HelpCircle } from 'lucide-react';
+import MathText from '@/components/lesson/MathText';
 
 /**
  * One short question that checks whether the learner understood the
@@ -22,7 +23,8 @@ export default function AssistantCheckQuestion({ selectedText, lessonTitle }) {
 
 Write ONE very short question that checks whether they truly understood it.
 Then give the answer, and a one-sentence reason why that answer is correct.
-Use British English and plain, everyday wording.`,
+Use British English and plain, everyday wording.
+Any mathematics must be written in LaTeX between single dollar signs, such as $8+3$; never as plain text like "x^2".`,
         response_json_schema: {
           type: 'object',
           properties: {
@@ -55,11 +57,11 @@ Use British English and plain, everyday wording.`,
 
   return (
     <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 text-xs leading-6 text-violet-900">
-      <p className="font-semibold">{question.question}</p>
+      <p className="font-semibold"><MathText text={question.question} /></p>
       {revealed ? (
         <div className="mt-2 space-y-1">
-          <p><span className="font-semibold">Answer:</span> {question.answer}</p>
-          <p><span className="font-semibold">Why:</span> {question.reason}</p>
+          <p><span className="font-semibold">Answer: </span><MathText text={question.answer} /></p>
+          <p><span className="font-semibold">Why: </span><MathText text={question.reason} /></p>
         </div>
       ) : (
         <button

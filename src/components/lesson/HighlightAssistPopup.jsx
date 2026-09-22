@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Loader2, Sparkles, X, StickyNote, ArrowDownWideNarrow } from 'lucide-react';
 import { toast } from 'sonner';
 import AssistantCheckQuestion from '@/components/lesson/AssistantCheckQuestion';
+import MathText from '@/components/lesson/MathText';
 
 const LEVELS = [
   { label: 'Plain English', instruction: 'Explain at the level of a capable GCSE/A-Level student, keeping correct terminology but defining it.' },
@@ -41,6 +42,7 @@ ${LEVELS[nextLevel].instruction}
 
 Rules:
 - British English spelling throughout.
+- The highlighted text may contain LaTeX maths written between single dollar signs, such as $8-(-3)$. Keep all maths in that same $...$ LaTeX form in your steps, summary and key terms. Never write maths as plain text like "x^2" or "1/2" when a proper LaTeX form exists.
 - Break the explanation into short micro-steps: one single action or idea per step.
 - State the reason BEFORE any algebra, calculation or technical move.
 - Never chain two calculations into one step.
@@ -100,7 +102,7 @@ Rules:
         </button>
       </div>
 
-      <p className="mb-3 line-clamp-3 rounded-lg bg-slate-50 p-2 text-xs italic leading-5 text-slate-600">“{selection.text}”</p>
+      <MathText className="mb-3 line-clamp-3 rounded-lg bg-slate-50 p-2 text-xs italic leading-5 text-slate-600" text={`“${selection.text}”`} />
 
       {!explanation && !loading && (
         <button
@@ -122,15 +124,15 @@ Rules:
         <div className="space-y-3">
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">{LEVELS[level].label}</p>
           <ol className="list-decimal space-y-2 pl-5 text-sm leading-6">
-            {explanation.steps.map((step, index) => <li key={index}>{step}</li>)}
+            {explanation.steps.map((step, index) => <li key={index}><MathText text={step} /></li>)}
           </ol>
-          <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs leading-6 text-emerald-900">
-            <span className="font-semibold">In short:</span> {explanation.summary}
-          </p>
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs leading-6 text-emerald-900">
+            <span className="font-semibold">In short: </span><MathText text={explanation.summary} />
+          </div>
           {explanation.key_terms?.length > 0 && (
             <ul className="space-y-1 text-xs leading-6 text-slate-600">
               {explanation.key_terms.map(term => (
-                <li key={term.term}><span className="font-semibold text-slate-800">{term.term}:</span> {term.meaning}</li>
+                <li key={term.term}><span className="font-semibold text-slate-800">{term.term}: </span><MathText text={term.meaning} /></li>
               ))}
             </ul>
           )}
