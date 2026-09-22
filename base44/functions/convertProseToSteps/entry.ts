@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { mathTokensKey, invokeWithRetry, mapWithLimit } from '../../shared/lessonHtml.ts';
+import { mathTokensKey, invokeWithRetry, mapWithLimit, decodeEntities } from '../../shared/lessonHtml.ts';
 
 const OL_STYLE = 'margin:12px 0 12px 22px;line-height:1.75;font-size:1.06em;color:#24343d;';
 const LI_STYLE = 'margin:6px 0;';
@@ -51,6 +51,40 @@ function extractClassDivs(src: string, re: RegExp, store: string[]): string {
   return out + src.slice(pos);
 }
 
+// Rewrites each maths span into the stored canonical form: decode HTML
+// entities, then re-escape raw < and > so the browser never parses them as
+// markup at render time (matches the escapeMathOperators convention).
+// Spans that contain HTML tags are skipped: they are not real maths (an
+// unpaired currency "$" pairing across markup) and escaping their tags
+// would corrupt the HTML.
+function canonicaliseMathSpans(html: string): string {
+  return html.replace(/\$\$?[^$]+\$\$?/g, (span) => {
+    const decoded = decodeEntities(span);
+    if (/<\/?[a-zA-Z!]/.test(decoded)) return span;
+    return decoded.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  });
+}
+
+// Detects slides that still contain dense explanatory prose worth
+// restructuring, so retry sweeps skip slides already converted into step
+// lists (cheap filter, no LLM call).
+function looksDense(content: string): boolean {
+  const store: string[] = [];
+  let prose = (content || '').replace(/<svg[\s\S]*?<\/svg>/g, '');
+  prose = extractClassDivs(prose, /<div[^>]*\bclass="[^"]*\btutor-checkpoint\b[^"]*"[^>]*>/gi, store);
+  prose = extractClassDivs(prose, /<div[^>]*\bclass="[^"]*\bpractice-block\b[^"]*"[^>]*>/gi, store);
+  prose = prose
+    .replace(/<details[\s\S]*?<\/details>/gi, '')
+    .replace(/<figure[\s\S]*?<\/figure>/gi, '')
+    .replace(/<img[^>]*>/gi, '');
+  const paras = prose.match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) || [];
+  return paras.some((p) => {
+    const text = p.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+    const sentences = (text.match(/[.!?](?:\s|$)/g) || []).length;
+    return text.length >= 240 || sentences >= 3;
+  });
+}
+
 async function convertSlide(base44, content) {
   const svgs = [];
   const media = [];
@@ -97,6 +131,7 @@ async function convertSlide(base44, content) {
     break;
   }
   if (!out) return { content, changed: false, reason: 'maths mismatch' };
+  out = canonicaliseMathSpans(out);
 
   for (let i = 0; i < svgs.length; i++) {
     if (!out.includes(`[SVG_${i}]`)) return { content, changed: false, reason: 'svg lost' };
@@ -123,6 +158,12 @@ export default async function (req: Request): Promise<Response> {
     const body = await req.json();
     const courseId = body.course_id;
     const orders = Array.isArray(body.orders) ? body.orders : [];
+    // Optional 1-based slide numbers: retry only those slides.
+    const slideNums = Array.isArray(body.slides)
+      ? body.slides.map(Number).filter((n) => Number.isInteger(n) && n > 0)
+      : null;
+    // Retry-sweep mode: only attempt slides that still contain dense prose.
+    const onlyDense = body.only_dense === true;
     if (!courseId || orders.length === 0) {
       return Response.json({ error: 'course_id and orders are required' }, { status: 400 });
     }
@@ -135,10 +176,19 @@ export default async function (req: Request): Promise<Response> {
     const report = [];
     for (const lesson of lessons) {
       const slides = Array.isArray(lesson.slides) ? [...lesson.slides] : [];
-      const results = await mapWithLimit(slides, 3, (s) => convertSlide(base44, s.content || ''));
+      let targets = slides.map((s, i) => ({ slide: s, index: i }));
+      if (slideNums) targets = targets.filter((t) => slideNums.includes(t.index + 1));
+      let denseFiltered = 0;
+      if (onlyDense) {
+        const before = targets.length;
+        targets = targets.filter((t) => looksDense((t.slide && t.slide.content) || ''));
+        denseFiltered = before - targets.length;
+      }
+      const results = await mapWithLimit(targets, 3, (t) => convertSlide(base44, (t.slide && t.slide.content) || ''));
       let converted = 0;
       const skipped = [];
-      results.forEach((r, i) => {
+      results.forEach((r, k) => {
+        const i = targets[k].index;
         if (r.changed) {
           slides[i] = { ...slides[i], content: r.content };
           converted++;
@@ -149,7 +199,7 @@ export default async function (req: Request): Promise<Response> {
       if (converted > 0) {
         await base44.asServiceRole.entities.Lesson.update(lesson.id, { slides });
       }
-      report.push({ order: lesson.order, title: lesson.title, converted, skipped });
+      report.push({ order: lesson.order, title: lesson.title, converted, skipped, ...(onlyDense ? { dense_filtered: denseFiltered } : {}) });
     }
 
     return Response.json({ processed: report.length, report });

@@ -1,7 +1,25 @@
 // Shared helpers for LLM-driven lesson HTML rewrites.
 
+// Math-token comparison must be insensitive to how special characters are
+// HTML-encoded: the model may emit raw & < > where stored lesson HTML uses
+// &amp; &lt; &gt; (or the reverse). Decoding entities inside each token keeps
+// the comparison focused on the mathematics itself; callers re-canonicalise
+// accepted output before persisting.
+const ENTITY_RE = /&(amp|lt|gt|nbsp|quot|apos|#x[0-9a-fA-F]+|#\d+);/g;
+
+export function decodeEntities(str: string): string {
+  return str.replace(ENTITY_RE, (e) => {
+    const body = e.slice(1, -1);
+    if (body.startsWith('#x')) return String.fromCodePoint(parseInt(body.slice(2), 16));
+    if (body.startsWith('#')) return String.fromCodePoint(parseInt(body.slice(1), 10));
+    const named: Record<string, string> = { amp: '&', lt: '<', gt: '>', nbsp: ' ', quot: '"', apos: "'" };
+    return body in named ? named[body] : e;
+  });
+}
+
 export function mathTokens(html: string): string[] {
-  return ((html || '').match(/\$\$?[^$]+\$\$?/g) || []).map((t) => t.replace(/\s+/g, ''));
+  return ((html || '').match(/\$\$?[^$]+\$\$?/g) || [])
+    .map((t) => decodeEntities(t).replace(/\s+/g, ''));
 }
 
 export function mathTokensKey(html: string): string {
