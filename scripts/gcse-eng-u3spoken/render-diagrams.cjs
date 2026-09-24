@@ -128,7 +128,7 @@ x.fillText('Aspect', M + LABEL_W / 2, headY + HEAD_H / 2 + 2);
 
 // Rows: labels strictly inside the reserved column
 let y = headY + HEAD_H;
-ROWS.forEach((r, i) {
+ROWS.forEach((r, i) => {
   const h = rowHs[i];
   const cy = y + h / 2;
   const labelX = M + LABEL_W / 2;
