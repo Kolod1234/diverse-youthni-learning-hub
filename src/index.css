@@ -462,7 +462,8 @@ button:focus-visible {
     align-items: center;
     justify-content: center;
     flex: none;
-    width: 1.75rem;
+    min-width: 1.75rem;
+    padding: 0 0.4rem;
     height: 1.75rem;
     margin-top: 0.1rem;
     border-radius: 9999px;

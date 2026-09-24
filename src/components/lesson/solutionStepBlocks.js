@@ -31,6 +31,62 @@ const MATH_ONLY_RE = /^<p[^>]*>\s*(\$\$[\s\S]+?\$\$|<math[^>]*>[\s\S]+?<\/math>)
 const LABEL_STRIP_P_RE = /^<p([^>]*)>\s*<strong[^>]*>\s*(?:Step\s*)?\d+\s*[.):]\s*<\/strong>/i;
 const LABEL_STRIP_LI_RE = /^\s*<strong[^>]*>\s*(?:Step\s*)?\d+\s*[.):]\s*<\/strong>/i;
 
+// <ol start="13"> - the start value is the question number this list answers.
+const OL_START_ATTR_RE = /^<ol[^>]*\bstart=["']?(\d+)/i;
+
+// 1 -> 'a', 2 -> 'b', ... 27 -> 'aa'
+function toPartLabel(n) {
+  let s = '';
+  while (n > 0) {
+    n -= 1;
+    s = String.fromCharCode(97 + (n % 26)) + s;
+    n = Math.floor(n / 26);
+  }
+  return s;
+}
+
+function hasVisibleText(html) {
+  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;|\s/g, '').length > 0;
+}
+
+// Splits an <li> body into its own text plus any lists nested directly in it.
+function extractNestedLists(html) {
+  const lists = [];
+  const ranges = [];
+  TAG_RE.lastIndex = 0;
+  const stack = [];
+  let m;
+  while ((m = TAG_RE.exec(html)) !== null) {
+    const name = (m[2] || '').toLowerCase();
+    if (m[1]) {
+      for (let i = stack.length - 1; i >= 0; i--) {
+        if (stack[i] === name) {
+          stack.length = i;
+          break;
+        }
+      }
+    } else if (!m[4] && !VOID_TAGS.has(name)) {
+      if (stack.length === 0 && (name === 'ol' || name === 'ul')) {
+        const b = elementBounds(html, m.index);
+        if (b) {
+          ranges.push([b.start, b.end]);
+          lists.push(html.slice(b.start, b.end));
+          TAG_RE.lastIndex = b.end;
+        }
+      }
+      stack.push(name);
+    }
+  }
+  let own = '';
+  let pos = 0;
+  for (const [s, e] of ranges) {
+    own += html.slice(pos, s);
+    pos = e;
+  }
+  own += html.slice(pos);
+  return { own, lists };
+}
+
 // Containers whose children are not on the slide's top level.
 const CONTAINER_TAG_RE = /^(div|section|article|table|figure|blockquote|details|ul|ol)$/i;
 // "Example 3:" / "Worked example 2 - ..." heading that introduces a prose example.
@@ -177,13 +233,71 @@ function feedElement(api, el, tag, opts) {
   }
 
   if (tag === 'ol' || tag === 'ul') {
-    const listInner = el.slice(el.indexOf('>') + 1, el.lastIndexOf('</'));
-    for (const li of splitTopLevel(listInner)) {
-      if (!/^<li[\s>]/i.test(li)) continue;
-      const liInner = li.slice(li.indexOf('>') + 1, li.lastIndexOf('</'));
-      api.counter += 1;
-      api.pushStep(api.counter, liInner.replace(LABEL_STRIP_LI_RE, ''));
+    // A list that carries a start attribute holds the working for ONE
+    // examination question (the start value is that question's number).
+    // Its items become lettered parts of that question (13a, 13b, ...) so
+    // learners can map every step to the question it answers. Lists without
+    // a start keep the sequential 1, 2, 3 step numbering.
+    const startM = tag === 'ol' ? el.match(OL_START_ATTR_RE) : null;
+    const base = startM ? startM[1] : null;
+
+    if (base) {
+      // A start attribute marks the working for ONE question (the value is
+      // its number): every step of its working, including moves from lists
+      // nested inside items, becomes a lettered part of it (13a, 13b, ...).
+      // A single-step answer shows just the question number.
+      const bodies = [];
+      const walkQuestion = (listEl) => {
+        const listInner = listEl.slice(listEl.indexOf('>') + 1, listEl.lastIndexOf('</'));
+        for (const li of splitTopLevel(listInner)) {
+          if (!/^<li[\s>]/i.test(li)) continue;
+          const liInner = li.slice(li.indexOf('>') + 1, li.lastIndexOf('</'));
+          const { own, lists } = extractNestedLists(liInner);
+          if (hasVisibleText(own)) bodies.push(own.replace(LABEL_STRIP_LI_RE, ''));
+          for (const nested of lists) walkQuestion(nested);
+        }
+      };
+      walkQuestion(el);
+      bodies.forEach((body, i) => {
+        const num = bodies.length === 1 ? base : `${base}${toPartLabel(i + 1)}`;
+        api.pushStep(num, body);
+      });
+      return;
     }
+
+    // Without a start, each item is one step (a method move, or the answer to
+    // the correspondingly numbered question). Lists nested inside an item are
+    // further moves of that same step, not content to merge into one block:
+    // they become lettered parts of it (5a, 5b, ...) without consuming the
+    // step numbering.
+    const walkSteps = (listEl) => {
+      const listInner = listEl.slice(listEl.indexOf('>') + 1, listEl.lastIndexOf('</'));
+      for (const li of splitTopLevel(listInner)) {
+        if (!/^<li[\s>]/i.test(li)) continue;
+        const liInner = li.slice(li.indexOf('>') + 1, li.lastIndexOf('</'));
+        const { own, lists } = extractNestedLists(liInner);
+        api.counter += 1;
+        const unit = api.counter;
+        let sub = 0;
+        const emitPart = (body) => {
+          sub += 1;
+          api.pushStep(`${unit}${toPartLabel(sub)}`, body);
+        };
+        const walkNested = (nestedEl) => {
+          const nestedInner = nestedEl.slice(nestedEl.indexOf('>') + 1, nestedEl.lastIndexOf('</'));
+          for (const nestedLi of splitTopLevel(nestedInner)) {
+            if (!/^<li[\s>]/i.test(nestedLi)) continue;
+            const nestedInnerLi = nestedLi.slice(nestedLi.indexOf('>') + 1, nestedLi.lastIndexOf('</'));
+            const { own: nestedOwn, lists: nestedLists } = extractNestedLists(nestedInnerLi);
+            if (hasVisibleText(nestedOwn)) emitPart(nestedOwn.replace(LABEL_STRIP_LI_RE, ''));
+            for (const deeper of nestedLists) walkNested(deeper);
+          }
+        };
+        if (hasVisibleText(own)) api.pushStep(unit, own.replace(LABEL_STRIP_LI_RE, ''));
+        for (const nested of lists) walkNested(nested);
+      }
+    };
+    walkSteps(el);
     return;
   }
 
