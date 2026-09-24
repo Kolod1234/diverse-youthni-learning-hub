@@ -44,9 +44,9 @@ const ROWS = [
     writing: 'Read at a distance. The writer must imagine the reader.'
   },
   {
-    label: 'Feedback',
-    speech: 'Instant: a frown, a nod, a question. Speakers adjust mid-flow.',
-    writing: 'None while writing. Any response arrives long after the words are fixed.'
+    label: 'Channels',
+    speech: 'Feedback is instant — a frown, a nod, a question — and speech travels through more channels than words: tone, volume, gesture, expression.',
+    writing: 'Marks on the page must do all the work. Any response arrives long after the words are fixed.'
   },
   {
     label: 'Structure',
