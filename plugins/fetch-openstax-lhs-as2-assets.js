@@ -6,6 +6,7 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { Buffer } from 'node:buffer';
 import { createCanvas, loadImage } from 'canvas';
 
 const ARCHIVE = 'https://openstax.org/apps/archive/20260604.144757/resources/';
