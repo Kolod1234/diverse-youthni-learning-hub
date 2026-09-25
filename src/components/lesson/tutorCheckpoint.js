@@ -28,6 +28,11 @@ if (typeof document !== 'undefined' && !window.__tutorCheckpointInit) {
       fb.hidden = false;
       fb.classList.add(isRight ? 'is-correct' : 'is-wrong');
       fb.textContent = btn.dataset.feedback || '';
+      // The feedback is inserted at click time, after the page-level MathJax
+      // pass, so ask MathJax to typeset any $...$ maths notation in it now.
+      if (fb.textContent.includes('$') && window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+        window.MathJax.typesetPromise([fb]).catch(() => {});
+      }
     }
   });
 }

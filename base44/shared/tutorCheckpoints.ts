@@ -5,13 +5,38 @@
 
 // The lesson players decode entities in some paths, so the checkpoint markup
 // must avoid quote and ampersand characters entirely instead of entity-encoding them.
-export function escText(s) {
-  return String(s)
+// Segments wrapped in single dollar signs are inline maths for MathJax and
+// must survive escaping: inside them, < > & become LaTeX commands instead of
+// text substitutions, and quotes are dropped so the data-feedback attribute
+// stays intact.
+function escMath(m) {
+  return String(m)
+    .replace(/"/g, '')
+    .replace(/&/g, ' ')
+    .replace(/</g, '\\lt ')
+    .replace(/>/g, '\\gt ')
+    .replace(/\s+/g, ' ');
+}
+
+function escPlain(t) {
+  return String(t)
     .replace(/[\u2014\u2013]/g, ' to ')
     .replace(/"/g, "'")
     .replace(/&(?!\w+;)/g, 'and')
     .replace(/</g, '(')
-    .replace(/>/g, ')')
+    .replace(/>/g, ')');
+}
+
+export function escText(s) {
+  const str = String(s);
+  const parts = str.split('$');
+  if (parts.length % 2 === 0) {
+    // Unbalanced $: no maths delimiters, escape the whole string as plain text.
+    return escPlain(str).replace(/\s+/g, ' ').trim();
+  }
+  return parts
+    .map((p, i) => (i % 2 ? escMath(p) : escPlain(p)))
+    .join('$')
     .replace(/\s+/g, ' ')
     .trim();
 }
