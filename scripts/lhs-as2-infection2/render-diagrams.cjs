@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { createCanvas } = require('canvas');
 
-const OUT_DIR = path.join(__dirname, '..', '..', '..', 'public', 'lesson-assets', 'lhs-as2');
+const OUT_DIR = path.join(__dirname, '..', '..', 'public', 'lesson-assets', 'lhs-as2');
 const SCALE = 2;
 const FONT = "'DejaVu Sans', Arial, sans-serif";
 
@@ -407,7 +407,8 @@ function amrSelection() {
     setFont(ctx, 28, 'bold');
     ctx.fillStyle = '#1f2937';
     ctx.textAlign = 'center';
-    ctx.fillText(title, ox + 170, 660);
+    const titleLines = title.split('\n');
+    titleLines.forEach((line, idx) => ctx.fillText(line, ox + 170, 640 + idx * 34));
   }
 
   function grid(colours) {
@@ -422,14 +423,14 @@ function amrSelection() {
     return cells;
   }
 
-  panel(70, '1. Variation: a rare\nrandom mutation'.split('\n')[0], grid(['s', 's', 's', 's', 's', 's', 's', 's', 's', 's', 'r', 's']));
+  panel(70, '1. Variation: a rare\nrandom mutation', grid(['s', 's', 's', 's', 's', 's', 's', 's', 's', 's', 'r', 's']));
   ctx.font = '';
   panel(475, '2. Antibiotic applied', (function () {
     const cells = grid(['dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'r', 'dead']);
     return cells;
   })());
   panel(880, '3. Susceptible cells die', grid(['dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'dead', 'r', 'dead', 'dead']));
-  panel(1285, '4. Resistant cells multiply', (function () {
+  panel(1285, '4. Resistant cells\nmultiply', (function () {
     const cells = [];
     let k = 0;
     const states = ['r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r'];
