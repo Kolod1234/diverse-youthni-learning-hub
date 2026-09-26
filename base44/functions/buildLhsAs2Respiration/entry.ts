@@ -2,9 +2,12 @@
 // respiration) in both the Single Award AS and Double Award AS Life and
 // Health Sciences courses. Figures are downloaded from OpenStax (CC
 // BY-NC-SA 4.0) and uploaded to permanent public storage; the mitochondrion
-// diagram reuses the existing Biology 2e asset in /lesson-assets.
+// diagram reuses the existing Biology 2e asset in /lesson-assets. Slide
+// validation and publishing use base44/shared/lhsLessonBuild.ts (with the two
+// legacy checks left off for this chapter's original markup).
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
+import { resolveSlides, validateSlides, publishLessonToCourses } from '../../shared/lhsLessonBuild.ts';
 import { PAGES_1 } from './pages1.ts';
 import { PAGES_2 } from './pages2.ts';
 import { PAGES_3 } from './pages3.ts';
@@ -40,8 +43,6 @@ const LESSON_META = {
   content_type: 'richtext',
   section: 'CCEA Unit AS 2: Human Body Systems \u2014 Compulsory',
 };
-
-const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g;
 
 export default async function(req) {
   try {
@@ -82,50 +83,13 @@ export default async function(req) {
       uploadError = err && err.message ? err.message : String(err);
     }
 
-    const slides = pages.map(function (p) {
-      const content = p.content
-        .replace(CONTROL_CHARS, '')
-        .replace(/LESSON_ASSET:([a-z0-9.-]+\.png)/g, function (m, file) {
-          return urls[file] || m;
-        });
-      return { title: p.title, order: p.order, content: content };
-    });
-
-    // Validate: every asset token resolved, checkpoint markup balanced.
-    const problems = [];
-    slides.forEach(function (s) {
-      if (/LESSON_ASSET:/.test(s.content)) problems.push('page ' + s.order + ': unresolved figure token');
-      const opens = (s.content.match(/<div class="tutor-checkpoint">/g) || []).length;
-      const feedbacks = (s.content.match(/class="tutor-checkpoint-feedback"/g) || []).length;
-      if (opens !== feedbacks) problems.push('page ' + s.order + ': checkpoint markup mismatch');
-      if ((s.content.match(/\$/g) || []).length % 2 !== 0) problems.push('page ' + s.order + ': unbalanced $ math delimiters');
-    });
+    const slides = resolveSlides(pages, urls);
+    const problems = validateSlides(slides, { checkBubbles: false, checkRawQuotes: false });
     if (problems.length > 0) {
       return Response.json({ error: 'Validation failed', problems: problems }, { status: 500 });
     }
 
-    const results = [];
-    for (const c of COURSES) {
-      const existing = await base44.entities.Lesson.filter({ course_id: c.id, title: LESSON_META.title });
-      const record = Object.assign({ course_id: c.id, order: c.order }, LESSON_META, { slides: slides });
-      let lesson;
-      if (existing.length > 0) {
-        lesson = await base44.entities.Lesson.update(existing[0].id, record);
-      } else {
-        lesson = await base44.entities.Lesson.create(record);
-        const course = await base44.entities.Course.get(c.id);
-        await base44.entities.Course.update(c.id, {
-          total_lessons: (course.total_lessons || 0) + 1,
-        });
-      }
-      results.push({
-        course_id: c.id,
-        lesson_id: lesson.id,
-        order: c.order,
-        pages: slides.length,
-        checkpoints: (JSON.stringify(slides).match(/tutor-checkpoint-label/g) || []).length,
-      });
-    }
+    const results = await publishLessonToCourses(base44, COURSES, LESSON_META, slides);
 
     return Response.json({
       ok: true,
