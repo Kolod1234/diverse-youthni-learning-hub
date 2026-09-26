@@ -249,8 +249,8 @@ function renderSampling() {
       }
     }
 
-    // panel titles
-    textCentered(ctx, p.name, ox + pw / 2, oy - 108, pw + 30, 27, '700');
+    // panel titles (inside the frame, clear of the global subtitle)
+    textCentered(ctx, p.name, ox + pw / 2, oy - 32, pw + 30, 27, '700');
     textCentered(ctx, p.note, ox + pw / 2, oy + ph + 56, pw + 40, 19, '400', C.sub);
   });
 
@@ -310,7 +310,7 @@ function renderCentralTendency() {
   arrow(ctx, 1000, 420, 1280, 520, 3, C.sub);
   textCentered(ctx, 'long tail of high values', 1250, 388, 340, 21, '400', C.sub);
 
-  textCentered(ctx, 'In a symmetric (normal) distribution all three averages coincide at the centre &mdash; it is skew that separates them', W / 2, H - 34, W - 160, 21, '400', C.sub);
+  textCentered(ctx, 'In a symmetric (normal) distribution all three averages coincide at the centre \u2014 it is skew that separates them', W / 2, H - 34, W - 160, 21, '400', C.sub);
   save('a21-central-tendency.png', canvas);
 }
 
