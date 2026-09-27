@@ -28,6 +28,7 @@
     "@mui/material": "^7.3.11",
     "@mui/system": "^7.3.11",
     "@mui/x-data-grid": "^8.29.2",
+    "@napi-rs/canvas": "^1.0.9",
     "@paddlejs-models/ocr": "^1.0.7",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
