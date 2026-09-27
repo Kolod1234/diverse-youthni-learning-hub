@@ -2,7 +2,15 @@
 // chapter as 2x-scale PNGs into public/lesson-assets/lhs-a2.
 const fs = require('fs');
 const path = require('path');
-const { createCanvas } = require('canvas');
+// node-canvas 2.x can no longer compile in this sandbox (its cairo/pango
+// system libraries are absent), so fall back to @napi-rs/canvas, a
+// prebuilt drop-in replacement with the same createCanvas API.
+let createCanvas;
+try {
+  ({ createCanvas } = require('canvas'));
+} catch (e) {
+  ({ createCanvas } = require('@napi-rs/canvas'));
+}
 
 const OUT_DIR = path.join(__dirname, '..', '..', 'public', 'lesson-assets', 'lhs-a2');
 fs.mkdirSync(OUT_DIR, { recursive: true });
