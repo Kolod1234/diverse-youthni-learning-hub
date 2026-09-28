@@ -7,7 +7,7 @@ title(ctx, 1560, 'The electrocardiogram', 'The heart\u2019s electrical cycle, dr
 // Trace panel
 panelBox(ctx, 90, 150, 1380, 420, '#ffffff', C.panelBorder, 16);
 const baseY = 480, ox = 170, xEnd = 1420;
-// grid: small squares 10 px, big (5x5) 50 px
+// grid: small squares 10 px, big (5x5) 50 px — one big square = 0.2 s
 ctx.strokeStyle = '#f1f5f9';
 ctx.lineWidth = 1;
 for (let gx = ox; gx <= xEnd; gx += 10) { ctx.beginPath(); ctx.moveTo(gx, 190); ctx.lineTo(gx, baseY); ctx.stroke(); }
@@ -16,8 +16,7 @@ ctx.strokeStyle = '#e2e8f0';
 for (let gx = ox; gx <= xEnd; gx += 50) { ctx.beginPath(); ctx.moveTo(gx, 190); ctx.lineTo(gx, baseY); ctx.stroke(); }
 for (let gy = 190; gy <= baseY; gy += 50) { ctx.beginPath(); ctx.moveTo(ox, gy); ctx.lineTo(xEnd, gy); ctx.stroke(); }
 
-// one cycle width 300 px = 1 s at 300 px/s? Grid: 1 big square = 0.2 s → 50 px per big square → 250 px/s.
-// Draw two cycles: P (bump up 30), Q (dip 12), R (spike up 130), S (dip 18), T (bump up 40).
+// Two cycles, well separated; the first carries the annotations.
 function cycle(cx) {
   const mid = baseY - 60;
   ctx.beginPath();
@@ -35,30 +34,31 @@ function cycle(cx) {
   ctx.strokeStyle = '#16a34a';
   ctx.lineJoin = 'round';
   ctx.stroke();
-  return mid;
 }
-const mid = cycle(370);
-cycle(890);
-cycle(1330);
+const c1 = 520, c2 = 1060;
+const mid = baseY - 60;
+cycle(c1);
+cycle(c2);
 
-const labels = [
-  ['P wave', cx => cx - 42, 'atria depolarise\n(the atria contract)', '#2563eb'],
-  ['QRS', cx => cx + 4, 'ventricles depolarise\n(ventricles contract)', '#16a34a'],
-  ['T wave', cx => cx + 74, 'ventricles repolarise\n(ventricles reset)', '#db2777'],
-];
-labels.forEach(([name, dx, meaning, col]) => {
-  const cx = 370;
-  const lx = dx(cx);
-  const ly = name === 'P wave' ? mid - 52 : name === 'QRS' ? mid - 140 : mid - 62;
-  lead(ctx, lx, ly, lx, mid - 175, C.sub);
-  textCentered(ctx, name, lx, mid - 200, 120, 19, '700', col);
-  textCentered(ctx, meaning.split('\n')[0], lx, mid - 224, 200, 13, '400', C.sub);
-  textCentered(ctx, meaning.split('\n')[1], lx, mid - 243, 200, 13, '400', C.sub);
-});
+// Annotations for the first cycle — one label each, spread across three
+// positions so nothing collides: P far left, QRS high above the R peak,
+// T to the right.
+// P wave
+lead(ctx, c1 - 42, mid - 44, c1 - 120, 232, '#2563eb');
+textCentered(ctx, 'P wave', c1 - 120, 258, 140, 20, '700', '#2563eb');
+textCentered(ctx, 'atria depolarise', c1 - 120, 284, 200, 15, '400', C.sub);
+// QRS complex
+lead(ctx, c1 - 2, mid - 134, c1, 218, '#16a34a');
+textCentered(ctx, 'QRS complex', c1, 218, 180, 20, '700', '#16a34a');
+textCentered(ctx, 'ventricles depolarise', c1, 190, 220, 15, '400', C.sub);
+// T wave
+lead(ctx, c1 + 74, mid - 56, c1 + 160, 232, '#db2777');
+textCentered(ctx, 'T wave', c1 + 160, 258, 140, 20, '700', '#db2777');
+textCentered(ctx, 'ventricles repolarise', c1 + 160, 284, 220, 15, '400', C.sub);
 
 // grid note
 textLeft(ctx, 'Standard paper: 25 mm per second \u2014 one large square = 0.2 s', 120, 548, 700, 16, '600', C.sub);
-textLeft(ctx, 'Amplitude: 10 mm = 1 mV \u2014 the hearts signal at the skin is only about 1 mV, so the monitor amplifies it', 820, 548, 620, 16, '600', C.sub);
+textLeft(ctx, 'Amplitude: 10 mm = 1 mV \u2014 the heart\u2019s signal at the skin is only about 1 mV, so the monitor amplifies it', 820, 548, 620, 16, '600', C.sub);
 
 // Bottom: heart-rate arithmetic
 panelBox(ctx, 90, 610, 1380, 180, C.accentSoft, '#c7d2fe', 16);
