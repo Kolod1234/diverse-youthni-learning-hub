@@ -1,4 +1,5 @@
 // Runner: renders all ten LHS A2 4 "Sound and Light" diagrams.
+const H = require('./common.cjs');
 const d1 = require('./diag-01-waves.cjs');
 const d2 = require('./diag-02-ear.cjs');
 const d3 = require('./diag-03-refraction.cjs');
