@@ -104,11 +104,11 @@ function render() {
   // Labels — right column with leader lines
   const lx = 940, lw = 500;
   const labels = [
-    ['Acetabular cup — titanium alloy', 'Anchors the implant in the pelvis; strong enough to hold everything and corrosion-proof in salty body fluids.', 200, (cx + 74, 264)],
-    ['Liner — UHMWPE polymer', 'The slippery bearing the head glides inside: low friction, high impact resistance, almost no wear debris.', 318, (cx + 52, 300)],
-    ['Head — alumina or zirconia ceramic', 'Extremely hard and perfectly smooth, so it keeps its shape and finish against the liner for decades.', 436, (cx + 42, 344)],
-    ['Stem — titanium alloy', 'Carries the whole body weight, every step. A natural oxide layer on its surface resists attack by blood and tissue fluid.', 554, (cx + 18, 520)],
-    ['Bone grows onto the surface', 'Coatings such as hydroxyapatite invite living bone to bond directly to the implant — explained on the next diagram.', 672, (cx - 34, 700)],
+    ['Acetabular cup — titanium alloy', 'Anchors the implant in the pelvis; strong enough to hold everything and corrosion-proof in salty body fluids.', 200, [cx + 74, 264]],
+    ['Liner — UHMWPE polymer', 'The slippery bearing the head glides inside: low friction, high impact resistance, almost no wear debris.', 318, [cx + 52, 300]],
+    ['Head — alumina or zirconia ceramic', 'Extremely hard and perfectly smooth, so it keeps its shape and finish against the liner for decades.', 436, [cx + 42, 344]],
+    ['Stem — titanium alloy', 'Carries the whole body weight, every step. A natural oxide layer on its surface resists attack by blood and tissue fluid.', 554, [cx + 18, 520]],
+    ['Bone grows onto the surface', 'Coatings such as hydroxyapatite invite living bone to bond directly to the implant — explained on the next diagram.', 672, [cx - 34, 700]],
   ];
   labels.forEach(([t, d, y, anchor]) => {
     textLeft(ctx, t, lx, y - 22, lw, 18, '700');
@@ -122,3 +122,5 @@ function render() {
   textCentered(ctx, 'Biocompatibility: the ability of a material to perform with an appropriate host response in a specific application — it is always application-specific.', W / 2, 866, W - 200, 17, '400', C.sub);
   save('as5-biomaterials.png', canvas);
 }
+
+module.exports = { render };
