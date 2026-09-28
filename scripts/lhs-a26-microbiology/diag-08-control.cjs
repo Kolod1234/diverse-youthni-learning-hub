@@ -1,6 +1,6 @@
 // A2 6 Figure 8 — sterilisation, disinfection and antisepsis.
 const common = require('./common.cjs');
-const { C, makeCanvas, title, save, textCentered, paragraph, panelBox, chip, roundRect } = common;
+const { C, makeCanvas, title, save, textCentered, textLeft, paragraph, panelBox, roundRect } = common;
 
 const { canvas, ctx } = makeCanvas(980, 620);
 title(ctx, 980, 'Controlling microorganisms outside the body', 'Three levels of chemical and physical control, from harshest to gentlest');
