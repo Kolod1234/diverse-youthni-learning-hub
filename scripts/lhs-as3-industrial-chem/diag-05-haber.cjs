@@ -38,13 +38,14 @@ function renderHaber() {
 
   // product
   arrow(ctx, 1400, 325, 1460, 325, 5, C.ink);
-  textCentered(ctx, 'liquid ammonia', 1480, 260, 190, 20, '700', C.ink);
   ctx.fillStyle = '#c084fc';
   ctx.strokeStyle = C.ink;
   ctx.lineWidth = 3;
   roundRect(ctx, 1430, 300, 100, 90, 12);
   ctx.fill();
   ctx.stroke();
+  textCentered(ctx, 'NH3', 1480, 345, 80, 24, '700', '#3b0764');
+  textCentered(ctx, 'liquid ammonia', 1480, 420, 180, 20, '700', C.ink);
 
   // recycle loop
   ctx.strokeStyle = C.accent;
