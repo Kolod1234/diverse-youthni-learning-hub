@@ -1,5 +1,5 @@
 // AS 5 diagram 2 — the four families of engineering materials.
-const { C, makeCanvas, title, save, panelBox, textLeft, paragraph } = require('./common.cjs');
+const { C, makeCanvas, title, save, panelBox, textLeft, textCentered, paragraph } = require('./common.cjs');
 
 const CLASSES = [
   {
