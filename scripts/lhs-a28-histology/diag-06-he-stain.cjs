@@ -1,5 +1,5 @@
 // Diagram 6 — H&E staining: haematoxylin and eosin and what each colours.
-const { C, makeCanvas, title, save, panelBox, paragraph, textCentered, lead } = require('./common.cjs');
+const { C, makeCanvas, title, save, panelBox, paragraph, textCentered, textLeft, lead } = require('./common.cjs');
 
 const { canvas, ctx } = makeCanvas(1560, 860);
 title(ctx, 1560, 'Haematoxylin and eosin: the gold-standard stain', 'Unstained tissue is almost transparent — H&E turns nuclei blue-purple and cytoplasm pink-red');
