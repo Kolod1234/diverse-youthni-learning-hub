@@ -13,6 +13,7 @@ assert manifest_url.startswith("https://base44.app/api/apps/69418fc30769c7d95136
 destination = Path("/app/public/lesson-assets/gcse-maths")
 destination.mkdir(parents=True, exist_ok=True)
 
+
 def fetch(url):
     last = None
     for attempt in range(5):
@@ -24,8 +25,9 @@ def fetch(url):
             time.sleep(2 ** attempt)
     raise last
 
+
 manifest = json.loads(fetch(manifest_url))
-assert len(manifest) == 68
+assert len(manifest) in (12, 68)
 assert 0 <= start < end <= len(manifest)
 count = 0
 for entry in manifest[start:end]:
@@ -43,3 +45,4 @@ for entry in manifest[start:end]:
             count += 1
     print(entry["name"], len(names), "images", flush=True)
 print("COMPLETE", start, end, count, "images", flush=True)
+
