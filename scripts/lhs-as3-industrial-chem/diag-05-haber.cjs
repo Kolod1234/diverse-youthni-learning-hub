@@ -62,17 +62,24 @@ function renderHaber() {
   textCentered(ctx, 'unreacted nitrogen and hydrogen are recycled — nothing is wasted', 950, 596, 700, 20, '700', C.accent);
 
   // compromise conditions band
-  panelBox(ctx, 100, 660, 1400, 160, C.amberSoft, '#fde68a');
+  panelBox(ctx, 100, 660, 1400, 170, C.amberSoft, '#fde68a');
   textCentered(ctx, 'The engineer’s compromise', 800, 694, 800, 24, '700', '#92400e');
   const cols = [
-    ['Pressure: about 200 atm', 'Higher pressure would raise the yield further, but stronger vessels and pumps cost more and are more dangerous.'],
-    ['Temperature: about 450 °C', 'Cooler would give a better yield (forward is exothermic) but far too slowly; hotter converts less of the gas stream.'],
-    ['Iron catalyst', 'Speeds both directions equally, letting the plant run at a temperature that balances yield against rate.'],
+    ['Pressure: about 200 atm',
+      'Higher pressure would raise the yield further, but stronger',
+      'vessels and pumps cost more and are more dangerous.'],
+    ['Temperature: about 450 °C',
+      'Cooler would give a better yield (forward is exothermic) but',
+      'far too slowly; hotter converts less of the gas stream.'],
+    ['Iron catalyst',
+      'Speeds both directions equally, letting the plant run at a',
+      'temperature that balances yield against rate.'],
   ];
   cols.forEach(function (c, i) {
     const x = 130 + i * 465;
     textLeft(ctx, c[0], x, 726, 430, 21, '700', '#92400e');
-    textLeft(ctx, c[1], x, 762, 430, 18, '400', '#78350f');
+    textLeft(ctx, c[1], x, 758, 430, 17, '400', '#78350f');
+    textLeft(ctx, c[2], x, 786, 430, 17, '400', '#78350f');
   });
 
   chip(ctx, 'Only about 15 % of each pass converts — recycling is what makes the process profitable',
