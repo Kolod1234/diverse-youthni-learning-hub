@@ -1,5 +1,5 @@
 // Diagram 10 — mass spectrometry: instrument stages and a worked spectrum.
-const { C, makeCanvas, title, save, panelBox, paragraph, textCentered, textLeft, arrow } = require('./common.cjs');
+const { C, makeCanvas, title, save, panelBox, paragraph, textCentered, textLeft, arrow, lead } = require('./common.cjs');
 
 const { canvas, ctx } = makeCanvas(1560, 960);
 title(ctx, 1560, 'Mass spectrometry', 'Weigh the whole molecule — then read the pieces it breaks into');
