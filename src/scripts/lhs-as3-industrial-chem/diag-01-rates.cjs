@@ -83,7 +83,7 @@ function renderCollisionTheory() {
     'Anything that makes successful collisions more frequent makes the reaction faster.',
   ];
   lines.forEach(function (l, i) {
-    const y = 776 + i * 32;
+    const y = 772 + i * 31;
     ctx.fillStyle = C.accent;
     ctx.beginPath();
     ctx.arc(110, y, 12, 0, Math.PI * 2);
