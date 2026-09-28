@@ -70,11 +70,11 @@ const cards = [
     b: 'Broad, rounded trough. Hydrogen bonding between molecules smears the absorption across a wide band — the shape alone hints "alcohol".',
   },
   {
-    t: 'C=O (CARBONYL)  1650–1750 cm⁻¹', f: C.warnSoft, '#fecaca',
+    t: 'C=O (CARBONYL)  1650–1750 cm⁻¹', f: C.warnSoft, s: '#fecaca',
     b: 'Sharp, strong and narrow — the single most reliable peak in organic IR. Present in aldehydes, ketones, carboxylic acids and esters.',
   },
   {
-    t: 'C–H  2850–3000 cm⁻¹', f: C.amberSoft, '#fde68a',
+    t: 'C–H  2850–3000 cm⁻¹', f: C.amberSoft, s: '#fde68a',
     b: 'Modest dips just below 3000. Nearly every organic compound shows them — useful as a landmark, useless for identification alone.',
   },
 ];
