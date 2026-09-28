@@ -10,8 +10,8 @@ const steps = [
   { n: 3, t: 'TRANSPORT', d: 'Sample moved promptly, at the right temperature; delays degrade the analyte and falsify results', fill: C.accentSoft, stroke: '#c7d2fe' },
   { n: 4, t: 'RECEPTION', d: 'Accessioned with a unique laboratory number; integrity, labelling and form checked before acceptance', fill: C.accent2Soft, stroke: '#bae6fd' },
   { n: 5, t: 'ANALYSIS', d: 'Run on analysers calibrated with known standards and checked with quality-control material before patient samples', fill: C.okSoft, stroke: '#bbf7d0' },
-  { n: 6, t: 'VALIDATION', d: 'Results checked against QC ranges and previous values for the patient (delta check) \u2014 implausible results re-run', fill: '#fef9c3', '#fde047' },
-  { n: 7, t: 'REPORT', d: 'Result reported to the clinician, with reference ranges and where appropriate a comment; turnaround time recorded', fill: '#e0e7ff', '#a5b4fc' },
+  { n: 6, t: 'VALIDATION', d: 'Results checked against QC ranges and previous values for the patient (delta check) \u2014 implausible results re-run', fill: '#fef9c3', stroke: '#fde047' },
+  { n: 7, t: 'REPORT', d: 'Result reported to the clinician, with reference ranges and where appropriate a comment; turnaround time recorded', fill: '#e0e7ff', stroke: '#a5b4fc' },
   { n: 8, t: 'ACTION', d: 'The clinician acts on the answer \u2014 treatment, monitoring or a further request: the loop that began at step 1', fill: C.pinkSoft, stroke: '#f9a8d4' },
 ];
 steps.forEach((s, i) => {
