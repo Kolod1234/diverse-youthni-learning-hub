@@ -24,6 +24,11 @@ const VOID_TAGS = new Set([
 
 // "Step 1:" / "Step 2:" / "1." style labels at the start of a paragraph.
 const STEP_LABEL_RE = /^<p[^>]*>\s*<strong[^>]*>\s*(?:Step\s*)?(\d+)\s*[.):]/i;
+// Legacy inline number badge (e.g. <span class="step-number">3</span>) authored
+// directly into steps; the rewriter draws its own badge, so the inline one must
+// be stripped to avoid doubled numbering.
+const STEP_SPAN_RE = /^<p[^>]*>\s*<span[^>]*class="[^"]*\bstep-number\b[^"]*"[^>]*>\s*(\d+)\s*<\/span>/i;
+const STEP_SPAN_STRIP_P_RE = /^<p([^>]*)>\s*<span[^>]*class="[^"]*\bstep-number\b[^"]*"[^>]*>\s*\d+\s*<\/span>/i;
 const CHECK_LABEL_RE = /^<p[^>]*>\s*<strong[^>]*>\s*Check\b/i;
 // A paragraph that holds nothing but display maths is a continuation line of
 // the step above it, so it is folded into that step's block.
@@ -208,6 +213,12 @@ function feedElement(api, el, tag, opts) {
           return;
         }
       }
+    }
+    const spanM = el.match(STEP_SPAN_RE);
+    if (spanM) {
+      api.counter = parseInt(spanM[1], 10);
+      api.pushStep(api.counter, el.replace(STEP_SPAN_STRIP_P_RE, (full, attrs) => `<p${attrs}>`));
+      return;
     }
     const labelM = el.match(STEP_LABEL_RE);
     const isCheck = CHECK_LABEL_RE.test(el);
