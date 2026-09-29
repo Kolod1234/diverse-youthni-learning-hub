@@ -40,35 +40,51 @@ Deno.serve(async (req) => {
     let pointsEarned = 0;
     let newBadges = [];
 
-    // Calculate points based on action
+    // Calculate points based on action. Client-supplied `value` is never
+    // trusted as-is: quiz percentages and interactive points are clamped to a
+    // safe range, and the daily streak can only be awarded once per day.
+    const today = new Date().toISOString().split('T')[0];
     switch (action) {
       case 'complete_lesson':
         pointsEarned = 50;
         userProgress.total_lessons_completed = (userProgress.total_lessons_completed || 0) + 1;
         break;
-      case 'complete_quiz':
-        const percentage = value || 0;
+      case 'complete_quiz': {
+        // value is a percentage (0–100) from the client; clamp to a safe range.
+        const percentage = Math.min(Math.max(Number(value) || 0, 0), 100);
         pointsEarned = Math.round(percentage * 1.5); // Max 150 points for 100%
         userProgress.total_quizzes_completed = (userProgress.total_quizzes_completed || 0) + 1;
-        
+
         if (percentage === 100) {
           newBadges.push('perfect_quiz');
         }
         break;
+      }
       case 'complete_course':
         pointsEarned = 500;
         newBadges.push('course_complete');
         break;
-      case 'daily_streak':
-        pointsEarned = 25;
-        userProgress.streak_days = (userProgress.streak_days || 0) + 1;
-        
-        if (userProgress.streak_days >= 7) newBadges.push('week_streak');
-        if (userProgress.streak_days >= 30) newBadges.push('month_streak');
+      case 'daily_streak': {
+        // Idempotent per day: only award when last_activity_date isn't today,
+        // so repeated calls cannot inflate the streak or points.
+        if (userProgress.last_activity_date === today) {
+          pointsEarned = 0;
+        } else {
+          pointsEarned = 25;
+          userProgress.streak_days = (userProgress.streak_days || 0) + 1;
+
+          if (userProgress.streak_days >= 7) newBadges.push('week_streak');
+          if (userProgress.streak_days >= 30) newBadges.push('month_streak');
+        }
         break;
-      case 'interactive_complete':
-        pointsEarned = value || 20;
+      }
+      case 'interactive_complete': {
+        // value is client-supplied points; clamp to a safe maximum to prevent
+        // unlimited self-award.
+        const raw = typeof value === 'number' ? value : Number(value);
+        pointsEarned = Math.min(Math.max(raw || 20, 0), 100);
         break;
+      }
       default:
         pointsEarned = 0;
     }

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import { assertSafeFetchUrl } from '../../shared/urlSafety.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -13,6 +14,13 @@ Deno.serve(async (req) => {
     
     if (!fileUrl) {
       return Response.json({ error: 'File URL is required' }, { status: 400 });
+    }
+
+    // Validate the caller-supplied URL before fetching to prevent SSRF.
+    try {
+      await assertSafeFetchUrl(fileUrl);
+    } catch (e) {
+      return Response.json({ error: e.message || 'Invalid file URL' }, { status: 400 });
     }
 
     // Download PPTX file

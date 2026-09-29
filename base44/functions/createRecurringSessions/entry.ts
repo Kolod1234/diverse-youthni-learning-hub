@@ -9,16 +9,38 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Only tutors and admins may create recurring sessions — a student must
+    // not be able to spawn sessions attributed to any tutor.
+    if (!user.is_tutor && user.role !== 'admin') {
+      return Response.json({ error: 'Only tutors and admins can create recurring sessions' }, { status: 403 });
+    }
+
     const { sessionData, syncToCalendar } = await req.json();
 
     const startDate = new Date(sessionData.scheduled_date);
     const endDate = new Date(sessionData.recurrence_end_date);
+
+    // Guard against unbounded loops / resource exhaustion.
+    const MAX_OCCURRENCES = 100;
+    const MAX_WINDOW_DAYS = 365;
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return Response.json({ error: 'Invalid scheduled_date or recurrence_end_date' }, { status: 400 });
+    }
+    if (endDate < startDate) {
+      return Response.json({ error: 'recurrence_end_date must be on or after scheduled_date' }, { status: 400 });
+    }
+    const maxEndDate = new Date(startDate.getTime() + MAX_WINDOW_DAYS * 86400000);
+    if (endDate > maxEndDate) {
+      return Response.json({ error: 'Recurrence window cannot exceed 1 year' }, { status: 400 });
+    }
+
     const sessions = [];
     const parentSessionId = `parent-${Date.now()}`;
 
     let currentDate = new Date(startDate);
+    let occurrences = 0;
 
-    while (currentDate <= endDate) {
+    while (currentDate <= endDate && occurrences < MAX_OCCURRENCES) {
       const session = {
         ...sessionData,
         scheduled_date: currentDate.toISOString().split('T')[0],
@@ -29,6 +51,7 @@ Deno.serve(async (req) => {
 
       const created = await base44.asServiceRole.entities.VideoSession.create(session);
       sessions.push(created);
+      occurrences++;
 
       // Sync to calendar if enabled
       if (syncToCalendar) {

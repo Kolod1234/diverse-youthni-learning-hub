@@ -9,6 +9,13 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Only approved tutors and admins may book Google Meet/Calendar events,
+        // so a regular student cannot send invites from the shared workspace
+        // Google identity to arbitrary recipients.
+        if (!user.is_tutor && user.role !== 'admin') {
+            return Response.json({ error: 'Only tutors and admins can create Google Meet sessions' }, { status: 403 });
+        }
+
         const { sessionData, sessionId } = await req.json();
 
         // ID of the registered "Tutor Google Calendar" workspace connector (APP_USER mode).

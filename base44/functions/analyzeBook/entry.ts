@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
+import { assertSafeFetchUrl } from '../../shared/urlSafety.ts';
 
 Deno.serve(async (req) => {
     try {
@@ -14,6 +15,14 @@ Deno.serve(async (req) => {
 
         if (!file_url) {
             return Response.json({ error: 'File URL required' }, { status: 400 });
+        }
+
+        // Validate the caller-supplied URL before fetching to prevent SSRF
+        // (cloud metadata endpoints, internal hosts, private ranges).
+        try {
+            await assertSafeFetchUrl(file_url);
+        } catch (e) {
+            return Response.json({ error: e.message || 'Invalid file URL' }, { status: 400 });
         }
 
         let coverImageUrl = null;

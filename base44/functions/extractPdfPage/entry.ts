@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { assertSafeFetchUrl } from '../../shared/urlSafety.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -19,16 +20,15 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
-    // Fetch the PDF with authentication
-    console.log('Fetching PDF from:', file_url);
-    const token = req.headers.get('authorization')?.replace('Bearer ', '');
-    const appId = req.headers.get('x-app-id');
-    
-    const fetchHeaders = {};
-    if (token) fetchHeaders['Authorization'] = `Bearer ${token}`;
-    if (appId) fetchHeaders['X-App-Id'] = appId;
-    
-    const response = await fetch(file_url, { headers: fetchHeaders });
+    // Validate the URL to prevent SSRF, then fetch WITHOUT forwarding the
+    // caller's credentials — never attach the inbound Authorization header
+    // to an outbound fetch of a caller-supplied URL.
+    try {
+      await assertSafeFetchUrl(file_url);
+    } catch (e) {
+      return Response.json({ success: false, error: e.message || 'Invalid file URL' }, { status: 400 });
+    }
+    const response = await fetch(file_url);
     
     if (!response.ok) {
       console.error('Fetch failed:', response.status, response.statusText);

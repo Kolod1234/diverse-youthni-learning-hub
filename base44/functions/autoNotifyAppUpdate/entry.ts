@@ -4,25 +4,47 @@ Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
 
   const payload = await req.json();
-  const { event, data } = payload;
+  const { event, data, old_data } = payload;
 
   // Only proceed if this is a create or update event
-  if (!data) {
-    return Response.json({ skipped: true, reason: 'No data in payload' });
+  if (!data || !data.id) {
+    return Response.json({ skipped: true, reason: 'No version id in payload' });
+  }
+
+  // Load the authoritative record from the database. Never trust caller-
+  // supplied email content (version_name, release_notes, apk_url) — a direct
+  // HTTP caller could otherwise mass-mail attacker-controlled HTML. The
+  // entity-trigger workflow passes the real record id, so this preserves it.
+  let version;
+  try {
+    version = await base44.asServiceRole.entities.AppVersion.get(data.id);
+  } catch {
+    return Response.json({ skipped: true, reason: 'AppVersion record not found' });
+  }
+  if (!version) {
+    return Response.json({ skipped: true, reason: 'AppVersion record not found' });
   }
 
   // Only send notifications if notify_users is true AND is_active is true
-  if (!data.notify_users || !data.is_active) {
+  if (!version.notify_users || !version.is_active) {
     return Response.json({ skipped: true, reason: 'notify_users or is_active not set' });
   }
 
   // For updates, only send if notify_users just became true (avoid re-sending on unrelated updates)
-  // We check old_data - if notify_users was already true before, skip
-  if (event?.type === 'update' && payload.old_data?.notify_users === true) {
+  if (event?.type === 'update' && old_data?.notify_users === true) {
     return Response.json({ skipped: true, reason: 'notify_users was already true before this update' });
   }
 
-  const version = data;
+  // Restrict the download link to https to prevent phishing/malware links.
+  if (version.apk_url) {
+    try {
+      if (new URL(version.apk_url).protocol !== 'https:') {
+        return Response.json({ skipped: true, reason: 'apk_url must be an https URL' });
+      }
+    } catch {
+      return Response.json({ skipped: true, reason: 'apk_url is not a valid URL' });
+    }
+  }
 
   // Get all users
   const users = await base44.asServiceRole.entities.User.list();
