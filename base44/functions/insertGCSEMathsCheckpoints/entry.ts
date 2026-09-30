@@ -35,6 +35,9 @@ Rules:
 6. feedback for every wrong option: begin "Not quite." then name the correct option in the feedback and explain the misconception behind the chosen option, in one or two sentences. Each wrong option needs its own specific feedback.
 7. British English. No em dashes and no en dashes anywhere. No double quote characters anywhere in question, text or feedback. Question under 160 characters. Each option text under 140 characters. Each feedback under 320 characters.
 8. A page that is mostly practice questions, worked answers or a recap with no new concept teaching should return 0 checkpoints.
+9. Relevance: every question must be answerable only from what this page teaches, and must target the specific block it follows. Name that block's actual method, rule, notation or numbers in the question or in the options. A question a student could answer correctly without reading this page, or one about a topic the page never teaches, is off topic and must not be used.
+10. Difficulty: set questions at GCSE Higher Tier demand. Test application, reasoning or spotting a flaw, never simple recall of a rule the page has just stated. The correct option must not copy a phrase word for word from the page; make the student apply what they read: carry out the next step, pick the correct first line of working, identify which statement misuses the notation, or choose the example the rule does and does not cover.
+11. Distractors must be genuinely tempting: near-miss calculations, sign errors, swapped operations, wrong units or misread notation drawn from this page's own method. Never use obviously silly options or options about unrelated topics.
 
 Return ONLY JSON of the shape {"checkpoints": [...]}.`;
 
@@ -90,7 +93,7 @@ export default async function (req) {
           const slice = content.slice(r.start, r.end);
           const tag = (slice.match(/^<([a-zA-Z0-9]+)/) || [])[1] || 'block';
           const classes = (slice.match(/class="([^"]*)"/) || [])[1] || '';
-          const preview = stripTags(slice).slice(0, 220);
+          const preview = stripTags(slice).slice(0, 900);
           return `BLOCK ${i + 1} (${tag}${classes ? ', classes: ' + classes : ''}): ${preview}`;
         })
         .join('\n');

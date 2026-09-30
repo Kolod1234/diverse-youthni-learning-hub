@@ -26,6 +26,9 @@ Rules:
 6. The science must be accurate and consistent with the page. Keep terminology CCEA-appropriate and use British English spellings (fibre, colour, oesophagus). Include units wherever the page uses them.
 7. You may wrap short simple mathematical expressions in single dollar signs for maths rendering, for example $120/80$ mmHg. Keep any maths simple. No double quote characters anywhere in question, text or feedback. No em dashes and no en dashes anywhere. Question under 160 characters. Each option text under 140 characters. Each feedback under 320 characters.
 8. A page that is mostly practice questions, answers or a diagram with no new concept teaching should return an empty checkpoints list.
+9. Relevance: every question must be answerable only from what this page teaches, and must target the specific block it follows. Name that block's actual structure, process, term or data in the question or in the options. A question a student could answer correctly without reading this page, or one about a topic the page never teaches, is off topic and must not be used.
+10. Difficulty: set questions at the level of the qualification. Test application, interpretation or discrimination between similar structures and processes, never simple recall of a fact the page has just stated. The correct option must not copy a phrase word for word from the page; make the student apply what they read: predict the outcome of a change, pick the statement that contradicts the teaching, choose which scenario fits the process, or link two ideas from different blocks.
+11. Distractors must be genuinely tempting: near misses, common misconceptions and plausible confusions drawn from this page and this topic, including similar sounding terms and structures. Never use obviously silly options or options about unrelated topics.
 
 Return ONLY JSON of the shape {"checkpoints": [...]}.`;
 
@@ -90,7 +93,7 @@ export default async function (req) {
           const tag = (slice.match(/^<([a-zA-Z0-9]+)/) || [])[1] || 'block';
           const classes = (slice.match(/class="([^"]*)"/) || [])[1] || '';
           const isCheckpoint = slice.includes('tutor-checkpoint');
-          const preview = stripTags(slice).slice(0, 220);
+          const preview = stripTags(slice).slice(0, 900);
           return `BLOCK ${i + 1} (${tag}${classes ? ', classes: ' + classes : ''}${
             isCheckpoint ? ', EXISTING CHECKPOINT: do not place after this block' : ''
           }): ${preview}`;

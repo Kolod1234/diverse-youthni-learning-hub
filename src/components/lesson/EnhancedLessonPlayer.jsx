@@ -18,6 +18,7 @@ import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
 import MathJaxContent from '@/components/lesson/MathJaxContent';
+import MathText from '@/components/lesson/MathText';
 import { expandSolutionSteps } from '@/components/lesson/solutionStepBlocks';
 import TopicQuizModal from '@/components/lesson/TopicQuizModal';
 import WaterPolarityLessonVisual from '@/components/lesson/WaterPolarityLessonVisual';
