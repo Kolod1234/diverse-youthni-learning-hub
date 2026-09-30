@@ -1761,9 +1761,10 @@ export default function EnhancedLessonPlayer({
                       </div>
                     )}
                     {(aiResponse || aiSummary || aiTranslation) && (
-                      <div className="mt-5 whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700">
-                        {aiTab === 'summary' ? aiSummary : aiTab === 'translate' ? aiTranslation : aiResponse}
-                      </div>
+                      <MathText
+                        className="mt-5 whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700"
+                        text={aiTab === 'summary' ? aiSummary : aiTab === 'translate' ? aiTranslation : aiResponse}
+                      />
                     )}
                   </div>
                 </div>
