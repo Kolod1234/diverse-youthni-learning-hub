@@ -54,6 +54,12 @@ Rules:
 - Never chain two calculations into one step.
 - Keep each step to one or two short sentences.
 - Finish with a one-line plain-English summary.
+- If the highlighted text contains an equation, formula, calculation or any mathematical notation, also fill in maths_breakdown:
+  - equation: the main equation or formula, written in LaTeX between single dollar signs.
+  - symbol_meanings: EVERY symbol or term in that equation, each with its meaning in plain everyday words. The "symbol" field is the bare LaTeX symbol with no dollar signs around it (for example "\\theta" or "v"); the "meaning" field explains it in plain words.
+  - worked_steps: work the maths through in tiny steps. Each step states ONE single move in plain words first (why you do it), then shows the result in LaTeX between single dollar signs. Show EVERY intermediate line — never skip, merge or jump ahead. If the highlight only states a formula, apply it to one simple worked example using values consistent with the highlight, saying each substitution separately.
+  - check_line: one plain-English sentence checking the final result makes sense (right size, right units, sensible).
+  - If there is no equation or formula, leave maths_breakdown out entirely.
 - Then decide whether a picture would make this much easier to understand:
   - If a graph or chart of numbers would help (for example a trend, a relationship between two things, or a comparison), set visual.kind to "graph" and provide a small chart: chart_type ("line", "bar" or "scatter"), x_label, y_label, and series with 3-6 numbered points each. Use realistic values consistent with the highlighted text.
   - Otherwise, if a labelled diagram or sketch would help the learner see what is happening (an object, a process, a structure or a cycle), set visual.kind to "diagram" and write a detailed drawing_brief describing exactly what to draw, what to label and any arrows.
@@ -99,6 +105,15 @@ Rules:
                     required: ['name', 'points']
                   }
                 }
+              }
+            },
+            maths_breakdown: {
+              type: 'object',
+              properties: {
+                equation: { type: 'string' },
+                symbol_meanings: { type: 'array', items: { type: 'object', properties: { symbol: { type: 'string' }, meaning: { type: 'string' } }, required: ['symbol', 'meaning'] } },
+                worked_steps: { type: 'array', items: { type: 'string' } },
+                check_line: { type: 'string' }
               }
             }
           },
@@ -188,6 +203,32 @@ Rules:
             {explanation.steps.map((step, index) => <li key={index}><MathText text={step} /></li>)}
           </ol>
 
+          {explanation.maths_breakdown && (
+            <div className="rounded-lg border border-sky-200 bg-sky-50 p-3">
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-sky-700">The maths, bit by bit</p>
+              <div className="rounded-md bg-white p-2 text-center text-base">
+                <MathText text={explanation.maths_breakdown.equation} />
+              </div>
+              {explanation.maths_breakdown.symbol_meanings?.length > 0 && (
+                <ul className="mt-2 space-y-1 text-xs leading-6 text-sky-900">
+                  {explanation.maths_breakdown.symbol_meanings.map(item => (
+                    <li key={item.symbol}>
+                      <MathText text={`$${item.symbol}$`} /> — <MathText text={item.meaning} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {explanation.maths_breakdown.worked_steps?.length > 0 && (
+                <ol className="mt-2 list-decimal space-y-1 pl-5 text-xs leading-6 text-sky-900">
+                  {explanation.maths_breakdown.worked_steps.map((step, index) => <li key={index}><MathText text={step} /></li>)}
+                </ol>
+              )}
+              {explanation.maths_breakdown.check_line && (
+                <p className="mt-2 text-xs italic text-sky-800"><MathText text={explanation.maths_breakdown.check_line} /></p>
+              )}
+            </div>
+          )}
+
           {(hasChart || wantsDiagram) && (
             <div className="rounded-lg border border-slate-200 bg-white p-2">
               <p className="mb-1 text-xs font-bold text-slate-700">{visual.title || 'Picture to help you see it'}</p>
@@ -237,7 +278,11 @@ Rules:
                 <ArrowDownWideNarrow className="h-4 w-4" /> Still confused — simplify
               </button>
             )}
-            <AssistantCheckQuestion selectedText={selection.text} lessonTitle={lessonTitle} />
+            <AssistantCheckQuestion
+              selectedText={selection.text}
+              lessonTitle={lessonTitle}
+              taughtExplanation={explanation ? [explanation.summary, ...explanation.steps].join(' ') : null}
+            />
             {onSaveToNotes && (
               <button
                 type="button"
