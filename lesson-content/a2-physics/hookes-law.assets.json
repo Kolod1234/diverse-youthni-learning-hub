@@ -1,0 +1,65 @@
+{
+  "lesson_id": "6992615b8768dd44d6e8b6e2",
+  "generation_method": "Built-in image generation",
+  "images": [
+    {
+      "key": "extension",
+      "file_url": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/cf8f7ec82_a2-physics-hooke-extension.png",
+      "bytes": 1193700,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "key": "graphs",
+      "file_url": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/58d4a62a4_a2-physics-hooke-graphs.png",
+      "bytes": 976302,
+      "width": 1942,
+      "height": 809
+    },
+    {
+      "key": "experiment",
+      "file_url": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/9fa90eac3_a2-physics-hooke-experiment.png",
+      "bytes": 1492069,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "key": "combinations",
+      "file_url": "https://base44.app/api/apps/69418fc30769c7d951368216/files/mp/public/69418fc30769c7d951368216/94fbe2246_a2-physics-hooke-combinations.png",
+      "bytes": 1429320,
+      "width": 1774,
+      "height": 887
+    }
+  ],
+  "prompts": [
+    {
+      "key": "extension",
+      "prompt": "Use case: scientific-educational. Create a landscape raster textbook illustration for an A2 Physics lesson on Hooke's law. White background, flat orthographic 2D, clean accurate apparatus linework, restrained navy and teal, large clear labels. Exactly two side-by-side panels headed \"Natural length\" and \"Loaded length\". Each depicts the SAME vertical helical spring hung from a rigid horizontal support at exactly the SAME top height. Left spring has no load and ends at a horizontal dashed datum. Right spring has a small mass hanger and ends lower. Left measurement double-headed vertical arrow labelled \"L₀\" spans support-to-bottom of left spring. Right measurement double-headed arrow labelled \"L\" spans support-to-bottom of right spring, excluding mass hanger. A separate right-hand vertical double-headed arrow labelled \"x\" spans ONLY the gap between unloaded spring-bottom datum and loaded spring-bottom datum. Both dashed bottom datum lines extend clearly towards the extension arrow. At bottom centred typeset \"x = L − L₀\" and \"Extension is the increase in length\". No ruler numerical ticks, no force arrows, no perspective, no decorative pupils, no 3D, no SVG. Lettering must be exact. Dimension arrows and leader lines must not overlap the springs or labels."
+    },
+    {
+      "key": "graphs",
+      "prompt": "Use case: scientific-educational. Create a wide high-resolution raster textbook graph figure for A2 Physics Hooke's law. Flat 2D on white, navy axes, teal curves, large readable lettering. Exactly two panels with large gap. Both have vertical axis labelled \"Force, F / N\", horizontal axis \"Extension, x / m\", common origin labelled \"0\". These are SCHEMATIC graphs, no numerical tick values, no data points. Left title \"The gradient gives stiffness\". A single straight teal line rising from the origin; choose two widely separated points along it. Draw one unobtrusive right-angled gradient triangle between these points, with horizontal leg labelled \"Δx\" BELOW leg and vertical leg labelled \"ΔF\" RIGHT of leg. Under graph exact formula \"k = ΔF / Δx\" (use stacked fraction if possible). Right title \"The proportional region has a limit\". Curve goes straight from origin initially then smoothly bends to a less steep upward curve AFTER a clearly marked point \"P\". P is exactly the junction where it leaves straight behaviour. Leader from label \"Limit of proportionality\" terminates exactly at P. Straight initial region labelled \"F ∝ x\"; curved later region labelled \"F is no longer proportional to x\". All leaders on the named features; no elastic limit labelled. Under entire figure centred \"Schematic graphs — no measured data\". No gradients as decoration, no 3D, no hand drawn style. Nothing clipped or overlapping."
+    },
+    {
+      "key": "experiment",
+      "prompt": "Use case: scientific-educational. Create a landscape raster textbook illustration of a physically usable experiment to investigate Hooke's law. Flat orthographic 2D front view on white, simple realistic school laboratory apparatus, navy and teal, clear large labels. Stable retort stand with broad heavy base rests on lab bench. Vertical metal rod attached to base. Boss and rigid horizontal clamp secured to upper rod hold ONE vertical helical spring. A slotted mass hanger with several correctly seated slotted masses hangs from spring's lower hook, well clear of bench. A fine horizontal pointer fixed at LOWER END OF SPRING above the hanger points RIGHT towards a separate vertical millimetre ruler held independently alongside, very close to pointer, and NOT supporting the spring. Ruler has simple evenly spaced fine ticks, no numerical tick text required. Pointer tip ends immediately adjacent to ruler graduations. A shallow protective tray beneath mass hanger will catch falling masses. Ruler and stand each stable and correctly assembled. Exact labels with thin straight leader lines terminating at actual components: \"Rigid clamp\", \"Spring\", \"Pointer\", \"Vertical ruler\", \"Slotted masses\", \"Stable base\", \"Protective tray\". Keep all label lines apart from each other. Top title \"Measuring extension under increasing load\". Bottom caption \"Read the pointer at eye level; add masses gently.\" No force arrows or extra hanging springs. No humans, no decorative scene, no perspective, no artistic 3D, no unsafe impossible apparatus."
+    },
+    {
+      "key": "combinations",
+      "prompt": "Use case: scientific-educational. Create a wide raster 2D textbook diagram for applying Hooke's law to ideal spring combinations. White background, navy structures and teal springs, large clear labels, orthographic front view, no decorative 3D. Two clean panels. LEFT headed \"Series: the same force\". Two springs connected END TO END vertically: rigid top support, upper spring labelled \"k₁\", light connector, lower spring labelled \"k₂\", one massless lower attachment with downward external load arrow labelled \"F\". A vertical bracket immediately to right of upper spring labelled \"x₁\"; another next to lower spring labelled \"x₂\". Caption \"Total extension: x = x₁ + x₂\". Upper spring and lower spring must be visibly connected, not side by side. RIGHT headed \"Parallel: the same extension\". Two springs SIDE BY SIDE hung from SAME rigid top support at same height, labelled \"k₁\" and \"k₂\". Both end at SAME level on one horizontal rigid bar which remains horizontal; one downward external load arrow at centre of that bar labelled \"F\". A SINGLE vertical displacement arrow next to bar labelled \"x\" indicates equal extension, with faint unloaded-bar reference datum above the current bar; do not mistake total spring length for extension. Caption \"Forces add: F = F₁ + F₂\". No additional force arrows on springs, no equilibrium claims not depicted. Bottom note \"Ideal springs, light connections; within proportional limits.\" No numerical values, no graph, no clutter, no overlapping labels. This diagram must explain which quantity is shared in each arrangement."
+    }
+  ],
+  "edits": [
+    {
+      "key": "extension",
+      "path": "C:\\Users\\DYNIT\\.codex\\generated_images\\01a0f112-9105-76a3-aa60-222774cd6220\\exec-a4026216-1c2f-4fb5-aac7-15a02fad5998.png",
+      "prompt": "Correct ONLY the extension dimension on this physics diagram. Keep both springs, both supports, the lengths L and L₀, masses, lettering, style, colours and equation unchanged. The loaded spring bottom is the same horizontal level as the lower tip of the L dimension arrow, around y=617 in the 1536x1024 source. The existing x arrow incorrectly extends to the hanger hook around y=682. REMOVE that lowest dashed line entirely. Extend the existing dashed line at y=617 all the way right to the x arrow. Shorten the x double-headed arrow so it spans exactly from the upper unloaded spring datum at y=557 to the loaded spring-bottom datum at y=617. Its lower tip MUST end on the same line as the lower tip of L. Place x beside this shorter arrow. Extension x must equal the visual difference between L and L₀. No other changes."
+    },
+    {
+      "key": "combinations",
+      "path": "C:\\Users\\DYNIT\\.codex\\generated_images\\01a0f112-9105-76a3-aa60-222774cd6220\\exec-b90e9c76-1488-4a9a-b4a5-3394ead4ecd9.png",
+      "prompt": "Correct only the misleading dimension arrows in the LEFT series panel. Keep the title, both connected series springs, k₁ and k₂ labels, downward F load arrow, bottom formula, entire RIGHT parallel panel and all colours and style unchanged. REMOVE both vertical double-headed arrows currently labelled x₁ and x₂, along with their end bars. They incorrectly show full spring lengths as extensions. In the empty space to the right of the upper series spring write the text 'Extension x₁' without arrows or dimension lines. To the right of the lower series spring write 'Extension x₂' without arrows or dimension lines. Below the LEFT formula add a small readable line 'Extensions are increases in length.' Fit this above the existing bottom note with no overlap. Do not add any new arrows. Preserve scientific spelling and typography."
+    }
+  ],
+  "extension_final_prompt": "Use case: scientific-educational. Create a clean landscape A2 Physics textbook raster illustration showing that extension is the increase in spring length. White background, flat orthographic 2D, navy and teal, large readable exact text. Exactly two panels. LEFT title 'Before loading', vertical helical spring suspended from a rigid support with NO mass; below it text 'Natural length L₀'. RIGHT title 'After loading', a visibly LONGER version of the same vertical spring with the same number of coils, hanging from identical rigid support at exactly the SAME height; one small mass hanger attached below; beneath it text 'Loaded length L'. The loaded spring itself must extend visibly lower than unloaded spring. Show no ruler, no dashed lines, NO dimension arrows, NO brackets, NO force arrows, no double-headed arrows, no numerical data. The length labels are simply panel captions, NOT measurements on the objects. Bottom centred exact equation 'x = L − L₀' and beneath 'Measure the spring itself; exclude the hanger.' Clean textbook scientific composition, no decoration, no perspective, no 3D."
+}
