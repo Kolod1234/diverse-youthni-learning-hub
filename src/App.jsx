@@ -16,6 +16,7 @@ import AdminTeachingRequests from './pages/AdminTeachingRequests';
 import KahootHost from './pages/KahootHost';
 import KahootPlay from './pages/KahootPlay';
 import KahootAnalytics from './pages/KahootAnalytics';
+import OAuthConsent from './pages/OAuthConsent';
 import AssetLibrary from './pages/AssetLibrary';
 import ParentDashboard from './pages/ParentDashboard';
 import AdminParentLinks from './pages/AdminParentLinks';
@@ -109,6 +110,9 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <NavigationTracker />
+          <Routes>
+            <Route path="/oauth/consent" element={<OAuthConsent />} />
+          </Routes>
           <AuthenticatedApp />
         </Router>
         <Toaster />
