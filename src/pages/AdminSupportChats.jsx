@@ -96,7 +96,8 @@ export default function AdminSupportChats() {
       chat_id: selectedChatId,
       sender_role: 'agent',
       sender_name: adminUser?.full_name || 'Support Agent',
-      content: text
+      content: text,
+      user_email: chat?.user_email
     });
 
     await base44.entities.SupportChat.update(selectedChatId, {

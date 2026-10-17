@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, onClose }) {
   const [existingSections, setExistingSections] = useState([]);
   const [topic, setTopic] = useState('');
@@ -889,7 +890,7 @@ Return ONLY valid JSON:
                       <div 
                        className="prose prose-sm max-w-none"
                        dangerouslySetInnerHTML={{ 
-                         __html: generatedContent?.slides?.[previewSlideIndex]?.content || '<p>No content available</p>' 
+                         __html: sanitizeHtml(generatedContent?.slides?.[previewSlideIndex]?.content || '<p>No content available</p>') 
                        }}
                       />
                     </div>

@@ -56,11 +56,14 @@ export default function AccountSettings({ user }) {
       return;
     }
     try {
-      toast.success('Account deletion request submitted. Please contact support.');
+      // Deletes the user's personal records on the server, blocks the account and notifies admins.
+      await base44.functions.invoke('deleteMyAccount', { confirmEmail: deleteConfirm });
       setDeleteDialogOpen(false);
       setDeleteConfirm('');
+      toast.success('Your data has been deleted. An admin will close your login within 30 days.');
+      await base44.auth.logout();
     } catch (error) {
-      toast.error('Failed to delete account');
+      toast.error(error?.response?.data?.error || 'Failed to delete account. Please contact support.');
     }
   };
 

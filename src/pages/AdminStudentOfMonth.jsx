@@ -108,10 +108,12 @@ export default function AdminStudentOfMonth() {
             >
               <Stack direction="row" spacing={2} alignItems="flex-start">
                 <Avatar
-                  src={student.student_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.student_name)}`}
+                  src={student.student_avatar || undefined}
                   alt={student.student_name}
                   sx={{ width: 64, height: 64 }}
-                />
+                >
+                  {(student.student_name || '?').charAt(0).toUpperCase()}
+                </Avatar>
                 <Box sx={{ flex: 1 }}>
                   <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
                     <Typography fontWeight={700}>{student.student_name}</Typography>

@@ -30,14 +30,14 @@ export default function AdminRolesPermissions() {
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['all-users'],
-    queryFn: () => base44.asServiceRole.entities.User.list('email', 1000)
+    queryFn: async () => (await base44.functions.invoke('adminListUsers', { sort: 'email', limit: 1000 })).data.users
   });
 
   const updateUserRoleMutation = useMutation({
     mutationFn: async ({ userId, role, custom_permissions }) => {
-      return await base44.asServiceRole.entities.User.update(userId, {
-        role,
-        custom_permissions
+      return await base44.functions.invoke('adminUpdateUser', {
+        userId,
+        data: { role, custom_permissions }
       });
     },
     onSuccess: () => {

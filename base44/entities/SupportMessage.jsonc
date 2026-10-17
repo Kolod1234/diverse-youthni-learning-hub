@@ -23,6 +23,10 @@
     "content": {
       "type": "string",
       "description": "Message text"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who owns the support chat, copied from SupportChat. Used by the access rule."
     }
   },
   "required": [

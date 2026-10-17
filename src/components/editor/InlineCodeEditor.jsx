@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Code, Eye, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function InlineCodeEditor({ initialCode, language, onSave, onCancel }) {
   const [code, setCode] = useState(initialCode || '');
   const [showPreview, setShowPreview] = useState(true);
@@ -15,7 +16,7 @@ export default function InlineCodeEditor({ initialCode, language, onSave, onCanc
 
     return (
       <div className="border-2 border-gray-300 rounded-lg p-4 bg-white min-h-[200px]">
-        <div dangerouslySetInnerHTML={{ __html: code }} />
+        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(code) }} />
       </div>
     );
   };

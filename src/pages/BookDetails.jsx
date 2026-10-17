@@ -77,9 +77,7 @@ export default function BookDetails() {
     e?.stopPropagation();
     if (!book) return;
     try {
-      await base44.entities.LibraryResource.update(book.id, {
-        downloads_count: (book.downloads_count || 0) + 1
-      });
+      await base44.functions.invoke('recordStat', { type: 'libraryDownload', id: book.id });
       await base44.entities.FileActivity.create({
         resource_id: book.id,
         action: 'downloaded',

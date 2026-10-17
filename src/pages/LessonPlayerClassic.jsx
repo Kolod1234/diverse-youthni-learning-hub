@@ -77,6 +77,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 const AS_BIOLOGY_COURSE_ID = '698a3d721a8a90bcc13737dc';
 
 // Keep the component identity stable when saved course progress is refreshed.
@@ -1088,14 +1089,14 @@ export default function LessonPlayerClassic() {
                     mb: { xs: 2, sm: 3 }
                   }}
                   dangerouslySetInnerHTML={{
-                    __html: typeof lesson.description === 'string'
+                    __html: sanitizeHtml(typeof lesson.description === 'string'
                       ? lesson.description
                           .replace(/&lt;/g, '<')
                           .replace(/&gt;/g, '>')
                           .replace(/&quot;/g, '"')
                           .replace(/&#39;/g, "'")
                           .replace(/&amp;/g, '&')
-                      : lesson.description
+                      : lesson.description)
                   }}
                 />
               )}
@@ -1124,7 +1125,7 @@ export default function LessonPlayerClassic() {
                             }
                           }}
                           dangerouslySetInnerHTML={{
-                            __html: typeof slide.content === 'string'
+                            __html: sanitizeHtml(typeof slide.content === 'string'
                               ? slide.content
                                   .replace(/&lt;/g, '<')
                                   .replace(/&gt;/g, '>')
@@ -1132,7 +1133,7 @@ export default function LessonPlayerClassic() {
                                   .replace(/&#39;/g, "'")
                                   .replace(/&amp;/g, '&')
                                   .replace(/<span[^>]*class="[^"]*math-error[^"]*"[^>]*>.*?<\/span>/gi, '')
-                              : slide.content
+                              : slide.content)
                           }}
                         />
                       )}
