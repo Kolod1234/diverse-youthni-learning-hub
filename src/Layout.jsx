@@ -489,35 +489,15 @@ function LayoutContent({ children, currentPageName }) {
                   </MenuItem>
                 )}
                 <Divider />
-                <MenuItem component={Link} to={createPageUrl('AcademyManager')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><Award size={20} color="#7c3aed" /></ListItemIcon>
-                  <ListItemText primary="Academies" />
-                </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('MessageCenter')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                   <ListItemText primary="Messages" />
-                </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('Analytics')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
-                  <ListItemText primary="Analytics" />
                 </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('Achievements')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
                   <ListItemText primary="Achievements" />
                 </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('LearningPaths')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><Award size={20} color="#0d9488" /></ListItemIcon>
-                  <ListItemText primary="Learning Paths" />
-                </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('Programs')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
-                  <ListItemText primary="Programmes" />
-                </MenuItem>
                 <Divider />
-                <MenuItem component={Link} to={createPageUrl('CommunityEventSlides')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><GraduationCap size={20} color="#84cc16" /></ListItemIcon>
-                  <ListItemText primary="Event Slides" />
-                </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('ContactUs')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
                   <ListItemText primary="Contact Us" />
@@ -582,38 +562,6 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
                       <ListItemText primary="Templates" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('DataPresentation')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
-                      <ListItemText primary="Data to Slides" />
-                    </MenuItem>
-                    {can(PERMISSIONS.CREATE_QUIZ) && (
-                      <MenuItem component={Link} to={createPageUrl('QuizGenerator')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                        <ListItemText primary="Quiz Generator" />
-                      </MenuItem>
-                    )}
-                    {can(PERMISSIONS.CREATE_SIMULATION) && (
-                      <MenuItem component={Link} to={createPageUrl('SimulationAuthor')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><Award size={20} color="#8b5cf6" /></ListItemIcon>
-                        <ListItemText primary="Simulation Author" />
-                      </MenuItem>
-                    )}
-                    {can(PERMISSIONS.CREATE_COURSE) && (
-                      <>
-                        <MenuItem component={Link} to={createPageUrl('PathwayManager')} onClick={() => setMoreMenuAnchor(null)}>
-                          <ListItemIcon><Award size={20} color="#6366f1" /></ListItemIcon>
-                          <ListItemText primary="Pathway Manager" />
-                        </MenuItem>
-                        <MenuItem component={Link} to={createPageUrl('TutorSetup')} onClick={() => setMoreMenuAnchor(null)}>
-                          <ListItemIcon><User size={20} color="#0d9488" /></ListItemIcon>
-                          <ListItemText primary="Tutor Setup" />
-                        </MenuItem>
-                        <MenuItem component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMoreMenuAnchor(null)}>
-                          <ListItemIcon><Settings size={20} color="#6366f1" /></ListItemIcon>
-                          <ListItemText primary="Full Tutor Dashboard" />
-                        </MenuItem>
-                      </>
-                    )}
                   </>
                 )}
                 {can(PERMISSIONS.ACCESS_ADMIN_PANEL) && (
@@ -840,10 +788,6 @@ function LayoutContent({ children, currentPageName }) {
                         <ListItemText primary="My Learning" />
                       </ListItemButton>
                     )}
-                    <ListItemButton component={Link} to={createPageUrl('AcademyManager')} onClick={() => setMobileMenuOpen(false)}>
-                      <ListItemIcon><Award size={20} /></ListItemIcon>
-                      <ListItemText primary="Academies" />
-                    </ListItemButton>
                     {(user?.is_tutor || user?.is_coordinator || user?.role === 'admin') && (
                       <ListItemButton component={Link} to="/kahoot-host" onClick={() => setMobileMenuOpen(false)}>
                         <ListItemIcon><Sparkles size={20} /></ListItemIcon>
@@ -878,10 +822,6 @@ function LayoutContent({ children, currentPageName }) {
                         <ListItemButton component={Link} to={createPageUrl('Templates')} onClick={() => setMobileMenuOpen(false)}>
                           <ListItemIcon><ClipboardList size={20} /></ListItemIcon>
                           <ListItemText primary="Templates" />
-                        </ListItemButton>
-                        <ListItemButton component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMobileMenuOpen(false)}>
-                          <ListItemIcon><Settings size={20} /></ListItemIcon>
-                          <ListItemText primary="Full Tutor Dashboard" />
                         </ListItemButton>
                       </>
                     )}
