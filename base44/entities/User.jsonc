@@ -38,15 +38,36 @@
     "account_banned": {
       "type": "boolean",
       "default": false,
-      "description": "Administrative account restriction"
+      "description": "Administrative account restriction",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
     },
     "ban_reason": {
       "type": "string",
-      "description": "Reason shown to the restricted user"
+      "description": "Reason shown to the restricted user",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
     },
     "banned_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
     },
     "tutor_compliance_due_at": {
       "type": "string",
@@ -63,17 +84,38 @@
     "course_access_granted": {
       "type": "boolean",
       "default": false,
-      "description": "Set by the verifyAccessCode function when the course access code is accepted."
+      "description": "Set by the verifyAccessCode function when the course access code is accepted.",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
     },
     "coordinator_access_granted": {
       "type": "boolean",
       "default": false,
-      "description": "Set by the verifyAccessCode function when the coordinator access code is accepted."
+      "description": "Set by the verifyAccessCode function when the coordinator access code is accepted.",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
     },
     "deletion_requested_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Set by deleteMyAccount when the user deletes their account."
+      "description": "Set by deleteMyAccount when the user deletes their account.",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
     }
   }
 }
