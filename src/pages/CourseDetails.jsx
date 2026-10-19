@@ -342,12 +342,10 @@ export default function CourseDetails() {
                   {course.instructor && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar
-                        src={course.instructor_avatar || undefined}
+                        src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor)}&background=6366f1&color=fff`}
                         alt={course.instructor}
-                        sx={{ width: 40, height: 40, border: '2px solid rgba(255,255,255,0.3)', bgcolor: '#6366f1' }}
-                      >
-                        {(course.instructor || '?').charAt(0).toUpperCase()}
-                      </Avatar>
+                        sx={{ width: 40, height: 40, border: '2px solid rgba(255,255,255,0.3)' }}
+                      />
                       <Typography>{course.instructor}</Typography>
                     </Box>
                   )}
@@ -820,12 +818,10 @@ export default function CourseDetails() {
                 <Typography fontWeight={600} sx={{ mb: 2 }}>Your Instructor</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                   <Avatar
-                    src={course.instructor_avatar || undefined}
+                    src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor)}&background=6366f1&color=fff&size=80`}
                     alt={course.instructor}
-                    sx={{ width: 64, height: 64, bgcolor: '#6366f1' }}
-                  >
-                    {(course.instructor || '?').charAt(0).toUpperCase()}
-                  </Avatar>
+                    sx={{ width: 64, height: 64 }}
+                  />
                   <Box>
                     <Typography fontWeight={600}>{course.instructor}</Typography>
                   </Box>

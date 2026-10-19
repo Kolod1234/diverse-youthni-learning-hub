@@ -36,7 +36,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 // ---------------------------------------------------------------------------
 // SLIDE_TEMPLATES — built from native block trees defined in `nativeTemplates.js`.
 //
@@ -1554,7 +1553,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                         <div 
                           className="text-xs text-gray-500 line-clamp-2 mb-2"
                           dangerouslySetInnerHTML={{ 
-                            __html: sanitizeHtml(template.content?.replace(/<[^>]*>/g, ' ').substring(0, 120) + '...') 
+                            __html: template.content?.replace(/<[^>]*>/g, ' ').substring(0, 120) + '...' 
                           }}
                         />
                         <div className="flex gap-2">

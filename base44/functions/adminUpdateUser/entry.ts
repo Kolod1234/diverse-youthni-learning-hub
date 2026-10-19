@@ -9,19 +9,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const { email, userId, data, action } = await req.json();
+    const { email, data, action } = await req.json();
     if (action === 'health') return Response.json({ ok: true });
 
-    if ((!email && !userId) || !data) {
-      return Response.json({ error: 'email or userId, and data, are required' }, { status: 400 });
+    if (!email || !data) {
+      return Response.json({ error: 'email and data are required' }, { status: 400 });
     }
-    // Identity fields are never changed through this function.
-    delete data.id;
-    delete data.email;
 
-    const users = userId
-      ? [await base44.asServiceRole.entities.User.get(userId)].filter(Boolean)
-      : await base44.asServiceRole.entities.User.filter({ email });
+    const users = await base44.asServiceRole.entities.User.filter({ email });
     if (users.length === 0) {
       return Response.json({ error: 'User not found' }, { status: 404 });
     }

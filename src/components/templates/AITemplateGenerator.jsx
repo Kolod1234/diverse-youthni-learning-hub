@@ -10,7 +10,6 @@ import { Sparkles, Wand2, Loader2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 const SLIDE_TYPES = [
   { value: 'title', label: 'Title Slide', description: 'Eye-catching introduction slide' },
   { value: 'content', label: 'Content Slide', description: 'Text-based informational slide' },
@@ -275,7 +274,7 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
                       </div>
                       <div 
                         className="p-6"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }}
+                        dangerouslySetInnerHTML={{ __html: slide.content }}
                       />
                     </Card>
                   </motion.div>

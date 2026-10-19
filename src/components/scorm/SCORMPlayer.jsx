@@ -90,7 +90,6 @@ export default function SCORMPlayer({ scormPackage, onComplete }) {
         lesson_id: scormPackage.lesson_id,
         course_id: scormPackage.course_id,
         student_email: user.email,
-        user_email: user.email, // the SCORMSession table and its access rule use user_email
         lesson_status: status,
         score_raw: score,
         completion_status: status === 'completed' ? 'completed' : 'incomplete',

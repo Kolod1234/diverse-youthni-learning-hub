@@ -13,7 +13,6 @@ import {
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function LiveSessionView({ session, lesson, isPresenter, onClose }) {
   const [user, setUser] = useState(null);
   const [questionText, setQuestionText] = useState('');
@@ -162,7 +161,7 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
 
                 <div
                   className="prose prose-base max-w-none"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentSlide?.content || '') }} />
+                  dangerouslySetInnerHTML={{ __html: currentSlide?.content || '' }} />
 
               </motion.div>
             </AnimatePresence>

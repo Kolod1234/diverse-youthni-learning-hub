@@ -46,16 +46,29 @@ export default function CoordinatorsDashboard() {
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const { data: siteContent = [] } = useQuery({
+    queryKey: ['site-content'],
+    queryFn: () => base44.entities.SiteContent.list('key', 1000),
+  });
+
+  const getCoordinatorPassword = () => {
+    const item = siteContent.find(c => c.key === 'coordinator_password');
+    return item?.value || 'YELP26';
+  };
+
   useEffect(() => {
     const loadUser = async () => {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
         
-        // Access is recorded on the user's account by the verifyAccessCode server function,
-        // so it can't be granted by editing browser storage.
-        if (userData.is_coordinator && !userData.coordinator_banned && userData.coordinator_access_granted) {
-          setHasAccess(true);
+        // Check if user is coordinator and not banned
+        if (userData.is_coordinator && !userData.coordinator_banned) {
+          // Check session storage for password
+          const savedAccess = sessionStorage.getItem('coordinator_access');
+          if (savedAccess === 'true') {
+            setHasAccess(true);
+          }
         }
       } catch (error) {
         console.error('Failed to load user:', error);
@@ -66,18 +79,16 @@ export default function CoordinatorsDashboard() {
     loadUser();
   }, []);
 
-  const handlePasswordSubmit = async (e) => {
+  const handlePasswordSubmit = (e) => {
     e.preventDefault();
-    try {
-      const res = await base44.functions.invoke('verifyAccessCode', { type: 'coordinator', code: password });
-      if (res.data?.ok) {
-        setHasAccess(true);
-        toast.success('Access granted!');
-      } else {
-        toast.error('Incorrect password');
-      }
-    } catch {
-      toast.error('Could not check the password. Please try again.');
+    const correctPassword = getCoordinatorPassword();
+    
+    if (password === correctPassword) {
+      sessionStorage.setItem('coordinator_access', 'true');
+      setHasAccess(true);
+      toast.success('Access granted!');
+    } else {
+      toast.error('Incorrect password');
     }
   };
 

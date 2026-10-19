@@ -220,8 +220,7 @@ export default function SupportChatWidget() {
       chat_id: chatId,
       sender_role: 'user',
       sender_name: user?.full_name || 'You',
-      content: text,
-      user_email: user?.email
+      content: text
     });
 
     await base44.entities.SupportChat.update(chatId, {

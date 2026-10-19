@@ -2,7 +2,6 @@ import React from 'react';
 import { Plus, Copy, Trash2, GripVertical } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 /**
  * WorkspaceThumbnailRail
  * ----------------------
@@ -126,7 +125,7 @@ export default function WorkspaceThumbnailRail({
                                       className="text-[16px] text-slate-700 leading-relaxed"
                                       style={{ maxHeight: '520px', overflow: 'hidden' }}
                                       dangerouslySetInnerHTML={{
-                                        __html: sanitizeHtml(slide.content || '<p style="color:#94a3b8">Empty slide</p>'),
+                                        __html: slide.content || '<p style="color:#94a3b8">Empty slide</p>',
                                       }}
                                     />
                                   </div>

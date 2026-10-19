@@ -5,7 +5,6 @@ import { toPng, toJpeg } from 'html-to-image';
 import { Button } from '@/components/ui/button';
 import { Download, Image as ImageIcon } from 'lucide-react';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl, fileType }) {
   const [processedContent, setProcessedContent] = useState(content);
   const [isExporting, setIsExporting] = useState(false);
@@ -307,7 +306,7 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
             <div 
               ref={slideRef}
               className="slide-content-wrapper"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(processedContent) }}
+              dangerouslySetInnerHTML={{ __html: processedContent }}
             />
           </TransformComponent>
         </TransformWrapper>

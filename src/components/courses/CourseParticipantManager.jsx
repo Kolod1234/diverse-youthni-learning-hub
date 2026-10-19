@@ -41,7 +41,7 @@ export default function CourseParticipantManager({ courseId, courseName }) {
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: async () => (await base44.functions.invoke('adminListUsers', { sort: 'full_name', limit: 1000 })).data.users,
+    queryFn: () => base44.asServiceRole.entities.User.list('full_name', 1000),
     enabled: user?.role === 'admin' || user?.is_coordinator,
   });
 

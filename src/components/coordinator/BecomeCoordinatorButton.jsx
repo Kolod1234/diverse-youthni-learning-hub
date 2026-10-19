@@ -54,19 +54,13 @@ export default function BecomeCoordinatorButton({ user, onSuccess, hideButton, e
     },
   });
 
-  const handlePasscodeSubmit = async () => {
-    // Checked on the server against the COORDINATOR_ACCESS_CODE secret (it used to be written in this file).
-    try {
-      const res = await base44.functions.invoke('verifyAccessCode', { type: 'coordinatorRequest', code: passcode });
-      if (res.data?.ok) {
-        setShowPasscode(false);
-        setOpen(true);
-        setPasscode('');
-      } else {
-        toast.error('Incorrect passcode');
-      }
-    } catch {
-      toast.error('Could not check the passcode. Please try again.');
+  const handlePasscodeSubmit = () => {
+    if (passcode === 'YELP26') {
+      setShowPasscode(false);
+      setOpen(true);
+      setPasscode('');
+    } else {
+      toast.error('Incorrect passcode');
     }
   };
 

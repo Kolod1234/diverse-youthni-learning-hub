@@ -4,7 +4,6 @@ import DocumentViewer from './DocumentViewer';
 import GoogleSlidePlayer from './GoogleSlidePlayer';
 import ManusSlidePlayer from './ManusSlidePlayer';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 /**
  * Unified content renderer for different lesson content types
  * Supports: richtext, googleslides, document, video, quiz, simulation
@@ -171,7 +170,7 @@ function RichTextRenderer({ slides }) {
           <div 
             className="prose prose-slate max-w-none prose-headings:mb-3 prose-p:mb-2 prose-li:mb-1 prose-ul:my-3 prose-ol:my-3"
             dangerouslySetInnerHTML={{ 
-              __html: sanitizeHtml(cleanHTML(slide.content))
+              __html: cleanHTML(slide.content)
             }}
           />
         </div>

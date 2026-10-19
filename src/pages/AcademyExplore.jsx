@@ -42,17 +42,18 @@ export default function AcademyExplore() {
 
   const enrollMutation = useMutation({
     mutationFn: async (academyId) => {
-      const enrollment = await base44.entities.AcademyEnrollment.create({
-        academy_id: academyId,
-        student_email: user.email,
-        student_name: user.full_name,
-        current_module_index: 0,
-        completed_courses: [],
-        overall_progress: 0
-      });
-      // The enrolled count is recalculated on the server (students can't edit Academy records).
-      await base44.functions.invoke('recordStat', { type: 'academyEnrolment', id: academyId });
-      return enrollment;
+      return await base44.entities.Academy.update(academyId, {
+        enrolled_count: (academies.find(a => a.id === academyId)?.enrolled_count || 0) + 1
+      }).then(() => 
+        base44.entities.AcademyEnrollment.create({
+          academy_id: academyId,
+          student_email: user.email,
+          student_name: user.full_name,
+          current_module_index: 0,
+          completed_courses: [],
+          overall_progress: 0
+        })
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['my-academy-enrollments']);

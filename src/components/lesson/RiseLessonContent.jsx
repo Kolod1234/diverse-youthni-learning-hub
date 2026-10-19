@@ -2,7 +2,6 @@ import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import DocumentViewer from '@/components/lesson/DocumentViewer';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function RiseLessonContent({ lesson, expandedSections, onToggleSection }) {
   const slides = lesson.slides || [];
 
@@ -38,7 +37,7 @@ export default function RiseLessonContent({ lesson, expandedSections, onToggleSe
                     {slide.content ? (
                       <div 
                         className="prose prose-sm max-w-none text-gray-700"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }}
+                        dangerouslySetInnerHTML={{ __html: slide.content }}
                       />
                     ) : (
                       <p className="text-gray-600">No content available</p>

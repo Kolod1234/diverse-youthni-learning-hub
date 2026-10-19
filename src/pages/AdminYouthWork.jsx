@@ -66,12 +66,12 @@ export default function AdminYouthWork() {
 
   const { data: allProgress = [] } = useQuery({
     queryKey: ['all-workbook-progress'],
-    queryFn: async () => (await base44.functions.invoke('adminListRecords', { entity: 'WorkbookProgress', sort: '-created_date', limit: 1000 })).data.records,
+    queryFn: () => base44.asServiceRole.entities.WorkbookProgress.list('-created_date', 1000),
   });
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: async () => (await base44.functions.invoke('adminListUsers', { sort: 'full_name', limit: 1000 })).data.users,
+    queryFn: () => base44.asServiceRole.entities.User.list('full_name', 1000),
   });
 
   const { data: attendance = [] } = useQuery({
@@ -95,7 +95,7 @@ export default function AdminYouthWork() {
 
   const blockUserMutation = useMutation({
     mutationFn: (userId) => 
-      base44.functions.invoke('adminUpdateUser', { userId, data: { youth_work_blocked: true } }),
+      base44.asServiceRole.entities.User.update(userId, { youth_work_blocked: true }),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('User blocked from youth work');
@@ -104,9 +104,9 @@ export default function AdminYouthWork() {
 
   const assignCoordinatorMutation = useMutation({
     mutationFn: ({ userId, coordinatorEmail }) =>
-      base44.functions.invoke('adminUpdateUser', { userId, data: {
-        assigned_coordinator_email: coordinatorEmail
-      } }),
+      base44.asServiceRole.entities.User.update(userId, { 
+        assigned_coordinator_email: coordinatorEmail 
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('Coordinator assigned');

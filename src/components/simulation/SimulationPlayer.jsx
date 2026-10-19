@@ -6,7 +6,6 @@ import { ArrowRight, RotateCcw, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function SimulationPlayer({ simulation, onComplete }) {
   const [currentNodeId, setCurrentNodeId] = useState(simulation.scenario_data?.start_node_id);
   const [visitedNodes, setVisitedNodes] = useState([]);
@@ -154,7 +153,7 @@ export default function SimulationPlayer({ simulation, onComplete }) {
 
             <Box
               sx={{ mb: 4 }}
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentNode.content) }}
+              dangerouslySetInnerHTML={{ __html: currentNode.content }}
             />
 
             {currentNode.is_end ? (

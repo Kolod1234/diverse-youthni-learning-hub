@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import { Monitor, Tablet, Smartphone, Presentation, X } from 'lucide-react';
 import { MathJax } from 'better-react-mathjax';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 // Live HTML preview at desktop / tablet / mobile / presentation widths.
 // Renders into document.body via a portal so it always sits above the global
 // Layout header, drawers, MUI AppBar, etc. We use an inline z-index that beats
@@ -129,7 +128,7 @@ export default function PreviewModal({ open, onClose, html, background }) {
                 primitives as the live CourseReaderView (editorial serif heads,
                 18px body, indigo links). slide.content HTML is not modified. */}
             <MathJax dynamic>
-              <div className="reader-prose" dangerouslySetInnerHTML={{ __html: sanitizeHtml(html || '') }} />
+              <div className="reader-prose" dangerouslySetInnerHTML={{ __html: html || '' }} />
             </MathJax>
           </div>
         </div>

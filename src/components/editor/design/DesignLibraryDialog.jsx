@@ -8,7 +8,6 @@ import { base44 } from '@/api/base44Client';
 import { DESIGN_TABS } from './designAssets';
 import AssetUploadDialog from '@/components/assets/AssetUploadDialog';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 // "My library" pseudo-tab — backed by the AssetLibrary entity rather than
 // a static items array. Marked with kind: 'library' so the dialog knows to
 // fetch and render dynamically.
@@ -293,7 +292,7 @@ function AssetTile({ item, kind, onClick }) {
             className="w-full px-3 text-[10px] overflow-hidden [&>hr]:!my-0 [&>div]:!my-0"
             // The asset HTML is internally-authored static markup from
             // designAssets.js — no user input is ever rendered here.
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.html) }}
+            dangerouslySetInnerHTML={{ __html: item.html }}
           />
         ) : (
           // image / shape — both use the same thumbnail rendering path.

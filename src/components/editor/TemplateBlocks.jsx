@@ -10,7 +10,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { createBlock } from '@/components/editor/lessonBuilder/blockTypes';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 // ─────────────────────────────────────────────────────────────────────────────
 // Native-block factories — used by entries below that opt in via `nativeBlock`.
 // When present, WorkspaceShell serialises these through `blocksToHtml`, so the
@@ -772,7 +771,7 @@ export default function TemplateBlocks({ onInsert, onClose, onConvertToColumns }
                       <div 
                         className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs overflow-hidden"
                         dangerouslySetInnerHTML={{ 
-                          __html: sanitizeHtml(block.html.replace(/style="[^"]*"/g, 'style="transform: scale(0.7); transform-origin: top left; width: 142%; pointer-events: none;"'))
+                          __html: block.html.replace(/style="[^"]*"/g, 'style="transform: scale(0.7); transform-origin: top left; width: 142%; pointer-events: none;"')
                         }}
                       />
                     </Card>

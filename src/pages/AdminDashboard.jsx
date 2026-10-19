@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['all-enrollments'],
-    queryFn: async () => (await base44.functions.invoke('adminListRecords', { entity: 'Enrollment', sort: '-created_date', limit: 1000 })).data.records,
+    queryFn: () => base44.asServiceRole.entities.Enrollment.list('-created_date', 1000),
   });
 
   const { data: lessons = [] } = useQuery({
@@ -260,6 +260,7 @@ export default function AdminDashboard() {
             <Tab label="Enrollments" value="enrollments" />
             <Tab label="Templates" value="templates" />
             <Tab label="User Passwords" value="passwords" />
+            <Tab label="Site Passwords" value="site-passwords" />
             <Tab label="Partners" value="partners" />
             <Tab label="Attendance" value="attendance" />
             <Tab label="Contact Info" value="contact" />
@@ -286,6 +287,7 @@ export default function AdminDashboard() {
             {selectedTab === 'enrollments' && <EnrollmentsManagement enrollments={enrollments} courses={courses} users={allUsers} />}
             {selectedTab === 'templates' && <TemplatesManagement templates={templates} />}
             {selectedTab === 'passwords' && <PasswordManagement users={allUsers} />}
+            {selectedTab === 'site-passwords' && <SitePasswordsManagement siteContent={siteContent} />}
             {selectedTab === 'partners' && <PartnersManagement />}
             {selectedTab === 'attendance' && <AttendanceManagement attendanceRecords={attendanceRecords} users={allUsers} />}
             {selectedTab === 'contact' && <ContactInfoManagement contactInfo={contactInfo[0]} />}
@@ -643,7 +645,7 @@ function CoursesManagement({ courses, users }) {
       id: editingInstructor.id,
       data: {
         instructor: customInstructorName,
-        instructor_avatar: '' // initials are drawn locally; names are no longer sent to ui-avatars.com
+        instructor_avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(customInstructorName)}&background=6366f1&color=fff`
       }
     });
   };
@@ -1914,6 +1916,65 @@ function AboutUsManagement({ siteContent }) {
               <Typography variant="body2">{formData[field] || '—'}</Typography>
             </Card>
           ))}
+        </Box>
+      )}
+    </Box>
+  );
+}
+
+function SitePasswordsManagement({ siteContent }) {
+  const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    admin_panel_password: siteContent.find(c => c.key === 'admin_panel_password')?.value || '',
+    special_content_password: siteContent.find(c => c.key === 'special_content_password')?.value || '',
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data) => {
+      await Promise.all(Object.entries(data).map(([key, value]) => {
+        const existing = siteContent.find(c => c.key === key);
+        return existing
+          ? base44.entities.SiteContent.update(existing.id, { value })
+          : base44.entities.SiteContent.create({ key, value, section: 'general' });
+      }));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      setIsEditing(false);
+      toast.success('Site passwords updated!');
+    },
+  });
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>Site Passwords Management</Typography>
+          <Typography variant="body2" color="textSecondary">Manage access passwords for protected areas</Typography>
+        </Box>
+        {!isEditing && <Button variant="contained" startIcon={<Lock />} onClick={() => setIsEditing(true)}>Change</Button>}
+      </Box>
+
+      {isEditing ? (
+        <Card sx={{ p: 3 }}>
+          <TextField fullWidth label="Admin Panel Password" value={formData.admin_panel_password} onChange={(e) => setFormData({ ...formData, admin_panel_password: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth label="Special Content Password (optional)" value={formData.special_content_password} onChange={(e) => setFormData({ ...formData, special_content_password: e.target.value })} sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="contained" onClick={() => updateMutation.mutate(formData)}>Update Passwords</Button>
+            <Button variant="outlined" onClick={() => setIsEditing(false)}>Cancel</Button>
+          </Box>
+        </Card>
+      ) : (
+        <Box sx={{ space: 2 }}>
+          <Card sx={{ p: 2 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Admin Panel Password</Typography>
+            <Typography variant="body2">••••••••</Typography>
+          </Card>
+          <Card sx={{ p: 2 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Special Content Password</Typography>
+            <Typography variant="body2">{formData.special_content_password ? '••••••••' : '—'}</Typography>
+          </Card>
         </Box>
       )}
     </Box>

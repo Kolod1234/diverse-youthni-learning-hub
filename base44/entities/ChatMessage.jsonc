@@ -29,13 +29,6 @@
         "system"
       ],
       "default": "text"
-    },
-    "participant_emails": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Emails of the chat room's members, copied from ChatRoom when the message is sent. Used by the access rule."
     }
   },
   "required": [

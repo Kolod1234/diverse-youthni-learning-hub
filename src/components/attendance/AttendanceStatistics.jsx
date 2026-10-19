@@ -12,7 +12,7 @@ export default function AttendanceStatistics({ selectedDate }) {
 
   const { data: users = [] } = useQuery({
     queryKey: ['all-users-attendance'],
-    queryFn: async () => (await base44.functions.invoke('adminListUsers', { sort: '-created_date', limit: 1000 })).data.users,
+    queryFn: () => base44.asServiceRole.entities.User.list('-created_date', 1000),
   });
 
   const stats = {

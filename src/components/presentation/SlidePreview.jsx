@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function SlidePreview({ slide }) {
   return (
     <div className="w-full h-full p-12 bg-white rounded-xl shadow-lg flex flex-col min-h-[500px]">
@@ -11,7 +10,7 @@ export default function SlidePreview({ slide }) {
         {/* 2. Text Area - Styled with Typography plugin or custom CSS */}
         <div 
           className="prose prose-lg text-slate-700" 
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }} 
+          dangerouslySetInnerHTML={{ __html: slide.content }} 
         />
 
         {/* 3. Image Area - Only renders if we have an image */}

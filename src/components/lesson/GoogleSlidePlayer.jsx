@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
   // If Google Slides URL is provided, use iframe embed
   if (googleSlidesUrl) {
@@ -79,7 +78,7 @@ export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
         `}} />
         <div 
           className="mobile-responsive-content prose prose-base md:prose-lg max-w-none text-gray-700"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
+          dangerouslySetInnerHTML={{ __html: content }}
         />
       </div>
     );
@@ -183,7 +182,7 @@ export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
       `}} />
       <div 
         className="google-slide-container"
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
+        dangerouslySetInnerHTML={{ __html: content }}
       />
     </div>
   );

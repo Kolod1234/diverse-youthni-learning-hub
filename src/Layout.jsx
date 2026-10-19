@@ -94,17 +94,6 @@ const TUTOR_PAGES = [
   'TutorLeaderboard',
 ];
 
-// Pages that handle people's personal data, accounts, roles or integration settings.
-// Only admins may open these; everyone else is sent back to their dashboard.
-// (The real protection is the access rules on the data and the admin checks in server functions;
-// this keeps the screens themselves out of reach.)
-const ADMIN_ONLY_PAGES = new Set([
-  'AdminDashboard', 'AdminUsers', 'AdminUserProfile', 'AdminRolesPermissions', 'AdminCoordinators',
-  'AdminStudentMessages', 'AdminSupportChats', 'AdminAttendance', 'AdminYouthWork', 'AdminParentLinks',
-  'AdminNotifications', 'AdminTutorMonitor', 'AdminTeachingRequests', 'AdminAppVersion',
-  'AdminProjectSubmissions', 'LMSIntegrationConfig', 'EnterpriseIntegrations', 'Analytics',
-]);
-
 // Pull-to-refresh hook (mobile only)
 function usePullToRefresh(onRefresh) {
   const startY = useRef(0);
@@ -140,6 +129,8 @@ function usePullToRefresh(onRefresh) {
 
 function LayoutContent({ children, currentPageName }) {
   const [scrolled, setScrolled] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
   const [moreMenuAnchor, setMoreMenuAnchor] = useState(null);
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const [showTutorDialog, setShowTutorDialog] = useState(false);
@@ -192,14 +183,6 @@ function LayoutContent({ children, currentPageName }) {
     }
   }, [user, currentPageName]);
 
-  // Keep non-admins out of admin-only pages.
-  useEffect(() => {
-    if (!user) return;
-    if (ADMIN_ONLY_PAGES.has(currentPageName) && user.role !== 'admin') {
-      navigate(createPageUrl(user.is_tutor ? 'TutorDashboardOverview' : 'Dashboard'), { replace: true });
-    }
-  }, [user, currentPageName]);
-
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
@@ -246,6 +229,15 @@ function LayoutContent({ children, currentPageName }) {
   if (IMMERSIVE_PAGES.has(currentPageName)) {
     return <>{children}</>;
   }
+
+  const handleAdminAccess = () => {
+    const correctPassword = getContent('admin_panel_password', 'Edu24!');
+    if (adminPassword === correctPassword) {
+      window.location.href = createPageUrl('AdminDashboard');
+    } else {
+      alert('Incorrect password');
+    }
+  };
 
   // Role checks
   const isTutorOrAdmin = user && (user.is_tutor === true || user.role === 'admin');
@@ -622,7 +614,7 @@ function LayoutContent({ children, currentPageName }) {
                     <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
                       ADMIN PANEL
                     </Typography>
-                    <MenuItem component={Link} to={createPageUrl('AdminDashboard')} onClick={() => setMoreMenuAnchor(null)}>
+                    <MenuItem onClick={() => { setShowAdminPassword(true); setMoreMenuAnchor(null); }}>
                       <ListItemIcon><Settings size={20} color="#dc2626" /></ListItemIcon>
                       <ListItemText primary="Admin Panel" />
                     </MenuItem>
@@ -889,7 +881,7 @@ function LayoutContent({ children, currentPageName }) {
                     {isAdmin && (
                       <>
                         <Divider sx={{ my: 1 }} />
-                        <ListItemButton component={Link} to={createPageUrl('AdminDashboard')} onClick={() => setMobileMenuOpen(false)}>
+                        <ListItemButton onClick={() => { setShowAdminPassword(true); setMobileMenuOpen(false); }}>
                           <ListItemIcon><Settings size={20} /></ListItemIcon>
                           <ListItemText primary="Admin Panel" />
                         </ListItemButton>
@@ -1003,6 +995,31 @@ function LayoutContent({ children, currentPageName }) {
       {/* Become Tutor / Coordinator Dialogs - rendered outside MuiMenu to avoid focus trapping issues */}
       <BecomeTutorButton user={user} externalOpen={showTutorDialog} onExternalOpenChange={setShowTutorDialog} />
       <BecomeCoordinatorButton user={user} externalOpen={showCoordinatorDialog} onExternalOpenChange={setShowCoordinatorDialog} />
+
+      {/* Admin Password Modal */}
+      <Dialog open={showAdminPassword} onClose={() => setShowAdminPassword(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Admin Access</DialogTitle>
+        <DialogContent>
+          <TextField
+            type="password"
+            value={adminPassword}
+            onChange={(e) => setAdminPassword(e.target.value)}
+            placeholder="Enter admin password"
+            fullWidth
+            autoFocus
+            onKeyPress={(e) => e.key === 'Enter' && handleAdminAccess()}
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowAdminPassword(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleAdminAccess} variant="contained" color="primary">
+            Access
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Logout Confirmation Dialog */}
       <Dialog open={logoutDialogOpen} onClose={() => setLogoutDialogOpen(false)}>

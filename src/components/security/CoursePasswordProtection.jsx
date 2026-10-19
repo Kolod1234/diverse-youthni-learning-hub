@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, TextField, Button, Box, Typography, CircularProgress, Alert } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import { toast } from 'sonner';
@@ -12,6 +13,16 @@ export default function CoursePasswordProtection({ children, user }) {
   const [error, setError] = useState('');
   const [userLoading, setUserLoading] = useState(true);
   const navigate = useNavigate();
+
+  const { data: siteContent = [], isLoading: contentLoading } = useQuery({
+    queryKey: ['site-content'],
+    queryFn: () => base44.entities.SiteContent.list('key', 1000),
+  });
+
+  const getCoursePassword = () => {
+    const item = siteContent.find(c => c.key === 'course_access_password');
+    return item?.value || 'LEARNERS26';
+  };
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -26,8 +37,8 @@ export default function CoursePasswordProtection({ children, user }) {
         return;
       }
 
-      // Recorded on the user's account by the verifyAccessCode server function.
-      if (user?.course_access_granted === true) {
+      const accessGranted = sessionStorage.getItem('course_access_granted');
+      if (accessGranted === 'true') {
         setHasAccess(true);
         return;
       }
@@ -38,20 +49,19 @@ export default function CoursePasswordProtection({ children, user }) {
     checkAccess();
   }, [user, userLoading]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    try {
-      const res = await base44.functions.invoke('verifyAccessCode', { type: 'course', code: password });
-      if (res.data?.ok) {
-        setHasAccess(true);
-        toast.success('Access granted!');
-      } else {
-        setError('Incorrect password. Please try again.');
-        toast.error('Incorrect password');
-      }
-    } catch {
-      setError('Could not check the password. Please try again.');
+
+    const correctPassword = getCoursePassword();
+
+    if (password === correctPassword) {
+      sessionStorage.setItem('course_access_granted', 'true');
+      setHasAccess(true);
+      toast.success('Access granted!');
+    } else {
+      setError('Incorrect password. Please try again.');
+      toast.error('Incorrect password');
     }
   };
 
@@ -59,7 +69,7 @@ export default function CoursePasswordProtection({ children, user }) {
     navigate(createPageUrl('Home'));
   };
 
-  if (userLoading) {
+  if (userLoading || contentLoading) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.50' }}>
         <CircularProgress sx={{ color: '#4f46e5' }} />

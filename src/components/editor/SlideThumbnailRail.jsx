@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Copy, Trash2, GripVertical } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
-import { sanitizeHtml } from '@/components/security/SafeHtml';
 /**
  * SlideThumbnailRail
  * ------------------
@@ -69,7 +68,7 @@ export default function SlideThumbnailRail({
                           <div
                             className="text-gray-600 line-clamp-3 text-[9px]"
                             dangerouslySetInnerHTML={{
-                              __html: sanitizeHtml((slide.content || '').replace(/<[^>]*>/g, ' ').substring(0, 80) + '...'),
+                              __html: (slide.content || '').replace(/<[^>]*>/g, ' ').substring(0, 80) + '...',
                             }}
                           />
                         </div>

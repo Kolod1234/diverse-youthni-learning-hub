@@ -42,19 +42,15 @@ export default function ChatWindow({ roomId, currentUser, height = 400 }) {
   }, [messages.length]);
 
   const sendMutation = useMutation({
-    mutationFn: async (content) => {
-      // The access rule lets only the room's members read a message, so copy the member list onto it.
-      const room = await base44.entities.ChatRoom.get(roomId);
-      return base44.entities.ChatMessage.create({
+    mutationFn: (content) =>
+      base44.entities.ChatMessage.create({
         room_id: roomId,
         sender_email: currentUser.email,
         sender_name: currentUser.full_name,
         sender_avatar: currentUser.avatar,
         content,
         type: 'text',
-        participant_emails: room?.participant_emails || [currentUser.email],
-      });
-    },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chat-messages', roomId] });
       // Update room's last_message preview
