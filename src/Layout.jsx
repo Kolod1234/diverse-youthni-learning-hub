@@ -574,12 +574,34 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Settings size={20} color="#dc2626" /></ListItemIcon>
                       <ListItemText primary="Admin Panel" />
                     </MenuItem>
+                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
+                      PEOPLE
+                    </Typography>
                     {can(PERMISSIONS.MANAGE_ROLES) && (
                       <MenuItem component={Link} to={createPageUrl('AdminRolesPermissions')} onClick={() => setMoreMenuAnchor(null)}>
                         <ListItemIcon><Shield size={20} color="#f59e0b" /></ListItemIcon>
                         <ListItemText primary="Roles & Permissions" />
                       </MenuItem>
                     )}
+                    <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
+                      <ListItemText primary="Manage Coordinators" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminTeachingRequests')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
+                      <ListItemText primary="Teaching Requests" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminTutorMonitor')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Tutor Monitor" />
+                    </MenuItem>
+                    <MenuItem component={Link} to="/admin-parent-links" onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><UserCheck size={20} color="#0d9488" /></ListItemIcon>
+                      <ListItemText primary="Parent Verification" />
+                    </MenuItem>
+                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
+                      CONTENT
+                    </Typography>
                     <MenuItem component={Link} to={createPageUrl('AdminPageBuilder')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><LayoutIcon size={20} color="#8b5cf6" /></ListItemIcon>
                       <ListItemText primary="Page Builder" />
@@ -588,41 +610,13 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><CheckCircle size={20} color="#10b981" /></ListItemIcon>
                       <ListItemText primary="Course Validator" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminTutorMonitor')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Tutor Monitor" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminTeachingRequests')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="Teaching Requests" />
-                    </MenuItem>
-                    <MenuItem component={Link} to="/admin-parent-links" onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><UserCheck size={20} color="#0d9488" /></ListItemIcon>
-                      <ListItemText primary="Parent Verification" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
-                      <ListItemText primary="Manage Coordinators" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminRSSFeed')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#2563eb" /></ListItemIcon>
-                      <ListItemText primary="Manage RSS Feed" />
-                    </MenuItem>
                     <MenuItem component={Link} to={createPageUrl('AdminLibrary')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
                       <ListItemText primary="Manage Library" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminQuotes')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#ec4899" /></ListItemIcon>
-                      <ListItemText primary="Manage Quotes" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminStudentOfMonth')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                      <ListItemText primary="Student of Month" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminDailyFacts')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#0d9488" /></ListItemIcon>
-                      <ListItemText primary="Manage Facts" />
+                    <MenuItem component={Link} to={createPageUrl('AdminEvents')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
+                      <ListItemText primary="Event Manager" />
                     </MenuItem>
                     <MenuItem component={Link} to={createPageUrl('AdminDiscover')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
@@ -632,37 +626,55 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Award size={20} color="#ea580c" /></ListItemIcon>
                       <ListItemText primary="Manage Reviews" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
-                      <ListItemText primary="Student Reminders" />
+                    <MenuItem component={Link} to={createPageUrl('AdminQuotes')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#ec4899" /></ListItemIcon>
+                      <ListItemText primary="Manage Quotes" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
-                      <ListItemText primary="Send Student Messages" />
+                    <MenuItem component={Link} to={createPageUrl('AdminDailyFacts')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#0d9488" /></ListItemIcon>
+                      <ListItemText primary="Manage Facts" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminAppVersion')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="App Version Manager" />
+                    <MenuItem component={Link} to={createPageUrl('AdminStudentOfMonth')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                      <ListItemText primary="Student of Month" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminNotifications')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Notification Centre" />
+                    <MenuItem component={Link} to={createPageUrl('AdminRSSFeed')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#2563eb" /></ListItemIcon>
+                      <ListItemText primary="Manage RSS Feed" />
+                    </MenuItem>
+                    <MenuItem component={Link} to="/admin-project-submissions" onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Project Submissions" />
                     </MenuItem>
                     <MenuItem component={Link} to="/tutor-leaderboard" onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
                       <ListItemText primary="Student Leaderboard" />
                     </MenuItem>
+                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
+                      COMMUNICATION
+                    </Typography>
                     <MenuItem component={Link} to={createPageUrl('AdminSupportChats')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><MessageSquare size={20} color="#0ea5e9" /></ListItemIcon>
                       <ListItemText primary="Support Chats" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminEvents')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="Event Manager" />
+                    <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
+                      <ListItemText primary="Send Student Messages" />
                     </MenuItem>
-                    <MenuItem component={Link} to="/admin-project-submissions" onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Project Submissions" />
+                    <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
+                      <ListItemText primary="Student Reminders" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminNotifications')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Notification Centre" />
+                    </MenuItem>
+                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
+                      SYSTEM
+                    </Typography>
+                    <MenuItem component={Link} to={createPageUrl('AdminAppVersion')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#16a34a" /></ListItemIcon>
+                      <ListItemText primary="App Version Manager" />
                     </MenuItem>
                   </>
                 )}
