@@ -129,6 +129,49 @@ across every subject, curriculum and qualification level.
 - Apply lesson pages to the course with the scripts/wjec-a2-crim/lN-pages-M.cjs
   files (never regenerate authored pages with the LLM).
 
+## Checkpoint: Part B complete — all access rules (Oct 2026)
+- Part B (row-level security hardening) is complete. Every platform entity now
+  carries explicit RLS rules applied in batches 1 to 8:
+  - Batch 1: Attendance, SiteContent, LMSIntegration, Lesson, ContactInfo,
+    AudioNote, Enrollment, FileUpload, PathEnrollment, QuizAttempt, StudyStreak,
+    UserProgress, Certificate, ReviewSchedule, Annotation, LessonAnnotation,
+    LessonHighlight, SavedSearch, UserPreferences.
+  - Batch 2: LessonSnippet, GroupProject, CollaborativeWorkspace,
+    CourseEnrollment, ProgramParticipant, PeerReview, WorkbookProgress,
+    ScheduledMessage, FileShare, AcademyEnrollment, EventRSVP,
+    LessonProgress, PathwayProgress, QuizPerformance.
+  - Batch 3: SCORMSession, SCORMSuspendData, Logbook, Rota,
+    YouthWorkAttendance, SessionParticipant, CoordinatorRequest,
+    CourseTeachingRequest, GroupSessionCalendarSync, LessonBookmark,
+    NotificationPreference, TutorOnboarding, TutorRequest, SupportMessage.
+  - Batch 4: UserLibraryRole, StudyGroupMessage, Notification,
+    SessionReminder, ChatRoom, LearningImpactMetric, LessonMetrics,
+    FileActivity, LessonFeedback, xAPIStatement, LessonUnlockKey,
+    LMSReportingData, AIAnswerFeedback, SCORMErrorLog.
+  - Batch 5: SlideAnalytics, SessionChat, StudyGroupMember, Activity,
+    Program, LibraryResource, KahootGame, LiveSession, VideoSession,
+    Academy, AssetLibrary, Assignment, BlogPost, Competency.
+  - Batch 6: ContentReview, ContentVersion, Course, Event,
+    ExpertContentTemplate, InteractiveSimulation, KnowledgeBaseItem,
+    LearningPath, LearningPathway, MediaLibrary, PathwayResource, Quiz,
+    ReminderConfig, SCORMPackage.
+  - Batch 7: Template, YouthWorkQualification, SessionRecording,
+    AppVersion, CarouselImage, DailyFact, DiscoverContent,
+    InspirationalQuote, LibraryRole, PageSection, PageSectionVariant,
+    PartnerLogo, RSSFeed, StudentOfMonth.
+  - Batch 8: Achievement, ChallengeParticipant, CommunityPost, Discussion,
+    FileComment, LessonDifficulty, LessonQuestion, Review, Challenge,
+    ArtGallery, GroupStudySession, SessionQuestion, StudyGroup,
+    TutorAvailability.
+- Rules follow the owner-supplied templates verbatim (read/create/update/delete
+  per entity, using created_by, data.<field> and user_condition role/is_tutor/
+  is_coordinator as specified). No rules were merged or simplified.
+- Field-level RLS on User (account_banned, ban_reason, banned_at,
+  course_access_granted, coordinator_access_granted, deletion_requested_at)
+  remains admin-only.
+- Next: verify no entity was missed by diffing the entity directory against the
+  batches above; re-audit any entity whose rules diverge from the template.
+
 ## App conventions
 - Course: GCSE Single Award Science (CCEA) — 15 substantive pages per lesson,
   exam-style practice with hidden answers, misconception callouts, custom
