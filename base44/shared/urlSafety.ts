@@ -104,3 +104,43 @@ export async function assertSafeFetchUrl(
 
   return parsed;
 }
+// ---------------------------------------------------------------------------
+// App-file fetching. Functions that load a file the caller points at (a PDF
+// to analyse, a page to extract) should only ever read THIS app's own uploads,
+// never an arbitrary website. Each redirect hop is checked too, so a
+// permitted URL can't bounce the request somewhere else.
+const APP_ID = '69418fc30769c7d951368216';
+const APP_FILE_RULES: Array<{ host: string; pathIncludes: string }> = [
+  { host: 'base44.app', pathIncludes: `/apps/${APP_ID}/files/` },
+  { host: 'media.base44.com', pathIncludes: `/files/public/${APP_ID}/` },
+  { host: 'qtrypzzcjebvfcihiynt.supabase.co', pathIncludes: `/${APP_ID}/` },
+];
+
+export function isAppFileUrl(rawUrl: string): boolean {
+  try {
+    const u = new URL(rawUrl);
+    return u.protocol === 'https:' &&
+      APP_FILE_RULES.some((r) => u.hostname.toLowerCase() === r.host && u.pathname.includes(r.pathIncludes));
+  } catch {
+    return false;
+  }
+}
+
+/** Fetch one of this app's uploaded files without sending any credentials.
+ *  Throws UnsafeUrlError for anything that isn't an app file. */
+export async function fetchAppFile(rawUrl: string, maxRedirects = 3): Promise<Response> {
+  let url = rawUrl;
+  for (let hop = 0; hop <= maxRedirects; hop++) {
+    if (!isAppFileUrl(url)) throw new UnsafeUrlError('Only files uploaded to this app can be used.');
+    await assertSafeFetchUrl(url);
+    const res = await fetch(url, { redirect: 'manual' });
+    if (res.status >= 300 && res.status < 400) {
+      const next = res.headers.get('location');
+      if (!next) throw new UnsafeUrlError('Redirect without a location.');
+      url = new URL(next, url).toString();
+      continue;
+    }
+    return res;
+  }
+  throw new UnsafeUrlError('Too many redirects.');
+}
