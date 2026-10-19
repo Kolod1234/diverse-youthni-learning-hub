@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Box, Typography, Button, IconButton, Collapse } from '@mui/material';
+import { Box, Typography, Button, IconButton } from '@mui/material';
 import { X, Download, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -35,7 +35,9 @@ export default function AppUpdateBanner() {
     setDismissed(true);
   };
 
-  if (!active || dismissed) return null;
+  // The download is an Android APK, so only Android devices (including the app itself) should see this.
+  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+  if (!isAndroid || !active || dismissed) return null;
 
   const isForce = active.force_update;
 

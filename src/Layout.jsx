@@ -11,7 +11,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   AppBar, Toolbar, Button, IconButton, Avatar, Menu as MuiMenu, MenuItem, 
   Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton,
-  Box, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions, TextField
+  Box, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import HomeIcon from '@mui/icons-material/Home';
@@ -489,35 +489,15 @@ function LayoutContent({ children, currentPageName }) {
                   </MenuItem>
                 )}
                 <Divider />
-                <MenuItem component={Link} to={createPageUrl('AcademyManager')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><Award size={20} color="#7c3aed" /></ListItemIcon>
-                  <ListItemText primary="Academies" />
-                </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('MessageCenter')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                   <ListItemText primary="Messages" />
-                </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('Analytics')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
-                  <ListItemText primary="Analytics" />
                 </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('Achievements')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
                   <ListItemText primary="Achievements" />
                 </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('LearningPaths')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><Award size={20} color="#0d9488" /></ListItemIcon>
-                  <ListItemText primary="Learning Paths" />
-                </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('Programs')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
-                  <ListItemText primary="Programmes" />
-                </MenuItem>
                 <Divider />
-                <MenuItem component={Link} to={createPageUrl('CommunityEventSlides')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><GraduationCap size={20} color="#84cc16" /></ListItemIcon>
-                  <ListItemText primary="Event Slides" />
-                </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('ContactUs')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
                   <ListItemText primary="Contact Us" />
@@ -582,38 +562,6 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
                       <ListItemText primary="Templates" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('DataPresentation')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
-                      <ListItemText primary="Data to Slides" />
-                    </MenuItem>
-                    {can(PERMISSIONS.CREATE_QUIZ) && (
-                      <MenuItem component={Link} to={createPageUrl('QuizGenerator')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                        <ListItemText primary="Quiz Generator" />
-                      </MenuItem>
-                    )}
-                    {can(PERMISSIONS.CREATE_SIMULATION) && (
-                      <MenuItem component={Link} to={createPageUrl('SimulationAuthor')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><Award size={20} color="#8b5cf6" /></ListItemIcon>
-                        <ListItemText primary="Simulation Author" />
-                      </MenuItem>
-                    )}
-                    {can(PERMISSIONS.CREATE_COURSE) && (
-                      <>
-                        <MenuItem component={Link} to={createPageUrl('PathwayManager')} onClick={() => setMoreMenuAnchor(null)}>
-                          <ListItemIcon><Award size={20} color="#6366f1" /></ListItemIcon>
-                          <ListItemText primary="Pathway Manager" />
-                        </MenuItem>
-                        <MenuItem component={Link} to={createPageUrl('TutorSetup')} onClick={() => setMoreMenuAnchor(null)}>
-                          <ListItemIcon><User size={20} color="#0d9488" /></ListItemIcon>
-                          <ListItemText primary="Tutor Setup" />
-                        </MenuItem>
-                        <MenuItem component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMoreMenuAnchor(null)}>
-                          <ListItemIcon><Settings size={20} color="#6366f1" /></ListItemIcon>
-                          <ListItemText primary="Full Tutor Dashboard" />
-                        </MenuItem>
-                      </>
-                    )}
                   </>
                 )}
                 {can(PERMISSIONS.ACCESS_ADMIN_PANEL) && (
@@ -626,12 +574,34 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Settings size={20} color="#dc2626" /></ListItemIcon>
                       <ListItemText primary="Admin Panel" />
                     </MenuItem>
+                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
+                      PEOPLE
+                    </Typography>
                     {can(PERMISSIONS.MANAGE_ROLES) && (
                       <MenuItem component={Link} to={createPageUrl('AdminRolesPermissions')} onClick={() => setMoreMenuAnchor(null)}>
                         <ListItemIcon><Shield size={20} color="#f59e0b" /></ListItemIcon>
                         <ListItemText primary="Roles & Permissions" />
                       </MenuItem>
                     )}
+                    <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
+                      <ListItemText primary="Manage Coordinators" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminTeachingRequests')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
+                      <ListItemText primary="Teaching Requests" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminTutorMonitor')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Tutor Monitor" />
+                    </MenuItem>
+                    <MenuItem component={Link} to="/admin-parent-links" onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><UserCheck size={20} color="#0d9488" /></ListItemIcon>
+                      <ListItemText primary="Parent Verification" />
+                    </MenuItem>
+                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
+                      CONTENT
+                    </Typography>
                     <MenuItem component={Link} to={createPageUrl('AdminPageBuilder')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><LayoutIcon size={20} color="#8b5cf6" /></ListItemIcon>
                       <ListItemText primary="Page Builder" />
@@ -640,41 +610,13 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><CheckCircle size={20} color="#10b981" /></ListItemIcon>
                       <ListItemText primary="Course Validator" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminTutorMonitor')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Tutor Monitor" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminTeachingRequests')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="Teaching Requests" />
-                    </MenuItem>
-                    <MenuItem component={Link} to="/admin-parent-links" onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><UserCheck size={20} color="#0d9488" /></ListItemIcon>
-                      <ListItemText primary="Parent Verification" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
-                      <ListItemText primary="Manage Coordinators" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminRSSFeed')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#2563eb" /></ListItemIcon>
-                      <ListItemText primary="Manage RSS Feed" />
-                    </MenuItem>
                     <MenuItem component={Link} to={createPageUrl('AdminLibrary')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
                       <ListItemText primary="Manage Library" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminQuotes')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#ec4899" /></ListItemIcon>
-                      <ListItemText primary="Manage Quotes" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminStudentOfMonth')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                      <ListItemText primary="Student of Month" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminDailyFacts')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#0d9488" /></ListItemIcon>
-                      <ListItemText primary="Manage Facts" />
+                    <MenuItem component={Link} to={createPageUrl('AdminEvents')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
+                      <ListItemText primary="Event Manager" />
                     </MenuItem>
                     <MenuItem component={Link} to={createPageUrl('AdminDiscover')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
@@ -684,37 +626,55 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Award size={20} color="#ea580c" /></ListItemIcon>
                       <ListItemText primary="Manage Reviews" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
-                      <ListItemText primary="Student Reminders" />
+                    <MenuItem component={Link} to={createPageUrl('AdminQuotes')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#ec4899" /></ListItemIcon>
+                      <ListItemText primary="Manage Quotes" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
-                      <ListItemText primary="Send Student Messages" />
+                    <MenuItem component={Link} to={createPageUrl('AdminDailyFacts')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#0d9488" /></ListItemIcon>
+                      <ListItemText primary="Manage Facts" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminAppVersion')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="App Version Manager" />
+                    <MenuItem component={Link} to={createPageUrl('AdminStudentOfMonth')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                      <ListItemText primary="Student of Month" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminNotifications')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Notification Centre" />
+                    <MenuItem component={Link} to={createPageUrl('AdminRSSFeed')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#2563eb" /></ListItemIcon>
+                      <ListItemText primary="Manage RSS Feed" />
+                    </MenuItem>
+                    <MenuItem component={Link} to="/admin-project-submissions" onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Project Submissions" />
                     </MenuItem>
                     <MenuItem component={Link} to="/tutor-leaderboard" onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
                       <ListItemText primary="Student Leaderboard" />
                     </MenuItem>
+                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
+                      COMMUNICATION
+                    </Typography>
                     <MenuItem component={Link} to={createPageUrl('AdminSupportChats')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><MessageSquare size={20} color="#0ea5e9" /></ListItemIcon>
                       <ListItemText primary="Support Chats" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminEvents')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="Event Manager" />
+                    <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
+                      <ListItemText primary="Send Student Messages" />
                     </MenuItem>
-                    <MenuItem component={Link} to="/admin-project-submissions" onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Project Submissions" />
+                    <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
+                      <ListItemText primary="Student Reminders" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminNotifications')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Notification Centre" />
+                    </MenuItem>
+                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
+                      SYSTEM
+                    </Typography>
+                    <MenuItem component={Link} to={createPageUrl('AdminAppVersion')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#16a34a" /></ListItemIcon>
+                      <ListItemText primary="App Version Manager" />
                     </MenuItem>
                   </>
                 )}
@@ -840,10 +800,6 @@ function LayoutContent({ children, currentPageName }) {
                         <ListItemText primary="My Learning" />
                       </ListItemButton>
                     )}
-                    <ListItemButton component={Link} to={createPageUrl('AcademyManager')} onClick={() => setMobileMenuOpen(false)}>
-                      <ListItemIcon><Award size={20} /></ListItemIcon>
-                      <ListItemText primary="Academies" />
-                    </ListItemButton>
                     {(user?.is_tutor || user?.is_coordinator || user?.role === 'admin') && (
                       <ListItemButton component={Link} to="/kahoot-host" onClick={() => setMobileMenuOpen(false)}>
                         <ListItemIcon><Sparkles size={20} /></ListItemIcon>
@@ -878,10 +834,6 @@ function LayoutContent({ children, currentPageName }) {
                         <ListItemButton component={Link} to={createPageUrl('Templates')} onClick={() => setMobileMenuOpen(false)}>
                           <ListItemIcon><ClipboardList size={20} /></ListItemIcon>
                           <ListItemText primary="Templates" />
-                        </ListItemButton>
-                        <ListItemButton component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMobileMenuOpen(false)}>
-                          <ListItemIcon><Settings size={20} /></ListItemIcon>
-                          <ListItemText primary="Full Tutor Dashboard" />
                         </ListItemButton>
                       </>
                     )}
@@ -1105,7 +1057,7 @@ function LayoutContent({ children, currentPageName }) {
           
           <Divider sx={{ my: 4 }} />
           <Typography variant="body2" color="text.secondary" align="center">
-            {getContent('footer_copyright', '© 2024 LearnHub. All rights reserved.')}
+            {getContent('footer_copyright', `© ${new Date().getFullYear()} Diverse Youth NI. All rights reserved.`)}
           </Typography>
         </Container>
       </Box>

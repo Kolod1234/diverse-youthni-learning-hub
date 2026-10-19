@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
-import { assertSafeFetchUrl } from '../../shared/urlSafety.ts';
+import { fetchAppFile, isAppFileUrl } from '../../shared/urlSafety.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -18,14 +18,13 @@ Deno.serve(async (req) => {
     }
 
     // Validate the caller-supplied URL before fetching to prevent SSRF.
-    try {
-      await assertSafeFetchUrl(file_url);
-    } catch (e) {
-      return Response.json({ error: e.message || 'Invalid file URL' }, { status: 400 });
+    // Only this app's own uploads can be read (blocks arbitrary or internal addresses).
+    if (!isAppFileUrl(file_url)) {
+      return Response.json({ error: 'Only files uploaded to this app can be used.' }, { status: 400 });
     }
 
     // Fetch and load the PDF
-    const pdfResponse = await fetch(file_url);
+    const pdfResponse = await fetchAppFile(file_url);
     const pdfBytes = await pdfResponse.arrayBuffer();
     const pdfDoc = await PDFDocument.load(pdfBytes);
     

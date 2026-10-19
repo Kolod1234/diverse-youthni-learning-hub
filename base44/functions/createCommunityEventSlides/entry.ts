@@ -8,6 +8,10 @@ Deno.serve(async (req) => {
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    // Creates presentations on the organisation's Google account, so staff only.
+    if (user.role !== 'admin' && !user.is_tutor && !(user.is_coordinator && !user.coordinator_banned)) {
+      return Response.json({ error: 'Only staff can create event slides' }, { status: 403 });
+    }
 
     const { eventTitle, eventDate, eventLocation, description, agenda, organizer } = await req.json();
 

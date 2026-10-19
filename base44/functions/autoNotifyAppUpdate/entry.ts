@@ -1,7 +1,17 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
+// Text from the database is placed inside an HTML email, so escape it.
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
+
+  // Called by the "Auto Notify Users on New Active App Version" workflow (no signed-in user)
+  // or by an admin. A signed-in user who is not an admin may not trigger a mass email.
+  const caller = await base44.auth.me().catch(() => null);
+  if (caller && caller.role !== 'admin') {
+    return Response.json({ error: 'Forbidden' }, { status: 403 });
+  }
 
   const payload = await req.json();
   const { event, data, old_data } = payload;
@@ -46,6 +56,10 @@ Deno.serve(async (req) => {
     }
   }
 
+  // Claim this notification BEFORE sending, so a repeated or concurrent call finds
+  // notify_users already false and skips instead of emailing everyone again.
+  await base44.asServiceRole.entities.AppVersion.update(version.id, { notify_users: false });
+
   // Get all users
   const users = await base44.asServiceRole.entities.User.list();
 
@@ -54,28 +68,28 @@ Deno.serve(async (req) => {
     if (!u.email) continue;
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: u.email,
-      subject: `📱 App Update Available – Version ${version.version_name}`,
+      subject: `📱 App Update Available – Version ${esc(version.version_name)}`,
       body: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
           <h2 style="color: #003366;">📱 New App Version Available!</h2>
-          <p>Hi ${u.full_name || 'there'},</p>
+          <p>Hi ${esc(u.full_name || 'there')},</p>
           <p>A new version of the <strong>Diverse Youth NI</strong> app is now available to download.</p>
           <table style="width:100%; border-collapse: collapse; margin: 16px 0; background: #f8fafc; border-radius: 8px;">
             <tr>
               <td style="padding: 10px 12px; font-weight: bold; border-bottom: 1px solid #e2e8f0;">Version</td>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0;">${version.version_name}</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0;">${esc(version.version_name)}</td>
             </tr>
             <tr>
               <td style="padding: 10px 12px; font-weight: bold; border-bottom: 1px solid #e2e8f0;">Version Code</td>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0;">${version.version_code}</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0;">${esc(version.version_code)}</td>
             </tr>
             ${version.release_notes ? `
             <tr>
               <td style="padding: 10px 12px; font-weight: bold; vertical-align: top;">What's New</td>
-              <td style="padding: 10px 12px; white-space: pre-wrap;">${version.release_notes}</td>
+              <td style="padding: 10px 12px; white-space: pre-wrap;">${esc(version.release_notes)}</td>
             </tr>` : ''}
           </table>
-          <a href="${version.apk_url}" style="display: inline-block; background: #003366; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 8px; font-size: 16px;">
+          <a href="${esc(version.apk_url)}" style="display: inline-block; background: #003366; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 8px; font-size: 16px;">
             ⬇️ Download Update
           </a>
           <p style="color: #94a3b8; font-size: 12px; margin-top: 32px;">
@@ -86,9 +100,6 @@ Deno.serve(async (req) => {
     });
     sent++;
   }
-
-  // Mark notify_users as false so it doesn't re-trigger on future unrelated updates
-  await base44.asServiceRole.entities.AppVersion.update(version.id, { notify_users: false });
 
   return Response.json({ success: true, emails_sent: sent });
 });

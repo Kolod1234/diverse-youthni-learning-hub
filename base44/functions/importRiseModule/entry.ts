@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { fetchAppFile, isAppFileUrl } from '../../shared/urlSafety.ts';
 
 /**
  * Import Articulate Rise modules into the platform
@@ -22,8 +23,13 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Only this app's own uploads can be imported (blocks arbitrary or internal addresses).
+    if (!isAppFileUrl(fileUrl)) {
+      return Response.json({ error: 'Only files uploaded to this app can be imported.' }, { status: 400 });
+    }
+
     // Fetch the Rise file
-    const fileResponse = await fetch(fileUrl);
+    const fileResponse = await fetchAppFile(fileUrl);
     if (!fileResponse.ok) {
       throw new Error('Failed to fetch Rise module file');
     }

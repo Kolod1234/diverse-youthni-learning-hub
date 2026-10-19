@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import { assertSafeFetchUrl } from '../../shared/urlSafety.ts';
+import { fetchAppFile, isAppFileUrl } from '../../shared/urlSafety.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -17,16 +17,15 @@ Deno.serve(async (req) => {
     }
 
     // Validate the caller-supplied URL before fetching to prevent SSRF.
-    try {
-      await assertSafeFetchUrl(fileUrl);
-    } catch (e) {
-      return Response.json({ error: e.message || 'Invalid file URL' }, { status: 400 });
+    // Only this app's own uploads can be read (blocks arbitrary or internal addresses).
+    if (!isAppFileUrl(fileUrl)) {
+      return Response.json({ error: 'Only files uploaded to this app can be used.' }, { status: 400 });
     }
 
     console.log('Converting DOC to slides:', fileUrl);
 
     // Download the file
-    const fileResponse = await fetch(fileUrl);
+    const fileResponse = await fetchAppFile(fileUrl);
     if (!fileResponse.ok) {
       throw new Error('Failed to download file');
     }

@@ -160,7 +160,7 @@ export default function Home() {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <PageSEO title="Diverse Youth NI Learning Hub" description="Empowering young people through education" />
+      <PageSEO pageName="Learning Hub" />
 
       {/* Hero: always show Afterschool write-up; if hero images exist, use them as carousel background */}
       {heroImages.length > 0 ? <HeroCarouselWithWriteup images={heroImages} /> : <AfterschoolHero />}
