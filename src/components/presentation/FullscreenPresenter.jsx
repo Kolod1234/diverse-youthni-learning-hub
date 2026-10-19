@@ -5,6 +5,7 @@ import {
   Keyboard, Clock, Grid3x3
 } from 'lucide-react';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 const TRANSITIONS = {
   slide: {
     enter: (dir) => ({ x: dir > 0 ? 300 : -300, opacity: 0 }),
@@ -403,7 +404,7 @@ export default function FullscreenPresenter({
                       <p className="text-sm font-semibold line-clamp-2 mb-1">{s.title || 'Untitled'}</p>
                       <div
                         className="text-[10px] text-slate-600 line-clamp-4 prose prose-xs max-w-none"
-                        dangerouslySetInnerHTML={{ __html: s.content || '' }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(s.content || '') }}
                       />
                     </div>
                   </button>
@@ -487,7 +488,7 @@ function SlideCanvas({ slide, slideNumber }) {
         {slide.content && (
           <div
             className="presenter-slide-content prose prose-lg md:prose-xl max-w-none text-slate-800"
-            dangerouslySetInnerHTML={{ __html: slide.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }}
           />
         )}
         {!slide.title && !slide.content && !slide.image_url && (

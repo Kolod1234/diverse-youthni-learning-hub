@@ -21,6 +21,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function PresentationMode({ slides, onClose, isPersisted = true }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showNotes, setShowNotes] = useState(true);
@@ -493,7 +494,7 @@ export default function PresentationMode({ slides, onClose, isPersisted = true }
                       <div 
                         className="prose prose-lg max-w-none presentation-content"
                         dangerouslySetInnerHTML={{ 
-                          __html: processSlideContent(currentSlideData.content || '') 
+                          __html: sanitizeHtml(processSlideContent(currentSlideData.content || '')) 
                         }}
                       />
                     </>

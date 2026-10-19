@@ -37,7 +37,7 @@ export default function AttendanceReports() {
 
   const { data: users = [] } = useQuery({
     queryKey: ['all-users-for-reports'],
-    queryFn: () => base44.asServiceRole.entities.User.list('-created_date', 1000),
+    queryFn: async () => (await base44.functions.invoke('adminListUsers', { sort: '-created_date', limit: 1000 })).data.users,
   });
 
   const handleExport = async () => {

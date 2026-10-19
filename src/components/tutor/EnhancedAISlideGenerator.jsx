@@ -25,6 +25,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function EnhancedAISlideGenerator({ courseId, onSlidesGenerated, onClose, existingLessonId = null }) {
   // Course & Section Management
   const [existingSections, setExistingSections] = useState([]);
@@ -991,7 +992,7 @@ Return JSON:
                       ) : (
                         <div 
                           className="prose prose-sm max-w-none"
-                          dangerouslySetInnerHTML={{ __html: generatedContent.slides[previewSlideIndex]?.content || '<p>No content</p>' }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(generatedContent.slides[previewSlideIndex]?.content || '<p>No content</p>') }}
                         />
                       )}
                     </div>

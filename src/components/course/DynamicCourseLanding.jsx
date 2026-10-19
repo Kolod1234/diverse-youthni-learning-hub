@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Star, Users, Clock, Award, BookOpen, CheckCircle } from 'lucide-react';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function DynamicCourseLanding({ course, enrollment }) {
   const { data: customSections = [] } = useQuery({
     queryKey: ['course-sections', course.id],
@@ -71,7 +72,7 @@ function TextBlockSection({ section }) {
       {section.title && <h2 className="text-3xl font-bold mb-4">{section.title}</h2>}
       {section.subtitle && <p className="text-xl text-gray-600 mb-6">{section.subtitle}</p>}
       {section.content && (
-        <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: section.content }} />
+        <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }} />
       )}
     </div>
   );

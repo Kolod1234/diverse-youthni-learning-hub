@@ -103,9 +103,7 @@ export default function StudentPathways() {
 
   const handleDownloadResource = async (resource) => {
     try {
-      await base44.entities.LibraryResource.update(resource.id, {
-        downloads_count: (resource.downloads_count || 0) + 1
-      });
+      await base44.functions.invoke('recordStat', { type: 'libraryDownload', id: resource.id });
       window.open(resource.file_url, '_blank');
     } catch (error) {
       window.open(resource.file_url, '_blank');

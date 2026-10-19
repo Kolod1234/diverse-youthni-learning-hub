@@ -16,15 +16,11 @@ export default function ABTestRenderer({ section, children }) {
   });
 
   const trackImpressionMutation = useMutation({
-    mutationFn: (variantId) => base44.entities.PageSectionVariant.update(variantId, {
-      impressions: (selectedVariant?.impressions || 0) + 1
-    })
+    mutationFn: (variantId) => base44.functions.invoke('recordStat', { type: 'abImpression', id: variantId })
   });
 
   const trackClickMutation = useMutation({
-    mutationFn: (variantId) => base44.entities.PageSectionVariant.update(variantId, {
-      clicks: (selectedVariant?.clicks || 0) + 1
-    })
+    mutationFn: (variantId) => base44.functions.invoke('recordStat', { type: 'abClick', id: variantId })
   });
 
   // Select variant on mount

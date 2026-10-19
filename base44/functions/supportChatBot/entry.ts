@@ -27,6 +27,13 @@ Deno.serve(async (req) => {
   const { chat_id, message } = await req.json();
   if (!chat_id || !message) return Response.json({ error: 'Missing params' }, { status: 400 });
 
+  // Only the person who opened this support chat (or an admin) may post into it.
+  const chat = await base44.asServiceRole.entities.SupportChat.get(chat_id).catch(() => null);
+  if (!chat) return Response.json({ error: 'Chat not found' }, { status: 404 });
+  if (chat.user_email !== user.email && user.role !== 'admin') {
+    return Response.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   // Detect live agent request
   const isLiveAgentRequest = /live\s*agent/i.test(message.trim());
 
@@ -38,7 +45,8 @@ Deno.serve(async (req) => {
       chat_id,
       sender_role: 'bot',
       sender_name: 'Support Bot',
-      content: confirmMsg
+      content: confirmMsg,
+      user_email: chat.user_email
     });
 
     // Flag the chat as escalated
@@ -146,7 +154,8 @@ Deno.serve(async (req) => {
     chat_id,
     sender_role: 'bot',
     sender_name: 'Support Bot',
-    content: reply
+    content: reply,
+    user_email: chat.user_email
   });
 
   // Update chat record

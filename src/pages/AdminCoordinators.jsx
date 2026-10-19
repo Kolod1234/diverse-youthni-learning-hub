@@ -16,7 +16,6 @@ import { motion } from 'framer-motion';
 export default function AdminCoordinators() {
   const [user, setUser] = useState(null);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export default function AdminCoordinators() {
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: () => base44.asServiceRole.entities.User.list('full_name', 1000),
+    queryFn: async () => (await base44.functions.invoke('adminListUsers', { sort: 'full_name', limit: 1000 })).data.users,
   });
 
   const { data: coordinatorRequests = [] } = useQuery({
@@ -33,17 +32,11 @@ export default function AdminCoordinators() {
     queryFn: () => base44.entities.CoordinatorRequest.filter({ status: 'pending' }, '-created_date', 100),
   });
 
-  const { data: siteContent = [] } = useQuery({
-    queryKey: ['site-content'],
-    queryFn: () => base44.entities.SiteContent.list('key', 1000),
-  });
-
   const coordinators = allUsers.filter(u => u.is_coordinator);
   const participants = allUsers.filter(u => !u.is_coordinator && !u.is_tutor && u.role !== 'admin');
-  const currentPassword = siteContent.find(c => c.key === 'coordinator_password')?.value || 'YELP26';
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ userId, data }) => base44.asServiceRole.entities.User.update(userId, data),
+    mutationFn: ({ userId, data }) => base44.functions.invoke('adminUpdateUser', { userId, data }),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       queryClient.invalidateQueries(['assigned-participants']);
@@ -51,30 +44,9 @@ export default function AdminCoordinators() {
     },
   });
 
-  const updatePasswordMutation = useMutation({
-    mutationFn: async (password) => {
-      const existing = siteContent.find(c => c.key === 'coordinator_password');
-      if (existing) {
-        await base44.entities.SiteContent.update(existing.id, { value: password });
-      } else {
-        await base44.entities.SiteContent.create({ key: 'coordinator_password', value: password, category: 'security' });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['site-content']);
-      setShowPasswordDialog(false);
-      setNewPassword('');
-      toast.success('Coordinator password updated');
-    },
-  });
-
   const approveRequestMutation = useMutation({
     mutationFn: async ({ requestId, userEmail, userName }) => {
-      const users = await base44.asServiceRole.entities.User.filter({ email: userEmail });
-      const targetUser = users[0];
-      if (!targetUser) throw new Error('User not found');
-
-      await base44.asServiceRole.entities.User.update(targetUser.id, { is_coordinator: true });
+      await base44.functions.invoke('adminUpdateUser', { email: userEmail, data: { is_coordinator: true } });
       await base44.entities.CoordinatorRequest.update(requestId, {
         status: 'approved',
         processed_by: user.email,
@@ -325,29 +297,16 @@ export default function AdminCoordinators() {
       </Container>
 
       <Dialog open={showPasswordDialog} onClose={() => setShowPasswordDialog(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Change Coordinator Password</DialogTitle>
+        <DialogTitle>Coordinator Password</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Current password: <strong>{currentPassword}</strong>
+          <Typography variant="body2" color="text.secondary">
+            The coordinator password is stored securely as the Base44 secret <strong>COORDINATOR_ACCESS_CODE</strong> and
+            is checked on the server. To change it, update that secret in Base44 (Secrets). Coordinators who have
+            already entered it keep their access.
           </Typography>
-          <TextField
-            fullWidth
-            label="New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="Enter new password"
-          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowPasswordDialog(false)} variant="outlined">Cancel</Button>
-          <Button
-            onClick={() => updatePasswordMutation.mutate(newPassword)}
-            disabled={!newPassword.trim()}
-            variant="contained"
-            sx={{ bgcolor: '#9333ea', '&:hover': { bgcolor: '#7e22ce' } }}
-          >
-            Update Password
-          </Button>
+          <Button onClick={() => setShowPasswordDialog(false)} variant="outlined">Close</Button>
         </DialogActions>
       </Dialog>
     </Box>

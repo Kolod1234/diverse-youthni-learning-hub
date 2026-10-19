@@ -56,13 +56,8 @@ export default function LessonRatingDialog({
         instructor_name: course.instructor
       });
 
-      // Update course average rating
-      const allReviews = await base44.entities.Review.filter({ course_id: course.id });
-      const tutorReviews = allReviews.filter(r => r.rating_type === 'tutor');
-      if (tutorReviews.length > 0) {
-        const avgRating = tutorReviews.reduce((sum, r) => sum + r.rating, 0) / tutorReviews.length;
-        await base44.entities.Course.update(course.id, { rating: avgRating });
-      }
+      // Update course average rating (done on the server: students can't edit Course records)
+      await base44.functions.invoke('recordStat', { type: 'courseRating', id: course.id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['reviews']);

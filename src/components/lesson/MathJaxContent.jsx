@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import DigestiveDiagramPortals from '@/components/lesson/DigestiveDiagramPortals';
 import LessonImageZoom from '@/components/lesson/LessonImageZoom';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 function annotateRenderedMath(node, mathJax) {
   const containers = Array.from(node.querySelectorAll('mjx-container'));
   const items = mathJax.startup?.document?.getMathItemsWithin?.(node) || [];
@@ -87,5 +88,5 @@ export default function MathJaxContent({ html, className }) {
     };
   }, [html]);
 
-  return <><div ref={ref} className={className} dangerouslySetInnerHTML={{ __html: html || '' }} /><DigestiveDiagramPortals containerRef={ref} html={html} /><LessonImageZoom image={zoomedImage} onClose={() => setZoomedImage(null)} /></>;
+  return <><div ref={ref} className={className} dangerouslySetInnerHTML={{ __html: sanitizeHtml(html || '') }} /><DigestiveDiagramPortals containerRef={ref} html={html} /><LessonImageZoom image={zoomedImage} onClose={() => setZoomedImage(null)} /></>;
 }

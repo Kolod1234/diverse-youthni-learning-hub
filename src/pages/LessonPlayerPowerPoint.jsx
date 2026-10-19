@@ -67,6 +67,7 @@ import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
 import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -581,9 +582,9 @@ export default function LessonPlayerPowerPoint() {
                           <div className="max-w-4xl w-full">
                             <h2 className="text-xl sm:text-3xl font-bold mb-4 text-foreground">{sortedSlides[currentSlideIndex]?.title}</h2>
                             <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert"
-                              dangerouslySetInnerHTML={{ __html: typeof sortedSlides[currentSlideIndex]?.content === 'string'
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(typeof sortedSlides[currentSlideIndex]?.content === 'string'
                                 ? sortedSlides[currentSlideIndex].content.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'")
-                                : sortedSlides[currentSlideIndex]?.content
+                                : sortedSlides[currentSlideIndex]?.content)
                               }} />
                           </div>
                         </div>

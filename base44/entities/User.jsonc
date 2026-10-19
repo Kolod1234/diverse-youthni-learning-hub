@@ -59,6 +59,21 @@
     "tutor_compliance_notice_for_due": {
       "type": "string",
       "format": "date-time"
+    },
+    "course_access_granted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set by the verifyAccessCode function when the course access code is accepted."
+    },
+    "coordinator_access_granted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set by the verifyAccessCode function when the coordinator access code is accepted."
+    },
+    "deletion_requested_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Set by deleteMyAccount when the user deletes their account."
     }
   }
 }

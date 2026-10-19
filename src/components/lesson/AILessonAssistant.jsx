@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Loader2, Sparkles, Copy, Check, LayoutTemplate, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function AILessonAssistant({ lessonTitle, lessonContent, learningObjectives = [], existingSlides = [], onSlidesGenerated }) {
   const [activeTool, setActiveTool] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -333,7 +334,7 @@ Each slide's "content" must be a short HTML snippet using basic tags only: <h2>,
                     </div>
                     <div
                       className="text-xs text-gray-600 prose prose-sm max-w-none line-clamp-3"
-                      dangerouslySetInnerHTML={{ __html: slide.content }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }}
                     />
                   </div>
                 ))}

@@ -31,13 +31,19 @@ export default function GroupChat({ groupId }) {
   });
 
   const sendMutation = useMutation({
-    mutationFn: (msg) => base44.entities.StudyGroupMessage.create({
-      group_id: groupId,
-      message: msg,
-      sender_name: user.full_name,
-      sender_avatar: user.avatar,
-      message_type: 'text'
-    }),
+    mutationFn: async (msg) => {
+      // The access rule lets only group members read a message, so copy the member list onto it.
+      const members = await base44.entities.StudyGroupMember.filter({ group_id: groupId }, 'created_date', 500);
+      const memberEmails = [...new Set([user.email, ...members.map(m => m.member_email).filter(Boolean)])];
+      return base44.entities.StudyGroupMessage.create({
+        group_id: groupId,
+        message: msg,
+        sender_name: user.full_name,
+        sender_avatar: user.avatar,
+        message_type: 'text',
+        member_emails: memberEmails
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['group-messages', groupId]);
       setMessage('');

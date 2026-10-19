@@ -11,10 +11,10 @@ export default function ParticipantProgressOverview({ user }) {
   const { data: participants = [] } = useQuery({
     queryKey: ['assigned-participants', user?.email],
     queryFn: async () => {
-      const users = await base44.asServiceRole.entities.User.filter({ 
-        assigned_coordinator_email: user?.email 
+      const res = await base44.functions.invoke('adminListUsers', {
+        filter: { assigned_coordinator_email: user?.email },
       });
-      return users;
+      return res.data.users;
     },
     enabled: !!user?.email,
   });

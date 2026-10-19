@@ -19,6 +19,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 const mathJaxConfig = {
   loader: { load: ['input/tex', 'output/chtml'] },
   tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
@@ -73,7 +74,7 @@ function SlideContent({ html, bulletColor }) {
         .slide-content-render em { font-style: italic; opacity: 0.85; }
         .slide-content-render p { margin-bottom: 8px; }
       `}</style>
-      <div className="slide-content-render" dangerouslySetInnerHTML={{ __html: cleaned }} />
+      <div className="slide-content-render" dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleaned) }} />
     </MathJax>
   );
 }
@@ -318,7 +319,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                 </div>
                 <div className="aspect-video bg-white rounded border border-slate-200 p-2 overflow-hidden text-[6px] text-slate-400 select-none">
                   <div className="font-bold text-slate-800 mb-1 truncate">{slide.title}</div>
-                  <div className="line-clamp-3" dangerouslySetInnerHTML={{ __html: cleanContent(slide.content) }} />
+                  <div className="line-clamp-3" dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanContent(slide.content)) }} />
                 </div>
               </div>
             ))}

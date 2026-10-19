@@ -148,7 +148,11 @@ function ShapeSVG({ merged }) {
   // Inject attributes into the geometry element. We append the attrs
   // before the self-closing slash so existing inner attrs (e.g. dasharray)
   // are preserved.
-  const shapeAttrs = `fill="${finalFill}" stroke="${finalStroke}" stroke-width="${finalSW}" stroke-linejoin="round"`;
+  // Colours and width come from stored lesson data and are pasted into SVG markup, so only
+  // plain colour values (hex, names, rgb()/hsl()) and numbers are allowed through.
+  const safeColour = (v, fallback) => (typeof v === 'string' && /^[#a-zA-Z0-9(),.%\s-]{1,40}$/.test(v) ? v : fallback);
+  const safeWidth = Math.max(0, Math.min(50, Number(finalSW) || 0));
+  const shapeAttrs = `fill="${safeColour(finalFill, 'none')}" stroke="${safeColour(finalStroke, '#94a3b8')}" stroke-width="${safeWidth}" stroke-linejoin="round"`;
   const geomWithAttrs = geomHtml.replace('/>', ` ${shapeAttrs}/>`);
 
   // Lines need a non-scaling stroke so thickness stays consistent even

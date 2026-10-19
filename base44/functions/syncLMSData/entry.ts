@@ -1,5 +1,18 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
+// Partner-system credentials are kept in Base44 Secrets, not in the LMSIntegration table
+// (every signed-in user could read that table). Secret names: LMS_<integrationId>_<KEY>,
+// e.g. LMS_6650ab12cd_API_KEY.
+const CREDENTIAL_KEYS = ['api_key', 'api_secret', 'username', 'password', 'access_token', 'auth_header'];
+function credentialsFromSecrets(integrationId) {
+  const creds = {};
+  for (const key of CREDENTIAL_KEYS) {
+    const value = Deno.env.get(`LMS_${integrationId}_${key.toUpperCase()}`);
+    if (value) creds[key] = value;
+  }
+  return creds;
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -12,6 +25,7 @@ Deno.serve(async (req) => {
     const { integrationId } = await req.json();
 
     const integration = await base44.entities.LMSIntegration.get(integrationId);
+    integration.credentials = credentialsFromSecrets(integration.id);
 
     if (!integration.sync_enabled) {
       return Response.json({ error: 'Sync not enabled' }, { status: 400 });

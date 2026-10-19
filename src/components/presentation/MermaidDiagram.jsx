@@ -6,7 +6,7 @@ import { AlertCircle } from 'lucide-react';
 mermaid.initialize({
   startOnLoad: true,
   theme: 'neutral',
-  securityLevel: 'loose',
+  securityLevel: 'strict', // 'loose' allowed HTML and click handlers inside diagram labels
   fontFamily: 'inherit'
 });
 

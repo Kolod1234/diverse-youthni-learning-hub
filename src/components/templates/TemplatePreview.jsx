@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { X, Download, FileText, Calendar, User } from 'lucide-react';
 import { format } from 'date-fns';
 
+import { sanitizeHtml } from '@/components/security/SafeHtml';
 export default function TemplatePreview({ template, onClose, onUse }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -63,7 +64,7 @@ export default function TemplatePreview({ template, onClose, onUse }) {
                       </div>
                       <div 
                         className="prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: slide.content?.substring(0, 200) + '...' }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content?.substring(0, 200) + '...') }}
                       />
                     </Card>
                   ))}

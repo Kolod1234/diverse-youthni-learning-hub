@@ -83,7 +83,8 @@ export default function AdminTutorMonitor() {
         sender_email: me.email,
         sender_name: me.full_name || 'Admin',
         content: message,
-        type: 'text'
+        type: 'text',
+        participant_emails: room.participant_emails || [tutorEmail]
       });
       await base44.entities.ChatRoom.update(room.id, {
         last_message: message,
