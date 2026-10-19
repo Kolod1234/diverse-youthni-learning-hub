@@ -996,7 +996,7 @@ function LayoutContent({ children, currentPageName }) {
                 />
               </Link>
               <Typography variant="body2" color="text.secondary">
-                Expert-led learning for young people across Northern Ireland.
+                Empowering learners worldwide with expert-led courses and cutting-edge content.
               </Typography>
             </Box>
             
