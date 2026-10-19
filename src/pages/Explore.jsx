@@ -373,14 +373,14 @@ export default function Explore() {
     {
       icon: StarIcon,
       label: 'Avg Rating',
-      value: isLoading ? '...' : coursesWithActualData.length > 0
+      value: isLoading ? '...' : coursesWithActualData.some(c => c.rating)
         ? (coursesWithActualData.filter(c => c.rating).reduce((sum, c) => sum + c.rating, 0) / (coursesWithActualData.filter(c => c.rating).length || 1)).toFixed(1)
         : '—',
     },
     {
       icon: TrendingUpIcon,
-      label: 'Success Rate',
-      value: '96%',
+      label: 'Subjects',
+      value: isLoading ? '...' : new Set(coursesWithActualData.map(c => c.category).filter(Boolean)).size,
     }
   ];
 

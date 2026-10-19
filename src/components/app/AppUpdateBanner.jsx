@@ -35,7 +35,9 @@ export default function AppUpdateBanner() {
     setDismissed(true);
   };
 
-  if (!active || dismissed) return null;
+  // The download is an Android APK, so only Android devices (including the app itself) should see this.
+  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+  if (!isAndroid || !active || dismissed) return null;
 
   const isForce = active.force_update;
 

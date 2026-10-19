@@ -139,11 +139,6 @@ export default function AdminCoordinators() {
           </Stack>
         </motion.div>
 
-        <Card sx={{ p: 2, mb: 2, bgcolor: '#eff6ff', border: 1, borderColor: '#bfdbfe' }}>
-          <Typography variant="body2" sx={{ color: '#1e3a8a' }}>
-            <strong>Debug:</strong> Total users: {allUsers.length}, Coordinators: {coordinators.length}, Participants: {participants.length}
-          </Typography>
-        </Card>
 
         {coordinatorRequests.length > 0 && (
           <Card sx={{ p: 3, mb: 3, bgcolor: '#faf5ff', border: 1, borderColor: '#e9d5ff' }}>

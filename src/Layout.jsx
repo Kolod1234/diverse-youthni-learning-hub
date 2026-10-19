@@ -996,7 +996,7 @@ function LayoutContent({ children, currentPageName }) {
                 />
               </Link>
               <Typography variant="body2" color="text.secondary">
-                Empowering learners worldwide with expert-led courses and cutting-edge content.
+                Expert-led learning for young people across Northern Ireland.
               </Typography>
             </Box>
             
@@ -1057,7 +1057,7 @@ function LayoutContent({ children, currentPageName }) {
           
           <Divider sx={{ my: 4 }} />
           <Typography variant="body2" color="text.secondary" align="center">
-            {getContent('footer_copyright', '© 2024 LearnHub. All rights reserved.')}
+            {getContent('footer_copyright', `© ${new Date().getFullYear()} Diverse Youth NI. All rights reserved.`)}
           </Typography>
         </Container>
       </Box>

@@ -386,11 +386,6 @@ export default function CourseDetails() {
                       alt={course.title}
                       style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                     />
-                    <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Box sx={{ width: 64, height: 64, bgcolor: 'rgba(255,255,255,0.9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', '&:hover': { transform: 'scale(1.1)' }, transition: 'transform 0.2s' }}>
-                        <Play className="w-6 h-6 text-indigo-600 ml-1" style={{ color: '#4f46e5' }} />
-                      </Box>
-                    </Box>
                   </CardMedia>
                   
                   <CardContent sx={{ p: 3 }}>
