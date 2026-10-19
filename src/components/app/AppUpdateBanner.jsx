@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Box, Typography, Button, IconButton, Collapse } from '@mui/material';
+import { Box, Typography, Button, IconButton } from '@mui/material';
 import { X, Download, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

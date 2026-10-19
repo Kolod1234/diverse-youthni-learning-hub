@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import {
   Box, Container, Typography, Card, CardContent, Button, Chip, Checkbox, Slider,
-  FormControlLabel, Drawer, IconButton
+  FormControlLabel, Drawer
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import TuneIcon from '@mui/icons-material/Tune';
