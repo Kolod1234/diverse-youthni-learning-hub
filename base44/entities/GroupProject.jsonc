@@ -88,5 +88,63 @@
   "required": [
     "course_id",
     "title"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.team_members": "{{user.email}}"
+        },
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.is_tutor": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.is_tutor": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.team_members": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.is_tutor": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

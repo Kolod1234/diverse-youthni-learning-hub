@@ -36,5 +36,47 @@
     "resource_id",
     "shared_with_email",
     "shared_by_email"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.shared_by_email": "{{user.email}}"
+        },
+        {
+          "data.shared_with_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": true,
+    "update": {
+      "$or": [
+        {
+          "data.shared_by_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.shared_by_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

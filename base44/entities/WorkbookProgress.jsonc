@@ -62,5 +62,59 @@
     "qualification_id",
     "unit_index",
     "participant_email"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.participant_email": "{{user.email}}"
+        },
+        {
+          "data.assigned_coordinator_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.participant_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.is_coordinator": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.participant_email": "{{user.email}}"
+        },
+        {
+          "data.assigned_coordinator_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }
