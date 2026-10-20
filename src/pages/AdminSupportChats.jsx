@@ -205,7 +205,7 @@ export default function AdminSupportChats() {
                 sx={{
                   px: 2, py: 1.5, cursor: 'pointer', borderBottom: '1px solid', borderColor: 'divider',
                   bgcolor: selectedChatId === chat.id ? 'primary.main' + '10' : 'transparent',
-                  borderLeft: selectedChatId === chat.id ? '3px solid #003366' : '3px solid transparent',
+                  borderLeft: selectedChatId === chat.id ? '3px solid #0b2f5c' : '3px solid transparent',
                   '&:hover': { bgcolor: 'action.hover' }, transition: 'all 0.15s'
                 }}
               >

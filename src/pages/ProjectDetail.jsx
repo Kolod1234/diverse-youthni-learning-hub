@@ -45,7 +45,7 @@ export default function ProjectDetail() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Hero */}
       <Box sx={{
-        background: 'linear-gradient(135deg, #003366 0%, #1a0d60 50%, #4a0080 100%)',
+        background: 'linear-gradient(135deg, #0b2f5c 0%, #1a0d60 50%, #4a0080 100%)',
         py: { xs: 6, md: 8 },
         position: 'relative',
         overflow: 'hidden',
@@ -130,7 +130,7 @@ export default function ProjectDetail() {
                   target="_blank"
                   rel="noopener noreferrer"
                   component="a"
-                  sx={{ background: 'linear-gradient(to right, #003366, #7c3aed)', color: 'white', borderRadius: 50, fontWeight: 700 }}
+                  sx={{ background: 'linear-gradient(to right, #0b2f5c, #7c3aed)', color: 'white', borderRadius: 50, fontWeight: 700 }}
                 >
                   View Project
                 </Button>
@@ -143,7 +143,7 @@ export default function ProjectDetail() {
                 <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>🛠️ Skills Used</Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                   {project.skills.map(skill => (
-                    <Chip key={skill} label={skill} sx={{ background: 'linear-gradient(135deg, #003366, #7c3aed)', color: 'white', fontWeight: 600 }} />
+                    <Chip key={skill} label={skill} sx={{ background: 'linear-gradient(135deg, #0b2f5c, #7c3aed)', color: 'white', fontWeight: 600 }} />
                   ))}
                 </Box>
               </Card>

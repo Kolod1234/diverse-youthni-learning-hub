@@ -140,7 +140,7 @@ export default function AdminProjectSubmissions() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
-      <Box sx={{ background: 'linear-gradient(135deg, #003366 0%, #1a0d60 100%)', py: 5 }}>
+      <Box sx={{ background: 'linear-gradient(135deg, #0b2f5c 0%, #1a0d60 100%)', py: 5 }}>
         <Container maxWidth="xl">
           <Typography variant="h4" fontWeight={900} sx={{ color: 'white', mb: 0.5 }}>
             🗂️ Project Submissions
@@ -391,7 +391,7 @@ export default function AdminProjectSubmissions() {
 
       {/* Edit Dialog */}
       <Dialog open={!!editProject} onClose={() => setEditProject(null)} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 4 } }}>
-        <Box sx={{ height: 5, background: 'linear-gradient(to right, #003366, #7c3aed)' }} />
+        <Box sx={{ height: 5, background: 'linear-gradient(to right, #0b2f5c, #7c3aed)' }} />
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography fontWeight={800} fontSize="1.2rem">✏️ Edit Submission</Typography>
           <IconButton onClick={() => setEditProject(null)}><X size={20} /></IconButton>
@@ -424,7 +424,7 @@ export default function AdminProjectSubmissions() {
             startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <Save size={16} />}
             onClick={handleSave}
             disabled={saving}
-            sx={{ background: 'linear-gradient(to right, #003366, #7c3aed)', color: 'white' }}
+            sx={{ background: 'linear-gradient(to right, #0b2f5c, #7c3aed)', color: 'white' }}
           >
             {saving ? 'Saving…' : 'Save Changes'}
           </Button>

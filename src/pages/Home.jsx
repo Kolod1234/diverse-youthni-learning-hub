@@ -196,7 +196,7 @@ function AfterschoolHero() {
       sx={{
         position: 'relative',
         minHeight: { xs: 500, md: 600 },
-        background: 'linear-gradient(135deg, #003366 0%, #0d2e6e 40%, #1a1060 100%)',
+        background: 'linear-gradient(135deg, #0b2f5c 0%, #0d2e6e 40%, #1a1060 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -216,16 +216,16 @@ function AfterschoolHero() {
         {/* Badge */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <Chip
-            icon={<Sparkles size={16} color="#003366" />}
+            icon={<Sparkles size={16} color="#0b2f5c" />}
             label={badge}
-            sx={{ bgcolor: '#fbbf24', color: '#003366', fontWeight: 800, fontSize: '0.875rem', px: 2, py: 1, mb: 3, height: 'auto', letterSpacing: 1, '& .MuiChip-icon': { color: '#003366' } }}
+            sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 800, fontSize: '0.875rem', px: 2, py: 1, mb: 3, height: 'auto', letterSpacing: 1, '& .MuiChip-icon': { color: '#0b2f5c' } }}
           />
         </motion.div>
 
         {/* Title */}
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
           <Box sx={{ bgcolor: 'white', display: 'inline-block', px: { xs: 4, md: 6 }, py: { xs: 2.5, md: 4 }, borderRadius: 5, boxShadow: 8, mb: 4 }}>
-            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, background: 'linear-gradient(to right, #003366, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, background: 'linear-gradient(to right, #0b2f5c, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
               {title}
             </Typography>
           </Box>
@@ -239,10 +239,10 @@ function AfterschoolHero() {
         {/* FREE ACCESS box */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
           <Box sx={{ background: 'linear-gradient(to right, #fbbf24, #f59e0b)', borderRadius: 3, display: 'inline-block', px: { xs: 5, md: 7 }, py: 2.5, mb: 4, boxShadow: '0 8px 30px rgba(251,191,36,0.4)' }}>
-            <Typography variant="h4" sx={{ color: '#003366', fontWeight: 900, letterSpacing: 1 }}>{freeAccess}</Typography>
+            <Typography variant="h4" sx={{ color: '#0b2f5c', fontWeight: 900, letterSpacing: 1 }}>{freeAccess}</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-              <Zap size={16} color="#003366" />
-              <Typography sx={{ color: '#003366', fontWeight: 700, fontSize: '0.875rem', letterSpacing: 2 }}>{allCourses}</Typography>
+              <Zap size={16} color="#0b2f5c" />
+              <Typography sx={{ color: '#0b2f5c', fontWeight: 700, fontSize: '0.875rem', letterSpacing: 2 }}>{allCourses}</Typography>
             </Box>
           </Box>
         </motion.div>
@@ -259,7 +259,7 @@ function AfterschoolHero() {
               variant="contained"
               size="large"
               endIcon={<ArrowRight size={20} />}
-              sx={{ bgcolor: '#fbbf24', color: '#003366', fontWeight: 900, fontSize: '1.1rem', px: 6, py: 2, borderRadius: 50, boxShadow: '0 8px 30px rgba(251,191,36,0.5)', '&:hover': { bgcolor: '#fcd34d', transform: 'scale(1.05)', boxShadow: '0 12px 40px rgba(251,191,36,0.6)' } }}
+              sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 900, fontSize: '1.1rem', px: 6, py: 2, borderRadius: 50, boxShadow: '0 8px 30px rgba(251,191,36,0.5)', '&:hover': { bgcolor: '#fcd34d', transform: 'scale(1.05)', boxShadow: '0 12px 40px rgba(251,191,36,0.6)' } }}
             >
               {buttonText}
             </Button>
@@ -330,9 +330,9 @@ function HeroCarouselWithWriteup({ images }) {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <motion.div whileHover={{ scale: 1.1, rotate: -2 }} transition={{ type: 'spring', stiffness: 300 }}>
             <Chip
-              icon={<Sparkles size={16} color="#003366" />}
+              icon={<Sparkles size={16} color="#0b2f5c" />}
               label={get('hero_online_learning', 'ONLINE LEARNING')}
-              sx={{ bgcolor: '#fbbf24', color: '#003366', fontWeight: 800, fontSize: '0.875rem', px: 2, py: 1, mb: 3, height: 'auto', letterSpacing: 1, cursor: 'default', '& .MuiChip-icon': { color: '#003366' } }}
+              sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 800, fontSize: '0.875rem', px: 2, py: 1, mb: 3, height: 'auto', letterSpacing: 1, cursor: 'default', '& .MuiChip-icon': { color: '#0b2f5c' } }}
             />
           </motion.div>
         </motion.div>
@@ -341,7 +341,7 @@ function HeroCarouselWithWriteup({ images }) {
         <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
           <motion.div whileHover={{ scale: 1.04, rotate: 1 }} transition={{ type: 'spring', stiffness: 200 }}>
             <Box sx={{ bgcolor: 'white', display: 'inline-block', px: { xs: 4, md: 6 }, py: { xs: 2.5, md: 4 }, borderRadius: 5, boxShadow: 8, mb: 4, cursor: 'default' }}>
-              <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, background: 'linear-gradient(to right, #003366, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, background: 'linear-gradient(to right, #0b2f5c, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                 {get('hero_afterschool_hours', 'Afterschool Hours')}
               </Typography>
             </Box>
@@ -361,10 +361,10 @@ function HeroCarouselWithWriteup({ images }) {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
           <motion.div whileHover={{ scale: 1.07, y: -4 }} transition={{ type: 'spring', stiffness: 250 }}>
             <Box sx={{ background: 'linear-gradient(to right, #fbbf24, #f59e0b)', borderRadius: 3, display: 'inline-block', px: { xs: 5, md: 7 }, py: 2.5, mb: 4, boxShadow: '0 8px 30px rgba(251,191,36,0.5)', cursor: 'default' }}>
-              <Typography variant="h4" sx={{ color: '#003366', fontWeight: 900, letterSpacing: 1 }}>{get('hero_free_access', 'FREE ACCESS')}</Typography>
+              <Typography variant="h4" sx={{ color: '#0b2f5c', fontWeight: 900, letterSpacing: 1 }}>{get('hero_free_access', 'FREE ACCESS')}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                <Zap size={16} color="#003366" />
-                <Typography sx={{ color: '#003366', fontWeight: 700, fontSize: '0.875rem', letterSpacing: 2 }}>{get('hero_all_courses', 'ALL COURSES')}</Typography>
+                <Zap size={16} color="#0b2f5c" />
+                <Typography sx={{ color: '#0b2f5c', fontWeight: 700, fontSize: '0.875rem', letterSpacing: 2 }}>{get('hero_all_courses', 'ALL COURSES')}</Typography>
               </Box>
             </Box>
           </motion.div>
@@ -385,7 +385,7 @@ function HeroCarouselWithWriteup({ images }) {
                 variant="contained"
                 size="large"
                 endIcon={<ArrowRight size={20} />}
-                sx={{ bgcolor: '#fbbf24', color: '#003366', fontWeight: 900, fontSize: '1.1rem', px: 6, py: 2, borderRadius: 50, boxShadow: '0 8px 30px rgba(251,191,36,0.6)', '&:hover': { bgcolor: '#fcd34d' } }}
+                sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 900, fontSize: '1.1rem', px: 6, py: 2, borderRadius: 50, boxShadow: '0 8px 30px rgba(251,191,36,0.6)', '&:hover': { bgcolor: '#fcd34d' } }}
               >
                 {get('hero_button', 'BROWSE COURSES')}
               </Button>
@@ -441,7 +441,7 @@ function HeroCarousel({ items }) {
                             label={item.badge}
                             sx={{
                               bgcolor: '#fbbf24',
-                              color: '#003366',
+                              color: '#0b2f5c',
                               px: { xs: 3, md: 4 },
                               py: { xs: 1, md: 1.5 },
                               fontSize: { xs: '1rem', md: '1.5rem' },
@@ -461,7 +461,7 @@ function HeroCarousel({ items }) {
                           transition={{ duration: 0.7, delay: 0.15, ease: "easeInOut" }}
                         >
                           <Box sx={{ bgcolor: 'white', display: 'inline-block', px: { xs: 4, md: 6 }, py: { xs: 3, md: 4 }, borderRadius: 6, boxShadow: 6, mb: 3 }}>
-                            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4.5rem' }, fontWeight: 900, color: '#003366', letterSpacing: '-0.025em' }}>
+                            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4.5rem' }, fontWeight: 900, color: '#0b2f5c', letterSpacing: '-0.025em' }}>
                               {item.title}
                             </Typography>
                           </Box>
@@ -505,7 +505,7 @@ function HeroCarousel({ items }) {
                               endIcon={<ArrowRight size={32} />}
                               sx={{
                                 bgcolor: '#fbbf24',
-                                color: '#003366',
+                                color: '#0b2f5c',
                                 fontSize: { xs: '1.25rem', md: '1.5rem' },
                                 fontWeight: 900,
                                 px: { xs: 5, md: 6 },

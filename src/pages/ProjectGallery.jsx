@@ -35,7 +35,7 @@ export default function ProjectGallery() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Hero */}
       <Box sx={{
-        background: 'linear-gradient(135deg, #003366 0%, #1a0d60 50%, #4a0080 100%)',
+        background: 'linear-gradient(135deg, #0b2f5c 0%, #1a0d60 50%, #4a0080 100%)',
         py: { xs: 6, md: 10 },
         position: 'relative',
         overflow: 'hidden',
@@ -76,11 +76,11 @@ export default function ProjectGallery() {
               sx={{
                 fontWeight: 600,
                 cursor: 'pointer',
-                bgcolor: activeCategory === cat ? '#003366' : 'transparent',
+                bgcolor: activeCategory === cat ? '#0b2f5c' : 'transparent',
                 color: activeCategory === cat ? 'white' : 'text.primary',
                 border: '2px solid',
-                borderColor: activeCategory === cat ? '#003366' : 'divider',
-                '&:hover': { bgcolor: activeCategory === cat ? '#002244' : 'action.hover' },
+                borderColor: activeCategory === cat ? '#0b2f5c' : 'divider',
+                '&:hover': { bgcolor: activeCategory === cat ? '#082544' : 'action.hover' },
               }}
             />
           ))}
@@ -120,7 +120,7 @@ export default function ProjectGallery() {
                       <Typography sx={{ color: 'white', fontSize: '3rem' }}>🎬</Typography>
                     </Box>
                   ) : (
-                    <Box sx={{ height: 200, background: 'linear-gradient(135deg, #003366, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Box sx={{ height: 200, background: 'linear-gradient(135deg, #0b2f5c, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Typography sx={{ fontSize: '4rem' }}>🚀</Typography>
                     </Box>
                   )}

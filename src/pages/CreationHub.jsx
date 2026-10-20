@@ -241,7 +241,7 @@ export default function CreationHub() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Hero */}
       <Box sx={{
-        background: 'linear-gradient(135deg, #003366 0%, #1a0d60 50%, #4a0080 100%)',
+        background: 'linear-gradient(135deg, #0b2f5c 0%, #1a0d60 50%, #4a0080 100%)',
         py: { xs: 8, md: 12 },
         position: 'relative',
         overflow: 'hidden',
@@ -266,7 +266,7 @@ export default function CreationHub() {
               size="large"
               startIcon={<Plus size={18} />}
               onClick={() => setShowForm(true)}
-              sx={{ bgcolor: '#fbbf24', color: '#003366', fontWeight: 800, px: 4, py: 1.5, borderRadius: 50, '&:hover': { bgcolor: '#fcd34d' } }}
+              sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 800, px: 4, py: 1.5, borderRadius: 50, '&:hover': { bgcolor: '#fcd34d' } }}
             >
               Submit Your Project
             </Button>
@@ -295,11 +295,11 @@ export default function CreationHub() {
                   fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
-                  bgcolor: activeCategory === cat ? '#003366' : 'transparent',
+                  bgcolor: activeCategory === cat ? '#0b2f5c' : 'transparent',
                   color: activeCategory === cat ? 'white' : 'text.primary',
-                  border: activeCategory === cat ? '2px solid #003366' : '2px solid',
-                  borderColor: activeCategory === cat ? '#003366' : 'divider',
-                  '&:hover': { bgcolor: activeCategory === cat ? '#002244' : 'action.hover' },
+                  border: activeCategory === cat ? '2px solid #0b2f5c' : '2px solid',
+                  borderColor: activeCategory === cat ? '#0b2f5c' : 'divider',
+                  '&:hover': { bgcolor: activeCategory === cat ? '#082544' : 'action.hover' },
                 }}
               />
             ))}
@@ -356,7 +356,7 @@ export default function CreationHub() {
         </Box>
 
         {/* CTA Banner */}
-        <Box sx={{ mt: 10, background: 'linear-gradient(135deg, #003366 0%, #7c3aed 100%)', borderRadius: 6, p: { xs: 4, md: 6 }, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ mt: 10, background: 'linear-gradient(135deg, #0b2f5c 0%, #7c3aed 100%)', borderRadius: 6, p: { xs: 4, md: 6 }, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <Box sx={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 20% 50%, white 0%, transparent 60%), radial-gradient(circle at 80% 50%, white 0%, transparent 60%)' }} />
           <Box sx={{ position: 'relative' }}>
             <Typography variant="h4" fontWeight={800} sx={{ color: 'white', mb: 2 }}>Have a project idea? 💡</Typography>
@@ -368,7 +368,7 @@ export default function CreationHub() {
               size="large"
               startIcon={<Send size={18} />}
               onClick={() => setShowForm(true)}
-              sx={{ bgcolor: '#fbbf24', color: '#003366', fontWeight: 800, px: 4, py: 1.5, borderRadius: 50, '&:hover': { bgcolor: '#fcd34d' } }}
+              sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 800, px: 4, py: 1.5, borderRadius: 50, '&:hover': { bgcolor: '#fcd34d' } }}
             >
               Submit Your Project
             </Button>
@@ -427,7 +427,7 @@ export default function CreationHub() {
 
       {/* Submission Form Dialog */}
       <Dialog open={showForm} onClose={() => setShowForm(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 4 } }}>
-        <Box sx={{ height: 6, background: 'linear-gradient(to right, #003366, #7c3aed, #ec4899)' }} />
+        <Box sx={{ height: 6, background: 'linear-gradient(to right, #0b2f5c, #7c3aed, #ec4899)' }} />
         <DialogTitle sx={{ fontWeight: 800, fontSize: '1.4rem' }}>
           🚀 Submit Your Project
         </DialogTitle>
@@ -567,7 +567,7 @@ export default function CreationHub() {
             startIcon={<Send size={16} />}
             onClick={handleSubmit}
             disabled={submitting}
-            sx={{ background: 'linear-gradient(to right, #003366, #7c3aed)', color: 'white' }}
+            sx={{ background: 'linear-gradient(to right, #0b2f5c, #7c3aed)', color: 'white' }}
           >
             {submitting ? 'Submitting...' : 'Submit Project'}
           </Button>
