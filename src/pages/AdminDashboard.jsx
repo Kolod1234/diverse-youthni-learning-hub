@@ -2,21 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import {
-  Button, Card, CardContent, CardHeader, TextField, Box, Container, Typography,
-  Chip, Avatar, Tabs, Tab, Paper, Table, TableBody, TableCell, TableHead,
+  Button, Card, CardContent, TextField, Box, Typography,
+  Chip, Avatar, Table, TableBody, TableCell, TableHead,
   TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem,
-  FormControl, InputLabel, Alert, AlertTitle, IconButton, Grid, Badge
+  FormControl, InputLabel, IconButton, Grid
 } from '@mui/material';
-import {
-  Shield, Users, BookOpen, MessageSquare, Palette, FileText, Award, Settings,
+import { Users, BookOpen, Palette, FileText, Award, Settings,
   Trash2, CheckCircle, Upload, Eye, EyeOff, Edit, Search, Send, UserCog, Video,
-  Brain, Calendar, TrendingUp, Database, Lock, Plus, GraduationCap, X
+  Brain, TrendingUp, Database, Plus, GraduationCap, X
 } from '@/components/admin/AdminDashboardIcons';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import CurriculumImporter from '@/components/admin/CurriculumImporter';
 import PaginationBar from '@/components/ui/PaginationBar';
 
 export default function AdminDashboard() {

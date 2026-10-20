@@ -15,8 +15,6 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import StarIcon from '@mui/icons-material/Star';
-import PeopleIcon from '@mui/icons-material/People';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import CourseCardV2 from '@/components/courses/CourseCardV2';
 
