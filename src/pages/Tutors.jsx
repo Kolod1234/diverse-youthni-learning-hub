@@ -131,7 +131,7 @@ export default function Tutors() {
 
   if (!isUnlocked && !isTutorOrAdmin) {
     return (
-      <div className="min-h-screen bg-indigo-600 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -172,7 +172,7 @@ export default function Tutors() {
   }
 
   return (
-    <div className="min-h-screen bg-indigo-600">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Logout Button */}
         <div className="flex justify-end mb-4">
@@ -215,7 +215,7 @@ export default function Tutors() {
           )}
           {!currentUser?.is_tutor && !currentUser?.data?.is_tutor && currentUser?.role !== 'admin' && (
             <div className="mt-6">
-              <Card className="max-w-2xl mx-auto p-6 bg-indigo-600 border-indigo-200">
+              <Card className="max-w-2xl mx-auto p-6 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-white" />

@@ -73,7 +73,7 @@ ${formData.message}
   };
 
   return (
-    <div className="min-h-screen bg-indigo-600">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header */}
         <motion.div
@@ -188,7 +188,7 @@ ${formData.message}
             transition={{ delay: 0.4 }}
             className="space-y-6"
           >
-            <Card className="p-6 bg-indigo-600 text-white border-0 shadow-lg">
+            <Card className="p-6 bg-[#0b2f5c] text-white border-0 shadow-lg">
               <h3 className="text-xl font-bold mb-6">Contact Information</h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">

@@ -663,7 +663,7 @@ export default function Library() {
                         <div className="absolute inset-0 z-10 cursor-pointer" style={{ pointerEvents: 'auto' }} />
                       </div>
                     ) : (
-                      <div className="w-full aspect-[3/4] bg-indigo-600 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
+                      <div className="w-full aspect-[3/4] bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
                         <BookOpen className="w-12 h-12 text-indigo-600" />
                       </div>
                     )}
@@ -795,7 +795,7 @@ export default function Library() {
                     <div className="absolute inset-0 z-10 cursor-pointer" style={{ pointerEvents: 'auto' }} />
                   </div>
                 ) : (
-                  <div className="w-full aspect-[3/4] bg-indigo-600 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
+                  <div className="w-full aspect-[3/4] bg-background flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
                     <BookOpen className="w-12 h-12 text-gray-400" />
                   </div>
                 )}
@@ -879,7 +879,7 @@ export default function Library() {
           {selectedBook && (
             <div className="flex flex-col md:flex-row h-full gap-0">
               {/* Book Cover */}
-              <div className="md:w-1/3 bg-indigo-600 p-4 flex flex-col items-center overflow-y-auto">
+              <div className="md:w-1/3 bg-[#0b2f5c] p-4 flex flex-col items-center overflow-y-auto">
                 {selectedBook.cover_image ? (
                   selectedBook.cover_image.toLowerCase().includes('.pdf') ? (
                     <div className="w-40 h-52 rounded-lg shadow-2xl mb-3 bg-card flex-shrink-0">
@@ -897,7 +897,7 @@ export default function Library() {
                     />
                   )
                 ) : (
-                  <div className="w-40 h-52 bg-indigo-600 rounded-lg flex items-center justify-center mb-3 flex-shrink-0">
+                  <div className="w-40 h-52 bg-[#0b2f5c] rounded-lg flex items-center justify-center mb-3 flex-shrink-0">
                     <BookOpen className="w-16 h-16 text-gray-400" />
                   </div>
                 )}
@@ -1072,7 +1072,7 @@ export default function Library() {
               </div>
               <div className="flex-1 flex flex-col" id="pdf-viewer-container">
                 {canEditBookUI(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
-                  <div className="p-3 bg-indigo-600 border-b flex items-center justify-center gap-3">
+                  <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 border-b flex items-center justify-center gap-3">
                     <Button 
                       size="sm"
                       onClick={async (e) => {

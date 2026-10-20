@@ -172,7 +172,7 @@ export default function Sessions() {
   };
 
   return (
-    <div className="min-h-screen bg-indigo-600">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -192,7 +192,7 @@ export default function Sessions() {
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 bg-indigo-600 border-red-200">
+          <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-red-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Live Now</p>
@@ -204,7 +204,7 @@ export default function Sessions() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-indigo-600 border-indigo-200">
+          <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Upcoming</p>
@@ -216,7 +216,7 @@ export default function Sessions() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-indigo-600 border-gray-200">
+          <Card className="p-6 bg-background border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Completed</p>
