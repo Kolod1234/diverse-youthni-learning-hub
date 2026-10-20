@@ -1736,7 +1736,7 @@ export default function EnhancedLessonPlayer({
                           type="button"
                           onClick={() => { askAI(aiQuestion, activeContentSlide?.content || lesson.title); setAiQuestion(''); }}
                           disabled={!aiQuestion.trim() || aiLoading}
-                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-bold text-[#0b2f5c] hover:bg-indigo-500 disabled:opacity-50"
+                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-bold text-white hover:bg-indigo-500 disabled:opacity-50"
                         >
                           {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Ask
                         </button>
@@ -1850,7 +1850,7 @@ export default function EnhancedLessonPlayer({
             disabled={isLastPage && !nextLesson && !canOpenTopicQuiz}
             aria-label={canOpenTopicQuiz ? 'Open topic quiz' : isLastPage ? 'Go to next topic' : 'Go to next page'}
             title={canOpenTopicQuiz ? 'Topic quiz' : isLastPage ? 'Next topic' : 'Next page'}
-            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-bold text-[#0b2f5c] shadow-sm hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5"
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-bold text-white shadow-sm hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5"
           >
             <span className="hidden sm:inline">{canOpenTopicQuiz ? 'Topic quiz' : isLastPage ? 'Next topic' : 'Next page'}</span><ChevronRight className="h-5 w-5" />
           </button>
