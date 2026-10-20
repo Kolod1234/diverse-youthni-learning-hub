@@ -113,7 +113,16 @@ export default function NotificationBell() {
       markAsReadMutation.mutate(notification.id);
     }
     if (notification.action_url) {
-      window.location.href = notification.action_url;
+      // Only follow links inside this site or plain web links. Anyone can create a
+      // notification, so a "javascript:" link here would run code as the reader.
+      try {
+        const target = new URL(notification.action_url, window.location.origin);
+        if (target.protocol === 'https:' || target.protocol === 'http:') {
+          window.location.href = target.href;
+        }
+      } catch {
+        // Not a valid link: ignore it.
+      }
     }
     setShowNotifications(false);
   };

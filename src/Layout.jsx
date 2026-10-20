@@ -103,6 +103,7 @@ const ADMIN_ONLY_PAGES = new Set([
   'AdminStudentMessages', 'AdminSupportChats', 'AdminAttendance', 'AdminYouthWork', 'AdminParentLinks',
   'AdminNotifications', 'AdminTutorMonitor', 'AdminTeachingRequests', 'AdminAppVersion',
   'AdminProjectSubmissions', 'LMSIntegrationConfig', 'EnterpriseIntegrations', 'Analytics',
+  'AdminLearningObjectives', 'AdminMathSolutionAudit',
 ]);
 
 // Pull-to-refresh hook (mobile only)
@@ -195,7 +196,8 @@ function LayoutContent({ children, currentPageName }) {
   // Keep non-admins out of admin-only pages.
   useEffect(() => {
     if (!user) return;
-    if (ADMIN_ONLY_PAGES.has(currentPageName) && user.role !== 'admin') {
+    const isStaffOnlyPage = currentPageName?.startsWith('Admin') && user.is_tutor !== true;
+    if ((ADMIN_ONLY_PAGES.has(currentPageName) || isStaffOnlyPage) && user.role !== 'admin') {
       navigate(createPageUrl(user.is_tutor ? 'TutorDashboardOverview' : 'Dashboard'), { replace: true });
     }
   }, [user, currentPageName]);
