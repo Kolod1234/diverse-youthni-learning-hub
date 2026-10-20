@@ -83,32 +83,22 @@ export default function MUIThemeProvider({ children }) {
           },
         },
       },
+      // Calm, flat cards: white, soft shadow, no glass blur or hover lift.
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 16,
-            background: isDark 
-              ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)'
-              : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: isDark
-              ? '1px solid rgba(255,255,255,0.1)'
-              : '1px solid rgba(255,255,255,0.4)',
-            boxShadow: isDark 
-              ? '0px 8px 32px 0px rgba(0,0,0,0.3)'
-              : '0px 8px 32px 0px rgba(0,0,0,0.1)',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              boxShadow: isDark 
-                ? '0px 12px 40px 0px rgba(0,0,0,0.4)'
-                : '0px 12px 40px 0px rgba(0,0,0,0.15)',
-              transform: 'translateY(-4px)',
-              border: isDark
-                ? '1px solid rgba(255,255,255,0.15)'
-                : '1px solid rgba(255,255,255,0.5)',
-            },
+            borderRadius: 14,
+            backgroundImage: 'none',
+            border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #eef0f4',
+            boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.08)',
           },
         },
+      },
+      MuiPaper: {
+        styleOverrides: { rounded: { borderRadius: 14 } },
+      },
+      MuiTab: {
+        styleOverrides: { root: { textTransform: 'none', fontWeight: 700, minHeight: 44 } },
       },
       MuiAppBar: {
         styleOverrides: {
@@ -129,7 +119,7 @@ export default function MUIThemeProvider({ children }) {
       MuiChip: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
+            borderRadius: 999,
             fontWeight: 500,
           },
         },
