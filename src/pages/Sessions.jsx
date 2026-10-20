@@ -97,7 +97,7 @@ export default function Sessions() {
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 bg-backgroundr from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
                   <Video className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -136,7 +136,7 @@ export default function Sessions() {
                   <Badge className="bg-gray-600">Cancelled</Badge>
                 )}
                 {isHost && (
-                  <Badge variant="outline" className="border-indigo-300 text-indigo-700">Host</Badge>
+                  <Badge variant="outline" className="border-purple-300 text-purple-700">Host</Badge>
                 )}
               </div>
             </div>
@@ -147,8 +147,8 @@ export default function Sessions() {
                   size="sm"
                   className={
                     session.status === 'live' 
-                      ? 'bg-indigo-600 hover:bg-indigo-700'
-                      : 'bg-indigo-600 hover:bg-indigo-700'
+                      ? 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700'
+                      : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700'
                   }
                 >
                   {session.status === 'live' ? (
@@ -172,7 +172,7 @@ export default function Sessions() {
   };
 
   return (
-    <div className="min-h-screen bg-background to-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -182,7 +182,7 @@ export default function Sessions() {
           </div>
           {isTutorOrCoordinator && (
             <Link to={createPageUrl('ScheduleSession')}>
-              <Button className="bg-indigo-600 hover:bg-indigo-700">
+              <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
                 <Plus className="w-4 h-4 mr-2" />
                 Schedule Session
               </Button>
@@ -192,7 +192,7 @@ export default function Sessions() {
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 bg-backgroundr from-red-50 to-pink-50 border-red-200">
+          <Card className="p-6 bg-gradient-to-br from-red-50 to-pink-50 border-red-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Live Now</p>
@@ -204,19 +204,19 @@ export default function Sessions() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-backgroundr from-purple-50 to-indigo-50 border-indigo-200">
+          <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Upcoming</p>
                 <p className="text-3xl font-bold text-gray-900">{upcomingSessions.length}</p>
               </div>
-              <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
                 <Calendar className="w-6 h-6 text-white" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-backgroundr from-gray-50 to-slate-50 border-gray-200">
+          <Card className="p-6 bg-gradient-to-br from-gray-50 to-slate-50 border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Completed</p>
@@ -231,7 +231,7 @@ export default function Sessions() {
 
         {/* Sessions Tabs */}
         <Tabs defaultValue="live" className="space-y-6">
-          <TabsList className="bg-card border border-gray-200">
+          <TabsList className="bg-white border border-gray-200">
             <TabsTrigger value="live" className="gap-2">
               <PlayCircle className="w-4 h-4" />
               Live ({liveSessions.length})
@@ -272,7 +272,7 @@ export default function Sessions() {
                 <p className="text-gray-500 mb-6">You don't have any scheduled sessions yet</p>
                 {isTutorOrCoordinator && (
                   <Link to={createPageUrl('ScheduleSession')}>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+                    <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
                       <Plus className="w-4 h-4 mr-2" />
                       Schedule Your First Session
                     </Button>

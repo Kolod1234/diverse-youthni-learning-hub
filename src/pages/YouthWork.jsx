@@ -72,7 +72,7 @@ export default function YouthWork() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 6 }}>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f0fdf4, white)', py: 6 }}>
       <Container maxWidth="lg">
         {/* Header */}
         <motion.div
@@ -91,7 +91,7 @@ export default function YouthWork() {
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
             <Link to={createPageUrl('YouthWorkWorkbook')} style={{ textDecoration: 'none' }}>
-              <Button variant="contained" sx={{ bgcolor: '#4f46e5', px: 4, py: 1.5, fontSize: '1rem', borderRadius: 2, boxShadow: 3 }} startIcon={<BookOpen />}>
+              <Button variant="contained" sx={{ background: 'linear-gradient(to right, #9333ea, #ec4899)', px: 4, py: 1.5, fontSize: '1rem', borderRadius: 2, boxShadow: 3 }} startIcon={<BookOpen />}>
                 Start Your Interactive Workbook
               </Button>
             </Link>
@@ -106,7 +106,7 @@ export default function YouthWork() {
         </motion.div>
 
         {/* Model of Effective Practice Overview */}
-        <Card sx={{ p: 4, mb: 6, bgcolor: 'action.hover', borderColor: '#a7f3d0', border: 1 }}>
+        <Card sx={{ p: 4, mb: 6, background: 'linear-gradient(to bottom right, #f0fdf4, #f0f9ff)', borderColor: '#a7f3d0', border: 1 }}>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
               <Target className="w-7 h-7" style={{ color: '#16a34a' }} />
@@ -182,9 +182,9 @@ export default function YouthWork() {
               style={{ marginBottom: 24 }}
             >
               <Card sx={{ overflow: 'hidden', '&:hover': { boxShadow: 6 }, transition: 'box-shadow 0.3s' }}>
-                <Box sx={{ bgcolor: 'success.main', p: 3, color: 'white' }}>
+                <Box sx={{ background: 'linear-gradient(to right, #16a34a, #0d9488)', p: 3, color: 'white' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                    <Chip label={qual.level} sx={{ bgcolor: 'background.paper', color: '#16a34a', fontWeight: 'bold' }} />
+                    <Chip label={qual.level} sx={{ bgcolor: 'white', color: '#16a34a', fontWeight: 'bold' }} />
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.875rem' }}>
                       {qual.credit_value && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -217,7 +217,7 @@ export default function YouthWork() {
                     {qual.curriculum && qual.curriculum.length > 0 ? (
                         <Box sx={{ mb: 2 }}>
                           {qual.curriculum.map((unit, idx) => (
-                            <Card key={idx} sx={{ p: 2, bgcolor: 'action.hover', mb: 1 }}>
+                            <Card key={idx} sx={{ p: 2, bgcolor: '#f3f4f6', mb: 1 }}>
                               <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                                 <Box>
                                   <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>

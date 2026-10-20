@@ -60,7 +60,7 @@ export default function Community() {
 
   const categoryColors = {
     announcement: 'bg-blue-100 text-blue-700',
-    event: 'bg-indigo-100 text-indigo-700',
+    event: 'bg-purple-100 text-purple-700',
     achievement: 'bg-yellow-100 text-yellow-700',
     discussion: 'bg-green-100 text-green-700',
     question: 'bg-orange-100 text-orange-700'
@@ -74,7 +74,7 @@ export default function Community() {
   });
 
   return (
-    <div className="min-h-screen bg-background to-white py-8">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>

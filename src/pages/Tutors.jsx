@@ -131,13 +131,13 @@ export default function Tutors() {
 
   if (!isUnlocked && !isTutorOrAdmin) {
     return (
-      <div className="min-h-screen bg-background to-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          <div className="bg-card rounded-2xl shadow-xl p-8 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
             <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <GraduationCap className="w-8 h-8 text-indigo-600" />
             </div>
@@ -172,7 +172,7 @@ export default function Tutors() {
   }
 
   return (
-    <div className="min-h-screen bg-background to-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Logout Button */}
         <div className="flex justify-end mb-4">
@@ -192,7 +192,7 @@ export default function Tutors() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="w-16 h-16 bg-backgroundr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-3">Meet Our Expert Tutors</h1>
@@ -215,7 +215,7 @@ export default function Tutors() {
           )}
           {!currentUser?.is_tutor && !currentUser?.data?.is_tutor && currentUser?.role !== 'admin' && (
             <div className="mt-6">
-              <Card className="max-w-2xl mx-auto p-6 bg-backgroundr from-indigo-50 to-violet-50 border-indigo-200">
+              <Card className="max-w-2xl mx-auto p-6 bg-gradient-to-br from-indigo-50 to-violet-50 border-indigo-200">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-white" />
@@ -397,7 +397,7 @@ export default function Tutors() {
                         <ChevronRight className="w-4 h-4 ml-1" />
                       </Button>
                       <Link to={`${createPageUrl('BookSession')}?tutor=${encodeURIComponent(tutor.email)}`}>
-                        <Button variant="outline" size="sm" title="Book a session" className="text-indigo-600 border-indigo-300 hover:bg-indigo-50">
+                        <Button variant="outline" size="sm" title="Book a session" className="text-purple-600 border-purple-300 hover:bg-purple-50">
                           <Calendar className="w-4 h-4" />
                         </Button>
                       </Link>

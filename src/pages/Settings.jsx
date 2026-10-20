@@ -219,7 +219,7 @@ export default function Settings() {
 
                   <Box>
                     <InputLabel>Email</InputLabel>
-                    <TextField fullWidth value={user?.email || ''} disabled sx={{ mt: 1, bgcolor: 'action.hover' }} />
+                    <TextField fullWidth value={user?.email || ''} disabled sx={{ mt: 1, bgcolor: '#f9fafb' }} />
                     <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>Email cannot be changed</Typography>
                   </Box>
 
@@ -307,19 +307,19 @@ export default function Settings() {
                       disabled={updatePreferenceMutation.isPending}
                       sx={{
                         position: 'relative', p: 3, borderRadius: 3, border: 2, textAlign: 'left',
-                        borderColor: playerPreference === 'LessonPlayerPowerPoint' ? '#4f46e5' : 'divider',
+                        borderColor: playerPreference === 'LessonPlayerPowerPoint' ? '#f97316' : 'divider',
                         bgcolor: playerPreference === 'LessonPlayerPowerPoint' ? '#fff7ed' : 'background.paper',
                         display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-                        '&:hover': { borderColor: playerPreference === 'LessonPlayerPowerPoint' ? '#4f46e5' : 'text.secondary' }
+                        '&:hover': { borderColor: playerPreference === 'LessonPlayerPowerPoint' ? '#ea580c' : 'text.secondary' }
                       }}
                     >
                       {playerPreference === 'LessonPlayerPowerPoint' && (
-                        <Box sx={{ position: 'absolute', top: 16, right: 16, bgcolor: '#4f46e5', color: 'white', p: 0.5, borderRadius: '50%' }}>
+                        <Box sx={{ position: 'absolute', top: 16, right: 16, bgcolor: '#f97316', color: 'white', p: 0.5, borderRadius: '50%' }}>
                           <CheckCircle2 size={20} />
                         </Box>
                       )}
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                        <Box sx={{ width: 48, height: 48, bgcolor: '#4f46e5', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Box sx={{ width: 48, height: 48, background: 'linear-gradient(to bottom right, #f97316, #dc2626)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Presentation size={24} color="white" />
                         </Box>
                         <Typography variant="h6" fontWeight={700}>PowerPoint Style</Typography>
@@ -346,7 +346,7 @@ export default function Settings() {
                         </Box>
                       )}
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                        <Box sx={{ width: 48, height: 48, bgcolor: '#4f46e5', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Box sx={{ width: 48, height: 48, background: 'linear-gradient(to bottom right, #6366f1, #9333ea)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Layout size={24} color="white" />
                         </Box>
                         <Typography variant="h6" fontWeight={700}>Classic Style</Typography>
@@ -380,7 +380,7 @@ export default function Settings() {
                 </Box>
                 <Box sx={{ bgcolor: '#fee2e2', border: 1, borderColor: '#fca5a5', borderRadius: 2, p: 3 }}>
                   <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#991b1b' }}>Delete Account</Typography>
-                  <Box sx={{ mb: 3, bgcolor: 'background.paper', p: 2, borderRadius: 1.5, border: 1, borderColor: '#fca5a5' }}>
+                  <Box sx={{ mb: 3, bgcolor: 'white', p: 2, borderRadius: 1.5, border: 1, borderColor: '#fca5a5' }}>
                     <Typography variant="body2" fontWeight={600} sx={{ mb: 1, color: '#991b1b' }}>What happens when you delete your account:</Typography>
                     <Box component="ul" sx={{ pl: 2.5, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem', color: 'text.secondary' } }}>
                       <li>All your course progress and enrollments will be permanently deleted</li>
