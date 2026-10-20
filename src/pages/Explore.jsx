@@ -5,8 +5,9 @@ import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import {
   Box, Container, Typography, Card, CardContent, Button, Chip, Checkbox, Slider,
-  FormControlLabel, Drawer
+  FormControlLabel, Drawer, TextField, InputAdornment, MenuItem
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import TuneIcon from '@mui/icons-material/Tune';
 import CloseIcon from '@mui/icons-material/Close';
@@ -17,9 +18,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import StarIcon from '@mui/icons-material/Star';
 import PeopleIcon from '@mui/icons-material/People';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { motion, AnimatePresence } from 'framer-motion';
-import CourseCard from '@/components/courses/CourseCard';
-import SearchBar from '@/components/courses/SearchBar';
+import CourseCardV2 from '@/components/courses/CourseCardV2';
 
 const categories = [
   { id: 'mathematics', label: 'Mathematics', icon: '🔢' },
@@ -359,275 +358,126 @@ export default function Explore() {
     </Box>
   );
 
-  const stats = [
-    {
-      icon: MenuBookIcon,
-      label: 'Total Courses',
-      value: isLoading ? '...' : coursesWithActualData.length,
-    },
-    {
-      icon: PeopleIcon,
-      label: 'Active Learners',
-      value: enrollmentsLoading ? '...' : new Set(allEnrollments.map(e => e.created_by_id)).size,
-    },
-    {
-      icon: StarIcon,
-      label: 'Avg Rating',
-      value: isLoading ? '...' : coursesWithActualData.some(c => c.rating)
-        ? (coursesWithActualData.filter(c => c.rating).reduce((sum, c) => sum + c.rating, 0) / (coursesWithActualData.filter(c => c.rating).length || 1)).toFixed(1)
-        : '—',
-    },
-    {
-      icon: TrendingUpIcon,
-      label: 'Subjects',
-      value: isLoading ? '...' : new Set(coursesWithActualData.map(c => c.category).filter(Boolean)).size,
-    }
-  ];
+  // Subjects that actually have published courses, for the chip row.
+  const subjectChips = useMemo(() => {
+    const present = new Set(coursesWithActualData.map(c => c.category).filter(Boolean));
+    return categories.filter(cat => present.has(cat.id));
+  }, [coursesWithActualData]);
 
-  const featuredCourses = useMemo(
-    () => coursesWithActualData.filter(c => c.rating && c.rating >= 4.5).slice(0, 3),
-    [coursesWithActualData]
-  );
+  const advancedFilterCount = selectedLevels.length + (showFreeOnly ? 1 : 0)
+    + (selectedQualification.length < 2 ? 1 : 0) + (selectedALevelStage.length < 3 ? 1 : 0);
 
   return (
     <CoursePasswordProtection user={user}>
       <Box ref={scrollContainerRef} sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-        {/* Pull to Refresh Indicator */}
         {isPulling && (
-          <Box
-            sx={{
-              position: 'fixed',
-              top: 64,
-              left: 0,
-              right: 0,
-              display: 'flex',
-              justifyContent: 'center',
-              zIndex: 50,
-              pointerEvents: 'none',
-              transition: 'transform 0.1s',
-              transform: `translateY(${Math.min(pullDistance, 80)}px)`,
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, bgcolor: '#2563eb', color: 'white', px: 3, py: 1.5, borderRadius: 50, boxShadow: 4 }}>
+          <Box sx={{ position: 'fixed', top: 64, left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 50, pointerEvents: 'none', transform: `translateY(${Math.min(pullDistance, 80)}px)` }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, bgcolor: 'primary.main', color: 'primary.contrastText', px: 3, py: 1.5, borderRadius: 50, boxShadow: 4 }}>
               {pullDistance > 80
                 ? <AutorenewIcon sx={{ fontSize: 16, animation: 'spin 1s linear infinite', '@keyframes spin': { '100%': { transform: 'rotate(360deg)' } } }} />
                 : <RefreshIcon sx={{ fontSize: 16 }} />}
-              <Typography variant="body2" fontWeight={600}>
-                {pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
-              </Typography>
+              <Typography variant="body2" fontWeight={600}>{pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}</Typography>
             </Box>
           </Box>
         )}
 
-        <Container maxWidth="xl" sx={{ py: 6 }}>
-          {/* Header */}
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-            <Box sx={{ textAlign: 'center', mb: 6 }}>
-              <Chip
-                icon={<AutoAwesomeIcon sx={{ fontSize: 16 }} />}
-                label="Discover Learning"
-                sx={{ px: 3, py: 1, borderRadius: 50, bgcolor: 'primary.main', color: 'white', border: '2px solid', borderColor: 'primary.main', fontWeight: 700, mb: 2, '& .MuiChip-icon': { color: 'white' } }}
-              />
-              <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '3.75rem' }, fontWeight: 700, mb: 2 }}>
-                Explore Courses
-              </Typography>
-              <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
-                Discover courses tailored to your interests and start your learning journey today
-              </Typography>
-            </Box>
-          </motion.div>
+        <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 }, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          <Box>
+            <Typography component="h1" sx={{ fontSize: { xs: '1.75rem', md: '2rem' }, fontWeight: 700 }}>Explore courses</Typography>
+            <Typography color="text.secondary">
+              {isLoading ? 'Loading courses…' : `${coursesWithActualData.length} courses · free for every learner`}
+            </Typography>
+          </Box>
 
-          {/* Stats Grid */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 2, mb: 6 }}>
-            {stats.map((stat, i) => {
-              const Icon = stat.icon;
+          {/* Search, sort and filters */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+            <TextField
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by subject, topic or teacher"
+              inputProps={{ 'aria-label': 'Search courses' }}
+              sx={{ flex: '1 1 320px', '& .MuiOutlinedInput-root': { bgcolor: 'background.paper', minHeight: 48 } }}
+              InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
+            />
+            <TextField
+              select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              inputProps={{ 'aria-label': 'Sort courses' }}
+              sx={{ flex: '0 1 200px', '& .MuiOutlinedInput-root': { bgcolor: 'background.paper', minHeight: 48 } }}
+            >
+              <MenuItem value="popular">Most popular</MenuItem>
+              <MenuItem value="rating">Top rated</MenuItem>
+              <MenuItem value="teachers">Teacher A–Z</MenuItem>
+            </TextField>
+            <Button variant="outlined" onClick={() => setFilterDrawerOpen(true)} startIcon={<TuneIcon />} sx={{ minHeight: 48, bgcolor: 'background.paper' }}>
+              Filters{advancedFilterCount > 0 ? ` (${advancedFilterCount})` : ''}
+            </Button>
+            <Drawer anchor="right" open={filterDrawerOpen} onClose={() => setFilterDrawerOpen(false)} PaperProps={{ sx: { width: 320, maxWidth: '100vw', p: 3, overflowY: 'auto' } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h6" fontWeight={700}>Filters</Typography>
+                <Button onClick={() => setFilterDrawerOpen(false)} aria-label="Close filters" sx={{ minWidth: 44 }}><CloseIcon /></Button>
+              </Box>
+              <FilterContent />
+            </Drawer>
+          </Box>
+
+          {/* Subject chips */}
+          <Box role="group" aria-label="Filter by subject" sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            <Chip
+              label="All subjects"
+              onClick={() => setSelectedCategories([])}
+              color={selectedCategories.length === 0 ? 'primary' : 'default'}
+              variant={selectedCategories.length === 0 ? 'filled' : 'outlined'}
+              sx={{ height: 40, fontWeight: 500, bgcolor: selectedCategories.length === 0 ? undefined : 'background.paper' }}
+            />
+            {subjectChips.map(cat => {
+              const on = selectedCategories.includes(cat.id);
               return (
-                <Card key={i} sx={{ p: 2.5, borderRadius: 4, border: 1, borderColor: 'divider', transition: 'all 0.2s', '&:hover': { boxShadow: 4 } }}>
-                  <Box sx={{ width: 48, height: 48, borderRadius: 3, bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5, boxShadow: 2 }}>
-                    <Icon sx={{ fontSize: 24, color: 'white' }} />
-                  </Box>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>{stat.label}</Typography>
-                  <Typography variant="h5" fontWeight={700}>{stat.value}</Typography>
-                </Card>
+                <Chip
+                  key={cat.id}
+                  label={cat.label}
+                  onClick={() => setSelectedCategories(prev => on ? prev.filter(c => c !== cat.id) : [...prev, cat.id])}
+                  color={on ? 'primary' : 'default'}
+                  variant={on ? 'filled' : 'outlined'}
+                  aria-pressed={on}
+                  sx={{ height: 40, fontWeight: 500, bgcolor: on ? undefined : 'background.paper' }}
+                />
               );
             })}
           </Box>
 
-          {/* Featured Courses */}
-          {featuredCourses.length > 0 && (
-            <Box sx={{ mb: 6 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                <Typography variant="h5" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <StarIcon sx={{ fontSize: 24, color: '#eab308' }} /> Featured Courses
-                </Typography>
-                <Chip label="Top Rated" sx={{ bgcolor: '#fef3c7', color: '#a16207' }} />
-              </Box>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
-                {featuredCourses.map((course, i) => (
-                  <CourseCard key={course.id} course={course} index={i} user={user} />
-                ))}
-              </Box>
-            </Box>
-          )}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+            <Typography color="text.secondary" aria-live="polite">
+              {isLoading ? '' : `${sortedCourses.length} ${sortedCourses.length === 1 ? 'course' : 'courses'}`}
+            </Typography>
+            {hasActiveFilters && <Button variant="text" onClick={clearFilters} startIcon={<CloseIcon />}>Clear filters</Button>}
+          </Box>
 
-          {/* Category Showcase */}
-          <Box sx={{ mb: 6 }}>
-            <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>Browse by Category</Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)', lg: 'repeat(8, 1fr)' }, gap: 1.5 }}>
-              {categories.map((cat) => (
-                <Button
-                  key={cat.id}
-                  variant={selectedCategories.includes(cat.id) ? 'contained' : 'outlined'}
-                  onClick={() => setSelectedCategories([cat.id])}
-                  sx={{ flexDirection: 'column', height: 'auto', py: 1.5, px: 1, borderRadius: 4, gap: 0.5 }}
-                >
-                  <span style={{ fontSize: '1.5rem' }}>{cat.icon}</span>
-                  <Typography variant="caption" sx={{ fontWeight: 600, textAlign: 'center', lineHeight: 1.2, textTransform: 'none' }}>{cat.label}</Typography>
-                </Button>
+          {isLoading ? (
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 2 }}>
+              {[...Array(8)].map((_, i) => (
+                <Card key={i} sx={{ overflow: 'hidden' }}>
+                  <Box sx={{ aspectRatio: '16/9', bgcolor: 'action.hover' }} />
+                  <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Box sx={{ height: 16, bgcolor: 'action.hover', borderRadius: 1, width: '33%' }} />
+                    <Box sx={{ height: 20, bgcolor: 'action.hover', borderRadius: 1 }} />
+                  </CardContent>
+                </Card>
               ))}
             </Box>
-          </Box>
-
-          {/* Search and Mobile Filter */}
-          <Box sx={{ display: 'flex', gap: 1.5, mb: 4 }}>
-            <Box sx={{ flex: 1 }}>
-              <SearchBar value={searchQuery} onChange={setSearchQuery} sortBy={sortBy} onSortChange={setSortBy} />
+          ) : sortedCourses.length > 0 ? (
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 2 }}>
+              {sortedCourses.map(course => <CourseCardV2 key={course.id} course={course} />)}
             </Box>
-            <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-              <Button
-                variant="outlined"
-                onClick={() => setFilterDrawerOpen(true)}
-                startIcon={<TuneIcon sx={{ color: '#f97316' }} />}
-                sx={{ height: 48, px: 2, borderRadius: 4 }}
-              >
-                {hasActiveFilters && (
-                  <Chip
-                    size="small"
-                    label={selectedCategories.length + selectedLevels.length + (showFreeOnly ? 1 : 0)}
-                    sx={{ ml: 0.5, bgcolor: 'primary.main', color: 'white', height: 20 }}
-                  />
-                )}
-              </Button>
-              <Drawer
-                anchor="left"
-                open={filterDrawerOpen}
-                onClose={() => setFilterDrawerOpen(false)}
-                PaperProps={{ sx: { width: 320, p: 3, overflowY: 'auto' } }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                  <TuneIcon sx={{ fontSize: 20 }} />
-                  <Typography variant="h6">Filters</Typography>
-                </Box>
-                <FilterContent />
-              </Drawer>
-            </Box>
-          </Box>
-
-          <Box sx={{ display: 'flex', gap: 4 }}>
-            {/* Desktop Sidebar */}
-            <Box sx={{ display: { xs: 'none', lg: 'block' }, width: 288, flexShrink: 0 }}>
-              <Card sx={{ position: 'sticky', top: 96, p: 3, boxShadow: 2, border: '2px solid', borderColor: 'divider', borderRadius: 4 }}>
-                <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <TuneIcon sx={{ fontSize: 20, color: '#f97316' }} /> Filters
-                </Typography>
-                <FilterContent />
-              </Card>
-            </Box>
-
-            {/* Course Grid */}
-            <Box sx={{ flex: 1 }}>
-              <Card sx={{ mb: 4, p: 2, borderRadius: 4, boxShadow: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 2 }}>
-                      <MenuBookIcon sx={{ fontSize: 24, color: 'white' }} />
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Available Courses</Typography>
-                      <Typography variant="h5" fontWeight={700} color="primary">
-                        {isLoading ? '...' : sortedCourses.length}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  {hasActiveFilters && (
-                    <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                      {selectedCategories.map(cat => {
-                        const category = categories.find(c => c.id === cat);
-                        return (
-                          <Chip
-                            key={cat}
-                            onDelete={() => setSelectedCategories(prev => prev.filter(c => c !== cat))}
-                            deleteIcon={<CloseIcon sx={{ fontSize: 12 }} />}
-                            label={
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <span>{category.icon}</span>
-                                <span>{category.label}</span>
-                              </Box>
-                            }
-                            sx={{ bgcolor: '#2563eb', color: 'white', fontWeight: 600, '& .MuiChip-deleteIcon': { color: 'white' } }}
-                          />
-                        );
-                      })}
-                      {selectedLevels.map(lev => (
-                        <Chip
-                          key={lev}
-                          onDelete={() => setSelectedLevels(prev => prev.filter(l => l !== lev))}
-                          deleteIcon={<CloseIcon sx={{ fontSize: 12 }} />}
-                          label={levels.find(l => l.id === lev)?.label}
-                          sx={{ bgcolor: '#4f46e5', color: 'white', fontWeight: 600, '& .MuiChip-deleteIcon': { color: 'white' } }}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                </Box>
-              </Card>
-
-              {isLoading ? (
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }, gap: 3 }}>
-                  {[...Array(9)].map((_, i) => (
-                    <Card key={i} sx={{ borderRadius: 4, overflow: 'hidden' }}>
-                      <Box sx={{ aspectRatio: '16/9', bgcolor: 'action.hover' }} />
-                      <CardContent sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                        <Box sx={{ height: 16, bgcolor: 'action.hover', borderRadius: 1, width: '33%' }} />
-                        <Box sx={{ height: 20, bgcolor: 'action.hover', borderRadius: 1 }} />
-                        <Box sx={{ height: 16, bgcolor: 'action.hover', borderRadius: 1, width: '66%' }} />
-                      </CardContent>
-                    </Card>
-                  ))}
-                </Box>
-              ) : sortedCourses.length > 0 ? (
-                <Box component={motion.div} layout sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }, gap: 4 }}>
-                  <AnimatePresence>
-                    {sortedCourses.map((course, index) => (
-                      <CourseCard key={course.id} course={course} index={index} user={user} />
-                    ))}
-                  </AnimatePresence>
-                </Box>
-              ) : (
-                <Card sx={{ textAlign: 'center', py: 10, borderRadius: 6, border: '2px dashed', borderColor: 'divider', boxShadow: 2 }}>
-                  <MenuBookIcon sx={{ fontSize: 80, color: '#fdba74', mb: 3 }} />
-                  <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>No courses found</Typography>
-                  <Typography color="text.secondary" sx={{ mb: 3 }}>Try adjusting your search or filter criteria</Typography>
-                  <Button
-                    onClick={clearFilters}
-                    variant="contained"
-                    startIcon={<CloseIcon sx={{ fontSize: 16 }} />}
-                    sx={{
-                      background: 'linear-gradient(to right, #2563eb, #9333ea)',
-                      color: 'white',
-                      borderRadius: 50,
-                      px: 3,
-                      py: 1.5,
-                      fontWeight: 600,
-                      '&:hover': { background: 'linear-gradient(to right, #1d4ed8, #7e22ce)' },
-                    }}
-                  >
-                    Clear all filters
-                  </Button>
-                </Card>
-              )}
-            </Box>
-          </Box>
+          ) : (
+            <Card sx={{ textAlign: 'center', py: 8, px: 3 }}>
+              <MenuBookIcon sx={{ fontSize: 56, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>No courses match</Typography>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>Try another subject or clear your filters.</Typography>
+              <Button onClick={clearFilters} variant="contained">Clear filters</Button>
+            </Card>
+          )}
         </Container>
       </Box>
     </CoursePasswordProtection>
