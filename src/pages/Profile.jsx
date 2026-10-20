@@ -130,7 +130,7 @@ export default function Profile() {
           <Card sx={{ p: 4, mb: 4, boxShadow: 2 }}>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, gap: 3 }}>
               <Box sx={{ position: 'relative', '&:hover .avatar-overlay': { opacity: 1 } }} onClick={handleAvatarClick}>
-                <Avatar src={user?.avatar} sx={{ width: 96, height: 96, border: 4, borderColor: 'white', boxShadow: 3, bgcolor: 'linear-gradient(to bottom right, #6366f1, #8b5cf6)', fontSize: '2rem', fontWeight: 600, cursor: 'pointer' }}>
+                <Avatar src={user?.avatar} sx={{ width: 96, height: 96, border: 4, borderColor: 'white', boxShadow: 3, bgcolor: '#4f46e5', fontSize: '2rem', fontWeight: 600, cursor: 'pointer' }}>
                   {user?.full_name?.charAt(0) || 'U'}
                 </Avatar>
                 <Box className="avatar-overlay" sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.3s', cursor: 'pointer' }}>
