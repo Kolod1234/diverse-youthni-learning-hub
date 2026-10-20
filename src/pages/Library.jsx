@@ -229,7 +229,7 @@ export default function Library() {
           </Box>
           <Typography variant="h5" fontWeight={700} gutterBottom>Access Restricted</Typography>
           <Typography variant="body2" color="text.secondary">
-            The BookBase Library is only accessible to tutors and administrators. Please contact your administrator if you need access.
+            The BookBase Library is for staff lesson preparation and is only accessible to administrators. Please contact your administrator if you need access.
           </Typography>
         </Box>
       </Box>
