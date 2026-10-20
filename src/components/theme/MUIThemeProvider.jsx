@@ -12,26 +12,27 @@ export default function MUIThemeProvider({ children }) {
   const theme = useMemo(() => createTheme({
     palette: {
       mode: isDark ? 'dark' : 'light',
-      primary: {
-        main: '#003366',
-        light: '#004488',
-        dark: '#002244',
-        contrastText: '#ffffff',
-      },
+      // Redesign: one action colour (indigo) for buttons, links and selected tabs.
+      // Brand navy lives in the header; yellow is for badges only.
+      primary: isDark
+        ? { main: '#818cf8', light: '#a5b4fc', dark: '#6366f1', contrastText: '#0b0b14' }
+        : { main: '#4f46e5', light: '#6366f1', dark: '#3730a3', contrastText: '#ffffff' },
       secondary: {
-        main: '#FF8C00',
-        light: '#FFA500',
-        dark: '#CC7000',
-        contrastText: '#ffffff',
+        main: '#fbbf24',
+        light: '#fcd34d',
+        dark: '#d97706',
+        contrastText: '#1a1a1a',
       },
+      success: { main: '#16a34a', contrastText: '#ffffff' },
       background: {
-        default: isDark ? '#0d0d12' : '#f5f7fa',
+        default: isDark ? '#0d0d12' : '#f6f7fb',
         paper: isDark ? '#17171e' : '#ffffff',
       },
       text: {
         primary: isDark ? '#f5f5fa' : '#1a1a1a',
-        secondary: isDark ? '#c8c8d2' : '#666666',
+        secondary: isDark ? '#c8c8d2' : '#4b5563',
       },
+      divider: isDark ? 'rgba(255,255,255,0.12)' : '#e5e7eb',
     },
     typography: {
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -41,10 +42,10 @@ export default function MUIThemeProvider({ children }) {
       h4: { fontSize: '1.5rem', fontWeight: 600, lineHeight: 1.4 },
       h5: { fontSize: '1.25rem', fontWeight: 500, lineHeight: 1.5 },
       h6: { fontSize: '1rem', fontWeight: 500, lineHeight: 1.5 },
-      button: { textTransform: 'none', fontWeight: 600 },
+      button: { textTransform: 'none', fontWeight: 700 },
     },
     shape: {
-      borderRadius: 12,
+      borderRadius: 10,
     },
     components: {
       MuiDialog: {
@@ -62,13 +63,19 @@ export default function MUIThemeProvider({ children }) {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 12,
-            padding: '10px 24px',
+            borderRadius: 10,
+            padding: '10px 20px',
+            minHeight: 44,
             fontSize: '1rem',
             boxShadow: 'none',
             '&:hover': {
-              boxShadow: '0px 4px 12px rgba(0,0,0,0.15)',
+              boxShadow: 'none',
             },
+          },
+          sizeSmall: {
+            minHeight: 36,
+            padding: '6px 14px',
+            fontSize: '0.875rem',
           },
           sizeLarge: {
             padding: '14px 32px',
