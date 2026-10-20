@@ -104,6 +104,8 @@ const ADMIN_ONLY_PAGES = new Set([
   'AdminNotifications', 'AdminTutorMonitor', 'AdminTeachingRequests', 'AdminAppVersion',
   'AdminProjectSubmissions', 'LMSIntegrationConfig', 'EnterpriseIntegrations', 'Analytics',
   'AdminLearningObjectives', 'AdminMathSolutionAudit',
+  // Library books are for in-house lesson preparation only.
+  'Library', 'BookDetails', 'AdminLibrary', 'AdminLibraryDashboard',
 ]);
 
 // Pull-to-refresh hook (mobile only)
