@@ -388,7 +388,7 @@ function LayoutContent({ children, currentPageName }) {
               >
                 Explore
               </Button>
-              {(user?.is_tutor || user?.role === 'admin') && (
+              {user?.role === 'admin' && (
               <Button
                 component={Link}
                 to={createPageUrl('Library')}
@@ -783,7 +783,7 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Compass size={20} /></ListItemIcon>
                       <ListItemText primary="Explore" />
                     </ListItemButton>
-                    {isTutorOrAdmin && (
+                    {user?.role === 'admin' && (
                     <ListItemButton component={Link} to={createPageUrl('Library')} onClick={() => setMobileMenuOpen(false)}>
                       <ListItemIcon><BookOpen size={20} /></ListItemIcon>
                       <ListItemText primary="Library" />
@@ -927,7 +927,7 @@ function LayoutContent({ children, currentPageName }) {
             isTutorOrAdmin
               ? { label: 'My Courses', page: 'TutorDashboardOverview', icon: BookOpen, match: 'TutorDashboard' }
               : { label: 'Progress', page: 'Dashboard', icon: BarChart3, match: 'Dashboard' },
-            ...(isTutorOrAdmin ? [{ label: 'Library', page: 'Library', icon: BookOpen, match: 'Library' }] : []),
+            ...(user?.role === 'admin' ? [{ label: 'Library', page: 'Library', icon: BookOpen, match: 'Library' }] : []),
             { label: 'Profile', page: 'Profile', icon: User, match: 'Profile' },
           ].map(({ label, page, icon: Icon, match }) => {
             const isActive = location.pathname.includes(match);
@@ -1017,7 +1017,7 @@ function LayoutContent({ children, currentPageName }) {
                    </Typography>
                  </Link>
                 </ListItem>
-                {isTutorOrAdmin && (
+                {user?.role === 'admin' && (
                 <ListItem disablePadding>
                  <Link to={createPageUrl('Library')} style={{ textDecoration: 'none', color: 'inherit' }}>
                    <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>

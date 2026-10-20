@@ -20,14 +20,14 @@ export default function FreeResourcesCenter() {
   const { data: resources = [] } = useQuery({
     queryKey: ['library-resources'],
     queryFn: () => base44.entities.LibraryResource.list('-created_date', 100),
+    enabled: user?.role === 'admin',
     initialData: []
   });
 
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Only show to tutors/admins
-  const isTutorOrAdmin = user && (user.is_tutor === true || user.role === 'admin');
-  if (!isTutorOrAdmin) {
+  // Library books are for admins only (used to write lessons)
+  if (user?.role !== 'admin') {
     return null;
   }
 
