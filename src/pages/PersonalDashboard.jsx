@@ -129,7 +129,7 @@ export default function PersonalDashboard() {
           title: 'Leadership Development',
           icon: Users,
           color: '#4f46e5',
-          gradient: 'linear-gradient(135deg, #7c3aed 0%, #c026d3 100%)',
+          gradient: '#4f46e5',
           stats: [
             { label: 'My Programs', value: programs.length, icon: ClipboardList },
             { label: 'Upcoming Activities', value: activities.length, icon: Calendar },
@@ -143,7 +143,7 @@ export default function PersonalDashboard() {
           title: 'Youth Work (OCN)',
           icon: Award,
           color: '#10b981',
-          gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          gradient: '#4f46e5',
           stats: [
             { label: 'Qualifications', value: qualifications.length, icon: Award },
             { label: 'Units Completed', value: qualifications.filter(q => q.status === 'completed').length, icon: CheckCircle },
@@ -155,7 +155,7 @@ export default function PersonalDashboard() {
           title: 'GCSE & A-Level Learning',
           icon: BookOpen,
           color: '#3b82f6',
-          gradient: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
+          gradient: '#4f46e5',
           stats: [
             { label: 'Enrolled Courses', value: enrollments.length, icon: BookOpen },
             { label: 'Lessons Completed', value: userProgress?.total_lessons_completed || 0, icon: CheckCircle },

@@ -48,37 +48,37 @@ export default function YouthWorkLanding() {
       icon: Award,
       title: 'OCN Qualifications',
       description: 'Earn nationally recognized Open College Network qualifications',
-      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+      gradient: '#4f46e5'
     },
     {
       icon: BookOpen,
       title: 'Flexible Learning',
       description: 'Study at your own pace with interactive workbooks and resources',
-      gradient: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)'
+      gradient: '#4f46e5'
     },
     {
       icon: Users,
       title: 'Community Support',
       description: 'Learn alongside peers and get guidance from experienced mentors',
-      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+      gradient: '#4f46e5'
     },
     {
       icon: Briefcase,
       title: 'Career Ready',
       description: 'Develop practical skills valued by employers across industries',
-      gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
+      gradient: '#4f46e5'
     },
     {
       icon: TrendingUp,
       title: 'Track Progress',
       description: 'Monitor your learning journey with detailed progress reports',
-      gradient: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)'
+      gradient: '#4f46e5'
     },
     {
       icon: CheckCircle,
       title: 'Competency Based',
       description: 'Demonstrate real-world skills through practical assessments',
-      gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
+      gradient: '#4f46e5'
     }
   ];
 

@@ -44,37 +44,37 @@ export default function LeadershipLanding() {
     icon: Users,
     title: 'Personal Mentorship',
     description: 'Get paired with experienced mentors who guide your leadership journey',
-    gradient: 'linear-gradient(135deg, #a855f7 0%, #4f46e5 100%)'
+    gradient: '#4f46e5'
   },
   {
     icon: ClipboardList,
     title: 'Digital Logbooks',
     description: 'Track your progress with easy-to-use digital logbooks and receive feedback',
-    gradient: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)'
+    gradient: '#4f46e5'
   },
   {
     icon: Calendar,
     title: 'Weekly Activities',
     description: 'Participate in workshops, events, and team-building activities',
-    gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+    gradient: '#4f46e5'
   },
   {
     icon: Award,
     title: 'Certification',
     description: 'Earn recognized certificates upon completing programme milestones',
-    gradient: 'linear-gradient(135deg, #f97316 0%, #dc2626 100%)'
+    gradient: '#4f46e5'
   },
   {
     icon: Target,
     title: 'Goal Setting',
     description: 'Set and achieve personal and professional development goals',
-    gradient: 'linear-gradient(135deg, #ec4899 0%, #e11d48 100%)'
+    gradient: '#4f46e5'
   },
   {
     icon: TrendingUp,
     title: 'Skills Development',
     description: 'Build leadership, communication, and project management skills',
-    gradient: 'linear-gradient(135deg, #eab308 0%, #f59e0b 100%)'
+    gradient: '#4f46e5'
   }];
 
 
