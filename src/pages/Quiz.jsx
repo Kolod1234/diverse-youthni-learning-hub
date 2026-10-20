@@ -452,26 +452,27 @@ export default function Quiz() {
     : answers[currentQuestion] !== undefined;
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Link to={createPageUrl('CourseDetails') + `?id=${quiz.course_id}`}>
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </Button>
+    <div className="min-h-screen bg-background">
+      {/* Redesign (wireframe L9): navy quiz bar with exit, title, question count and progress */}
+      <div className="bg-[#0b2f5c] text-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-8 py-2 flex items-center gap-3">
+          <Link to={createPageUrl('CourseDetails') + `?id=${quiz.course_id}`} className="inline-flex items-center gap-2 min-h-11 font-medium text-white no-underline">
+            <ArrowLeft className="w-4 h-4" />
+            Exit quiz
           </Link>
+          <h1 className="flex-1 min-w-0 text-center font-bold text-base sm:text-lg truncate">{quiz.title}</h1>
           {timeLeft !== null && (
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-              timeLeft < 60 ? 'bg-red-50 dark:bg-red-500/15 text-red-600' : 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600'
-            }`}>
-              <Clock className="w-5 h-5" />
-              <span className="font-semibold">{formatTime(timeLeft)}</span>
-            </div>
+            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-sm font-semibold ${timeLeft < 60 ? 'bg-red-600' : 'bg-white/15'}`}>
+              <Clock className="w-4 h-4" />{formatTime(timeLeft)}
+            </span>
           )}
+          <span className="text-sm text-[#dbe4f0] whitespace-nowrap">Question {currentQuestion + 1} of {quiz.questions.length}</span>
         </div>
-
+        <div className="h-1.5 bg-white/15" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Quiz progress">
+          <div className="h-full bg-green-600 transition-all" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+      <div className="max-w-3xl mx-auto p-4 sm:p-8">
         <motion.div
           key={currentQuestion}
           initial={{ opacity: 0, x: 20 }}
@@ -479,17 +480,6 @@ export default function Quiz() {
           exit={{ opacity: 0, x: -20 }}
         >
           <Card className="p-8 border-0 shadow-lg mb-6">
-            {/* Quiz Header */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-foreground">{quiz.title}</h1>
-                <Badge className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-sm">
-                  {currentQuestion + 1} / {quiz.questions.length}
-                </Badge>
-              </div>
-              <Progress value={progress} className="h-2" />
-            </div>
-
             {/* Question */}
             <div className="mb-8">
               <div className="flex items-start justify-between mb-6">
