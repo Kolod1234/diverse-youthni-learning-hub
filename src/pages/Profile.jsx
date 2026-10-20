@@ -180,7 +180,7 @@ export default function Profile() {
 
         {/* Tabs */}
         <Box sx={{ mt: 4 }}>
-          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
             <Tab value="courses" icon={<BookOpen size={16} />} iconPosition="start" label="My Courses" />
             <Tab value="overview" icon={<User size={16} />} iconPosition="start" label="Overview" />
             <Tab value="achievements" icon={<Award size={16} />} iconPosition="start" label="Achievements" />

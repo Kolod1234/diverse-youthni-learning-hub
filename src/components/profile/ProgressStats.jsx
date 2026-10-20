@@ -50,7 +50,7 @@ export default function ProgressStats({ user }) {
         return (
           <Card key={stat.label} className="overflow-hidden">
             <CardContent className="p-6">
-              <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorClasses[stat.color]} flex items-center justify-center mb-3`}>
+              <div className={`w-12 h-12 rounded-lg bg-background ${colorClasses[stat.color]} flex items-center justify-center mb-3`}>
                 <Icon className="w-6 h-6 text-white" />
               </div>
               <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>

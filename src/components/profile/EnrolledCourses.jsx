@@ -38,7 +38,7 @@ export default function EnrolledCourses({ user }) {
           <CardContent className="space-y-4">
             {inProgress.map(({ course, progress_percent, completed_lessons }) => (
               <div key={course.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 transition">
-                <div className="w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0">
+                <div className="w-20 h-20 rounded-lg overflow-hidden bg-indigo-600 flex-shrink-0">
                   {course.thumbnail ? (
                     <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
                   ) : (
@@ -84,7 +84,7 @@ export default function EnrolledCourses({ user }) {
           <CardContent className="space-y-4">
             {completed.map(({ course, completed_date }) => (
               <div key={course.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 transition">
-                <div className="w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-green-500 to-emerald-600 flex-shrink-0">
+                <div className="w-20 h-20 rounded-lg overflow-hidden bg-indigo-600 flex-shrink-0">
                   {course.thumbnail ? (
                     <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
                   ) : (

@@ -96,14 +96,8 @@ export default function Achievements() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Hero Banner */}
-      <Box sx={{ position: 'relative', height: 256, mb: 4, overflow: 'hidden' }}>
-        <CardMedia
-          component="img"
-          image="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/565ae72b8_image.png"
-          alt="Diverse Youth NI Learning Hub"
-          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
-        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.5), transparent)', display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ position: 'relative', mb: 4, bgcolor: '#0b2f5c', py: { xs: 5, md: 7 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Container maxWidth="lg" sx={{ width: '100%' }}>
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white', mb: 1 }}>Your Achievements</Typography>
@@ -138,7 +132,7 @@ export default function Achievements() {
         </motion.div>
 
         {/* Success Stories Section */}
-        <SuccessStoriesCarousel />
+        {/* Success stories removed: it showed another company's case studies (placeholder content). */}
 
         {/* Milestones */}
         <Grid container spacing={2} sx={{ mb: 4 }}>

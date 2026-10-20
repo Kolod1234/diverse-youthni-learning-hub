@@ -95,7 +95,7 @@ export default function MUIThemeProvider({ children }) {
         },
       },
       MuiPaper: {
-        styleOverrides: { rounded: { borderRadius: 14 } },
+        styleOverrides: { root: { backgroundImage: 'none' }, rounded: { borderRadius: 14 } },
       },
       MuiTab: {
         styleOverrides: { root: { textTransform: 'none', fontWeight: 700, minHeight: 44 } },

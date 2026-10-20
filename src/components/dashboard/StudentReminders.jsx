@@ -74,7 +74,7 @@ export default function StudentReminders({ user }) {
     >
       <Card sx={{ p: 4, borderRadius: 4, boxShadow: 3, border: 1, borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <Box sx={{ width: 40, height: 40, background: 'linear-gradient(to bottom right, #fbbf24, #f59e0b)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 3 }}>
+          <Box sx={{ width: 40, height: 40, bgcolor: '#4f46e5', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 3 }}>
             <AlertCircle size={20} color="white" />
           </Box>
           <Typography variant="h6" fontWeight={600}>Your Reminders</Typography>
