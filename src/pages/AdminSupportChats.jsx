@@ -277,7 +277,7 @@ export default function AdminSupportChats() {
               </Box>
 
               {/* Messages */}
-              <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 1.5, bgcolor: '#f8fafc' }}>
+              <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 1.5, bgcolor: 'action.hover' }}>
                 {messages.map((msg, i) => {
                   const isUser = msg.sender_role === 'user';
                   const isBot = msg.sender_role === 'bot';

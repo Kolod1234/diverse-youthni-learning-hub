@@ -361,7 +361,7 @@ function PartnersManagement() {
           <Grid size={{ xs: 6, md: 3 }} key={logo.id}>
             <Card sx={{ opacity: logo.is_active ? 1 : 0.5 }}>
               <CardContent>
-                <Box sx={{ aspectRatio: '1/1', bgcolor: '#f3f4f6', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1, overflow: 'hidden' }}>
+                <Box sx={{ aspectRatio: '1/1', bgcolor: 'action.hover', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1, overflow: 'hidden' }}>
                   <Box component="img" src={logo.logo_url} alt={logo.name} sx={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
                 </Box>
                 <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>{logo.name}</Typography>
@@ -872,9 +872,9 @@ function CarouselManager({ carouselType = 'main', title = 'Carousel Images' }) {
       <Grid container spacing={2}>
         {carouselImages.map((img) => (
           <Grid size={{ xs: 6, md: 4 }} key={img.id}>
-            <Box sx={{ position: 'relative', borderRadius: 1, overflow: 'hidden', height: 200, bgcolor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', group: '&:hover' }}>
+            <Box sx={{ position: 'relative', borderRadius: 1, overflow: 'hidden', height: 200, bgcolor: 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'center', group: '&:hover' }}>
               <Box component="img" src={img.image_url} alt="Carousel" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <IconButton onClick={() => removeImage(img.id)} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'white' } }}>
+              <IconButton onClick={() => removeImage(img.id)} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'background.paper' } }}>
                 <Trash2 style={{ width: 18, height: 18, color: 'red' }} />
               </IconButton>
             </Box>
@@ -1256,7 +1256,7 @@ function EnrollmentsManagement({ enrollments, courses, users }) {
       <Box sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: '#f3f4f6' }}>
+            <TableRow sx={{ bgcolor: 'action.hover' }}>
               <TableCell>Student Email</TableCell>
               <TableCell>Course</TableCell>
               <TableCell>Progress</TableCell>
@@ -1401,7 +1401,7 @@ function AttendanceManagement({ attendanceRecords, users }) {
       <Box sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: '#f3f4f6' }}>
+            <TableRow sx={{ bgcolor: 'action.hover' }}>
               <TableCell>User</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Status</TableCell>

@@ -170,7 +170,7 @@ export default function AdminLibraryDashboard() {
   }, [resources, activities, timeRange]);
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', py: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'action.hover', py: 4 }}>
       <Container maxWidth="xl">
         {/* Header */}
         <Box sx={{ mb: 4 }}>

@@ -295,7 +295,7 @@ export default function AdminAttendance() {
             {/* Attendance Table */}
             <TableContainer component={Paper}>
               <Table>
-                <TableHead sx={{ bgcolor: '#f3f4f6' }}>
+                <TableHead sx={{ bgcolor: 'action.hover' }}>
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
