@@ -120,155 +120,90 @@ export default function AdminDashboard() {
     { label: 'Reviews', value: reviews.length, icon: Award, color: '#ca8a04' },
   ];
 
+  // Redesign: the 23 tools grouped like the wireframe's side menu.
+  const toolGroups = [
+    { name: 'PEOPLE', tools: [['users', 'Users'], ['tutor-requests', 'Tutor requests'], ['enrollments', 'Enrolments'], ['attendance', 'Attendance'], ['passwords', 'User passwords']] },
+    { name: 'CONTENT', tools: [['courses', 'Courses & tutors'], ['lessons', 'Lessons'], ['quizzes', 'Quizzes'], ['sessions', 'Live sessions'], ['templates', 'Templates'], ['reviews', 'Reviews'], ['certificates', 'Certificates'], ['blog', 'Blog']] },
+    { name: 'COMMUNICATION', tools: [['messages', 'Messages'], ['contact', 'Contact info']] },
+    { name: 'SITE & SYSTEM', tools: [['hero-carousel', 'Hero photos'], ['carousel', 'Community photos'], ['leadership-carousel', 'Leadership photos'], ['partners', 'Partner logos'], ['content', 'Site text'], ['about-us', 'About us'], ['page-builder', 'Page builder'], ['theme', 'Theme']] },
+  ];
+  const toolLabel = toolGroups.flatMap(g => g.tools).find(([id]) => id === selectedTab)?.[1] || '';
+  const keyStats = [
+    { label: 'Users', value: allUsers.length },
+    { label: 'Courses', value: courses.length },
+    { label: 'Lessons', value: lessons.length },
+    { label: 'Enrolments', value: enrollments.length },
+  ];
+  const attention = [
+    { n: tutorRequests.length, label: 'Tutor requests waiting for approval', tab: 'tutor-requests' },
+    { n: messages.length, label: 'Recent platform messages', tab: 'messages' },
+  ];
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-            <Box sx={{ width: 48, height: 48, background: 'linear-gradient(to bottom right, #dc2626, #ea580c)', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Shield sx={{ color: 'white' }} />
+      <Box sx={{ maxWidth: 1280, mx: 'auto', px: { xs: 2, md: 3 }, py: 3, display: 'flex', flexWrap: 'wrap', gap: 3, alignItems: 'flex-start' }}>
+        {/* Side menu (desktop) */}
+        <Card component="nav" aria-label="Admin tools" sx={{ flex: '1 1 220px', maxWidth: { md: 260 }, p: 1.5, display: { xs: 'none', md: 'block' }, position: 'sticky', top: 88 }}>
+          {toolGroups.map(group => (
+            <Box key={group.name} sx={{ mb: 1 }}>
+              <Typography sx={{ px: 1.25, pt: 1, pb: 0.5, fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', color: 'text.secondary' }}>{group.name}</Typography>
+              {group.tools.map(([id, label]) => {
+                const on = selectedTab === id;
+                return (
+                  <Button key={id} fullWidth onClick={() => setSelectedTab(id)} aria-current={on ? 'page' : undefined}
+                    sx={{ justifyContent: 'flex-start', minHeight: 40, px: 1.25, fontWeight: on ? 700 : 400,
+                      color: on ? 'primary.main' : 'text.primary', bgcolor: on ? 'rgba(79,70,229,0.10)' : 'transparent' }}>
+                    {label}
+                    {id === 'tutor-requests' && tutorRequests.length > 0 && <Chip label={tutorRequests.length} size="small" color="primary" sx={{ ml: 'auto', height: 22 }} />}
+                  </Button>
+                );
+              })}
             </Box>
-            <Box>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', m: 0 }}>Admin Dashboard</Typography>
-              <Typography variant="body2" color="textSecondary">Complete control over the platform</Typography>
-            </Box>
+          ))}
+        </Card>
+
+        <Box component="main" sx={{ flex: '999 1 560px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          <Box>
+            <Typography component="h1" sx={{ fontSize: '1.75rem', fontWeight: 700 }}>Admin dashboard</Typography>
+            <Typography color="text.secondary">Manage people, content and the site.</Typography>
           </Box>
-        </motion.div>
 
-        {/* Quick Access Widgets */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: '#fed7aa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <GraduationCap sx={{ color: '#d97706' }} />
-                    </Box>
-                    <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>New Tutor Requests</Typography>
-                      <Typography variant="caption" color="textSecondary">Pending approval</Typography>
-                    </Box>
-                  </Box>
-                  {tutorRequests.length > 0 && <Chip label={tutorRequests.length} color="warning" />}
-                </Box>
-                {tutorRequests.length > 0 ? (
-                  <Box>
-                    {tutorRequests.slice(0, 3).map((request) => (
-                      <Box key={request.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1, bgcolor: '#f3f4f6', borderRadius: 1, mb: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Avatar sx={{ width: 32, height: 32 }}>{request.user_name?.charAt(0)}</Avatar>
-                          <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>{request.user_name}</Typography>
-                            <Typography variant="caption" color="textSecondary">{request.user_email}</Typography>
-                          </Box>
-                        </Box>
-                      </Box>
-                    ))}
-                    {tutorRequests.length > 3 && <Typography variant="caption" color="textSecondary">+{tutorRequests.length - 3} more</Typography>}
-                    <Button fullWidth size="small" onClick={() => setSelectedTab('tutor-requests')} sx={{ mt: 1 }}>View All →</Button>
-                  </Box>
-                ) : (
-                  <Box sx={{ textAlign: 'center', py: 2 }}>
-                    <GraduationCap sx={{ color: '#d1d5db', mb: 1 }} />
-                    <Typography variant="caption" color="textSecondary">No pending requests</Typography>
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' }, gap: 2 }}>
+            {keyStats.map(s => (
+              <Card key={s.label} sx={{ p: 2.25 }}>
+                <Typography color="text.secondary" variant="body2">{s.label}</Typography>
+                <Typography sx={{ fontSize: '1.75rem', fontWeight: 700 }}>{s.value}</Typography>
+              </Card>
+            ))}
+          </Box>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <MessageSquare sx={{ color: '#2563eb' }} />
-                    </Box>
-                    <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>Recent Messages</Typography>
-                      <Typography variant="caption" color="textSecondary">Platform activity</Typography>
-                    </Box>
-                  </Box>
-                  <Chip label={messages.length} variant="outlined" />
-                </Box>
-                {messages.length > 0 ? (
-                  <Box>
-                    {messages.slice(0, 3).map((msg) => (
-                      <Box key={msg.id} sx={{ p: 1, bgcolor: '#f3f4f6', borderRadius: 1, mb: 1 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                          <Typography variant="body2" sx={{ fontWeight: 500 }}>{msg.sender_name}</Typography>
-                          <Typography variant="caption" color="textSecondary">{new Date(msg.created_date).toLocaleDateString()}</Typography>
-                        </Box>
-                        <Typography variant="caption" color="textSecondary" sx={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{msg.content}</Typography>
-                      </Box>
-                    ))}
-                    <Button fullWidth size="small" onClick={() => setSelectedTab('messages')} sx={{ mt: 1 }}>View All →</Button>
-                  </Box>
-                ) : (
-                  <Box sx={{ textAlign: 'center', py: 2 }}>
-                    <MessageSquare sx={{ color: '#d1d5db', mb: 1 }} />
-                    <Typography variant="caption" color="textSecondary">No recent messages</Typography>
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+          <Card sx={{ p: 2.5 }}>
+            <Typography component="h2" sx={{ fontSize: '1.125rem', fontWeight: 700, mb: 1 }}>Needs your attention</Typography>
+            {attention.map(a => (
+              <Box key={a.tab} sx={{ minHeight: 52, display: 'flex', alignItems: 'center', gap: 1.5, borderTop: 1, borderColor: 'divider' }}>
+                <Box sx={{ minWidth: 32, height: 32, px: 1, borderRadius: 999, bgcolor: a.n ? 'rgba(79,70,229,0.12)' : 'action.hover', color: a.n ? 'primary.main' : 'text.secondary', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{a.n}</Box>
+                <Typography sx={{ flexGrow: 1 }}>{a.label}</Typography>
+                <Button size="small" onClick={() => setSelectedTab(a.tab)}>Review</Button>
+              </Box>
+            ))}
+          </Card>
 
-        {/* Stats Overview */}
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          {stats.map((stat, idx) => {
-            const Icon = stat.icon;
-            return (
-              <Grid size={{ xs: 6, md: 3 }} key={stat.label}>
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
-                  <Card>
-                    <CardContent>
-                      <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: stat.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
-                        <Icon style={{ color: stat.color, width: 20, height: 20 }} />
-                      </Box>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{stat.value}</Typography>
-                      <Typography variant="caption" color="textSecondary">{stat.label}</Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-            );
-          })}
-        </Grid>
+          {/* Tool picker (phones) */}
+          <FormControl fullWidth sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <InputLabel id="admin-tool-label">Admin tool</InputLabel>
+            <Select labelId="admin-tool-label" label="Admin tool" value={selectedTab} onChange={(e) => setSelectedTab(e.target.value)} sx={{ bgcolor: 'background.paper' }}>
+              {toolGroups.flatMap(g => [
+                <MenuItem key={g.name} disabled sx={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', opacity: '1 !important' }}>{g.name}</MenuItem>,
+                ...g.tools.map(([id, label]) => <MenuItem key={id} value={id} sx={{ pl: 3 }}>{label}</MenuItem>),
+              ])}
+            </Select>
+          </FormControl>
 
-        {/* Main Tabs */}
-        <Paper>
-          <Tabs value={selectedTab} onChange={(e, value) => setSelectedTab(value)} variant="scrollable" scrollButtons="auto">
-            <Tab label="Users" value="users" />
-            <Tab label="Tutor Requests" value="tutor-requests" icon={tutorRequests.length > 0 ? <Badge badgeContent={tutorRequests.length} color="error"><GraduationCap /></Badge> : undefined} iconPosition="start" />
-            <Tab label="Courses & Tutors" value="courses" />
-            <Tab label="Reviews" value="reviews" />
-            <Tab label="Messages" value="messages" />
-            <Tab label="Main Carousel" value="carousel" />
-            <Tab label="Leadership Carousel" value="leadership-carousel" />
-            <Tab label="Hero Carousel" value="hero-carousel" />
-            <Tab label="Certificates" value="certificates" />
-            <Tab label="Theme" value="theme" />
-            <Tab label="Blog" value="blog" />
-            <Tab label="Lessons" value="lessons" />
-            <Tab label="Quizzes" value="quizzes" />
-            <Tab label="Sessions" value="sessions" />
-            <Tab label="Enrollments" value="enrollments" />
-            <Tab label="Templates" value="templates" />
-            <Tab label="User Passwords" value="passwords" />
-            <Tab label="Partners" value="partners" />
-            <Tab label="Attendance" value="attendance" />
-            <Tab label="Contact Info" value="contact" />
-            <Tab label="Site Content" value="content" />
-            <Tab label="Page Builder" value="page-builder" />
-            <Tab label="About Us" value="about-us" />
-          </Tabs>
-
-          <Box sx={{ p: 3 }}>
+          <Card sx={{ overflow: 'hidden' }}>
+            <Box sx={{ px: 3, py: 2, borderBottom: 1, borderColor: 'divider' }}>
+              <Typography component="h2" sx={{ fontSize: '1.125rem', fontWeight: 700 }}>{toolLabel}</Typography>
+            </Box>
+            <Box sx={{ p: { xs: 2, md: 3 } }}>
             {selectedTab === 'users' && <UsersManagement users={allUsers} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}
             {selectedTab === 'tutor-requests' && <TutorRequestsManagement />}
             {selectedTab === 'courses' && <CoursesManagement courses={courses} users={allUsers} />}
@@ -302,9 +237,10 @@ export default function AdminDashboard() {
               </Card>
             )}
             {selectedTab === 'about-us' && <AboutUsManagement siteContent={siteContent} />}
-          </Box>
-        </Paper>
-      </Container>
+            </Box>
+          </Card>
+        </Box>
+      </Box>
     </Box>
   );
 }
