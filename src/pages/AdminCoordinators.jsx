@@ -247,7 +247,7 @@ export default function AdminCoordinators() {
             </Stack>
             <Stack spacing={1.5} sx={{ maxHeight: 600, overflowY: 'auto' }}>
               {participants.map(participant => (
-                <Card key={participant.email} sx={{ p: 2 }}>
+                <Card key={participant.email} sx={{ p: 2, flexShrink: 0 }}>
                   <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 1.5 }}>
                     <Avatar src={participant.avatar} sx={{ bgcolor: '#e0e7ff', color: '#4338ca', width: 40, height: 40 }}>
                       {participant.full_name?.charAt(0) || 'U'}
