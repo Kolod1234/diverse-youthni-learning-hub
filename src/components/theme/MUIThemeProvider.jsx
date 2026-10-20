@@ -4,8 +4,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useTheme } from 'next-themes';
 
 export default function MUIThemeProvider({ children }) {
-  const { theme: currentTheme } = useTheme();
-  const isDark = currentTheme === 'dark';
+  // resolvedTheme turns "system" into the actual light/dark choice, so MUI
+  // matches the Tailwind side (which follows the device setting).
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
 
   const theme = useMemo(() => createTheme({
     palette: {
