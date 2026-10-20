@@ -9,7 +9,12 @@ import { createPageUrl } from '@/utils';
 
 // Redesign hero: navy band, text on the left, the site's real hero photos on the right.
 // Text comes from the same SiteContent keys the old hero used, so admins can still edit it.
-export default function RedesignHero({ images = [], user }) {
+// Photos with captions printed on them (e.g. "Coding classes") clash with the hero text.
+// Add a file-name fragment here to keep a photo out of the hero.
+const PHOTOS_WITH_WORDS = ['98873a707_'];
+
+export default function RedesignHero({ images: allImages = [], user }) {
+  const images = allImages.filter(img => !PHOTOS_WITH_WORDS.some(id => img.image_url?.includes(id)));
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
   const [current, setCurrent] = useState(0);
 
