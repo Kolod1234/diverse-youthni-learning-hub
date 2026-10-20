@@ -36,13 +36,6 @@ export default function ProgressStats({ user }) {
     { label: 'Day Streak', value: streakDays, icon: Flame, color: 'orange' },
   ];
 
-  const colorClasses = {
-    blue: 'from-blue-500 to-blue-600',
-    green: 'from-green-500 to-green-600',
-    purple: 'from-purple-500 to-purple-600',
-    orange: 'from-orange-500 to-orange-600',
-  };
-
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat) => {
@@ -50,11 +43,11 @@ export default function ProgressStats({ user }) {
         return (
           <Card key={stat.label} className="overflow-hidden">
             <CardContent className="p-6">
-              <div className={`w-12 h-12 rounded-lg bg-background ${colorClasses[stat.color]} flex items-center justify-center mb-3`}>
+              <div className="w-12 h-12 rounded-lg bg-indigo-600 flex items-center justify-center mb-3">
                 <Icon className="w-6 h-6 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
-              <div className="text-sm text-gray-500">{stat.label}</div>
+              <div className="text-3xl font-bold text-foreground mb-1">{stat.value}</div>
+              <div className="text-sm text-muted-foreground">{stat.label}</div>
             </CardContent>
           </Card>
         );
