@@ -3,7 +3,8 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { ThemeProvider, createTheme, useTheme as useMuiTheme } from '@mui/material/styles';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -151,6 +152,19 @@ function LayoutContent({ children, currentPageName }) {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
+  // Redesign: the header is a navy band. It gets its own sub-theme so every nav item,
+  // icon and dropdown inside it switches to light text without editing each one.
+  const outerTheme = useMuiTheme();
+  const headerTheme = useMemo(() => createTheme(outerTheme, {
+    palette: {
+      mode: 'dark',
+      primary: { main: '#fbbf24', contrastText: '#1a1a1a' },
+      text: { primary: '#ffffff', secondary: 'rgba(255,255,255,0.85)' },
+      background: { paper: '#123a6b', default: '#0b2f5c' },
+      action: { hover: 'rgba(255,255,255,0.10)', active: '#ffffff' },
+      divider: 'rgba(255,255,255,0.15)',
+    },
+  }), [outerTheme]);
   const navigate = useNavigate();
   // Persist scroll positions per tab path
   const tabScrollPositions = useRef({});
@@ -331,13 +345,14 @@ function LayoutContent({ children, currentPageName }) {
       {/* In-app APK update banner (mobile users) */}
       <AppUpdateBanner />
       {/* Header */}
+      <ThemeProvider theme={headerTheme}>
       <AppBar 
         position="sticky" 
         elevation={scrolled ? 2 : 0}
         role="banner"
         sx={{ 
-          bgcolor: scrolled ? 'background.paper' : 'background.paper/80',
-          backdropFilter: 'blur(10px)',
+          bgcolor: '#0b2f5c',
+          backgroundImage: 'none',
           borderBottom: 1,
           borderColor: 'divider',
           color: 'text.primary',
@@ -355,7 +370,7 @@ function LayoutContent({ children, currentPageName }) {
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
                   alt="Diverse Youth NI"
-                  style={{ height: '56px', width: '56px', objectFit: 'contain', borderRadius: '50%', overflow: 'hidden' }}
+                  style={{ height: '52px', width: '52px', objectFit: 'contain', borderRadius: '50%', overflow: 'hidden', background: '#ffffff', padding: '2px' }}
                 />
               </Link>
             ) : (
@@ -858,6 +873,7 @@ function LayoutContent({ children, currentPageName }) {
           </Toolbar>
         </Container>
       </AppBar>
+      </ThemeProvider>
 
       {/* Main Content with Route Transitions + Pull-to-Refresh */}
       <Box
@@ -946,7 +962,7 @@ function LayoutContent({ children, currentPageName }) {
                 }}
                 style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
               >
-                <Icon size={24} color={isActive ? '#003366' : '#999'} />
+                <Icon size={24} color={isActive ? '#4f46e5' : '#6b7280'} />
                 <Typography variant="caption" sx={{ color: isActive ? 'primary.main' : 'text.secondary', fontWeight: isActive ? 600 : 400, fontSize: '0.7rem' }}>
                   {label}
                 </Typography>
