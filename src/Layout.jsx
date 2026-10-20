@@ -211,6 +211,17 @@ function LayoutContent({ children, currentPageName }) {
     }
   }, [user, currentPageName]);
 
+  // Redesign sitemap merges: duplicate pages send visitors to the page that replaces them.
+  // (TutorDashboard is not here: it still has views of its own.)
+  useEffect(() => {
+    const MERGED_INTO = {
+      HomeGuest: 'Home', HomeLearning: 'Home', HomeLeadership: 'LeadershipLanding', HomeYouthWork: 'YouthWorkLanding',
+      PersonalDashboard: 'Dashboard', SocialHub: 'Community', CollaborationHub: 'Community',
+    };
+    const target = MERGED_INTO[currentPageName];
+    if (target) navigate(createPageUrl(target) + location.search, { replace: true });
+  }, [currentPageName]);
+
   // Keep non-admins out of admin-only pages.
   useEffect(() => {
     if (!user) return;
