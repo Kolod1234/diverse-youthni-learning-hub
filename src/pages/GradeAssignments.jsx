@@ -20,8 +20,8 @@ import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAcces
 // ── Shared error / empty page (always reaches a terminal state) ────────────
 function ErrorState({ title, message }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center px-4">
-      <Card className="max-w-md w-full p-8 text-center bg-white">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <Card className="max-w-md w-full p-8 text-center bg-card">
         <div className="w-14 h-14 rounded-full bg-amber-50 mx-auto mb-4 flex items-center justify-center">
           <AlertCircle className="w-7 h-7" color="#d97706" />
         </div>
@@ -262,7 +262,7 @@ export default function GradeAssignments() {
   }
   if (accessState !== 'granted') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-gray-500">Loading…</p>
       </div>
     );
@@ -275,7 +275,7 @@ export default function GradeAssignments() {
     : `All submissions · ${courseFromParam?.title || ''}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to={createPageUrl('TutorDashboard')} className="inline-flex items-center text-indigo-600 mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -289,7 +289,7 @@ export default function GradeAssignments() {
           <p className="text-gray-500">{heading}</p>
         </div>
 
-        <Card className="p-6 bg-white text-slate-900">
+        <Card className="p-6 bg-card text-slate-900">
           <h2 className="text-xl font-semibold mb-6 text-slate-900">Student Submissions</h2>
 
           <div className="space-y-4">
@@ -311,12 +311,12 @@ export default function GradeAssignments() {
                     </Badge>
                   </div>
 
-                  <div className="bg-white rounded-lg p-4 mb-3">
+                  <div className="bg-card rounded-lg p-4 mb-3">
                     <p className="text-gray-700 whitespace-pre-wrap">{submission.content}</p>
                   </div>
 
                   {gradingSubmission?.id === submission.id ? (
-                    <div className="bg-white rounded-lg p-4 space-y-3">
+                    <div className="bg-card rounded-lg p-4 space-y-3">
                       <div>
                         <Label>Grade (out of {maxPoints ?? '?'})</Label>
                         <Input

@@ -220,7 +220,7 @@ export default function ScheduleSession() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to={createPageUrl('TutorDashboard')}>
           <Button variant="ghost" className="mb-4">
@@ -231,7 +231,7 @@ export default function ScheduleSession() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
               <Video className="w-6 h-6 text-white" />
             </div>
             Schedule Live Session
@@ -361,7 +361,7 @@ export default function ScheduleSession() {
             <div className="border-t pt-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Repeat className="w-5 h-5 text-purple-600" />
+                  <Repeat className="w-5 h-5 text-indigo-600" />
                   <Label htmlFor="recurring">Recurring Session</Label>
                 </div>
                 <Switch
@@ -372,7 +372,7 @@ export default function ScheduleSession() {
               </div>
 
               {formData.is_recurring && (
-                <div className="ml-7 space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="ml-7 space-y-4 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="pattern">Repeat</Label>
@@ -446,7 +446,7 @@ export default function ScheduleSession() {
                   {students.map((student) => (
                     <div
                       key={student.email}
-                      className="flex items-center gap-3 p-3 bg-white rounded-lg border hover:border-indigo-300 transition-all"
+                      className="flex items-center gap-3 p-3 bg-card rounded-lg border hover:border-indigo-300 transition-all"
                     >
                       <Checkbox
                         id={`student-${student.email}`}
@@ -475,7 +475,7 @@ export default function ScheduleSession() {
               <Button
                 type="submit"
                 disabled={createSessionMutation.isPending}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                className="bg-indigo-600 hover:bg-indigo-700"
               >
                 {createSessionMutation.isPending ? (
                   'Scheduling...'

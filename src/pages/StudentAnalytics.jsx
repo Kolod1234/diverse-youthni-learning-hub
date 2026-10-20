@@ -76,7 +76,7 @@ export default function StudentAnalytics() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to={createPageUrl('TutorDashboard')} className="inline-flex items-center text-indigo-600 mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -92,7 +92,7 @@ export default function StudentAnalytics() {
           {[
             { label: 'Progress', value: `${enrollment?.progress_percent || 0}%`, icon: TrendingUp, color: 'bg-blue-50', iconColor: 'text-blue-600' },
             { label: 'Completed Lessons', value: enrollment?.completed_lessons?.length || 0, icon: CheckCircle, color: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-            { label: 'Avg Quiz Score', value: `${avgQuizScore}%`, icon: Award, color: 'bg-purple-50', iconColor: 'text-purple-600' },
+            { label: 'Avg Quiz Score', value: `${avgQuizScore}%`, icon: Award, color: 'bg-indigo-50', iconColor: 'text-indigo-600' },
             { label: 'Assignments Done', value: submissions.length, icon: Clock, color: 'bg-orange-50', iconColor: 'text-orange-600' },
           ].map((stat) => {
             const Icon = stat.icon;

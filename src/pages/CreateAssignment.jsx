@@ -83,7 +83,7 @@ export default function CreateAssignment() {
   if (!accessChecked) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to={createPageUrl('TutorDashboard')} className="inline-flex items-center text-indigo-600 mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />

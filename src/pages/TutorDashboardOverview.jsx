@@ -139,7 +139,7 @@ export default function TutorDashboardOverview() {
   ];
 
   const quickActions = [
-    { label: 'Schedule Session', icon: Video, href: createPageUrl('ScheduleSession'), color: 'bg-purple-600 hover:bg-purple-700 text-white' },
+    { label: 'Schedule Session', icon: Video, href: createPageUrl('ScheduleSession'), color: 'bg-indigo-600 hover:bg-indigo-700 text-white' },
     { label: 'Manage Bookings', icon: Calendar, href: createPageUrl('TutorBookingManager'), color: 'bg-emerald-600 hover:bg-emerald-700 text-white' },
     { label: 'Lesson Editor', icon: FileText, href: createPageUrl('LessonEditor'), color: 'bg-amber-600 hover:bg-amber-700 text-white' },
     { label: 'Quiz Generator', icon: Zap, href: createPageUrl('QuizGenerator'), color: 'bg-pink-600 hover:bg-pink-700 text-white' },
@@ -150,7 +150,7 @@ export default function TutorDashboardOverview() {
     <div className="min-h-screen bg-gray-50">
       <TutorSafeguardingReminder />
       {/* Hero Header */}
-      <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 text-white">
+      <div className="bg-[#0b2f5c] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -166,7 +166,7 @@ export default function TutorDashboardOverview() {
               </div>
               <div className="flex gap-3 flex-wrap">
                 <Link to={createPageUrl('TutorDashboard')}>
-                  <Button className="bg-white text-slate-900 hover:bg-slate-100 font-semibold">
+                  <Button className="bg-card text-slate-900 hover:bg-slate-100 font-semibold">
                     <BookOpen className="w-4 h-4 mr-2" />
                     Course Dashboard
                   </Button>
@@ -192,7 +192,7 @@ export default function TutorDashboardOverview() {
                     transition={{ delay: i * 0.07 }}
                     className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5"
                   >
-                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} mb-3`}>
+                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-background ${stat.color} mb-3`}>
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <p className="text-3xl font-bold text-white">{stat.value}</p>
@@ -216,7 +216,7 @@ export default function TutorDashboardOverview() {
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-5 text-white flex items-center justify-between"
+                className="bg-indigo-600 rounded-2xl p-5 text-white flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -228,7 +228,7 @@ export default function TutorDashboardOverview() {
                   </div>
                 </div>
                 <Link to={createPageUrl('TutorSessionsDashboard')}>
-                  <Button className="bg-white text-emerald-700 hover:bg-emerald-50 font-semibold" size="sm">View</Button>
+                  <Button className="bg-card text-emerald-700 hover:bg-emerald-50 font-semibold" size="sm">View</Button>
                 </Link>
               </motion.div>
             )}
@@ -252,7 +252,7 @@ export default function TutorDashboardOverview() {
             )}
 
             {/* My Assigned Courses */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">My Assigned Courses</h2>
@@ -291,7 +291,7 @@ export default function TutorDashboardOverview() {
                         transition={{ delay: i * 0.05 }}
                         className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors"
                       >
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
                           {course.thumbnail
                             ? <img src={course.thumbnail} alt="" className="w-full h-full object-cover" />
                             : <BookMarked className="w-6 h-6 text-blue-500" />}
@@ -332,7 +332,7 @@ export default function TutorDashboardOverview() {
             </div>
 
             {/* Students Enrolled in My Courses */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">My Students</h2>
@@ -360,9 +360,9 @@ export default function TutorDashboardOverview() {
                       <p className="text-2xl font-bold text-green-700">{completedCount}</p>
                       <p className="text-xs text-green-600 mt-1">Completed</p>
                     </div>
-                    <div className="bg-purple-50 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-purple-700">{avgCompletion}%</p>
-                      <p className="text-xs text-purple-600 mt-1">Avg Progress</p>
+                    <div className="bg-indigo-50 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-indigo-700">{avgCompletion}%</p>
+                      <p className="text-xs text-indigo-600 mt-1">Avg Progress</p>
                     </div>
                   </div>
                 </div>
@@ -370,7 +370,7 @@ export default function TutorDashboardOverview() {
             </div>
 
             {/* Upcoming Sessions */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">Upcoming Sessions</h2>
@@ -378,7 +378,7 @@ export default function TutorDashboardOverview() {
                 </div>
                 <div className="flex gap-2">
                   <Link to={createPageUrl('ScheduleSession')}>
-                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white gap-1">
+                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white gap-1">
                       <Plus className="w-3.5 h-3.5" /> Schedule
                     </Button>
                   </Link>
@@ -400,8 +400,8 @@ export default function TutorDashboardOverview() {
                     const course = myCourses.find(c => c.id === session.course_id);
                     return (
                       <div key={session.id} className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50">
-                        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                          <Video className="w-5 h-5 text-purple-600" />
+                        <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Video className="w-5 h-5 text-indigo-600" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-900 truncate">{session.title}</p>
@@ -412,7 +412,7 @@ export default function TutorDashboardOverview() {
                           </p>
                         </div>
                         <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}>
-                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">Start</Button>
+                          <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">Start</Button>
                         </Link>
                       </div>
                     );
@@ -426,7 +426,7 @@ export default function TutorDashboardOverview() {
           <div className="space-y-6">
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm p-6">
               <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Zap className="w-4 h-4 text-amber-500" />
                 Quick Actions
@@ -457,7 +457,7 @@ export default function TutorDashboardOverview() {
             <TutorGoogleConnect />
 
             {/* Performance Card */}
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white">
+            <div className="bg-indigo-600 rounded-2xl p-6 text-white">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
                   <Award className="w-5 h-5" />
@@ -473,7 +473,7 @@ export default function TutorDashboardOverview() {
                   <span className="font-bold text-xl">{avgCompletion}%</span>
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-2">
-                  <div className="bg-white h-2 rounded-full transition-all" style={{ width: `${avgCompletion}%` }} />
+                  <div className="bg-card h-2 rounded-full transition-all" style={{ width: `${avgCompletion}%` }} />
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-indigo-200">Completed</span>
@@ -483,7 +483,7 @@ export default function TutorDashboardOverview() {
             </div>
 
             {/* Messages Preview */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                   <MessageSquare className="w-4 h-4 text-blue-500" />
@@ -518,7 +518,7 @@ export default function TutorDashboardOverview() {
             </div>
 
             {/* Tutor Tools */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm p-5">
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <Star className="w-4 h-4 text-amber-400" />
                 Tutor Tools

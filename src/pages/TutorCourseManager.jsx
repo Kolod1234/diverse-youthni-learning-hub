@@ -276,7 +276,7 @@ export default function TutorCourseManager() {
 
   if (course && !isAllowedToEditCourse) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <X className="w-8 h-8 text-red-600" />
@@ -295,7 +295,7 @@ export default function TutorCourseManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to={createPageUrl('TutorDashboard')} className="inline-flex items-center text-indigo-600 mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -316,7 +316,7 @@ export default function TutorCourseManager() {
           <div className="flex flex-wrap justify-center gap-2">
             <Button 
               onClick={() => setShowAIGenerator(true)} 
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              className="bg-indigo-600 hover:bg-indigo-700"
             >
               <Brain className="w-4 h-4 mr-2" />
               AI Generator
@@ -340,7 +340,7 @@ export default function TutorCourseManager() {
         </div>
 
         {/* Import from Google Slides */}
-        <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="p-4 mb-6 bg-indigo-50 dark:bg-indigo-500/10 border-blue-200">
           <div className="flex flex-col items-center gap-2 mb-3 text-center">
             <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
               <Download className="w-5 h-5 text-white" />
@@ -612,7 +612,7 @@ export default function TutorCourseManager() {
                                           variant="outline" 
                                           size="sm" 
                                           onClick={() => setAnalyzingLesson(lesson)}
-                                          className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+                                          className="bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100"
                                         >
                                           <Brain className="w-4 h-4" />
                                         </Button>
@@ -847,14 +847,14 @@ function DocumentUploadSection({ formData, setFormData, uploading, setUploading 
       )}
 
       {formData.slides && formData.slides.length > 0 && formData.slides[0]?.page_number && (
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <FileSliders className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+              <FileSliders className="w-5 h-5 text-indigo-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-purple-900">PDF converted to {formData.slides.length} slides!</p>
-              <p className="text-xs text-purple-700">Each page is now a navigable slide</p>
+              <p className="text-sm font-medium text-indigo-900">PDF converted to {formData.slides.length} slides!</p>
+              <p className="text-xs text-indigo-700">Each page is now a navigable slide</p>
             </div>
           </div>
         </div>
@@ -898,7 +898,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
   return (
     <div className="grid gap-6">
       {/* Basic Info */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-gray-200 p-4">
         <h3 className="font-semibold text-gray-900 mb-4">Basic Information</h3>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
@@ -932,7 +932,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Rich Text Description */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-gray-200 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Lesson Content</h3>
           <ContentInsertMenu 
@@ -954,7 +954,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Video Upload */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-gray-200 p-4">
         <h3 className="font-semibold text-gray-900 mb-4">Video Content</h3>
         <div className="space-y-3">
           <div>
@@ -1018,7 +1018,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Written Lesson Content (Slides) */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-gray-200 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Written Lesson Content (Slides)</h3>
           <div className="flex items-center gap-2">
@@ -1092,7 +1092,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Supplementary Materials */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-gray-200 p-4">
         <h3 className="font-semibold text-gray-900 mb-4">Supplementary Materials</h3>
         <FileUploadManager
           resources={formData.resources || []}
@@ -1104,7 +1104,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Learning Objectives */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-gray-200 p-4">
         <h3 className="font-semibold text-gray-900 mb-4">Learning Objectives (CCEA)</h3>
         <p className="text-sm text-gray-600 mb-3">What will students learn in this lesson?</p>
 

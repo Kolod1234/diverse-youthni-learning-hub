@@ -127,7 +127,7 @@ export default function TutorDashboard() {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden relative">
+    <div className="flex h-screen bg-card overflow-hidden relative">
       {showGlobalSearch && <GlobalSearch onClose={() => setShowGlobalSearch(false)} />}
 
       {isMobile && sidebarOpen && (
@@ -139,7 +139,7 @@ export default function TutorDashboard() {
         />
       )}
 
-      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-64 transition-transform duration-300 bg-white border-r border-gray-200 flex flex-col overflow-hidden md:translate-x-0 md:relative absolute z-20 h-full`}>
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-64 transition-transform duration-300 bg-card border-r border-gray-200 flex flex-col overflow-hidden md:translate-x-0 md:relative absolute z-20 h-full`}>
         <div className="p-4 border-b border-gray-200">
           <div className="mb-3 flex items-center justify-between md:hidden">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Course menu</p>
@@ -221,7 +221,7 @@ export default function TutorDashboard() {
             <button className="hover:bg-gray-700 p-2 rounded">
               <Bell className="w-5 h-5" />
             </button>
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
               {user?.full_name?.charAt(0) || 'T'}
             </div>
           </div>
@@ -444,7 +444,7 @@ function ModulesView({ courses, user }) {
       </div>
 
       {showCreateCourse && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+        <div className="bg-card border border-gray-200 rounded-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Create New Course</h3>
             <Button variant="ghost" size="icon" onClick={() => setShowCreateCourse(false)}>
@@ -492,7 +492,7 @@ function ModulesView({ courses, user }) {
       )}
 
       {showCreateLesson && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+        <div className="bg-card border border-gray-200 rounded-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Create New Lesson</h3>
             <Button variant="ghost" size="icon" onClick={() => setShowCreateLesson(false)}><X className="w-4 h-4" /></Button>
@@ -551,14 +551,14 @@ function ModulesView({ courses, user }) {
 
       {courses.length === 0 ? (
         user?.role === 'admin' ? (
-          <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
+          <div className="text-center py-16 bg-card border border-gray-200 rounded-lg">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">No courses yet</h3>
             <p className="text-gray-500 mb-6">Create your first course to get started</p>
             <Button onClick={() => setShowCreateCourse(true)}><Plus className="w-4 h-4 mr-2" />Create First Course</Button>
           </div>
         ) : (
-          <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
+          <div className="text-center py-16 bg-card border border-gray-200 rounded-lg">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">0 assigned courses</h3>
             <p className="text-gray-500 mb-2 max-w-md mx-auto">
@@ -582,8 +582,8 @@ function ModulesView({ courses, user }) {
             const isExpanded = expandedCourseId === course.id;
 
             return (
-              <div key={course.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+              <div key={course.id} className="bg-card border border-gray-200 rounded-lg overflow-hidden">
+                <div className="bg-indigo-50 dark:bg-indigo-500/10 px-6 py-4 border-b border-gray-200">
                   {editingCourse?.id === course.id ? (
                     <div className="space-y-4">
                       <input type="text" value={courseForm.title || ''} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} className="w-full px-3 py-2 border rounded-lg" />
@@ -675,7 +675,7 @@ function ModulesView({ courses, user }) {
                                                               {lesson.video_url && <><span className="text-gray-300">•</span><span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Video</span></>}
                                                               {lesson.google_slides_url && <><span className="text-gray-300">•</span><span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">Google Slides</span></>}
                                                               {lesson.file_url && <><span className="text-gray-300">•</span><span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{lesson.file_type?.toUpperCase() || 'Doc'}</span></>}
-                                                              {lesson.slides && lesson.slides.length > 0 && <><span className="text-gray-300">•</span><span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">{lesson.slides.length} Slides</span></>}
+                                                              {lesson.slides && lesson.slides.length > 0 && <><span className="text-gray-300">•</span><span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">{lesson.slides.length} Slides</span></>}
                                                               {lesson.learning_objectives && lesson.learning_objectives.length > 0 && <><span className="text-gray-300">•</span><span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">{lesson.learning_objectives.length} Objectives</span></>}
                                                             </div>
                                                           </div>
@@ -694,7 +694,7 @@ function ModulesView({ courses, user }) {
                                                             {lesson.google_slides_url && <div><span className="font-semibold text-gray-700">Google Slides:</span><a href={lesson.google_slides_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1 truncate">{lesson.google_slides_url}</a></div>}
                                                             {lesson.file_url && <div><span className="font-semibold text-gray-700">Uploaded Document:</span><a href={lesson.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1">{lesson.file_type?.toUpperCase() || 'Document'} File</a></div>}
                                                             {lesson.learning_objectives && lesson.learning_objectives.length > 0 && <div><span className="font-semibold text-gray-700">Learning Objectives:</span><ul className="list-disc list-inside mt-1 space-y-1 text-gray-600">{lesson.learning_objectives.map((obj, idx) => <li key={idx}>{obj}</li>)}</ul></div>}
-                                                            {lesson.slides && lesson.slides.length > 0 && <div><span className="font-semibold text-gray-700">Custom Slides ({lesson.slides.length}):</span><div className="mt-2 space-y-2 max-h-48 overflow-y-auto">{lesson.slides.slice(0, 5).map((slide, idx) => <div key={idx} className="bg-white border border-gray-200 rounded p-2"><div className="font-medium text-gray-800 text-xs">Slide {slide.order || idx + 1}: {slide.title}</div><div className="text-xs text-gray-500 line-clamp-1 mt-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }} /></div>)}{lesson.slides.length > 5 && <p className="text-xs text-gray-500 italic">+ {lesson.slides.length - 5} more slides</p>}</div></div>}
+                                                            {lesson.slides && lesson.slides.length > 0 && <div><span className="font-semibold text-gray-700">Custom Slides ({lesson.slides.length}):</span><div className="mt-2 space-y-2 max-h-48 overflow-y-auto">{lesson.slides.slice(0, 5).map((slide, idx) => <div key={idx} className="bg-card border border-gray-200 rounded p-2"><div className="font-medium text-gray-800 text-xs">Slide {slide.order || idx + 1}: {slide.title}</div><div className="text-xs text-gray-500 line-clamp-1 mt-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }} /></div>)}{lesson.slides.length > 5 && <p className="text-xs text-gray-500 italic">+ {lesson.slides.length - 5} more slides</p>}</div></div>}
                                                             {lesson.resources && lesson.resources.length > 0 && <div><span className="font-semibold text-gray-700">Resources:</span><ul className="mt-1 space-y-1">{lesson.resources.map((res, idx) => <li key={idx}><a href={res.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs">{res.name}</a></li>)}</ul></div>}
                                                             <div className="pt-2 border-t border-gray-200 mt-3"><Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}><Button variant="outline" size="sm" className="w-full"><Edit className="w-3 h-3 mr-2" />Edit All Lesson Content</Button></Link></div>
                                                           </div>
@@ -757,11 +757,11 @@ function HomeView({ courses, user }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-blue-50 border border-blue-100 rounded-xl p-5"><div className="text-3xl font-bold text-blue-600">{courses.length}</div><div className="text-sm text-blue-700 mt-1">Assigned Courses</div></div>
         <div className="bg-green-50 border border-green-100 rounded-xl p-5"><div className="text-3xl font-bold text-green-600">{totalStudents}</div><div className="text-sm text-green-700 mt-1">My Students</div></div>
-        <div className="bg-purple-50 border border-purple-100 rounded-xl p-5"><div className="text-3xl font-bold text-purple-600">{completedCount}</div><div className="text-sm text-purple-700 mt-1">Completions</div></div>
+        <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5"><div className="text-3xl font-bold text-indigo-600">{completedCount}</div><div className="text-sm text-indigo-700 mt-1">Completions</div></div>
         <div className="bg-amber-50 border border-amber-100 rounded-xl p-5"><div className="text-3xl font-bold text-amber-600">{upcomingSessions.length}</div><div className="text-sm text-amber-700 mt-1">Upcoming Sessions</div></div>
       </div>
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-card border border-gray-200 rounded-xl p-6">
           <h2 className="text-lg font-semibold mb-4">My Courses</h2>
           <div className="space-y-3">
             {courses.slice(0, 5).map(course => {
@@ -772,30 +772,30 @@ function HomeView({ courses, user }) {
                     <div className="font-medium text-gray-900 text-sm">{course.title}</div>
                     <div className="text-xs text-gray-500 mt-0.5 capitalize">{course.category?.replace(/_/g, ' ')} · {courseEnrollments.length} students</div>
                   </div>
-                  <Button component="a" href={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`} variant="outline" size="sm" className="border-slate-300 bg-white text-slate-900 hover:bg-slate-50">Manage course</Button>
+                  <Button component="a" href={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`} variant="outline" size="sm" className="border-slate-300 bg-card text-slate-900 hover:bg-slate-50">Manage course</Button>
                 </div>
               );
             })}
             {courses.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No courses assigned yet.</p>}
           </div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-card border border-gray-200 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Upcoming Sessions</h2>
-            <Link to={createPageUrl('ScheduleSession')}><Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white"><Plus className="w-3 h-3 mr-1" /> Schedule</Button></Link>
+            <Link to={createPageUrl('ScheduleSession')}><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white"><Plus className="w-3 h-3 mr-1" /> Schedule</Button></Link>
           </div>
           <div className="space-y-3">
             {upcomingSessions.map(session => (
-              <div key={session.id} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
-                <Video className="w-5 h-5 text-purple-600 flex-shrink-0" />
+              <div key={session.id} className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg">
+                <Video className="w-5 h-5 text-indigo-600 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-900 text-sm truncate">{session.title}</div>
                   <div className="text-xs text-gray-500">{new Date(session.scheduled_date).toLocaleDateString('en-GB')} at {session.scheduled_time}</div>
                 </div>
-                <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}><Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white text-xs">Start session</Button></Link>
+                <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs">Start session</Button></Link>
               </div>
             ))}
-            {upcomingSessions.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No upcoming sessions.<br /><Link to={createPageUrl('ScheduleSession')} className="text-purple-600 hover:underline">Schedule one now</Link></p>}
+            {upcomingSessions.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No upcoming sessions.<br /><Link to={createPageUrl('ScheduleSession')} className="text-indigo-600 hover:underline">Schedule one now</Link></p>}
           </div>
         </div>
       </div>
@@ -818,7 +818,7 @@ function AssignmentsView({ course }) {
       </div>
       <div className="space-y-3">
         {assignments.map(assignment => (
-          <div key={assignment.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div key={assignment.id} className="bg-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
             <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
             <p className="text-sm text-gray-500 mt-1">{assignment.description}</p>
             <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
@@ -866,7 +866,7 @@ function PeopleView({ courses, selectedCourse }) {
           {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
         </select>
       </div>
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <div className="bg-card border border-gray-200 rounded-xl overflow-hidden">
         <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
           <h3 className="font-semibold">Students ({uniqueStudents.length})</h3>
           <Link to={createPageUrl('MessageCenter')}><Button size="sm" variant="outline"><MessageSquare className="w-4 h-4 mr-1" /> Message All</Button></Link>
@@ -877,7 +877,7 @@ function PeopleView({ courses, selectedCourse }) {
             return (
               <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">{enrollment.created_by?.charAt(0)?.toUpperCase() || 'S'}</div>
+                  <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">{enrollment.created_by?.charAt(0)?.toUpperCase() || 'S'}</div>
                   <div>
                     <div className="font-medium text-gray-900 text-sm">{enrollment.created_by}</div>
                     <div className="text-xs text-gray-500">{course?.title} · {enrollment.progress_percent || 0}% complete</div>
@@ -949,7 +949,7 @@ function GradesView({ course, courses }) {
         <div className="bg-green-50 border border-green-100 rounded-xl p-4 text-center"><div className="text-2xl font-bold text-green-600">{quizAttempts.length}</div><div className="text-xs text-green-700 mt-1">Quiz Attempts</div></div>
       </div>
       {ungradedSubmissions.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mb-4">
+        <div className="bg-card border border-gray-200 rounded-xl overflow-hidden mb-4">
           <div className="px-6 py-4 bg-amber-50 border-b border-amber-100"><h3 className="font-semibold text-amber-800">Needs Grading ({ungradedSubmissions.length})</h3></div>
           <div className="divide-y divide-gray-200">
             {ungradedSubmissions.slice(0, 10).map(sub => (
@@ -958,13 +958,13 @@ function GradesView({ course, courses }) {
                   <div className="font-medium text-gray-900 text-sm">{sub.student_name || sub.created_by}</div>
                   <div className="text-xs text-gray-500">{sub.title || 'Assignment submission'}</div>
                 </div>
-                <Link to={createPageUrl('GradeAssignments') + `?assignmentId=${sub.assignment_id}&courseId=${targetCourseId}`}><Button size="sm" className="border border-slate-300 bg-white text-slate-900 hover:bg-slate-50">Grade submission</Button></Link>
+                <Link to={createPageUrl('GradeAssignments') + `?assignmentId=${sub.assignment_id}&courseId=${targetCourseId}`}><Button size="sm" className="border border-slate-300 bg-card text-slate-900 hover:bg-slate-50">Grade submission</Button></Link>
               </div>
             ))}
           </div>
         </div>
       )}
-      {targetCourseId && <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}><Button variant="outline" className="w-full border-slate-300 bg-white text-slate-900 hover:bg-slate-50">View all submissions and grades</Button></Link>}
+      {targetCourseId && <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}><Button variant="outline" className="w-full border-slate-300 bg-card text-slate-900 hover:bg-slate-50">View all submissions and grades</Button></Link>}
     </div>
   );
 }
@@ -991,12 +991,12 @@ function AnalyticsView({ course }) {
     <div className="max-w-4xl">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Analytics</h1>
       <div className="grid grid-cols-2 gap-6 mb-6">
-        <div className="bg-white border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Engagement</h3><div className="text-3xl font-bold text-blue-600">{engagementRate}%</div><div className="text-sm text-gray-500">Students who started the course</div><div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => (e.progress_percent || 0) > 0).length} of {enrollments.length} students</div></div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Completion</h3><div className="text-3xl font-bold text-green-600">{completionRate}%</div><div className="text-sm text-gray-500">Course completion rate</div><div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => e.is_completed).length} of {enrollments.length} completed</div></div>
+        <div className="bg-card border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Engagement</h3><div className="text-3xl font-bold text-blue-600">{engagementRate}%</div><div className="text-sm text-gray-500">Students who started the course</div><div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => (e.progress_percent || 0) > 0).length} of {enrollments.length} students</div></div>
+        <div className="bg-card border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Completion</h3><div className="text-3xl font-bold text-green-600">{completionRate}%</div><div className="text-sm text-gray-500">Course completion rate</div><div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => e.is_completed).length} of {enrollments.length} completed</div></div>
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Average Progress</h3><div className="text-3xl font-bold text-purple-600">{avgProgress}%</div><div className="text-sm text-gray-500">Across all students</div></div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Quiz Performance</h3><div className="text-3xl font-bold text-amber-600">{avgQuizScore}%</div><div className="text-sm text-gray-500">Average quiz score</div><div className="text-xs text-gray-400 mt-2">{quizAttempts.length} total attempts</div></div>
+        <div className="bg-card border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Average Progress</h3><div className="text-3xl font-bold text-indigo-600">{avgProgress}%</div><div className="text-sm text-gray-500">Across all students</div></div>
+        <div className="bg-card border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Quiz Performance</h3><div className="text-3xl font-bold text-amber-600">{avgQuizScore}%</div><div className="text-sm text-gray-500">Average quiz score</div><div className="text-xs text-gray-400 mt-2">{quizAttempts.length} total attempts</div></div>
       </div>
     </div>
   );
@@ -1017,13 +1017,13 @@ function DiscussionsView({ course }) {
       </div>
       <div className="space-y-3">
         {discussions.length > 0 ? discussions.map(discussion => (
-          <div key={discussion.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div key={discussion.id} className="bg-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
             <h3 className="font-semibold text-gray-900">{discussion.title}</h3>
             <p className="text-sm text-gray-500 mt-1 line-clamp-2">{discussion.content}</p>
             <div className="mt-3 flex items-center gap-4 text-sm text-gray-600"><span>{discussion.replies_count || 0} replies</span><span>•</span><span>{discussion.likes_count || 0} likes</span></div>
           </div>
         )) : (
-          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center"><MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No discussions yet</h3><p className="text-gray-500">Start a discussion to engage with students</p></div>
+          <div className="bg-card border border-gray-200 rounded-lg p-8 text-center"><MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No discussions yet</h3><p className="text-gray-500">Start a discussion to engage with students</p></div>
         )}
       </div>
     </div>
@@ -1044,12 +1044,12 @@ function OutcomesView({ course }) {
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Learning Outcomes</h1>
       <div className="space-y-4">
         {lessonsWithObjectives.length > 0 ? lessonsWithObjectives.map(lesson => (
-          <div key={lesson.id} className="bg-white border border-gray-200 rounded-lg p-4">
+          <div key={lesson.id} className="bg-card border border-gray-200 rounded-lg p-4">
             <h3 className="font-semibold text-gray-900 mb-2">{lesson.title}</h3>
             <ul className="list-disc list-inside space-y-1">{lesson.learning_objectives.map((obj, idx) => <li key={idx} className="text-sm text-gray-600">{obj}</li>)}</ul>
           </div>
         )) : (
-          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center"><Target className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No learning outcomes yet</h3><p className="text-gray-500">Add learning objectives to your lessons</p></div>
+          <div className="bg-card border border-gray-200 rounded-lg p-8 text-center"><Target className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No learning outcomes yet</h3><p className="text-gray-500">Add learning objectives to your lessons</p></div>
         )}
       </div>
     </div>
@@ -1071,13 +1071,13 @@ function QuizzesView({ course }) {
       </div>
       <div className="space-y-3">
         {quizzes.length > 0 ? quizzes.map(quiz => (
-          <div key={quiz.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div key={quiz.id} className="bg-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
             <h3 className="font-semibold text-gray-900">{quiz.title}</h3>
             <p className="text-sm text-gray-500 mt-1">{quiz.description}</p>
             <div className="mt-3 flex items-center gap-4 text-sm text-gray-600"><span>{quiz.questions?.length || 0} questions</span><span>•</span><span>{quiz.total_marks || 0} points</span><span>•</span><span>{quiz.is_published ? 'Published' : 'Draft'}</span></div>
           </div>
         )) : (
-          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center"><HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No quizzes yet</h3><p className="text-gray-500">Create quizzes to assess student learning</p></div>
+          <div className="bg-card border border-gray-200 rounded-lg p-8 text-center"><HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No quizzes yet</h3><p className="text-gray-500">Create quizzes to assess student learning</p></div>
         )}
       </div>
     </div>
@@ -1104,14 +1104,14 @@ function VideoView({ course, courses, user }) {
         <h1 className="text-3xl font-bold text-gray-900">Calendar & Sessions</h1>
         <div className="flex gap-2">
           <Link to={createPageUrl('TutorBookingManager')}><Button variant="outline">Bookings {pendingBookings.length > 0 && <span className="ml-1 bg-amber-500 text-white text-xs rounded-full px-1.5">{pendingBookings.length}</span>}</Button></Link>
-          <Link to={createPageUrl('ScheduleSession')}><Button className="bg-purple-600 hover:bg-purple-700 text-white"><Plus className="w-4 h-4 mr-2" />Schedule</Button></Link>
+          <Link to={createPageUrl('ScheduleSession')}><Button className="bg-indigo-600 hover:bg-indigo-700 text-white"><Plus className="w-4 h-4 mr-2" />Schedule</Button></Link>
         </div>
       </div>
       {pendingBookings.length > 0 && <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 flex items-center justify-between"><p className="font-semibold text-amber-900">{pendingBookings.length} booking{pendingBookings.length > 1 ? 's' : ''} pending</p><Link to={createPageUrl('TutorBookingManager')}><Button size="sm" className="bg-amber-600 text-white">Review</Button></Link></div>}
       <h2 className="text-lg font-semibold mb-3">Upcoming ({upcoming.length})</h2>
       <div className="space-y-3 mb-6">
-        {upcoming.map(s => { const c = (courses || []).find(co => co.id === s.course_id); return <div key={s.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center"><Video className="w-5 h-5 text-purple-600" /></div><div><h3 className="font-semibold text-gray-900 text-sm">{s.title}</h3><p className="text-xs text-gray-500">{new Date(s.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} at {s.scheduled_time}{c && ` · ${c.title}`}</p></div></div><Link to={createPageUrl('VideoSession') + `?id=${s.id}`}><Button className="bg-purple-600 hover:bg-purple-700 text-white" size="sm">Start</Button></Link></div>; })}
-        {upcoming.length === 0 && <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-500"><Video className="w-10 h-10 text-gray-300 mx-auto mb-2" /><p>No upcoming sessions. <Link to={createPageUrl('ScheduleSession')} className="text-purple-600 hover:underline">Schedule one</Link>.</p></div>}
+        {upcoming.map(s => { const c = (courses || []).find(co => co.id === s.course_id); return <div key={s.id} className="bg-card border border-gray-200 rounded-xl p-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center"><Video className="w-5 h-5 text-indigo-600" /></div><div><h3 className="font-semibold text-gray-900 text-sm">{s.title}</h3><p className="text-xs text-gray-500">{new Date(s.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} at {s.scheduled_time}{c && ` · ${c.title}`}</p></div></div><Link to={createPageUrl('VideoSession') + `?id=${s.id}`}><Button className="bg-indigo-600 hover:bg-indigo-700 text-white" size="sm">Start</Button></Link></div>; })}
+        {upcoming.length === 0 && <div className="bg-card border border-gray-200 rounded-xl p-8 text-center text-gray-500"><Video className="w-10 h-10 text-gray-300 mx-auto mb-2" /><p>No upcoming sessions. <Link to={createPageUrl('ScheduleSession')} className="text-indigo-600 hover:underline">Schedule one</Link>.</p></div>}
       </div>
       {past.length > 0 && <><h2 className="text-lg font-semibold mb-3">Past Sessions</h2><div className="space-y-2">{past.slice(0, 5).map(s => <div key={s.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center justify-between"><div><h3 className="font-medium text-gray-900 text-sm">{s.title}</h3><p className="text-xs text-gray-500">{new Date(s.scheduled_date).toLocaleDateString('en-GB')} · <span className="capitalize">{s.status}</span></p></div><Link to={createPageUrl('SessionRecordings') + `?sessionId=${s.id}`}><Button variant="outline" size="sm">Recording</Button></Link></div>)}</div></>}
     </div>
@@ -1122,7 +1122,7 @@ function AttendanceView() {
   return (
     <div className="max-w-4xl">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Attendance</h1>
-      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center"><Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">Attendance Tracking</h3><p className="text-gray-500">Track student attendance for sessions and activities</p></div>
+      <div className="bg-card border border-gray-200 rounded-lg p-8 text-center"><Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">Attendance Tracking</h3><p className="text-gray-500">Track student attendance for sessions and activities</p></div>
     </div>
   );
 }

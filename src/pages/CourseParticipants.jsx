@@ -46,7 +46,7 @@ export default function CourseParticipants() {
 
   if (selectedCourse) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
+      <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Button
             variant="outline"
@@ -66,7 +66,7 @@ export default function CourseParticipants() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Course Participants</h1>

@@ -145,29 +145,29 @@ export default function TutorOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-t-2xl p-6 text-white">
+        <div className="bg-indigo-600 rounded-t-2xl p-6 text-white">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
               {React.createElement(STEPS[step].icon, { className: 'w-5 h-5' })}
             </div>
             <div>
-              <p className="text-purple-200 text-xs font-medium uppercase tracking-wider">Step {step + 1} of {STEPS.length}</p>
+              <p className="text-indigo-200 text-xs font-medium uppercase tracking-wider">Step {step + 1} of {STEPS.length}</p>
               <h2 className="text-xl font-bold">{STEPS[step].title}</h2>
             </div>
           </div>
           <Progress value={progress} className="h-1.5 bg-white/20 mb-3" />
           <div className="flex gap-1.5">
             {STEPS.map((s, i) => (
-              <div key={s.id} className={`h-1.5 rounded-full flex-1 transition-all duration-300 ${i <= step ? 'bg-white' : 'bg-white/25'}`} />
+              <div key={s.id} className={`h-1.5 rounded-full flex-1 transition-all duration-300 ${i <= step ? 'bg-card' : 'bg-white/25'}`} />
             ))}
           </div>
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-b-2xl shadow-xl">
+        <div className="bg-card rounded-b-2xl shadow-xl">
           <div className="p-8">
             <AnimatePresence mode="wait">
               <motion.div
@@ -210,7 +210,7 @@ export default function TutorOnboarding() {
             <Button
               onClick={handleNext}
               disabled={!canProceed() || saveUserMutation.isPending}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 gap-2 min-w-[120px]"
+              className="bg-indigo-600 gap-2 min-w-[120px]"
             >
               {saveUserMutation.isPending ? 'Saving...' : step === STEPS.length - 1 ? 'Go to Dashboard' : 'Continue'}
               {step < STEPS.length - 1 && <ArrowRight className="w-4 h-4" />}
@@ -274,7 +274,7 @@ function GuideStep({ user }) {
   const [expanded, setExpanded] = useState('steps');
 
   const colorMap = {
-    purple: { bg: 'bg-purple-50', border: 'border-purple-200', icon: 'text-purple-600', badge: 'bg-purple-600', header: 'text-purple-800' },
+    purple: { bg: 'bg-indigo-50', border: 'border-indigo-200', icon: 'text-indigo-600', badge: 'bg-indigo-600', header: 'text-indigo-800' },
     amber: { bg: 'bg-amber-50', border: 'border-amber-200', icon: 'text-amber-600', badge: 'bg-amber-500', header: 'text-amber-800' },
     indigo: { bg: 'bg-indigo-50', border: 'border-indigo-200', icon: 'text-indigo-600', badge: 'bg-indigo-600', header: 'text-indigo-800' },
   };
@@ -282,8 +282,8 @@ function GuideStep({ user }) {
   return (
     <div className="space-y-4">
       <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-          <GraduationCap className="w-8 h-8 text-purple-600" />
+        <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
+          <GraduationCap className="w-8 h-8 text-indigo-600" />
         </div>
         <h3 className="text-xl font-bold text-gray-900">Welcome, {user?.full_name?.split(' ')[0] || 'Tutor'}! 🎉</h3>
         <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
@@ -318,7 +318,7 @@ function GuideStep({ user }) {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="p-4 bg-white space-y-3">
+                  <div className="p-4 bg-card space-y-3">
                     {section.items && section.items.map((item, i) => (
                       <div key={i} className="flex gap-3 items-start">
                         <div className={`w-7 h-7 ${c.badge} rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5`}>
@@ -384,10 +384,10 @@ function ChecklistStep({ checklist, setChecklist }) {
         <p className="text-sm text-gray-500">Complete these before your first session to ensure a great experience.</p>
       </div>
 
-      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4">
+      <div className="bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 rounded-xl p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-purple-800">{completedCount} of {CHECKLIST_ITEMS.length} completed</span>
-          <span className="text-sm font-bold text-purple-700">{pct}%</span>
+          <span className="text-sm font-medium text-indigo-800">{completedCount} of {CHECKLIST_ITEMS.length} completed</span>
+          <span className="text-sm font-bold text-indigo-700">{pct}%</span>
         </div>
         <Progress value={pct} className="h-2" />
       </div>
@@ -400,7 +400,7 @@ function ChecklistStep({ checklist, setChecklist }) {
               <label
                 key={item.id}
                 className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                  checklist[item.id] ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200 hover:border-purple-300'
+                  checklist[item.id] ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200 hover:border-indigo-300'
                 }`}
               >
                 <div
@@ -435,11 +435,11 @@ function ProfileStep({ profile, setProfile, uploading, fileInputRef, onUploadCli
 
       <div className="flex items-center gap-4">
         <div className="relative">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center overflow-hidden border-2 border-purple-200">
+          <div className="w-20 h-20 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center overflow-hidden border-2 border-indigo-200">
             {profile.avatar ? (
               <img src={profile.avatar} alt="avatar" className="w-full h-full object-cover" />
             ) : (
-              <User className="w-8 h-8 text-purple-400" />
+              <User className="w-8 h-8 text-indigo-400" />
             )}
           </div>
           {profile.avatar && (
@@ -490,13 +490,13 @@ function ExpertiseStep({ expertise, setExpertise, toggleSubject, toggleQualifica
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Subjects <span className="text-red-500">*</span>
-          {expertise.subjects.length > 0 && <span className="ml-2 text-purple-600">({expertise.subjects.length} selected)</span>}
+          {expertise.subjects.length > 0 && <span className="ml-2 text-indigo-600">({expertise.subjects.length} selected)</span>}
         </label>
         <div className="flex flex-wrap gap-2 mb-3">
           {SUBJECT_OPTIONS.map(s => (
             <button key={s} onClick={() => toggleSubject(s)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${
-                expertise.subjects.includes(s) ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300'
+                expertise.subjects.includes(s) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-card text-gray-700 border-gray-200 hover:border-indigo-300'
               }`}>{s}</button>
           ))}
         </div>
@@ -515,7 +515,7 @@ function ExpertiseStep({ expertise, setExpertise, toggleSubject, toggleQualifica
           {QUALIFICATION_OPTIONS.map(q => (
             <button key={q} onClick={() => toggleQualification(q)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${
-                expertise.qualifications.includes(q) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-200 hover:border-indigo-300'
+                expertise.qualifications.includes(q) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-card text-gray-700 border-gray-200 hover:border-indigo-300'
               }`}>{q}</button>
           ))}
         </div>
@@ -524,7 +524,7 @@ function ExpertiseStep({ expertise, setExpertise, toggleSubject, toggleQualifica
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Years of Teaching Experience</label>
         <select value={expertise.years_experience} onChange={e => setExpertise(ex => ({ ...ex, years_experience: e.target.value }))}
-          className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+          className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
           <option value="">Select...</option>
           <option value="<1">Less than 1 year</option>
           <option value="1-3">1–3 years</option>
@@ -576,13 +576,13 @@ function VerificationStep({ user, verification, setVerification }) {
       <label className="flex items-start gap-3 cursor-pointer group">
         <div onClick={() => setVerification(v => ({ ...v, agreed_to_terms: !v.agreed_to_terms }))}
           className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-            verification.agreed_to_terms ? 'bg-purple-600 border-purple-600' : 'border-gray-300 group-hover:border-purple-400'
+            verification.agreed_to_terms ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300 group-hover:border-indigo-400'
           }`}>
           {verification.agreed_to_terms && <CheckCircle className="w-3.5 h-3.5 text-white" />}
         </div>
         <span className="text-sm text-gray-700">
           I confirm that the information provided is accurate, and I agree to uphold the platform's{' '}
-          <span className="text-purple-600 underline cursor-pointer">Tutor Code of Conduct</span>{' '}
+          <span className="text-indigo-600 underline cursor-pointer">Tutor Code of Conduct</span>{' '}
           and maintain professional standards in all sessions.
         </span>
       </label>
@@ -596,7 +596,7 @@ function DoneStep({ user, expertise }) {
   return (
     <div className="text-center py-4">
       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-        className="w-24 h-24 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        className="w-24 h-24 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
         <CheckCircle className="w-12 h-12 text-green-600" />
       </motion.div>
 
@@ -610,13 +610,13 @@ function DoneStep({ user, expertise }) {
           <p className="text-sm font-medium text-gray-700 mb-3">Your Teaching Subjects</p>
           <div className="flex flex-wrap gap-2 justify-center">
             {expertise.subjects.map(s => (
-              <Badge key={s} className="bg-purple-100 text-purple-700 border-0"><Star className="w-3 h-3 mr-1" />{s}</Badge>
+              <Badge key={s} className="bg-indigo-100 text-indigo-700 border-0"><Star className="w-3 h-3 mr-1" />{s}</Badge>
             ))}
           </div>
         </div>
       )}
 
-      <Card className="p-4 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200 text-left">
+      <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 text-left">
         <p className="text-sm font-semibold text-gray-900 mb-2">What's next?</p>
         <ul className="space-y-1.5">
           {[
@@ -625,7 +625,7 @@ function DoneStep({ user, expertise }) {
             'Check incoming booking requests from students',
           ].map(item => (
             <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
-              <CheckCircle className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />{item}
+              <CheckCircle className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />{item}
             </li>
           ))}
         </ul>

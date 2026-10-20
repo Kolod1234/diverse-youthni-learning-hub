@@ -151,7 +151,7 @@ export default function CourseAnalytics() {
   const COLORS = ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -169,7 +169,7 @@ export default function CourseAnalytics() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             { label: 'Total Students', value: totalStudents, icon: Users, color: 'bg-blue-50', iconColor: 'text-blue-600' },
-            { label: 'Avg Progress', value: `${avgProgress}%`, icon: TrendingUp, color: 'bg-purple-50', iconColor: 'text-purple-600' },
+            { label: 'Avg Progress', value: `${avgProgress}%`, icon: TrendingUp, color: 'bg-indigo-50', iconColor: 'text-indigo-600' },
             { label: 'Completion Rate', value: `${completionRate}%`, icon: CheckCircle, color: 'bg-emerald-50', iconColor: 'text-emerald-600' },
             { label: 'Avg Quiz Score', value: `${avgQuizScore}%`, icon: Brain, color: 'bg-amber-50', iconColor: 'text-amber-600' },
           ].map((stat, idx) => {
@@ -195,7 +195,7 @@ export default function CourseAnalytics() {
 
         {/* Charts and Data */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
+          <TabsList className="bg-card border border-gray-200 p-1 rounded-xl mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="quizzes">Quiz Performance</TabsTrigger>
@@ -280,7 +280,7 @@ export default function CourseAnalytics() {
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">Quizzes</p>
-                        <p className="text-lg font-bold text-purple-600">{student.quizzesTaken}</p>
+                        <p className="text-lg font-bold text-indigo-600">{student.quizzesTaken}</p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">Avg Score</p>

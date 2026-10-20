@@ -142,7 +142,7 @@ export default function TutorSessionsDashboard() {
                 {session.status === 'live' ? '🔴 Live' : session.status.charAt(0).toUpperCase() + session.status.slice(1)}
               </Badge>
               {session.is_recorded && (
-                <Badge variant="outline" className="text-purple-600 border-purple-300">
+                <Badge variant="outline" className="text-indigo-600 border-indigo-300">
                   Recorded
                 </Badge>
               )}
@@ -206,7 +206,7 @@ export default function TutorSessionsDashboard() {
 
         <div className="flex gap-2 mt-4">
           <Link to={createPageUrl('VideoSession') + `?id=${session.id}`} className="flex-1">
-            <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600">
+            <Button className="w-full bg-indigo-600">
               <Video className="w-4 h-4 mr-2" />
               {session.status === 'scheduled' ? 'Join Session' : 'View Details'}
             </Button>
@@ -228,9 +228,9 @@ export default function TutorSessionsDashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-500">Loading sessions...</p>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function TutorSessionsDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -254,7 +254,7 @@ export default function TutorSessionsDashboard() {
           </div>
           <Button
             onClick={() => setShowScheduler(true)}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+            className="bg-indigo-600 hover:bg-indigo-700"
           >
             <Plus className="w-4 h-4 mr-2" />
             Schedule Session
@@ -263,7 +263,7 @@ export default function TutorSessionsDashboard() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+          <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-blue-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-blue-600 mb-1">Total Sessions</p>
@@ -275,19 +275,19 @@ export default function TutorSessionsDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+          <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600 mb-1">Upcoming</p>
+                <p className="text-sm font-medium text-indigo-600 mb-1">Upcoming</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.upcoming}</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-indigo-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-green-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-green-600 mb-1">Completed</p>
@@ -299,7 +299,7 @@ export default function TutorSessionsDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+          <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-orange-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-orange-600 mb-1">Cancelled</p>
@@ -335,7 +335,7 @@ export default function TutorSessionsDashboard() {
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No Upcoming Sessions</h3>
                 <p className="text-gray-600 mb-6">Schedule your first live session to get started</p>
-                <Button onClick={() => setShowScheduler(true)} className="bg-purple-600 hover:bg-purple-700">
+                <Button onClick={() => setShowScheduler(true)} className="bg-indigo-600 hover:bg-indigo-700">
                   <Plus className="w-4 h-4 mr-2" />
                   Schedule Session
                 </Button>
