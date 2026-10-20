@@ -189,7 +189,7 @@ export default function Explore() {
       {/* Qualification Type */}
       <Box>
         <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <EmojiEventsIcon sx={{ fontSize: 16, color: '#f97316' }} /> Qualification
+          <EmojiEventsIcon sx={{ fontSize: 16, color: 'primary.main' }} /> Qualification
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           {[{ id: 'gcse', label: 'GCSE' }, { id: 'alevel', label: 'A-Level' }].map((qual) => (
@@ -218,7 +218,7 @@ export default function Explore() {
       {selectedQualification.includes('alevel') && (
         <Box>
           <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TrendingUpIcon sx={{ fontSize: 16, color: '#f97316' }} /> A-Level Stage
+            <TrendingUpIcon sx={{ fontSize: 16, color: 'primary.main' }} /> A-Level Stage
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
             {[
@@ -251,7 +251,7 @@ export default function Explore() {
       {/* Categories */}
       <Box>
         <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <MenuBookIcon sx={{ fontSize: 16, color: '#f97316' }} /> Category
+          <MenuBookIcon sx={{ fontSize: 16, color: 'primary.main' }} /> Category
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           {categories.map((category) => (
@@ -284,7 +284,7 @@ export default function Explore() {
       {/* Level */}
       <Box>
         <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <TrendingUpIcon sx={{ fontSize: 16, color: '#f97316' }} /> Level
+          <TrendingUpIcon sx={{ fontSize: 16, color: 'primary.main' }} /> Level
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           {levels.map((level) => (
@@ -312,7 +312,7 @@ export default function Explore() {
       {/* Price Range */}
       <Box>
         <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <EmojiEventsIcon sx={{ fontSize: 16, color: '#f97316' }} /> Price Range
+          <EmojiEventsIcon sx={{ fontSize: 16, color: 'primary.main' }} /> Price Range
         </Typography>
         <Card sx={{ p: 2 }}>
           <Slider
