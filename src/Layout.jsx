@@ -70,6 +70,7 @@ import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import ThemeProvider from '@/components/theme/ThemeProvider';
 import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
+import AdminSideNav, { ADMIN_NAV_PAGES } from '@/components/admin/AdminSideNav';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
@@ -914,7 +915,12 @@ function LayoutContent({ children, currentPageName }) {
             transition={{ duration: 0.2, ease: 'easeInOut' }}
             style={{ width: '100%' }}
           >
-            {children}
+            {user?.role === 'admin' && ADMIN_NAV_PAGES.has(currentPageName) ? (
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', maxWidth: 1440, mx: 'auto' }}>
+                <AdminSideNav current={currentPageName} />
+                <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
+              </Box>
+            ) : children}
           </motion.div>
         </AnimatePresence>
       </Box>
