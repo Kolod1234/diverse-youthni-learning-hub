@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import { 
   Card, Button, TextField, InputLabel, FormControl, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
-  Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment, Select, MenuItem
+  Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment, Select, MenuItem, Alert
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LockIcon from '@mui/icons-material/Lock';
@@ -544,6 +544,11 @@ export default function Library() {
       </Box>
       )}
       <Container maxWidth="xl" sx={{ py: 4 }}>
+        {/* Staff-only notice */}
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Staff only - these books are for in-house lesson preparation and must not be shared with students or outside the organisation.
+        </Alert>
+
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 4, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
