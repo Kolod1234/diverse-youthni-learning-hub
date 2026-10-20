@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Download, FileText, BookOpen, Lightbulb, Filter } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 
 export default function FreeResourcesCenter() {
   const { data: user } = useQuery({
@@ -157,16 +157,16 @@ export default function FreeResourcesCenter() {
                     </div>
                   )}
 
+                  {/* The link itself is styled as the button: a <button> nested inside an <a>
+                      is invalid HTML and some browsers swallow the click. */}
                   <a
                     href={resource.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block"
+                    className={buttonVariants({ className: 'w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white' })}
                   >
-                    <Button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white">
-                      <Download className="w-4 h-4 mr-2" />
-                      Download
-                    </Button>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
                   </a>
                 </div>
               </motion.div>
