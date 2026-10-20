@@ -42,6 +42,8 @@ const Rss = (props) => <RssFeedIcon sx={{ fontSize: props.size || 16 }} {...prop
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import PageSEO from '@/components/seo/PageSEO';
+import RedesignHero from '@/components/home/RedesignHero';
+import HomeQuickStart from '@/components/home/HomeQuickStart';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 
@@ -163,7 +165,8 @@ export default function Home() {
       <PageSEO pageName="Learning Hub" />
 
       {/* Hero: always show Afterschool write-up; if hero images exist, use them as carousel background */}
-      {heroImages.length > 0 ? <HeroCarouselWithWriteup images={heroImages} /> : <AfterschoolHero />}
+      <RedesignHero images={heroImages.length > 0 ? heroImages : carouselImages} user={user} />
+      <HomeQuickStart courses={visibleCourses} user={user} />
 
       {/* Community Carousel */}
       {carouselImages.length > 0 && (

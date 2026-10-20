@@ -1,0 +1,91 @@
+import React, { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { Box, Button, Chip, Container, Typography } from '@mui/material';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+import { base44 } from '@/api/base44Client';
+import { createPageUrl } from '@/utils';
+
+// Redesign hero: navy band, text on the left, the site's real hero photos on the right.
+// Text comes from the same SiteContent keys the old hero used, so admins can still edit it.
+export default function RedesignHero({ images = [], user }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
+  const [current, setCurrent] = useState(0);
+
+  const { data: siteContent = [] } = useQuery({
+    queryKey: ['site-content-hero'],
+    queryFn: () => base44.entities.SiteContent.filter({ section: 'home' }, 'key', 50),
+  });
+  const get = (key, fallback) => siteContent.find(c => c.key === key)?.value || fallback;
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setCurrent(emblaApi.selectedScrollSnap());
+    emblaApi.on('select', onSelect);
+    return () => emblaApi.off('select', onSelect);
+  }, [emblaApi]);
+
+  return (
+    <Box component="section" sx={{ bgcolor: '#0b2f5c', color: '#fff', pt: { xs: 5, md: 8 }, pb: { xs: 8, md: 10 } }}>
+      <Container maxWidth="lg" sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 4, md: 6 }, alignItems: 'center' }}>
+        <Box sx={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2.5 }}>
+          <Chip
+            label={`${get('hero_free_access', 'FREE ACCESS')} · ${get('hero_online_learning', 'ONLINE LEARNING')}`}
+            sx={{ bgcolor: '#fbbf24', color: '#1a1a1a', fontWeight: 700, letterSpacing: 0.5 }}
+          />
+          <Typography component="h1" sx={{ fontSize: { xs: '2.25rem', md: '3rem' }, fontWeight: 700, lineHeight: 1.1 }}>
+            {get('hero_afterschool_hours', 'Afterschool Hours')}, online.
+          </Typography>
+          <Typography sx={{ fontSize: '1.125rem', color: '#dbe4f0', maxWidth: 520 }}>
+            {get('hero_online_quizzes', 'Online Quizzes')} and lessons for {get('hero_all_courses', 'ALL COURSES').toLowerCase()}.{' '}
+            {get('hero_description', 'Access them at the comfort of your home')}.
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+            <Button component={Link} to={createPageUrl('Explore')} variant="contained"
+              sx={{ bgcolor: '#fff', color: '#0b2f5c', '&:hover': { bgcolor: '#e8edf5' } }}>
+              {get('hero_button', 'Browse courses')}
+            </Button>
+            {!user && (
+              <Button onClick={() => base44.auth.redirectToLogin()} variant="outlined"
+                sx={{ borderColor: '#fff', color: '#fff', borderWidth: 2, '&:hover': { borderWidth: 2, borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.08)' } }}>
+                Create free account
+              </Button>
+            )}
+            {user && (
+              <Button component={Link} to={createPageUrl('Dashboard')} variant="outlined"
+                sx={{ borderColor: '#fff', color: '#fff', borderWidth: 2, '&:hover': { borderWidth: 2, borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.08)' } }}>
+                My learning
+              </Button>
+            )}
+          </Box>
+        </Box>
+
+        {images.length > 0 && (
+          <Box sx={{ flex: '1 1 380px', minWidth: 0 }}>
+            <Box ref={emblaRef} sx={{ overflow: 'hidden', borderRadius: '18px', aspectRatio: '4 / 3', bgcolor: '#1e4a7f' }}>
+              <Box sx={{ display: 'flex', height: '100%' }}>
+                {images.map((img, idx) => (
+                  <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0, height: '100%' }}>
+                    <Box component="img" src={img.image_url} alt="Students learning with Diverse Youth NI"
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                      sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            {images.length > 1 && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1.5 }}>
+                {images.map((_, idx) => (
+                  <Box key={idx} component="button" aria-label={`Show photo ${idx + 1}`} onClick={() => emblaApi?.scrollTo(idx)}
+                    sx={{ width: current === idx ? 28 : 10, height: 10, p: 0, border: 0, borderRadius: 5, cursor: 'pointer',
+                      bgcolor: current === idx ? '#fbbf24' : 'rgba(255,255,255,0.5)', transition: 'width 0.2s' }} />
+                ))}
+              </Box>
+            )}
+          </Box>
+        )}
+      </Container>
+    </Box>
+  );
+}
