@@ -372,7 +372,7 @@ export default function Profile() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <Card className="p-6 border-2 border-amber-200 bg-indigo-50 dark:bg-indigo-500/10">
+                      <Card className="p-6 border-2 border-amber-200 bg-amber-50 dark:bg-amber-500/10">
                         <div className="flex items-start justify-between mb-4">
                           <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
                             <Award className="w-6 h-6 text-white" />

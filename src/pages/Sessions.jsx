@@ -192,7 +192,7 @@ export default function Sessions() {
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-red-200">
+          <Card className="p-6 bg-red-50 dark:bg-red-500/10 border-red-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Live Now</p>
