@@ -111,7 +111,7 @@ export default function FreeResourcesCenter() {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
                 whileHover={{ y: -8 }}
-                className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border border-border group overflow-hidden"
+                className="relative bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border border-border group overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
                 
