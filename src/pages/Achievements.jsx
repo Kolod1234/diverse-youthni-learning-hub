@@ -218,7 +218,7 @@ function SuccessStoriesCarousel() {
     {
       category: 'Instructure',
       tag: 'Case Study',
-      tagColor: '#ea580c',
+      tagColor: '#4f46e5',
       title: 'Passaic County Technical Vocational Schools',
       description: 'Discover how technical schools are transforming education and preparing students for real-world careers.',
       bgColor: 'linear-gradient(to bottom right, #111827, #7c2d12, #111827)'

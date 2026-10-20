@@ -37,14 +37,14 @@ export default function ArtGallery() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Palette className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Art Gallery</h1>
+            <h1 className="text-3xl font-bold text-foreground">Art Gallery</h1>
           </div>
-          <p className="text-gray-600">Student artwork and creative expressions</p>
+          <p className="text-muted-foreground">Student artwork and creative expressions</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -60,7 +60,7 @@ export default function ArtGallery() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 border rounded-lg bg-white"
+            className="px-4 py-2 border rounded-lg bg-card"
           >
             <option value="all">All Categories</option>
             <option value="painting">Painting</option>
@@ -79,7 +79,7 @@ export default function ArtGallery() {
               className="overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
               onClick={() => setSelectedArt(art)}
             >
-              <div className="relative aspect-square overflow-hidden bg-gray-100">
+              <div className="relative aspect-square overflow-hidden bg-muted">
                 <img
                   src={art.image_url}
                   alt={art.title}
@@ -91,14 +91,14 @@ export default function ArtGallery() {
               </div>
               <div className="p-4">
                 <Badge variant="outline" className="mb-2 capitalize">{art.category}</Badge>
-                <h3 className="font-bold text-gray-900 mb-1 line-clamp-1">{art.title}</h3>
-                <p className="text-sm text-gray-600 mb-3">By {art.artist_name}</p>
+                <h3 className="font-bold text-foreground mb-1 line-clamp-1">{art.title}</h3>
+                <p className="text-sm text-muted-foreground mb-3">By {art.artist_name}</p>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     likeArtMutation.mutate({ id: art.id, likes: art.likes_count || 0 });
                   }}
-                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-600"
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-red-600"
                 >
                   <Heart className="w-4 h-4" />
                   {art.likes_count || 0} likes
@@ -111,7 +111,7 @@ export default function ArtGallery() {
         {filteredArtworks.length === 0 && (
           <div className="text-center py-12">
             <Palette className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No artworks found</p>
+            <p className="text-muted-foreground">No artworks found</p>
           </div>
         )}
 
@@ -119,7 +119,7 @@ export default function ArtGallery() {
           <DialogContent className="max-w-4xl">
             {selectedArt && (
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                   <img
                     src={selectedArt.image_url}
                     alt={selectedArt.title}
@@ -128,14 +128,14 @@ export default function ArtGallery() {
                 </div>
                 <div>
                   <Badge variant="outline" className="mb-3 capitalize">{selectedArt.category}</Badge>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedArt.title}</h2>
-                  <p className="text-gray-600 mb-4">By {selectedArt.artist_name}</p>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">{selectedArt.title}</h2>
+                  <p className="text-muted-foreground mb-4">By {selectedArt.artist_name}</p>
                   {selectedArt.description && (
-                    <p className="text-gray-700 mb-6">{selectedArt.description}</p>
+                    <p className="text-foreground mb-6">{selectedArt.description}</p>
                   )}
                   <button
                     onClick={() => likeArtMutation.mutate({ id: selectedArt.id, likes: selectedArt.likes_count || 0 })}
-                    className="flex items-center gap-2 text-gray-600 hover:text-red-600"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-red-600"
                   >
                     <Heart className="w-5 h-5" />
                     {selectedArt.likes_count || 0} likes

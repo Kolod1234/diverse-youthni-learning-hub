@@ -140,7 +140,7 @@ export default function LearningImpactDashboard() {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <CheckCircle className="w-8 h-8 text-purple-600" />
+                <CheckCircle className="w-8 h-8 text-indigo-600" />
                 <Box>
                   <Typography variant="h4" fontWeight="bold">{certificationRate}%</Typography>
                   <Typography variant="body2" color="text.secondary">Certification Rate</Typography>

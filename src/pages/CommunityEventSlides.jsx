@@ -7,7 +7,7 @@ const CardContent = ({ children, className, ...props }) => <MuiCardContent class
 const CardHeader = ({ children, className, ...props }) => <MuiCardHeader className={className} title={null} {...props}>{children}</MuiCardHeader>;
 const CardTitle = ({ children, className }) => <Typography variant="h6" fontWeight={700} className={className}>{children}</Typography>;
 const CardDescription = ({ children, className }) => <Typography variant="body2" color="text.secondary" className={className}>{children}</Typography>;
-const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-gray-700 mb-1'} {...props}>{children}</label>;
+const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-foreground mb-1'} {...props}>{children}</label>;
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
@@ -93,23 +93,23 @@ export default function CommunityEventSlides() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="min-h-screen bg-background dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Presentation className="w-12 h-12 text-blue-600" />
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-4xl font-bold text-foreground dark:text-white">
               Community Event Slides
             </h1>
           </div>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted-foreground dark:text-gray-300">
             Create beautiful Google Slides presentations for your community events
           </p>
         </div>
 
         {generatedUrl ? (
           <Card className="shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+            <CardHeader className="bg-indigo-600 text-white">
               <CardTitle className="flex items-center gap-2">
                 <ExternalLink className="w-5 h-5" />
                 Presentation Created Successfully!
@@ -120,7 +120,7 @@ export default function CommunityEventSlides() {
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                <p className="text-sm text-foreground dark:text-gray-300 mb-3">
                   Click the button below to open and edit your presentation in Google Slides
                 </p>
                 <a
@@ -235,7 +235,7 @@ export default function CommunityEventSlides() {
               <Button
                 onClick={handleGenerate}
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="w-full bg-indigo-600 hover:bg-indigo-700"
               >
                 {loading ? (
                   <>

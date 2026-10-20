@@ -125,7 +125,7 @@ export default function LeadershipLanding() {
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Button
                   onClick={handleJoinProgramme}
-                  className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 text-base font-semibold rounded-full"
+                  className="bg-card text-indigo-700 dark:text-indigo-300 hover:bg-muted px-8 py-3 text-base font-semibold rounded-full"
                   size="lg">
 
                   {user ? 'View Programs' : 'Sign In to View Programs'}
@@ -230,7 +230,7 @@ export default function LeadershipLanding() {
 
           <Box
             sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              bgcolor: '#4f46e5',
               borderRadius: 4,
               p: { xs: 4, md: 6 },
               textAlign: 'center',
@@ -247,7 +247,7 @@ export default function LeadershipLanding() {
             </Typography>
             <Button
               onClick={handleJoinProgramme}
-              className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg"
+              className="bg-card text-indigo-700 dark:text-indigo-300 hover:bg-muted px-8 py-6 text-lg"
               size="lg">
 
               {user ? 'Join Programme Now' : 'Sign In to Get Started'}

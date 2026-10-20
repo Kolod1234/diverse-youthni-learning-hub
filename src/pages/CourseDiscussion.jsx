@@ -130,7 +130,7 @@ export default function CourseDiscussion() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -140,8 +140,8 @@ export default function CourseDiscussion() {
               Back to Course
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Course Discussion</h1>
-          <p className="text-gray-500">{course?.title}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Course Discussion</h1>
+          <p className="text-muted-foreground">{course?.title}</p>
         </div>
 
         {/* Search and Filter */}
@@ -177,7 +177,7 @@ export default function CourseDiscussion() {
 
         {/* New Discussion */}
         <Card className="p-6 border-0 shadow-sm mb-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Start a Discussion</h2>
+          <h2 className="font-semibold text-foreground mb-4">Start a Discussion</h2>
           <div className="space-y-4">
             <Input
               placeholder="Discussion title..."
@@ -218,8 +218,8 @@ export default function CourseDiscussion() {
           {sortedDiscussions.length === 0 && (
             <Card className="p-12 text-center border-0 shadow-sm">
               <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No discussions yet</h3>
-              <p className="text-gray-500">Be the first to start a discussion!</p>
+              <h3 className="text-lg font-semibold text-foreground mb-2">No discussions yet</h3>
+              <p className="text-muted-foreground">Be the first to start a discussion!</p>
             </Card>
           )}
         </div>
@@ -248,7 +248,7 @@ function DiscussionCard({ discussion, index, courseId, onReply, replyContent, on
         <div className="flex gap-4">
           <Avatar className="w-10 h-10">
             <AvatarImage src={discussion.user_avatar} />
-            <AvatarFallback className="bg-indigo-100 text-indigo-600">
+            <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600">
               {discussion.user_name?.charAt(0) || 'U'}
             </AvatarFallback>
           </Avatar>
@@ -257,23 +257,23 @@ function DiscussionCard({ discussion, index, courseId, onReply, replyContent, on
             <div className="flex items-start justify-between mb-2">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-gray-900">{discussion.title}</h3>
+                  <h3 className="font-semibold text-foreground">{discussion.title}</h3>
                   {discussion.is_pinned && (
-                    <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+                    <Badge variant="secondary" className="bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300">
                       <Pin className="w-3 h-3 mr-1" />
                       Pinned
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {discussion.user_name} • {format(new Date(discussion.created_date), 'MMM d, yyyy')}
                 </p>
               </div>
             </div>
 
-            <p className="text-gray-700 mb-4">{discussion.content}</p>
+            <p className="text-foreground mb-4">{discussion.content}</p>
 
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <button className="flex items-center gap-1 hover:text-indigo-600 transition-colors">
                 <ThumbsUp className="w-4 h-4" />
                 <span>{discussion.likes_count || 0}</span>
@@ -289,21 +289,21 @@ function DiscussionCard({ discussion, index, courseId, onReply, replyContent, on
 
             {/* Replies */}
             {showReplies && (
-              <div className="mt-4 pl-4 border-l-2 border-gray-100 space-y-4">
+              <div className="mt-4 pl-4 border-l-2 border-border space-y-4">
                 {replies.map((reply) => (
                   <div key={reply.id} className="flex gap-3">
                     <Avatar className="w-8 h-8">
                       <AvatarImage src={reply.user_avatar} />
-                      <AvatarFallback className="bg-violet-100 text-violet-600 text-xs">
+                      <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 text-xs">
                         {reply.user_name?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-sm font-medium text-gray-900 mb-1">{reply.user_name}</p>
-                        <p className="text-sm text-gray-700">{reply.content}</p>
+                      <div className="bg-muted rounded-lg p-3">
+                        <p className="text-sm font-medium text-foreground mb-1">{reply.user_name}</p>
+                        <p className="text-sm text-foreground">{reply.content}</p>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {format(new Date(reply.created_date), 'MMM d, yyyy')}
                       </p>
                     </div>

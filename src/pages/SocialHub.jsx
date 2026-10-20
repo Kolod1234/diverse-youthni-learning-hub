@@ -27,13 +27,13 @@ export default function SocialHub() {
   const currentCourse = selectedCourse || myCourses[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-violet-50/20">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-indigo-900 to-violet-900 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl font-bold bg-[#0b2f5c] bg-clip-text text-transparent mb-3">
             Social Learning Hub
           </h1>
-          <p className="text-gray-600 text-lg">Connect, collaborate, and learn together with your peers</p>
+          <p className="text-muted-foreground text-lg">Connect, collaborate, and learn together with your peers</p>
         </div>
 
         {/* Course Selector */}
@@ -42,7 +42,7 @@ export default function SocialHub() {
             <select
               value={currentCourse?.id || ''}
               onChange={(e) => setSelectedCourse(myCourses.find(c => c.id === e.target.value))}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="px-4 py-2 bg-card border border-border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               {myCourses.map(course => (
                 <option key={course.id} value={course.id}>
@@ -94,8 +94,8 @@ export default function SocialHub() {
         ) : (
           <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-12 text-center">
             <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">No Courses Yet</h2>
-            <p className="text-gray-500">Enroll in a course to access social features</p>
+            <h2 className="text-xl font-semibold text-foreground mb-2">No Courses Yet</h2>
+            <p className="text-muted-foreground">Enroll in a course to access social features</p>
           </div>
         )}
       </div>

@@ -169,7 +169,7 @@ export default function YouthWorkLanding() {
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Button
                   onClick={handleJoinYouthWork}
-                  className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 text-base font-semibold rounded-full"
+                  className="bg-card text-indigo-700 dark:text-indigo-300 hover:bg-muted px-8 py-3 text-base font-semibold rounded-full"
                   size="lg">
                   {user ? 'Start Learning Now' : 'Get Started'}
                   <ArrowRight className="ml-2 w-4 h-4" />
@@ -311,7 +311,7 @@ export default function YouthWorkLanding() {
                     <Button
                       fullWidth
                       onClick={handleJoinYouthWork}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      className="bg-indigo-600 hover:bg-indigo-700"
                     >
                       Enroll Now
                     </Button>
@@ -348,7 +348,7 @@ export default function YouthWorkLanding() {
                       width: 60,
                       height: 60,
                       borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      bgcolor: '#4f46e5',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -427,7 +427,7 @@ export default function YouthWorkLanding() {
       {/* Final CTA Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          bgcolor: '#4f46e5',
           color: 'white',
           py: 8,
           textAlign: 'center'
@@ -448,7 +448,7 @@ export default function YouthWorkLanding() {
             </Typography>
             <Button
               onClick={handleJoinYouthWork}
-              className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg"
+              className="bg-card text-indigo-700 dark:text-indigo-300 hover:bg-muted px-8 py-6 text-lg"
               size="lg">
               Enroll Now & Get Started
               <ArrowRight className="ml-2" />

@@ -89,56 +89,56 @@ export default function DetailedCourseAnalytics() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <div className="bg-card border-b border-border sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={() => navigate(-1)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition"
+              className="p-2 hover:bg-muted rounded-lg transition"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">{course?.title || 'Course Analytics'}</h1>
+            <h1 className="text-3xl font-bold text-foreground">{course?.title || 'Course Analytics'}</h1>
           </div>
 
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="p-4 bg-blue-50 border-blue-100">
+            <Card className="p-4 bg-blue-50 dark:bg-blue-500/15 border-blue-100">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-600">Active Users</div>
+                  <div className="text-sm text-muted-foreground">Active Users</div>
                   <div className="text-2xl font-bold text-blue-600">{uniqueUsers}</div>
                 </div>
                 <Users className="w-8 h-8 text-blue-400 opacity-50" />
               </div>
             </Card>
 
-            <Card className="p-4 bg-green-50 border-green-100">
+            <Card className="p-4 bg-green-50 dark:bg-green-500/15 border-green-100">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-600">Completed</div>
+                  <div className="text-sm text-muted-foreground">Completed</div>
                   <div className="text-2xl font-bold text-green-600">{completedLessons}/{totalProgress}</div>
                 </div>
                 <TrendingUp className="w-8 h-8 text-green-400 opacity-50" />
               </div>
             </Card>
 
-            <Card className="p-4 bg-purple-50 border-purple-100">
+            <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-indigo-100">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-600">Avg Engagement</div>
-                  <div className="text-2xl font-bold text-purple-600">{avgEngagement}%</div>
+                  <div className="text-sm text-muted-foreground">Avg Engagement</div>
+                  <div className="text-2xl font-bold text-indigo-600">{avgEngagement}%</div>
                 </div>
-                <BarChart3 className="w-8 h-8 text-purple-400 opacity-50" />
+                <BarChart3 className="w-8 h-8 text-indigo-400 opacity-50" />
               </div>
             </Card>
 
-            <Card className="p-4 bg-red-50 border-red-100">
+            <Card className="p-4 bg-red-50 dark:bg-red-500/15 border-red-100">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-600">Total Lessons</div>
+                  <div className="text-sm text-muted-foreground">Total Lessons</div>
                   <div className="text-2xl font-bold text-red-600">{lessons.length}</div>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-red-400 opacity-50" />
@@ -150,16 +150,16 @@ export default function DetailedCourseAnalytics() {
 
       {/* Lesson Filter */}
       {lessons.length > 0 && (
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="bg-card border-b border-border px-6 py-4">
           <div className="max-w-7xl mx-auto">
-            <p className="text-sm font-semibold text-gray-700 mb-3">Filter by Lesson</p>
+            <p className="text-sm font-semibold text-foreground mb-3">Filter by Lesson</p>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setSelectedLesson(null)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                   !selectedLesson
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-muted text-foreground hover:bg-gray-200'
                 }`}
               >
                 All Lessons
@@ -171,7 +171,7 @@ export default function DetailedCourseAnalytics() {
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition truncate max-w-xs ${
                     selectedLesson === lesson.id
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-muted text-foreground hover:bg-gray-200'
                   }`}
                   title={lesson.title}
                 >

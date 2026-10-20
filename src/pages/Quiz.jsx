@@ -288,10 +288,10 @@ export default function Quiz() {
 
   if (loadingQuiz) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="p-8 text-center max-w-md">
           <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-gray-500">Loading quiz...</p>
+          <p className="text-muted-foreground">Loading quiz...</p>
         </Card>
       </div>
     );
@@ -299,11 +299,11 @@ export default function Quiz() {
 
   if (!quiz) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="p-8 text-center max-w-md">
           <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Quiz not found</h2>
-          <p className="text-gray-500 mb-6">This quiz may have been removed or doesn't exist.</p>
+          <h2 className="text-xl font-semibold text-foreground mb-2">Quiz not found</h2>
+          <p className="text-muted-foreground mb-6">This quiz may have been removed or doesn't exist.</p>
           <Link to={createPageUrl('Dashboard')}>
             <Button>Back to Dashboard</Button>
           </Link>
@@ -320,7 +320,7 @@ export default function Quiz() {
     const passed = lastAttempt?.passed || false;
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white p-4 sm:p-8">
+      <div className="min-h-screen bg-background p-4 sm:p-8">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -328,7 +328,7 @@ export default function Quiz() {
           >
             <Card className="overflow-hidden border-0 shadow-lg">
               {/* Results Header */}
-              <div className={`p-8 text-center ${passed ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-gradient-to-br from-orange-500 to-red-600'} text-white`}>
+              <div className={`p-8 text-center ${passed ? 'bg-indigo-600' : 'bg-indigo-600'} text-white`}>
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -354,22 +354,22 @@ export default function Quiz() {
               <div className="p-8">
                 <div className="grid grid-cols-3 gap-4 mb-8">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-gray-900 mb-1">{score}%</div>
-                    <div className="text-sm text-gray-500">Your Score</div>
+                    <div className="text-3xl font-bold text-foreground mb-1">{score}%</div>
+                    <div className="text-sm text-muted-foreground">Your Score</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-emerald-600 mb-1">{correctCount}/{totalQuestions}</div>
-                    <div className="text-sm text-gray-500">Correct</div>
+                    <div className="text-sm text-muted-foreground">Correct</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-indigo-600 mb-1">{attempts.length}</div>
-                    <div className="text-sm text-gray-500">Attempts</div>
+                    <div className="text-sm text-muted-foreground">Attempts</div>
                   </div>
                 </div>
 
                 {/* Question Review */}
                 <div className="space-y-4 mb-8">
-                  <h3 className="font-semibold text-gray-900 text-lg">Review Your Answers</h3>
+                  <h3 className="font-semibold text-foreground text-lg">Review Your Answers</h3>
                   {quiz.questions.map((question, idx) => {
                     const userAnswer = lastAttempt?.answers?.find(a => a.question_index === idx);
                     const isCorrect = userAnswer?.is_correct;
@@ -384,7 +384,7 @@ export default function Quiz() {
                             <XCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                           )}
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900 mb-2">
+                            <p className="font-medium text-foreground mb-2">
                               Question {idx + 1}: {question.question}
                             </p>
                             <div className="space-y-2">
@@ -393,10 +393,10 @@ export default function Quiz() {
                                   key={optIdx}
                                   className={`p-2 rounded-lg text-sm ${
                                     optIdx === question.correct_answer
-                                      ? 'bg-emerald-100 text-emerald-800 font-medium'
+                                      ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-medium'
                                       : selectedAnswer === optIdx && !isCorrect
-                                      ? 'bg-red-100 text-red-800'
-                                      : 'bg-white text-gray-600'
+                                      ? 'bg-red-100 dark:bg-red-500/15 text-red-800 dark:text-red-300'
+                                      : 'bg-card text-muted-foreground'
                                   }`}
                                 >
                                   {optIdx === question.correct_answer && '✓ '}
@@ -406,8 +406,8 @@ export default function Quiz() {
                               ))}
                             </div>
                             {question.explanation && (
-                              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                                <p className="text-sm text-blue-900">
+                              <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-500/15 rounded-lg">
+                                <p className="text-sm text-blue-900 dark:text-blue-300">
                                   <strong>Explanation:</strong> {question.explanation}
                                 </p>
                               </div>
@@ -452,7 +452,7 @@ export default function Quiz() {
     : answers[currentQuestion] !== undefined;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white p-4 sm:p-8">
+    <div className="min-h-screen bg-background p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -464,7 +464,7 @@ export default function Quiz() {
           </Link>
           {timeLeft !== null && (
             <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-              timeLeft < 60 ? 'bg-red-50 text-red-600' : 'bg-indigo-50 text-indigo-600'
+              timeLeft < 60 ? 'bg-red-50 dark:bg-red-500/15 text-red-600' : 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600'
             }`}>
               <Clock className="w-5 h-5" />
               <span className="font-semibold">{formatTime(timeLeft)}</span>
@@ -482,8 +482,8 @@ export default function Quiz() {
             {/* Quiz Header */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-gray-900">{quiz.title}</h1>
-                <Badge className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">
+                <h1 className="text-2xl font-bold text-foreground">{quiz.title}</h1>
+                <Badge className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-sm">
                   {currentQuestion + 1} / {quiz.questions.length}
                 </Badge>
               </div>
@@ -493,11 +493,11 @@ export default function Quiz() {
             {/* Question */}
             <div className="mb-8">
               <div className="flex items-start justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 flex-1">
+                <h2 className="text-xl font-semibold text-foreground flex-1">
                   {question.question}
                 </h2>
                 {question.marks && (
-                  <Badge className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm ml-4">
+                  <Badge className="bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full text-sm ml-4">
                     {question.marks} {question.marks === 1 ? 'mark' : 'marks'}
                   </Badge>
                 )}
@@ -515,11 +515,11 @@ export default function Quiz() {
                 <div className="space-y-4">
                   {question.text?.split('______').map((part, idx, arr) => (
                     <div key={idx} className="flex flex-wrap items-center gap-2">
-                      <span className="text-gray-700">{part}</span>
+                      <span className="text-foreground">{part}</span>
                       {idx < arr.length - 1 && (
                         <input
                           type="text"
-                          className="border-2 border-gray-300 rounded-lg px-3 py-2 min-w-[200px] focus:border-indigo-500 focus:outline-none"
+                          className="border-2 border-border rounded-lg px-3 py-2 min-w-[200px] focus:border-indigo-500 focus:outline-none"
                           placeholder={`Blank ${idx + 1}`}
                           value={answers[currentQuestion]?.[idx] || ''}
                           onChange={(e) => {
@@ -553,16 +553,16 @@ export default function Quiz() {
                           transition={{ delay: idx * 0.1 }}
                           className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
                             showResult && isCorrect
-                              ? 'border-emerald-500 bg-emerald-50'
+                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/15'
                               : showResult && !isCorrect
-                              ? 'border-red-500 bg-red-50'
+                              ? 'border-red-500 bg-red-50 dark:bg-red-500/15'
                               : isSelected
-                              ? 'border-indigo-500 bg-indigo-50'
-                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                              ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/15'
+                              : 'border-border hover:border-gray-300 bg-card'
                           }`}
                         >
                           <RadioGroupItem value={idx.toString()} id={`option-${idx}`} className="mt-1" />
-                          <Label htmlFor={`option-${idx}`} className="ml-3 flex-1 cursor-pointer text-gray-700">
+                          <Label htmlFor={`option-${idx}`} className="ml-3 flex-1 cursor-pointer text-foreground">
                             {option}
                           </Label>
                           {showResult && isCorrect && (
@@ -582,10 +582,10 @@ export default function Quiz() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+                  className="mt-4 p-4 bg-blue-50 dark:bg-blue-500/15 border border-blue-200 rounded-lg"
                 >
-                  <p className="text-sm font-medium text-blue-900 mb-1">💡 Explanation:</p>
-                  <p className="text-sm text-blue-800">{question.explanation}</p>
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-1">💡 Explanation:</p>
+                  <p className="text-sm text-blue-800 dark:text-blue-300">{question.explanation}</p>
                 </motion.div>
               )}
             </div>
@@ -629,10 +629,10 @@ export default function Quiz() {
         </motion.div>
 
         {/* Progress Tracker */}
-        <Card className="p-6 bg-gray-50 border-0 mb-4">
+        <Card className="p-6 bg-muted border-0 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">Progress</h3>
-            <span className="text-sm text-gray-500">
+            <h3 className="font-semibold text-foreground">Progress</h3>
+            <span className="text-sm text-muted-foreground">
               {Object.keys(questionStates).filter(k => questionStates[k].correct).length} correct
             </span>
           </div>
@@ -648,12 +648,12 @@ export default function Quiz() {
                   idx === currentQuestion
                     ? 'bg-indigo-600 text-white ring-2 ring-indigo-300'
                     : questionStates[idx]?.correct
-                    ? 'bg-emerald-100 text-emerald-700'
+                    ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
                     : questionStates[idx]?.answered
-                    ? 'bg-red-100 text-red-700'
+                    ? 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300'
                     : answers[idx] !== undefined
-                    ? 'bg-gray-300 text-gray-700'
-                    : 'bg-gray-100 text-gray-400'
+                    ? 'bg-gray-300 text-foreground'
+                    : 'bg-muted text-gray-400'
                 }`}
               >
                 {idx + 1}
@@ -663,23 +663,23 @@ export default function Quiz() {
         </Card>
 
         {/* Quiz Info */}
-        <Card className="p-6 bg-gray-50 border-0">
+        <Card className="p-6 bg-muted border-0">
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-gray-500 mb-1">Course</p>
-              <p className="font-medium text-gray-900">{course?.title}</p>
+              <p className="text-muted-foreground mb-1">Course</p>
+              <p className="font-medium text-foreground">{course?.title}</p>
             </div>
             <div>
-              <p className="text-gray-500 mb-1">Passing Score</p>
-              <p className="font-medium text-gray-900">{quiz.passing_score || 70}%</p>
+              <p className="text-muted-foreground mb-1">Passing Score</p>
+              <p className="font-medium text-foreground">{quiz.passing_score || 70}%</p>
             </div>
             <div>
-              <p className="text-gray-500 mb-1">Total Questions</p>
-              <p className="font-medium text-gray-900">{quiz.questions.length}</p>
+              <p className="text-muted-foreground mb-1">Total Questions</p>
+              <p className="font-medium text-foreground">{quiz.questions.length}</p>
             </div>
             <div>
-              <p className="text-gray-500 mb-1">Your Attempts</p>
-              <p className="font-medium text-gray-900">{attempts.length}</p>
+              <p className="text-muted-foreground mb-1">Your Attempts</p>
+              <p className="font-medium text-foreground">{attempts.length}</p>
             </div>
           </div>
         </Card>

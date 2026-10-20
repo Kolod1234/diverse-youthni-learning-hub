@@ -52,7 +52,7 @@ export default function HomeYouthWork() {
       )}
 
       {/* Hero Section */}
-      <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #059669, #047857, #065f46)', py: 12, overflow: 'hidden' }}>
+      <Box sx={{ position: 'relative', bgcolor: 'success.main', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -85,7 +85,7 @@ export default function HomeYouthWork() {
                   size="large"
                   endIcon={<ArrowRight size={24} />}
                   sx={{
-                    bgcolor: 'white',
+                    bgcolor: 'background.paper',
                     color: '#059669',
                     px: 5,
                     py: 2,

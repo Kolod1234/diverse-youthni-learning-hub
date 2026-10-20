@@ -258,12 +258,12 @@ export default function MessageCenter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Message Center</h1>
-          <p className="text-gray-500 mb-4">Direct messaging with tutors, coordinators and students</p>
+          <h1 className="text-3xl font-bold text-foreground mb-1">Message Center</h1>
+          <p className="text-muted-foreground mb-4">Direct messaging with tutors, coordinators and students</p>
           <div className="flex gap-2">
             <Button
               variant={viewMode === 'messages' ? 'default' : 'outline'}
@@ -294,7 +294,7 @@ export default function MessageCenter() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <MessageSquare className="w-5 h-5 text-indigo-600" />
-                    <h2 className="font-semibold text-gray-900">Conversations</h2>
+                    <h2 className="font-semibold text-foreground">Conversations</h2>
                     {unreadCount > 0 && <Badge className="bg-red-500 text-white">{unreadCount}</Badge>}
                   </div>
                   <Dialog open={showNewMessageDialog} onOpenChange={setShowNewMessageDialog}>
@@ -309,7 +309,7 @@ export default function MessageCenter() {
                       </DialogHeader>
                       <div className="space-y-4 pt-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">To:</label>
+                          <label className="block text-sm font-medium text-foreground mb-2">To:</label>
                           <select
                             value={newMessageRecipient}
                             onChange={(e) => setNewMessageRecipient(e.target.value)}
@@ -325,7 +325,7 @@ export default function MessageCenter() {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Message:</label>
+                          <label className="block text-sm font-medium text-foreground mb-2">Message:</label>
                           <Textarea
                             value={newMessageContent}
                             onChange={(e) => setNewMessageContent(e.target.value)}
@@ -358,7 +358,7 @@ export default function MessageCenter() {
 
               <ScrollArea className="flex-1 h-[580px]">
                 {sortedConversations.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500">
+                  <div className="p-8 text-center text-muted-foreground">
                     <MessageSquare className="w-10 h-10 mx-auto mb-3 text-gray-300" />
                     <p className="text-sm">No conversations yet.<br />Start one by clicking <strong>New</strong>.</p>
                   </div>
@@ -375,14 +375,14 @@ export default function MessageCenter() {
                           animate={{ opacity: 1 }}
                           onClick={() => handleSelectConv(conv)}
                           className={`p-4 cursor-pointer transition-colors ${
-                            isSelected ? 'bg-indigo-50 border-l-4 border-indigo-600' : 'hover:bg-gray-50'
+                            isSelected ? 'bg-indigo-50 dark:bg-indigo-500/15 border-l-4 border-indigo-600' : 'hover:bg-muted'
                           }`}
                         >
                           <div className="flex items-start gap-3">
                             <div className="relative shrink-0">
                               <Avatar className="w-10 h-10">
                                 <AvatarImage src={conv.contactUser?.avatar} />
-                                <AvatarFallback className="bg-indigo-100 text-indigo-700 font-semibold">
+                                <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-semibold">
                                   {name.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                               </Avatar>
@@ -394,7 +394,7 @@ export default function MessageCenter() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
-                                <p className={`font-medium text-sm truncate ${conv.unread > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
+                                <p className={`font-medium text-sm truncate ${conv.unread > 0 ? 'text-foreground' : 'text-foreground'}`}>
                                   {name}
                                 </p>
                                 {conv.lastMsg && (
@@ -405,7 +405,7 @@ export default function MessageCenter() {
                               </div>
                               {role && <p className="text-xs text-indigo-500 mb-0.5">{role}</p>}
                               {conv.lastMsg && (
-                                <p className={`text-xs truncate ${conv.unread > 0 ? 'text-gray-800 font-medium' : 'text-gray-500'}`}>
+                                <p className={`text-xs truncate ${conv.unread > 0 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
                                   {conv.lastMsg.sender_email === user?.email ? 'You: ' : ''}{conv.lastMsg.content}
                                 </p>
                               )}
@@ -424,7 +424,7 @@ export default function MessageCenter() {
               {selectedConv ? (
                 <>
                   {/* Chat Header */}
-                  <div className="p-4 border-b flex items-center gap-3 shrink-0 bg-white">
+                  <div className="p-4 border-b flex items-center gap-3 shrink-0 bg-card">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -435,12 +435,12 @@ export default function MessageCenter() {
                     </Button>
                     <Avatar className="w-10 h-10 shrink-0">
                       <AvatarImage src={selectedConv.contactUser?.avatar} />
-                      <AvatarFallback className="bg-indigo-100 text-indigo-700 font-semibold">
+                      <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-semibold">
                         {(selectedConv.contactUser?.full_name || selectedConv.contactEmail).charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-foreground">
                         {selectedConv.contactUser?.full_name || selectedConv.contactEmail}
                       </p>
                       {selectedConv.contactUser && (
@@ -482,7 +482,7 @@ export default function MessageCenter() {
                             {!isOwn && (
                               <Avatar className="w-7 h-7 mr-2 shrink-0 self-end">
                                 <AvatarImage src={msg.sender_avatar} />
-                                <AvatarFallback className="bg-gray-100 text-gray-600 text-xs">
+                                <AvatarFallback className="bg-muted text-muted-foreground text-xs">
                                   {msg.sender_name?.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
@@ -491,7 +491,7 @@ export default function MessageCenter() {
                               <div className={`rounded-2xl px-4 py-2.5 shadow-sm text-sm whitespace-pre-wrap leading-relaxed ${
                                 isOwn
                                   ? 'bg-indigo-600 text-white rounded-br-sm'
-                                  : 'bg-gray-100 text-gray-900 rounded-bl-sm'
+                                  : 'bg-muted text-foreground rounded-bl-sm'
                               }`}>
                                 {msg.content}
                               </div>
@@ -512,14 +512,14 @@ export default function MessageCenter() {
                   </ScrollArea>
 
                   {/* Input */}
-                  <div className="p-3 border-t bg-white shrink-0">
+                  <div className="p-3 border-t bg-card shrink-0">
                     <AnimatePresence>
                       {showEmojiPicker && (
                         <motion.div
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 8 }}
-                          className="flex flex-wrap gap-1.5 p-3 bg-gray-50 rounded-lg border mb-2"
+                          className="flex flex-wrap gap-1.5 p-3 bg-muted rounded-lg border mb-2"
                         >
                           {emojis.map(e => (
                             <button key={e} onClick={() => { setReplyText(prev => prev + e); setShowEmojiPicker(false); }} className="text-xl hover:scale-125 transition-transform">
@@ -569,7 +569,7 @@ export default function MessageCenter() {
                 <div className="flex-1 flex items-center justify-center text-center p-8">
                   <div>
                     <MessageSquare className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-500 mb-1">Select a conversation</h3>
+                    <h3 className="text-lg font-semibold text-muted-foreground mb-1">Select a conversation</h3>
                     <p className="text-sm text-gray-400">Choose from the list or start a new message</p>
                     <Button
                       className="mt-4 bg-indigo-600 hover:bg-indigo-700"
@@ -588,13 +588,13 @@ export default function MessageCenter() {
           <Card className="lg:col-span-3">
             <div className="p-4 border-b flex items-center gap-2">
               <Bell className="w-5 h-5 text-indigo-600" />
-              <h2 className="font-semibold text-gray-900">Notifications</h2>
+              <h2 className="font-semibold text-foreground">Notifications</h2>
               {unreadNotifCount > 0 && <Badge className="bg-red-500 text-white">{unreadNotifCount}</Badge>}
               {unreadNotifCount > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="ml-auto text-gray-500 hover:text-gray-700"
+                  className="ml-auto text-muted-foreground hover:text-gray-700"
                   onClick={() => notifications.filter(n => !n.is_read).forEach(n => markNotifReadMutation.mutate(n.id))}
                 >
                   Mark all read
@@ -621,17 +621,17 @@ export default function MessageCenter() {
                           if (notif.link) window.location.href = notif.link;
                         }}
                         className={`p-4 rounded-xl border cursor-pointer transition-all hover:shadow-sm flex items-start gap-3 ${
-                          notif.is_read ? 'bg-white opacity-70 border-gray-100' : 'bg-indigo-50 border-indigo-100'
+                          notif.is_read ? 'bg-card opacity-70 border-border' : 'bg-indigo-50 dark:bg-indigo-500/15 border-indigo-100'
                         }`}
                       >
-                        <div className={`p-2 rounded-lg shrink-0 ${notif.is_read ? 'bg-gray-100' : 'bg-indigo-100'}`}>
+                        <div className={`p-2 rounded-lg shrink-0 ${notif.is_read ? 'bg-muted' : 'bg-indigo-100 dark:bg-indigo-500/15'}`}>
                           <Icon className={`w-4 h-4 ${notif.is_read ? 'text-gray-400' : 'text-indigo-600'}`} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className={`font-medium text-sm ${notif.is_read ? 'text-gray-600' : 'text-gray-900'}`}>{notif.title}</p>
-                              <p className="text-sm text-gray-500 mt-0.5">{notif.message}</p>
+                              <p className={`font-medium text-sm ${notif.is_read ? 'text-muted-foreground' : 'text-foreground'}`}>{notif.title}</p>
+                              <p className="text-sm text-muted-foreground mt-0.5">{notif.message}</p>
                             </div>
                             {!notif.is_read && <Circle className="w-2 h-2 fill-indigo-600 text-indigo-600 shrink-0 mt-1.5" />}
                           </div>

@@ -60,13 +60,13 @@ export default function LearningPaths() {
   });
 
   const levelColors = {
-    beginner: 'bg-green-100 text-green-700',
-    intermediate: 'bg-yellow-100 text-yellow-700',
-    advanced: 'bg-red-100 text-red-700',
+    beginner: 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300',
+    intermediate: 'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300',
+    advanced: 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300',
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
+    <div className="min-h-screen bg-background py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -74,14 +74,14 @@ export default function LearningPaths() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Badge className="mb-4 bg-indigo-100 text-indigo-700">
+            <Badge className="mb-4 bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
               <Target className="w-3 h-3 mr-1" />
               Structured Learning
             </Badge>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
               Learning Paths
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Follow curated paths to master complete skill sets through multiple courses
             </p>
           </motion.div>
@@ -90,7 +90,7 @@ export default function LearningPaths() {
         {/* My Active Paths */}
         {myPathEnrollments.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Learning Paths</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">My Learning Paths</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {myPathEnrollments.map((enrollment) => {
                 const path = paths.find(p => p.id === enrollment.path_id);
@@ -100,23 +100,23 @@ export default function LearningPaths() {
                 const currentCourse = pathCourses[enrollment.current_course_index];
 
                 return (
-                  <Card key={enrollment.id} className="p-6 border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-white">
+                  <Card key={enrollment.id} className="p-6 border-2 border-indigo-200 bg-indigo-50 dark:bg-indigo-500/15">
                     <div className="flex items-start justify-between mb-4">
                       <Badge className={levelColors[path.difficulty_level]}>
                         {path.difficulty_level}
                       </Badge>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-muted-foreground">
                         {enrollment.current_course_index + 1}/{pathCourses.length}
                       </span>
                     </div>
                     
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{path.title}</h3>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{path.description}</p>
+                    <h3 className="text-xl font-bold text-foreground mb-2">{path.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{path.description}</p>
                     
                     <div className="mb-4">
                       <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="text-gray-600">Progress</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="text-muted-foreground">Progress</span>
+                        <span className="font-semibold text-foreground">
                           {Math.round(enrollment.progress_percent)}%
                         </span>
                       </div>
@@ -124,9 +124,9 @@ export default function LearningPaths() {
                     </div>
 
                     {currentCourse && (
-                      <div className="mb-4 p-3 bg-white rounded-lg border border-gray-200">
-                        <p className="text-xs text-gray-500 mb-1">Current Course:</p>
-                        <p className="text-sm font-medium text-gray-900">{currentCourse.title}</p>
+                      <div className="mb-4 p-3 bg-card rounded-lg border border-border">
+                        <p className="text-xs text-muted-foreground mb-1">Current Course:</p>
+                        <p className="text-sm font-medium text-foreground">{currentCourse.title}</p>
                       </div>
                     )}
 
@@ -145,7 +145,7 @@ export default function LearningPaths() {
 
         {/* All Paths */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">All Learning Paths</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">All Learning Paths</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paths.map((path) => {
               const pathCourses = allCourses.filter(c => path.course_ids?.includes(c.id));
@@ -158,7 +158,7 @@ export default function LearningPaths() {
                   animate={{ opacity: 1, y: 0 }}
                 >
                   <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-                    <div className="aspect-video bg-gradient-to-br from-indigo-500 to-purple-600 relative">
+                    <div className="aspect-video bg-indigo-600 relative">
                       {path.thumbnail ? (
                         <img src={path.thumbnail} alt={path.title} className="w-full h-full object-cover" />
                       ) : (
@@ -172,10 +172,10 @@ export default function LearningPaths() {
                     </div>
 
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{path.title}</h3>
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-3">{path.description}</p>
+                      <h3 className="text-xl font-bold text-foreground mb-2">{path.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{path.description}</p>
 
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                         <span className="flex items-center gap-1">
                           <BookOpen className="w-4 h-4" />
                           {pathCourses.length} courses
@@ -191,14 +191,14 @@ export default function LearningPaths() {
                       <div className="space-y-2 mb-4">
                         {pathCourses.slice(0, 3).map((course, idx) => (
                           <div key={course.id} className="flex items-center gap-2 text-sm">
-                            <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
-                              <span className="text-xs text-gray-600">{idx + 1}</span>
+                            <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center shrink-0">
+                              <span className="text-xs text-muted-foreground">{idx + 1}</span>
                             </div>
-                            <span className="text-gray-700 truncate">{course.title}</span>
+                            <span className="text-foreground truncate">{course.title}</span>
                           </div>
                         ))}
                         {pathCourses.length > 3 && (
-                          <p className="text-xs text-gray-500 ml-8">
+                          <p className="text-xs text-muted-foreground ml-8">
                             +{pathCourses.length - 3} more courses
                           </p>
                         )}

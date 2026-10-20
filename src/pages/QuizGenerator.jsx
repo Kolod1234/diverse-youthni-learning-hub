@@ -81,7 +81,7 @@ export default function QuizGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to={createPageUrl('TutorDashboard')} className="inline-flex items-center text-indigo-600 mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -90,23 +90,23 @@ export default function QuizGenerator() {
 
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-3">
-            <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center">
               <Brain className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Quiz Generator</h1>
-              <p className="text-gray-500">Create assessments with AI or build manually</p>
+              <h1 className="text-3xl font-bold text-foreground">Quiz Generator</h1>
+              <p className="text-muted-foreground">Create assessments with AI or build manually</p>
             </div>
           </div>
         </div>
 
         <Tabs defaultValue="create" className="w-full">
-          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
+          <TabsList className="bg-card border border-border p-1 rounded-xl mb-6">
             <TabsTrigger value="create" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
               <List className="w-4 h-4 mr-2" />
               Manual Builder
             </TabsTrigger>
-            <TabsTrigger value="ai" className="rounded-lg data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+            <TabsTrigger value="ai" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
               <Sparkles className="w-4 h-4 mr-2" />
               AI Generator
             </TabsTrigger>

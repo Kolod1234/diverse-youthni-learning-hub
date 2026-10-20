@@ -137,35 +137,35 @@ function AnswerBlock({ text, blockKey }) {
   const cleaned = cleanMathText(text);
   return (
     <MathJax key={blockKey} dynamic>
-      <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed text-base">
+      <div className="prose prose-sm max-w-none text-foreground leading-relaxed text-base">
         <ReactMarkdown
           components={{
-            p: ({ children }) => <p className="mb-4 leading-loose text-gray-800">{children}</p>,
-            strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
-            em: ({ children }) => <em className="italic text-gray-700">{children}</em>,
+            p: ({ children }) => <p className="mb-4 leading-loose text-foreground">{children}</p>,
+            strong: ({ children }) => <strong className="font-bold text-foreground">{children}</strong>,
+            em: ({ children }) => <em className="italic text-foreground">{children}</em>,
             ul: ({ children }) => <ul className="list-disc ml-6 mb-4 space-y-2">{children}</ul>,
             ol: ({ children }) => <ol className="list-decimal ml-6 mb-4 space-y-3">{children}</ol>,
-            li: ({ children }) => <li className="leading-loose text-gray-800">{children}</li>,
+            li: ({ children }) => <li className="leading-loose text-foreground">{children}</li>,
             h2: ({ children }) => (
-              <h2 className="text-base font-bold mt-6 mb-2 text-indigo-800 border-b border-indigo-100 pb-1">{children}</h2>
+              <h2 className="text-base font-bold mt-6 mb-2 text-indigo-800 dark:text-indigo-300 border-b border-indigo-100 pb-1">{children}</h2>
             ),
             h3: ({ children }) => (
-              <h3 className="text-sm font-bold mt-4 mb-1 text-gray-800">{children}</h3>
+              <h3 className="text-sm font-bold mt-4 mb-1 text-foreground">{children}</h3>
             ),
             code: ({ inline, children }) =>
               inline ? (
-                <code className="bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded text-sm font-mono text-amber-800">{children}</code>
+                <code className="bg-amber-50 dark:bg-amber-500/15 border border-amber-200 px-1.5 py-0.5 rounded text-sm font-mono text-amber-800 dark:text-amber-300">{children}</code>
               ) : (
-                <pre className="bg-gray-50 border border-gray-200 rounded-xl p-4 overflow-x-auto text-sm font-mono my-3">
+                <pre className="bg-muted border border-border rounded-xl p-4 overflow-x-auto text-sm font-mono my-3">
                   <code>{children}</code>
                 </pre>
               ),
             blockquote: ({ children }) => (
-              <blockquote className="border-l-4 border-green-400 bg-green-50 pl-4 pr-3 py-2 rounded-r-xl text-gray-700 my-4 italic">
+              <blockquote className="border-l-4 border-green-400 bg-green-50 dark:bg-green-500/15 pl-4 pr-3 py-2 rounded-r-xl text-foreground my-4 italic">
                 {children}
               </blockquote>
             ),
-            hr: () => <hr className="border-gray-200 my-4" />,
+            hr: () => <hr className="border-border my-4" />,
           }}
         >
           {cleaned}
@@ -495,10 +495,10 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
   return (
     <SolverAccessGate>
     <MathJaxContext config={mathJaxConfig}>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="min-h-screen bg-background">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-900 via-indigo-800 to-purple-800 text-white py-10 px-6">
+        <div className="bg-[#0b2f5c] text-white py-10 px-6">
           <div className="max-w-4xl mx-auto flex items-center gap-4">
             <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">🧠</div>
             <div>
@@ -511,30 +511,30 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
 
           {/* ── Input Card ── */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-6 space-y-5">
             <div className="flex items-center gap-2">
               <Brain className="w-5 h-5 text-indigo-600" />
-              <h2 className="font-semibold text-gray-800 text-lg">Your Question</h2>
+              <h2 className="font-semibold text-foreground text-lg">Your Question</h2>
             </div>
 
             {/* Subject & Qualification */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Subject</label>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Subject</label>
                 <select
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full h-10 border border-border rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
                 >
                   {SUBJECTS.map((s) => <option key={s}>{s}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Qualification</label>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Qualification</label>
                 <select
                   value={qualification}
                   onChange={(e) => setQualification(e.target.value)}
-                  className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full h-10 border border-border rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
                 >
                   {["GCSE", "AS-Level", "A-Level", "A2-Level"].map((q) => <option key={q}>{q}</option>)}
                 </select>
@@ -543,19 +543,19 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
             {/* Upload Zone */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-2">Upload Paper or Image</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-2">Upload Paper or Image</label>
               {uploadedFile ? (
-                <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-500/15 border border-blue-200 rounded-xl">
                   {uploadedFile.type === "image" && uploadedFile.preview ? (
                     <img src={uploadedFile.preview} alt="Uploaded" className="h-16 w-24 object-cover rounded-lg border border-blue-200" />
                   ) : (
-                    <div className="h-12 w-12 bg-red-100 rounded-lg flex items-center justify-center">
+                    <div className="h-12 w-12 bg-red-100 dark:bg-red-500/15 rounded-lg flex items-center justify-center">
                       <FileText className="w-6 h-6 text-red-500" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{uploadedFile.name}</p>
-                    <p className="text-xs text-gray-500 capitalize">{uploadedFile.type} file uploaded ✓</p>
+                    <p className="text-sm font-medium text-foreground truncate">{uploadedFile.name}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{uploadedFile.type} file uploaded ✓</p>
                   </div>
                   <button onClick={removeFile} className="p-1.5 rounded-full hover:bg-red-100 text-red-500 transition-all">
                     <X className="w-4 h-4" />
@@ -575,7 +575,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-purple-300 rounded-xl text-purple-600 hover:bg-purple-50 transition-all disabled:opacity-50"
+                    className="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-indigo-300 rounded-xl text-indigo-600 hover:bg-indigo-50 transition-all disabled:opacity-50"
                   >
                     {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-6 h-6" />}
                     <span className="text-xs font-medium">{uploading ? uploadProgress : "Upload Full Paper"}</span>
@@ -591,7 +591,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
             {/* Question text */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-muted-foreground mb-1">
                 Or type / paste a question <span className="text-gray-400">(optional if file uploaded)</span>
               </label>
               <textarea
@@ -599,31 +599,31 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                 onChange={(e) => setQuestionText(e.target.value)}
                 placeholder="e.g. A car travels 120 km in 1.5 hours. Calculate its average speed in m/s. Show all working. [3 marks]"
                 rows={4}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
             </div>
 
             {/* Marks */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Marks (optional)</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Marks (optional)</label>
               <input
                 type="number" min={1} max={25}
                 value={marks} onChange={(e) => setMarks(e.target.value)}
                 placeholder="e.g. 4"
-                className="w-32 h-9 border border-gray-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-32 h-9 border border-border rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             {/* Mode picker */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-2">What kind of help do you need?</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-2">What kind of help do you need?</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {SOLUTION_MODES.map((m) => (
                   <button key={m.id} onClick={() => setMode(m.id)}
-                    className={`p-3 rounded-xl border-2 text-left transition-all ${mode === m.id ? "border-blue-600 bg-blue-50" : "border-gray-200 hover:border-blue-300 bg-white"}`}
+                    className={`p-3 rounded-xl border-2 text-left transition-all ${mode === m.id ? "border-blue-600 bg-blue-50 dark:bg-blue-500/15" : "border-border hover:border-blue-300 bg-card"}`}
                   >
                     <div className="text-base mb-0.5">{m.emoji}</div>
-                    <div className={`text-xs font-semibold ${mode === m.id ? "text-blue-700" : "text-gray-700"}`}>{m.label}</div>
+                    <div className={`text-xs font-semibold ${mode === m.id ? "text-blue-700 dark:text-blue-300" : "text-foreground"}`}>{m.label}</div>
                     <div className="text-xs text-gray-400 mt-0.5 leading-tight">{m.desc}</div>
                   </button>
                 ))}
@@ -635,7 +635,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
               <button
                 onClick={solve}
                 disabled={solving || uploading || !hasInput || fullPaperSolving}
-                className="flex-1 min-w-[160px] bg-gradient-to-r from-blue-700 to-indigo-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
+                className="flex-1 min-w-[160px] bg-indigo-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
               >
                 {solving
                   ? <><Loader2 className="w-5 h-5 animate-spin" />Solving…</>
@@ -646,7 +646,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                 <button
                   onClick={solveFullPaper}
                   disabled={solving || uploading || fullPaperSolving}
-                  className="flex-1 min-w-[160px] bg-gradient-to-r from-purple-700 to-pink-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
+                  className="flex-1 min-w-[160px] bg-indigo-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
                 >
                   {fullPaperSolving
                     ? <><Loader2 className="w-5 h-5 animate-spin" />{fullPaperProgress || "Preparing paper…"}</>
@@ -656,7 +656,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
               {(solution || paperSolutions) && (
                 <button onClick={reset}
-                  className="px-4 py-3 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all flex items-center gap-2 text-sm"
+                  className="px-4 py-3 rounded-xl border border-border text-muted-foreground hover:bg-muted transition-all flex items-center gap-2 text-sm"
                 >
                   <RotateCcw className="w-4 h-4" />New
                 </button>
@@ -668,25 +668,25 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
           {paperSolutions && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 px-1">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                <h2 className="font-bold text-gray-800 text-lg">Full Paper Solutions</h2>
+                <Sparkles className="w-5 h-5 text-indigo-600" />
+                <h2 className="font-bold text-foreground text-lg">Full Paper Solutions</h2>
                 <div className="ml-auto flex items-center gap-3">
                   <SolutionExportButton solutions={paperSolutions} subject={subject} qualification={qualification} />
-                  <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{paperSolutions.length} questions</span>
+                  <span className="text-xs bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full">{paperSolutions.length} questions</span>
                 </div>
               </div>
-              <p className="px-1 text-xs text-gray-500">AI-generated worked solutions with CCEA-style checks; compare final answers with the official CCEA mark scheme.</p>
+              <p className="px-1 text-xs text-muted-foreground">AI-generated worked solutions with CCEA-style checks; compare final answers with the official CCEA mark scheme.</p>
               {paperSolutions.map((q, i) => (
-                <div key={i} className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
-                  <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3 flex items-center gap-3">
+                <div key={i} className="bg-card rounded-2xl shadow-sm border border-indigo-100 overflow-hidden">
+                  <div className="bg-indigo-600 px-5 py-3 flex items-center gap-3">
                     <span className="bg-white/20 text-white text-sm font-bold px-2.5 py-0.5 rounded-full">Q{q.number}</span>
-                    {q.marks && <span className="text-purple-100 text-xs">{q.marks} marks</span>}
+                    {q.marks && <span className="text-indigo-100 text-xs">{q.marks} marks</span>}
                     <p className="text-white text-sm line-clamp-1 flex-1">{q.text}</p>
                   </div>
                   <div className="px-6 py-5 space-y-4">
                     {/* Confidence badge */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Solution</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Solution</p>
                       {q.confidenceScore != null
                         ? <ConfidenceBadge score={q.confidenceScore} />
                         : <span className="text-xs text-gray-400 italic">Scoring confidence…</span>
@@ -696,7 +696,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                     <AnswerBlock text={q.answer} blockKey={q.answerKey} />
                     <StudentExtensionPanel key={q.answerKey} solution={{ ...q, uploadedFile }} />
                     {/* Feedback */}
-                    <div className="border-t border-gray-100 pt-3">
+                    <div className="border-t border-border pt-3">
                       <AnswerFeedback solutionMeta={q} />
                     </div>
                   </div>
@@ -707,8 +707,8 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
           {/* ── Single Solution Card ── */}
           {solution && (
-            <div className="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
+            <div className="bg-card rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
+              <div className="bg-indigo-600 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3 text-white">
                   <CheckCircle className="w-5 h-5" />
                   <div>
@@ -724,21 +724,21 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
               {/* Question recap */}
               {(solution.question || solution.uploadedFile) && (
-                <div className="px-6 pt-4 pb-3 bg-gray-50 border-b border-gray-100">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Question</p>
+                <div className="px-6 pt-4 pb-3 bg-muted border-b border-border">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Question</p>
                   <QuestionSourceImage file={solution.uploadedFile} />
                   {solution.uploadedFile && solution.uploadedFile.type !== "image" && (
-                    <div className="flex items-center gap-2 mb-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
                       <FileText className="w-4 h-4 text-red-500" /> {solution.uploadedFile.name}
                     </div>
                   )}
-                  {solution.question && <p className="text-sm text-gray-700">{solution.question}</p>}
+                  {solution.question && <p className="text-sm text-foreground">{solution.question}</p>}
                 </div>
               )}
 
               {/* Confidence badge */}
               <div className="px-6 pt-4 flex items-center gap-3 flex-wrap">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">AI Explanation</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">AI Explanation</p>
                 {solution.confidenceScore != null
                   ? <ConfidenceBadge score={solution.confidenceScore} />
                   : solving ? null : <span className="text-xs text-gray-400 italic animate-pulse">Calculating confidence…</span>
@@ -753,14 +753,14 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
               {/* Follow-up Q&As */}
               {solution.followUps?.length > 0 && (
-                <div className="border-t border-gray-100 px-6 py-4 space-y-5">
+                <div className="border-t border-border px-6 py-4 space-y-5">
                   {solution.followUps.map((fu, i) => (
                     <div key={i}>
                       <div className="flex items-start gap-2 mb-3">
-                        <span className="text-xs bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 font-medium shrink-0 mt-0.5">You</span>
-                        <p className="text-sm text-gray-700">{fu.question}</p>
+                        <span className="text-xs bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 rounded-full px-2 py-0.5 font-medium shrink-0 mt-0.5">You</span>
+                        <p className="text-sm text-foreground">{fu.question}</p>
                       </div>
-                      <div className="bg-indigo-50 rounded-xl px-5 py-4 border border-indigo-100">
+                      <div className="bg-indigo-50 dark:bg-indigo-500/15 rounded-xl px-5 py-4 border border-indigo-100">
                         <AnswerBlock text={fu.answer} blockKey={fu.answerKey} />
                       </div>
                     </div>
@@ -769,20 +769,20 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
               )}
 
               {/* Feedback + Follow-up */}
-              <div className="border-t border-gray-100 px-6 py-4 bg-gray-50 space-y-4">
+              <div className="border-t border-border px-6 py-4 bg-muted space-y-4">
                 {/* Feedback */}
                 <AnswerFeedback solutionMeta={solution} />
 
                 {/* Follow-up input */}
                 <div>
-                  <p className="text-xs font-semibold text-gray-500 mb-2">💬 Still confused? Ask a follow-up question…</p>
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">💬 Still confused? Ask a follow-up question…</p>
                   <div className="flex gap-2">
                     <input
                       type="text" value={followUp}
                       onChange={(e) => setFollowUp(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && askFollowUp()}
                       placeholder="e.g. Why do we divide by 1000 here?"
-                      className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="flex-1 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
                       disabled={followUpSolving}
                     />
                     <button
@@ -800,31 +800,31 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
           {/* ── History ── */}
           {history.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className="bg-card rounded-2xl shadow-sm border border-border">
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-2xl transition-all"
+                className="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-foreground hover:bg-muted rounded-2xl transition-all"
               >
                 <span className="flex items-center gap-2"><BookOpen className="w-4 h-4 text-indigo-500" />Recent Questions ({history.length})</span>
                 {showHistory ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
               {showHistory && (
-                <div className="divide-y divide-gray-100 border-t border-gray-100">
+                <div className="divide-y divide-gray-100 border-t border-border">
                   {history.map((h, i) => (
                     <button key={i} onClick={() => setSolution(h)}
                       className="w-full text-left px-6 py-3 hover:bg-indigo-50 transition-all"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm text-gray-700 line-clamp-1 flex-1">{h.question || (h.uploadedFile?.name) || "(File question)"}</p>
+                        <p className="text-sm text-foreground line-clamp-1 flex-1">{h.question || (h.uploadedFile?.name) || "(File question)"}</p>
                         <div className="flex items-center gap-2 shrink-0">
                           {h.confidenceScore != null && (
                             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                              h.confidenceScore >= 85 ? "bg-green-100 text-green-700" :
-                              h.confidenceScore >= 60 ? "bg-amber-100 text-amber-700" :
-                              "bg-red-100 text-red-700"
+                              h.confidenceScore >= 85 ? "bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300" :
+                              h.confidenceScore >= 60 ? "bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300" :
+                              "bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300"
                             }`}>{h.confidenceScore}%</span>
                           )}
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{h.subject}</span>
+                          <span className="text-xs bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">{h.subject}</span>
                           <span className="text-xs text-gray-400">{h.timestamp}</span>
                         </div>
                       </div>

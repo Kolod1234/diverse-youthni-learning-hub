@@ -125,13 +125,13 @@ export default function AdminEvents() {
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Calendar size={28} color="#003366" />
+          <Calendar size={28} color="#0b2f5c" />
           <Box>
             <Typography variant="h4" fontWeight={700}>Event Manager</Typography>
             <Typography color="text.secondary">Create and manage events with RSVP tracking</Typography>
           </Box>
         </Box>
-        <Button variant="contained" startIcon={<Plus size={18} />} onClick={openCreate} sx={{ bgcolor: '#003366', '&:hover': { bgcolor: '#002244' } }}>
+        <Button variant="contained" startIcon={<Plus size={18} />} onClick={openCreate} sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}>
           New Event
         </Button>
       </Box>
@@ -217,7 +217,7 @@ export default function AdminEvents() {
                   <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Avatar sx={{ width: 36, height: 36, bgcolor: '#003366', fontSize: 14 }}>
+                        <Avatar sx={{ width: 36, height: 36, bgcolor: '#0b2f5c', fontSize: 14 }}>
                           {rsvp.user_name?.[0] || '?'}
                         </Avatar>
                         <Box>
@@ -311,7 +311,7 @@ export default function AdminEvents() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave} disabled={createMutation.isPending || updateMutation.isPending} sx={{ bgcolor: '#003366', '&:hover': { bgcolor: '#002244' } }}>
+          <Button variant="contained" onClick={handleSave} disabled={createMutation.isPending || updateMutation.isPending} sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}>
             {editingEvent ? 'Save Changes' : 'Create Event'}
           </Button>
         </DialogActions>

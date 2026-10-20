@@ -47,7 +47,7 @@ export default function ChallengeLeaderboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto py-8">
         <Button
           variant="ghost"
@@ -60,8 +60,8 @@ export default function ChallengeLeaderboard() {
 
         <Card className="p-6 mb-6">
           <h1 className="text-3xl font-bold mb-2">{challenge?.title}</h1>
-          <p className="text-gray-600 mb-4">{challenge?.description}</p>
-          <div className="flex gap-4 text-sm text-gray-600">
+          <p className="text-muted-foreground mb-4">{challenge?.description}</p>
+          <div className="flex gap-4 text-sm text-muted-foreground">
             <span>👥 {participants.length} participants</span>
             <span>🏆 {challenge?.points_reward} XP reward</span>
           </div>
@@ -78,7 +78,7 @@ export default function ChallengeLeaderboard() {
                 transition={{ delay: i * 0.2 }}
                 className={`text-center ${i === 1 ? 'order-first' : ''}`}
               >
-                <div className={`bg-gradient-to-br ${getRankColor(p?.rank)} text-white rounded-lg p-6 mb-2`}>
+                <div className={`bg-[#0b2f5c] text-white rounded-lg p-6 mb-2`}>
                   <div className="mb-2">{getRankIcon(p?.rank)}</div>
                   <Avatar className="w-16 h-16 mx-auto mb-2 border-4 border-white">
                     <AvatarFallback>{p?.username?.charAt(0)}</AvatarFallback>
@@ -107,7 +107,7 @@ export default function ChallengeLeaderboard() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
                 className={`flex items-center gap-4 p-4 rounded-lg ${
-                  participant.rank <= 3 ? 'bg-gradient-to-r ' + getRankColor(participant.rank) + ' text-white' : 'bg-gray-50'
+                  participant.rank <= 3 ? 'bg-gradient-to-r ' + getRankColor(participant.rank) + ' text-white' : 'bg-muted'
                 }`}
               >
                 <div className="font-bold text-2xl w-8 text-center">
@@ -137,7 +137,7 @@ export default function ChallengeLeaderboard() {
           </div>
 
           {participants.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-muted-foreground">
               <Trophy className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <p>No one has completed this challenge yet. Be the first!</p>
             </div>

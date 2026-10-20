@@ -152,7 +152,7 @@ export default function AdminTutorMonitor() {
         </Box>
 
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2, mb: 3 }}>
-          {renderStat('Active Tutors', tutors.length, SchoolIcon, '#f3e8ff', '#9333ea')}
+          {renderStat('Active Tutors', tutors.length, SchoolIcon, '#f3e8ff', '#4f46e5')}
           {renderStat('Total Bookings', bookings.length, CalendarTodayIcon, '#dbeafe', '#2563eb')}
           {renderStat('Ungraded Submissions', submissions.length, ErrorOutlineIcon, '#fee2e2', '#dc2626')}
         </Box>

@@ -74,7 +74,7 @@ export default function AdminUserProfile() {
   if (!currentUser || !targetUser) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <CircularProgress sx={{ color: '#ea580c' }} />
+        <CircularProgress sx={{ color: '#4f46e5' }} />
       </Box>
     );
   }
@@ -93,7 +93,7 @@ export default function AdminUserProfile() {
           </Button>
           <Card sx={{ p: 3 }}>
             <Stack direction="row" spacing={3} alignItems="flex-start">
-              <Avatar src={targetUser.avatar} sx={{ width: 96, height: 96, bgcolor: '#ffedd5', color: '#ea580c', fontSize: '2rem' }}>
+              <Avatar src={targetUser.avatar} sx={{ width: 96, height: 96, bgcolor: '#ffedd5', color: '#4f46e5', fontSize: '2rem' }}>
                 {targetUser.full_name?.charAt(0) || 'U'}
               </Avatar>
               <Box sx={{ flex: 1 }}>
@@ -122,7 +122,7 @@ export default function AdminUserProfile() {
           {[
             { label: 'Enrolled Courses', value: enrollments.length, Icon: MenuBookIcon, bg: '#dbeafe', color: '#2563eb' },
             { label: 'Completed', value: completedEnrollments.length, Icon: EmojiEventsIcon, bg: '#dcfce7', color: '#16a34a' },
-            { label: 'Avg Progress', value: `${Math.round(totalProgress)}%`, Icon: TrendingUpIcon, bg: '#f3e8ff', color: '#9333ea' },
+            { label: 'Avg Progress', value: `${Math.round(totalProgress)}%`, Icon: TrendingUpIcon, bg: '#f3e8ff', color: '#4f46e5' },
             { label: 'Messages Sent', value: messages.length, Icon: ChatIcon, bg: '#fef3c7', color: '#d97706' },
           ].map((s) => (
             <Card key={s.label} sx={{ p: 2 }}>
@@ -157,7 +157,7 @@ export default function AdminUserProfile() {
                     <Box sx={{ flex: 1 }}>
                       <Typography fontWeight={600} sx={{ mb: 1 }}>{course?.title || 'Unknown Course'}</Typography>
                       <Stack direction="row" spacing={2} alignItems="center" sx={{ maxWidth: 400 }}>
-                        <LinearProgress variant="determinate" value={enrollment.progress_percent || 0} sx={{ flex: 1, height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { bgcolor: '#ea580c' } }} />
+                        <LinearProgress variant="determinate" value={enrollment.progress_percent || 0} sx={{ flex: 1, height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { bgcolor: '#4f46e5' } }} />
                         <Typography variant="body2" fontWeight={500}>{enrollment.progress_percent || 0}%</Typography>
                       </Stack>
                       <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
@@ -253,7 +253,7 @@ export default function AdminUserProfile() {
         {tab === 'points' && (
           <Card sx={{ p: 3 }}>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-              <EmojiEventsIcon sx={{ fontSize: 22, color: '#ea580c' }} />
+              <EmojiEventsIcon sx={{ fontSize: 22, color: '#4f46e5' }} />
               <Typography fontWeight={700}>Ranking Points Breakdown</Typography>
             </Stack>
             <PointsBreakdownPanel userId={userId} />

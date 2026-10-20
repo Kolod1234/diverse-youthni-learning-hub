@@ -169,10 +169,10 @@ export default function VideoSession() {
 
   if (loadingSession) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="p-8 text-center">
           <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading session...</p>
+          <p className="text-muted-foreground">Loading session...</p>
         </Card>
       </div>
     );
@@ -180,13 +180,13 @@ export default function VideoSession() {
 
   if (sessionError || !session) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="p-8 text-center max-w-md">
           <Video className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
             {sessionError ? 'Error Loading Session' : 'Session Not Found'}
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             {sessionError ? 'There was an error loading the session. Please try again.' : 'This session may have been removed or doesn\'t exist.'}
           </p>
           <Link to={createPageUrl('Dashboard')}>
@@ -199,11 +199,11 @@ export default function VideoSession() {
 
   if (!canJoin) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="p-8 text-center max-w-md">
           <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600 mb-6">You are not invited to this session.</p>
+          <h2 className="text-xl font-semibold text-foreground mb-2">Access Denied</h2>
+          <p className="text-muted-foreground mb-6">You are not invited to this session.</p>
           <Link to={createPageUrl('Dashboard')}>
             <Button>Back to Dashboard</Button>
           </Link>
@@ -213,7 +213,7 @@ export default function VideoSession() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to={createPageUrl('Dashboard')}>
           <Button variant="ghost" className="mb-4">
@@ -224,7 +224,7 @@ export default function VideoSession() {
 
         <Card className="overflow-hidden">
           {/* Session Header */}
-          <div className="bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-8">
+          <div className="bg-indigo-600 text-white p-8">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
@@ -232,7 +232,7 @@ export default function VideoSession() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold mb-1">{session.title}</h1>
-                  <p className="text-purple-100">{course?.title}</p>
+                  <p className="text-indigo-100">{course?.title}</p>
                 </div>
               </div>
               <Badge className={
@@ -246,14 +246,14 @@ export default function VideoSession() {
             </div>
 
             {session.description && (
-              <p className="text-purple-100 mb-4">{session.description}</p>
+              <p className="text-indigo-100 mb-4">{session.description}</p>
             )}
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
                 <div>
-                  <p className="text-xs text-purple-200">Date</p>
+                  <p className="text-xs text-indigo-200">Date</p>
                   <p className="font-medium">
                     {sessionDateTime && format(sessionDateTime, 'MMM d, yyyy')}
                   </p>
@@ -262,7 +262,7 @@ export default function VideoSession() {
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />
                 <div>
-                  <p className="text-xs text-purple-200">Time</p>
+                  <p className="text-xs text-indigo-200">Time</p>
                   <p className="font-medium">
                     {session.scheduled_time} ({session.duration_minutes} min)
                   </p>
@@ -271,7 +271,7 @@ export default function VideoSession() {
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
                 <div>
-                  <p className="text-xs text-purple-200">Participants</p>
+                  <p className="text-xs text-indigo-200">Participants</p>
                   <p className="font-medium">{session.invited_students?.length || 0} students</p>
                 </div>
               </div>
@@ -281,13 +281,13 @@ export default function VideoSession() {
           {/* Session Content */}
           <div className="p-8">
             <div className="mb-6">
-              <h3 className="font-semibold text-gray-900 mb-2">About this session</h3>
-              <p className="text-gray-600">
+              <h3 className="font-semibold text-foreground mb-2">About this session</h3>
+              <p className="text-muted-foreground">
                 Join this live video session to learn directly from your tutor. The session will open in Google Meet in a new tab.
               </p>
               {session.meet_link && (
-                <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-sm text-green-800 flex items-center gap-2">
+                <div className="mt-3 p-3 bg-green-50 dark:bg-green-500/15 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800 dark:text-green-300 flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" />
                     Google Meet link is ready
                   </p>
@@ -296,19 +296,19 @@ export default function VideoSession() {
             </div>
 
             <div className="mb-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Session Details</h3>
+              <h3 className="font-semibold text-foreground mb-3">Session Details</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Instructor:</span>
-                  <span className="font-medium text-gray-900">{session.tutor_name}</span>
+                  <span className="text-muted-foreground">Instructor:</span>
+                  <span className="font-medium text-foreground">{session.tutor_name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Course:</span>
-                  <span className="font-medium text-gray-900">{course?.title}</span>
+                  <span className="text-muted-foreground">Course:</span>
+                  <span className="font-medium text-foreground">{course?.title}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Duration:</span>
-                  <span className="font-medium text-gray-900">{session.duration_minutes} minutes</span>
+                  <span className="text-muted-foreground">Duration:</span>
+                  <span className="font-medium text-foreground">{session.duration_minutes} minutes</span>
                 </div>
               </div>
             </div>
@@ -316,12 +316,12 @@ export default function VideoSession() {
             {/* Action Buttons */}
             <div className="flex gap-3">
               {session.status === 'completed' ? (
-                <div className="flex-1 p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+                <div className="flex-1 p-4 bg-muted rounded-lg border border-border text-center">
                   <CheckCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600 font-medium">This session has ended</p>
+                  <p className="text-muted-foreground font-medium">This session has ended</p>
                 </div>
               ) : session.status === 'cancelled' ? (
-                <div className="flex-1 p-4 bg-red-50 rounded-lg border border-red-200 text-center">
+                <div className="flex-1 p-4 bg-red-50 dark:bg-red-500/15 rounded-lg border border-red-200 text-center">
                   <XCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
                   <p className="text-red-600 font-medium">This session has been cancelled</p>
                 </div>
@@ -330,7 +330,7 @@ export default function VideoSession() {
                   <Button
                     onClick={handleResumeSession}
                     disabled={generatingMeet}
-                    className="flex-1 h-14 text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                    className="flex-1 h-14 text-lg bg-indigo-600 hover:bg-indigo-700"
                   >
                     <PlayCircle className="w-5 h-5 mr-2" />
                     {generatingMeet ? 'Generating link…' : (session.meet_link ? 'Join Google Meet' : (isTutor ? 'Generate Meet Link' : 'Waiting for tutor…'))}
@@ -354,7 +354,7 @@ export default function VideoSession() {
                 <Button
                   onClick={handleStartSession}
                   disabled={(!isScheduledNow && !isTutor) || generatingMeet}
-                  className="flex-1 h-14 text-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                  className="flex-1 h-14 text-lg bg-indigo-600 hover:bg-indigo-700"
                 >
                   <Video className="w-5 h-5 mr-2" />
                   {generatingMeet ? 'Generating link…' : (isTutor ? 'Start Google Meet' : 'Join Google Meet')}
@@ -411,9 +411,9 @@ export default function VideoSession() {
 
             {/* Recording Player */}
             {session.recording_url && session.status === 'completed' && (
-              <div className="mt-6 p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <Video className="w-5 h-5 text-purple-600" />
+              <div className="mt-6 p-6 bg-indigo-50 dark:bg-indigo-500/15 rounded-lg border border-indigo-200">
+                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <Video className="w-5 h-5 text-indigo-600" />
                   Session Recording Available
                 </h3>
                 <video 
@@ -427,7 +427,7 @@ export default function VideoSession() {
                   <a 
                     href={session.recording_url} 
                     download 
-                    className="flex-1 text-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                    className="flex-1 text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
                   >
                     Download Recording
                   </a>

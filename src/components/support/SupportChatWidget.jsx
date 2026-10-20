@@ -70,7 +70,7 @@ function RatingModal({ onSubmit, onSkip }) {
             disabled={rating === 0}
             style={{
               flex: 2, padding: '8px 0', border: 'none', borderRadius: 8,
-              background: rating > 0 ? '#003366' : '#e2e8f0',
+              background: rating > 0 ? '#0b2f5c' : '#e2e8f0',
               color: rating > 0 ? 'white' : '#94a3b8',
               cursor: rating > 0 ? 'pointer' : 'not-allowed', fontSize: 13, fontWeight: 600
             }}
@@ -299,7 +299,7 @@ export default function SupportChatWidget() {
             )}
 
             {/* Header */}
-            <div style={{ background: '#003366', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+            <div style={{ background: '#0b2f5c', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <MessageCircle size={18} color="white" />
@@ -343,7 +343,7 @@ export default function SupportChatWidget() {
                 return (
                   <div key={msg.id || i} style={{ display: 'flex', flexDirection: isUser ? 'row-reverse' : 'row', alignItems: 'flex-end', gap: 8 }}>
                     {!isUser && (
-                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: isBot ? '#6366f1' : '#003366', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: isBot ? '#6366f1' : '#0b2f5c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         {isBot ? <Bot size={14} color="white" /> : <User size={14} color="white" />}
                       </div>
                     )}
@@ -351,7 +351,7 @@ export default function SupportChatWidget() {
                       maxWidth: '75%',
                       padding: '9px 12px',
                       borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                      background: isUser ? '#003366' : 'white',
+                      background: isUser ? '#0b2f5c' : 'white',
                       color: isUser ? 'white' : '#1e293b',
                       fontSize: 13,
                       lineHeight: 1.5,
@@ -362,7 +362,7 @@ export default function SupportChatWidget() {
                         <ReactMarkdown
                           components={{
                             p: ({ children }) => <span style={{ display: 'block', margin: 0 }}>{children}</span>,
-                            strong: ({ children }) => <strong style={{ color: isUser ? 'white' : '#003366' }}>{children}</strong>
+                            strong: ({ children }) => <strong style={{ color: isUser ? 'white' : '#0b2f5c' }}>{children}</strong>
                           }}
                         >
                           {msg.content}
@@ -388,7 +388,7 @@ export default function SupportChatWidget() {
               {/* User typing indicator */}
               {userTyping && !sending && (
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', gap: 8 }}>
-                  <div style={{ background: '#003366', borderRadius: '16px 16px 4px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', opacity: 0.7 }}>
+                  <div style={{ background: '#0b2f5c', borderRadius: '16px 16px 4px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', opacity: 0.7 }}>
                     <TypingDots />
                   </div>
                 </div>
@@ -422,7 +422,7 @@ export default function SupportChatWidget() {
                 onClick={handleSend}
                 disabled={!input.trim() || sending || isChatClosed}
                 style={{
-                  background: input.trim() && !isChatClosed ? '#003366' : '#e2e8f0', border: 'none', borderRadius: 10,
+                  background: input.trim() && !isChatClosed ? '#0b2f5c' : '#e2e8f0', border: 'none', borderRadius: 10,
                   width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: input.trim() && !isChatClosed ? 'pointer' : 'not-allowed', transition: 'background 0.2s', flexShrink: 0
                 }}
@@ -440,7 +440,7 @@ export default function SupportChatWidget() {
         whileTap={{ scale: 0.95 }}
         onClick={() => { setOpen(o => !o); setMinimized(false); setUnread(0); }}
         style={{
-          width: 52, height: 52, borderRadius: '50%', background: '#003366',
+          width: 52, height: 52, borderRadius: '50%', background: '#0b2f5c',
           border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 16px rgba(0,51,102,0.35)', position: 'relative'
         }}

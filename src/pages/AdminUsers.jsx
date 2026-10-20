@@ -143,7 +143,7 @@ export default function AdminUsers() {
               onClick={() => setShowInvite(!showInvite)}
               variant="contained"
               startIcon={<PersonAddIcon />}
-              sx={{ bgcolor: '#ea580c', '&:hover': { bgcolor: '#c2410c' } }}
+              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#c2410c' } }}
             >
               Invite User
             </Button>
@@ -170,7 +170,7 @@ export default function AdminUsers() {
                   onClick={handleInvite}
                   disabled={inviteMutation.isPending}
                   variant="contained"
-                  sx={{ bgcolor: '#ea580c', '&:hover': { bgcolor: '#c2410c' } }}
+                  sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#c2410c' } }}
                 >
                   {inviteMutation.isPending ? <CircularProgress size={20} sx={{ color: 'white' }} /> : 'Invite'}
                 </Button>
@@ -217,7 +217,7 @@ export default function AdminUsers() {
           </Card>
           <Card sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar sx={{ bgcolor: '#ffedd5', color: '#ea580c', width: 48, height: 48 }}><ShieldIcon /></Avatar>
+              <Avatar sx={{ bgcolor: '#ffedd5', color: '#4f46e5', width: 48, height: 48 }}><ShieldIcon /></Avatar>
               <Box>
                 <Typography variant="caption" color="text.secondary">Admins</Typography>
                 <Typography variant="h5" fontWeight={700}>{users.filter(u => u.role === 'admin').length}</Typography>
@@ -264,7 +264,7 @@ export default function AdminUsers() {
                     <TableRow key={user.id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                          <Avatar src={user.avatar} sx={{ bgcolor: '#ffedd5', color: '#ea580c' }}>
+                          <Avatar src={user.avatar} sx={{ bgcolor: '#ffedd5', color: '#4f46e5' }}>
                             {user.full_name?.charAt(0) || 'U'}
                           </Avatar>
                           <Typography variant="body2" fontWeight={500}>{user.full_name || 'Unknown'}</Typography>
@@ -337,7 +337,7 @@ export default function AdminUsers() {
       <Dialog open={!!messageUser} onClose={() => setMessageUser(null)} maxWidth="sm" fullWidth>
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Avatar sx={{ bgcolor: '#ffedd5', color: '#ea580c', width: 40, height: 40 }}><SendIcon /></Avatar>
+            <Avatar sx={{ bgcolor: '#ffedd5', color: '#4f46e5', width: 40, height: 40 }}><SendIcon /></Avatar>
             <Box>
               <Typography variant="h6" fontWeight={700}>Send Email</Typography>
               <Typography variant="caption" color="text.secondary">
@@ -378,7 +378,7 @@ export default function AdminUsers() {
             disabled={sendEmailMutation.isPending}
             variant="contained"
             startIcon={sendEmailMutation.isPending ? <CircularProgress size={16} sx={{ color: 'white' }} /> : <SendIcon />}
-            sx={{ bgcolor: '#ea580c', '&:hover': { bgcolor: '#c2410c' } }}
+            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#c2410c' } }}
           >
             {sendEmailMutation.isPending ? 'Sending...' : 'Send Email'}
           </Button>
@@ -389,7 +389,7 @@ export default function AdminUsers() {
       <Dialog open={showBulkEmail} onClose={() => setShowBulkEmail(false)} maxWidth="sm" fullWidth>
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Avatar sx={{ bgcolor: '#ffedd5', color: '#ea580c', width: 40, height: 40 }}><PeopleIcon /></Avatar>
+            <Avatar sx={{ bgcolor: '#ffedd5', color: '#4f46e5', width: 40, height: 40 }}><PeopleIcon /></Avatar>
             <Box>
               <Typography variant="h6" fontWeight={700}>Send Bulk Email</Typography>
               <Typography variant="caption" color="text.secondary">To {selectedUsers.length} selected users</Typography>
@@ -438,7 +438,7 @@ export default function AdminUsers() {
             onClick={handleBulkEmail}
             variant="contained"
             startIcon={<SendIcon />}
-            sx={{ bgcolor: '#ea580c', '&:hover': { bgcolor: '#c2410c' } }}
+            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#c2410c' } }}
           >
             Send to All
           </Button>

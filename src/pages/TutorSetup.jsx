@@ -69,7 +69,7 @@ export default function TutorSetup() {
 
   if (!isUnlocked) {
     return (
-      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
         <Card sx={{ width: '100%', maxWidth: 448, p: 4, borderRadius: 4, boxShadow: 6 }}>
           <Stack spacing={3} alignItems="center">
             <Avatar sx={{ width: 64, height: 64, bgcolor: '#e0e7ff', borderRadius: 3 }}>
@@ -104,10 +104,10 @@ export default function TutorSetup() {
   if (!user) return null;
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Container maxWidth="md" sx={{ py: 6 }}>
         <Stack alignItems="center" spacing={2} sx={{ mb: 4 }}>
-          <Avatar sx={{ width: 64, height: 64, background: 'linear-gradient(to bottom right, #4f46e5, #7c3aed)', borderRadius: 3 }}>
+          <Avatar sx={{ width: 64, height: 64, bgcolor: '#4f46e5', borderRadius: 3 }}>
             <SchoolIcon sx={{ fontSize: 32, color: 'white' }} />
           </Avatar>
           <Typography variant="h4" fontWeight={700}>Set Up Your Tutor Profile</Typography>

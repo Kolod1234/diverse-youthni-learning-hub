@@ -105,17 +105,17 @@ export default function WelcomeCover() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0b2f5c] flex items-center justify-center">
         <div className="text-white">Loading...</div>
       </div>);
 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0b2f5c] relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
+        <div className="absolute -top-1/2 -left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
         <div className="absolute top-1/3 -right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
         <div className="absolute -bottom-1/4 left-1/3 w-96 h-96 bg-green-500/20 rounded-full blur-3xl" />
       </div>
@@ -159,11 +159,11 @@ export default function WelcomeCover() {
                       alt={pathway.title}
                       className="w-full h-full object-cover" />
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute inset-0 bg-indigo-600" />
                     </div>
                   }
                   <div className="p-6 flex flex-col flex-grow">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${pathway.gradient} flex items-center justify-center mb-4 ${pathway.image ? '-mt-14 relative z-10 border-4 border-white/20' : ''}`}>
+                    <div className={`w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center mb-4 ${pathway.image ? '-mt-14 relative z-10 border-4 border-white/20' : ''}`}>
                       <Icon className="w-8 h-8 text-white" />
                     </div>
                     
@@ -181,7 +181,7 @@ export default function WelcomeCover() {
                     
                     <Button
                       onClick={() => handleSelectInterest(pathway.id)}
-                      className={`w-full bg-gradient-to-r ${pathway.gradient} hover:opacity-90 text-white border-0`}>
+                      className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0`}>
 
                       {user ? 'Get Started' : 'Sign In & Continue'}
                     </Button>

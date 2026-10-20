@@ -33,7 +33,7 @@ export default function Challenges() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -41,42 +41,42 @@ export default function Challenges() {
             <Trophy className="w-10 h-10 text-yellow-600" />
             Challenges Arena
           </h1>
-          <p className="text-gray-600">Compete, learn, and earn rewards!</p>
+          <p className="text-muted-foreground">Compete, learn, and earn rewards!</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-blue-600">
+          <div className="bg-card rounded-lg p-4 shadow-sm border-l-4 border-blue-600">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Available</p>
+                <p className="text-sm text-muted-foreground">Available</p>
                 <p className="text-2xl font-bold">{challenges.length}</p>
               </div>
               <Target className="w-8 h-8 text-blue-600" />
             </div>
           </div>
-          <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-600">
+          <div className="bg-card rounded-lg p-4 shadow-sm border-l-4 border-green-600">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Completed</p>
+                <p className="text-sm text-muted-foreground">Completed</p>
                 <p className="text-2xl font-bold">{myChallenges.filter(c => c.status === 'completed').length}</p>
               </div>
               <Zap className="w-8 h-8 text-green-600" />
             </div>
           </div>
-          <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-purple-600">
+          <div className="bg-card rounded-lg p-4 shadow-sm border-l-4 border-indigo-600">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">In Progress</p>
+                <p className="text-sm text-muted-foreground">In Progress</p>
                 <p className="text-2xl font-bold">{myChallenges.filter(c => c.status === 'in_progress').length}</p>
               </div>
-              <Users className="w-8 h-8 text-purple-600" />
+              <Users className="w-8 h-8 text-indigo-600" />
             </div>
           </div>
-          <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-yellow-600">
+          <div className="bg-card rounded-lg p-4 shadow-sm border-l-4 border-yellow-600">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total XP</p>
+                <p className="text-sm text-muted-foreground">Total XP</p>
                 <p className="text-2xl font-bold">
                   {myChallenges.reduce((sum, c) => sum + (c.score || 0), 0)}
                 </p>
@@ -128,9 +128,9 @@ export default function Challenges() {
               ))}
             </div>
             {filteredChallenges.length === 0 && (
-              <div className="text-center py-16 bg-white rounded-lg">
+              <div className="text-center py-16 bg-card rounded-lg">
                 <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-600">No challenges found</p>
+                <p className="text-muted-foreground">No challenges found</p>
               </div>
             )}
           </TabsContent>
@@ -143,9 +143,9 @@ export default function Challenges() {
               })}
             </div>
             {myChallenges.length === 0 && (
-              <div className="text-center py-16 bg-white rounded-lg">
+              <div className="text-center py-16 bg-card rounded-lg">
                 <Zap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-600">You haven't joined any challenges yet</p>
+                <p className="text-muted-foreground">You haven't joined any challenges yet</p>
               </div>
             )}
           </TabsContent>

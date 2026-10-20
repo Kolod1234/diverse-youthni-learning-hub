@@ -27,11 +27,11 @@ import TemplatePreview from '@/components/templates/TemplatePreview';
 import AITemplateGenerator from '@/components/templates/AITemplateGenerator';
 
 const CATEGORY_CONFIG = {
-  lesson: { icon: FileText, color: 'bg-blue-100 text-blue-700', label: 'Lesson' },
-  slide: { icon: LayoutTemplate, color: 'bg-purple-100 text-purple-700', label: 'Slide' },
-  assignment: { icon: ClipboardList, color: 'bg-green-100 text-green-700', label: 'Assignment' },
-  quiz: { icon: Award, color: 'bg-yellow-100 text-yellow-700', label: 'Quiz' },
-  custom: { icon: Star, color: 'bg-pink-100 text-pink-700', label: 'Custom' }
+  lesson: { icon: FileText, color: 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300', label: 'Lesson' },
+  slide: { icon: LayoutTemplate, color: 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300', label: 'Slide' },
+  assignment: { icon: ClipboardList, color: 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300', label: 'Assignment' },
+  quiz: { icon: Award, color: 'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300', label: 'Quiz' },
+  custom: { icon: Star, color: 'bg-pink-100 dark:bg-pink-500/15 text-pink-700 dark:text-pink-300', label: 'Custom' }
 };
 
 export default function Templates() {
@@ -105,23 +105,23 @@ export default function Templates() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-500/15 rounded-xl flex items-center justify-center">
                 <LayoutTemplate className="w-6 h-6 text-indigo-600" />
               </div>
               Template Library
             </h1>
-            <p className="text-gray-500 mt-2">Save and reuse your best content layouts</p>
+            <p className="text-muted-foreground mt-2">Save and reuse your best content layouts</p>
           </div>
           <div className="flex gap-2">
             <Button 
               onClick={() => setShowAIGenerator(true)}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              className="bg-indigo-600 hover:bg-indigo-700"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               AI Generate
@@ -179,14 +179,14 @@ export default function Templates() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
-              <Card key={i} className="h-64 animate-pulse bg-gray-100" />
+              <Card key={i} className="h-64 animate-pulse bg-muted" />
             ))}
           </div>
         ) : filteredTemplates.length === 0 ? (
           <Card className="p-12 text-center">
             <LayoutTemplate className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No templates found</h3>
-            <p className="text-gray-500 mb-6">Create your first template to get started</p>
+            <h3 className="text-xl font-semibold text-muted-foreground mb-2">No templates found</h3>
+            <p className="text-muted-foreground mb-6">Create your first template to get started</p>
             <Button onClick={() => setShowCreator(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Create Template
@@ -202,7 +202,7 @@ export default function Templates() {
               return (
                 <Card key={template.id} className="overflow-hidden hover:shadow-lg transition-all group">
                   {/* Thumbnail */}
-                  <div className="h-40 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center relative overflow-hidden">
+                  <div className="h-40 bg-indigo-50 dark:bg-indigo-500/15 flex items-center justify-center relative overflow-hidden">
                     {template.thumbnail_url ? (
                       <img src={template.thumbnail_url} alt={template.name} className="w-full h-full object-cover" />
                     ) : (
@@ -215,17 +215,17 @@ export default function Templates() {
                     </div>
                     {template.is_public && (
                       <div className="absolute top-2 left-2">
-                        <Badge className="bg-green-100 text-green-700">Public</Badge>
+                        <Badge className="bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300">Public</Badge>
                       </div>
                     )}
                   </div>
 
                   {/* Content */}
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">{template.name}</h3>
-                    <p className="text-sm text-gray-500 mb-3 line-clamp-2">{template.description || 'No description'}</p>
+                    <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{template.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{template.description || 'No description'}</p>
                     
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
                       <span>Used {template.usage_count || 0} times</span>
                       <span>By {isOwner ? 'You' : template.created_by}</span>
                     </div>

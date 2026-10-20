@@ -97,11 +97,11 @@ export default function TutorDashboardCanvas() {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-card">
       {/* Left Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 bg-white border-r border-gray-200 flex flex-col overflow-hidden`}>
+      <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 bg-card border-r border-border flex flex-col overflow-hidden`}>
         {/* Course Selector */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-10 h-10 bg-indigo-600 rounded flex items-center justify-center text-white font-bold">
               {selectedCourse?.category?.substring(0, 2).toUpperCase() || 'CO'}
@@ -113,13 +113,13 @@ export default function TutorDashboardCanvas() {
                   setSelectedCourseId(e.target.value);
                   setSearchParams({ courseId: e.target.value, view: currentView });
                 }}
-                className="w-full text-sm font-medium text-gray-900 bg-transparent border-none focus:outline-none cursor-pointer"
+                className="w-full text-sm font-medium text-foreground bg-transparent border-none focus:outline-none cursor-pointer"
               >
                 {courses.map(c => (
                   <option key={c.id} value={c.id}>{c.title}</option>
                 ))}
               </select>
-              <div className="text-xs text-gray-500">› Modules</div>
+              <div className="text-xs text-muted-foreground">› Modules</div>
             </div>
           </div>
         </div>
@@ -133,8 +133,8 @@ export default function TutorDashboardCanvas() {
               <button
                 key={item.view}
                 onClick={() => setSearchParams({ courseId: selectedCourseId, view: item.view })}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
-                  isActive ? 'bg-blue-50 border-l-4 border-blue-600 text-blue-700 font-medium' : 'text-gray-700'
+                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors ${
+                  isActive ? 'bg-blue-50 dark:bg-blue-500/15 border-l-4 border-blue-600 text-blue-700 dark:text-blue-300 font-medium' : 'text-foreground'
                 }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
@@ -171,7 +171,7 @@ export default function TutorDashboardCanvas() {
             <button className="hover:bg-gray-700 p-2 rounded">
               <Bell className="w-5 h-5" />
             </button>
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
               {user?.full_name?.charAt(0) || 'T'}
             </div>
           </div>
@@ -194,12 +194,12 @@ export default function TutorDashboardCanvas() {
             </div>
 
             {/* Right Sidebar */}
-            <div className="w-80 border-l border-gray-200 p-6 bg-gray-50">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Modules</h3>
+            <div className="w-80 border-l border-border p-6 bg-muted">
+              <h3 className="text-xl font-bold text-foreground mb-4">Modules</h3>
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Organize course content</h4>
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <h4 className="font-semibold text-foreground mb-2">Organize course content</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Use modules to organize your content and create a linear flow for what students should do in the course. 
                     Modules can be used to organize content by weeks, units, or a different organizational structure. 
                     Add files, discussions, assignments, quizzes, and other learning materials. 
@@ -270,10 +270,10 @@ function ModulesView({ course, lessons }) {
       </div>
 
       {Object.keys(sections).length === 0 ? (
-        <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
+        <div className="text-center py-16 bg-card border border-border rounded-lg">
           <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No modules yet</h3>
-          <p className="text-gray-500 mb-6 max-w-md mx-auto">
+          <h3 className="text-xl font-semibold text-foreground mb-2">No modules yet</h3>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
             Add your first module to organize course content and create a learning pathway for students
           </p>
           <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course?.id}`}>
@@ -286,19 +286,19 @@ function ModulesView({ course, lessons }) {
       ) : (
         <div className="space-y-4">
           {Object.entries(sections).map(([sectionName, sectionLessons]) => (
-            <div key={sectionName} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <h3 className="font-semibold text-gray-900">{sectionName}</h3>
+            <div key={sectionName} className="bg-card border border-border rounded-lg overflow-hidden">
+              <div className="bg-muted px-6 py-4 border-b border-border">
+                <h3 className="font-semibold text-foreground">{sectionName}</h3>
               </div>
               <div className="divide-y divide-gray-200">
                 {sectionLessons.map(lesson => (
-                  <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between group">
+                  <div key={lesson.id} className="px-6 py-4 hover:bg-muted flex items-center justify-between group">
                     <div className="flex items-center gap-3">
                       <BookOpen className="w-5 h-5 text-gray-400" />
                       <div>
-                        <div className="font-medium text-gray-900">{lesson.title}</div>
+                        <div className="font-medium text-foreground">{lesson.title}</div>
                         {lesson.description && (
-                          <div className="text-sm text-gray-500 line-clamp-1">{lesson.description}</div>
+                          <div className="text-sm text-muted-foreground line-clamp-1">{lesson.description}</div>
                         )}
                       </div>
                     </div>
@@ -321,18 +321,18 @@ function ModulesView({ course, lessons }) {
 function HomeView({ course }) {
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Home</h1>
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <h1 className="text-3xl font-bold text-foreground mb-6">Course Home</h1>
+      <div className="bg-card border border-border rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">{course?.title}</h2>
-        <p className="text-gray-600">{course?.description}</p>
+        <p className="text-muted-foreground">{course?.description}</p>
         <div className="mt-6 grid grid-cols-2 gap-4">
-          <div className="p-4 bg-blue-50 rounded-lg">
+          <div className="p-4 bg-blue-50 dark:bg-blue-500/15 rounded-lg">
             <div className="text-2xl font-bold text-blue-600">{course?.total_lessons || 0}</div>
-            <div className="text-sm text-gray-600">Total Lessons</div>
+            <div className="text-sm text-muted-foreground">Total Lessons</div>
           </div>
-          <div className="p-4 bg-green-50 rounded-lg">
+          <div className="p-4 bg-green-50 dark:bg-green-500/15 rounded-lg">
             <div className="text-2xl font-bold text-green-600">{course?.enrolled_count || 0}</div>
-            <div className="text-sm text-gray-600">Enrolled Students</div>
+            <div className="text-sm text-muted-foreground">Enrolled Students</div>
           </div>
         </div>
       </div>
@@ -350,7 +350,7 @@ function AssignmentsView({ course }) {
   return (
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Assignments</h1>
+        <h1 className="text-3xl font-bold text-foreground">Assignments</h1>
         <Link to={createPageUrl('CreateAssignment') + `?courseId=${course?.id}`}>
           <Button className="bg-blue-600 hover:bg-blue-700">
             <Plus className="w-4 h-4 mr-2" />
@@ -360,10 +360,10 @@ function AssignmentsView({ course }) {
       </div>
       <div className="space-y-3">
         {assignments.map(assignment => (
-          <div key={assignment.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
-            <p className="text-sm text-gray-500 mt-1">{assignment.description}</p>
-            <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+          <div key={assignment.id} className="bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <h3 className="font-semibold text-foreground">{assignment.title}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{assignment.description}</p>
+            <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
               <span>Due: {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}</span>
               <span>•</span>
               <span>{assignment.total_points || 100} points</span>
@@ -384,21 +384,21 @@ function PeopleView({ course }) {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">People</h1>
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+      <h1 className="text-3xl font-bold text-foreground mb-6">People</h1>
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <div className="px-6 py-4 bg-muted border-b border-border">
           <h3 className="font-semibold">Students ({enrollments.length})</h3>
         </div>
         <div className="divide-y divide-gray-200">
           {enrollments.map(enrollment => (
-            <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+            <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-muted">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
                   {enrollment.created_by?.charAt(0)?.toUpperCase() || 'S'}
                 </div>
                 <div>
-                  <div className="font-medium text-gray-900">{enrollment.created_by}</div>
-                  <div className="text-sm text-gray-500">{enrollment.progress_percent || 0}% complete</div>
+                  <div className="font-medium text-foreground">{enrollment.created_by}</div>
+                  <div className="text-sm text-muted-foreground">{enrollment.progress_percent || 0}% complete</div>
                 </div>
               </div>
               <Button variant="outline" size="sm">View Profile</Button>
@@ -413,11 +413,11 @@ function PeopleView({ course }) {
 function GradesView({ course }) {
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Grades</h1>
-      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+      <h1 className="text-3xl font-bold text-foreground mb-6">Grades</h1>
+      <div className="bg-card border border-border rounded-lg p-8 text-center">
         <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">Grade Book</h3>
-        <p className="text-gray-500">View and manage student grades</p>
+        <h3 className="text-xl font-semibold text-foreground mb-2">Grade Book</h3>
+        <p className="text-muted-foreground">View and manage student grades</p>
       </div>
     </div>
   );
@@ -426,17 +426,17 @@ function GradesView({ course }) {
 function AnalyticsView({ course }) {
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Analytics</h1>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Course Analytics</h1>
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="bg-card border border-border rounded-lg p-6">
           <h3 className="font-semibold mb-4">Engagement</h3>
           <div className="text-3xl font-bold text-blue-600">85%</div>
-          <div className="text-sm text-gray-500">Average engagement rate</div>
+          <div className="text-sm text-muted-foreground">Average engagement rate</div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="bg-card border border-border rounded-lg p-6">
           <h3 className="font-semibold mb-4">Completion</h3>
           <div className="text-3xl font-bold text-green-600">72%</div>
-          <div className="text-sm text-gray-500">Course completion rate</div>
+          <div className="text-sm text-muted-foreground">Course completion rate</div>
         </div>
       </div>
     </div>
@@ -446,13 +446,13 @@ function AnalyticsView({ course }) {
 function ComingSoonView({ viewName }) {
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">{viewName}</h1>
-      <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <h1 className="text-3xl font-bold text-foreground mb-6">{viewName}</h1>
+      <div className="bg-card border border-border rounded-lg p-12 text-center">
+        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
           <ChevronRight className="w-8 h-8 text-gray-400" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">Coming Soon</h3>
-        <p className="text-gray-500">This feature is under development</p>
+        <h3 className="text-xl font-semibold text-foreground mb-2">Coming Soon</h3>
+        <p className="text-muted-foreground">This feature is under development</p>
       </div>
     </div>
   );

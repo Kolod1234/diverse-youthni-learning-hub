@@ -93,7 +93,7 @@ export default function CourseIntegrityValidator() {
                 onClick={handleRunValidation}
                 disabled={isRunning || isFixing}
                 sx={{
-                  background: 'linear-gradient(to right, #2563eb, #1e40af)',
+                  bgcolor: '#4f46e5',
                   color: 'white',
                   px: 3,
                   py: 1.5,
@@ -109,7 +109,7 @@ export default function CourseIntegrityValidator() {
                   onClick={handleAutoFix}
                   disabled={isFixing}
                   sx={{
-                    background: 'linear-gradient(to right, #10b981, #059669)',
+                    bgcolor: 'success.main',
                     color: 'white',
                     px: 3,
                     py: 1.5,
@@ -149,7 +149,7 @@ export default function CourseIntegrityValidator() {
                   { label: 'Total Courses', value: validation.summary.total_courses, color: '#3b82f6' },
                   { label: 'With Issues', value: validation.summary.courses_with_issues, color: '#ef4444', highlight: validation.summary.courses_with_issues > 0 },
                   { label: 'Missing Lessons', value: validation.summary.missing_lessons, color: '#f59e0b' },
-                  { label: 'Missing Objectives', value: validation.summary.missing_objectives, color: '#8b5cf6' }
+                  { label: 'Missing Objectives', value: validation.summary.missing_objectives, color: '#4f46e5' }
                 ].map((stat, i) => (
                   <motion.div
                     key={i}

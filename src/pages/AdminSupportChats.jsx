@@ -148,7 +148,7 @@ export default function AdminSupportChats() {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <HeadphonesIcon size={28} color="#003366" />
+        <HeadphonesIcon size={28} color="#0b2f5c" />
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Typography variant="h4" fontWeight={700}>Support Chats</Typography>
@@ -212,7 +212,7 @@ export default function AdminSupportChats() {
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Badge variant="dot" color="error" invisible={!chat.unread_admin}>
-                      <Avatar sx={{ width: 32, height: 32, bgcolor: '#003366', fontSize: 13 }}>
+                      <Avatar sx={{ width: 32, height: 32, bgcolor: '#0b2f5c', fontSize: 13 }}>
                         {(chat.user_name || chat.user_email)?.[0]?.toUpperCase()}
                       </Avatar>
                     </Badge>
@@ -256,7 +256,7 @@ export default function AdminSupportChats() {
               {/* Chat Header */}
               <Box sx={{ px: 3, py: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <Avatar sx={{ bgcolor: '#003366', width: 36, height: 36 }}>
+                  <Avatar sx={{ bgcolor: '#0b2f5c', width: 36, height: 36 }}>
                     {(selectedChat?.user_name || selectedChat?.user_email)?.[0]?.toUpperCase()}
                   </Avatar>
                   <Box>
@@ -283,7 +283,7 @@ export default function AdminSupportChats() {
                   const isBot = msg.sender_role === 'bot';
                   return (
                     <Box key={msg.id || i} sx={{ display: 'flex', flexDirection: isUser ? 'row-reverse' : 'row', alignItems: 'flex-end', gap: 1 }}>
-                      <Avatar sx={{ width: 28, height: 28, bgcolor: isUser ? '#64748b' : isBot ? '#6366f1' : '#003366', fontSize: 12, flexShrink: 0 }}>
+                      <Avatar sx={{ width: 28, height: 28, bgcolor: isUser ? '#64748b' : isBot ? '#6366f1' : '#0b2f5c', fontSize: 12, flexShrink: 0 }}>
                         {isBot ? <Bot size={14} /> : isUser ? msg.sender_name?.[0] || 'U' : 'A'}
                       </Avatar>
                       <Box sx={{ maxWidth: '65%' }}>
@@ -292,7 +292,7 @@ export default function AdminSupportChats() {
                         </Typography>
                         <Box sx={{
                           px: 1.5, py: 1, borderRadius: isUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
-                          bgcolor: isUser ? '#e2e8f0' : isBot ? '#eef2ff' : '#003366',
+                          bgcolor: isUser ? '#e2e8f0' : isBot ? '#eef2ff' : '#0b2f5c',
                           color: isUser || isBot ? '#1e293b' : 'white',
                           fontSize: 13, lineHeight: 1.5
                         }}>
@@ -321,7 +321,7 @@ export default function AdminSupportChats() {
                 <IconButton
                   onClick={handleSend}
                   disabled={!reply.trim() || sending || selectedChat?.status === 'closed'}
-                  sx={{ bgcolor: '#003366', color: 'white', '&:hover': { bgcolor: '#002244' }, '&:disabled': { bgcolor: '#e2e8f0' }, borderRadius: 2, flexShrink: 0 }}
+                  sx={{ bgcolor: '#0b2f5c', color: 'white', '&:hover': { bgcolor: '#12396b' }, '&:disabled': { bgcolor: '#e2e8f0' }, borderRadius: 2, flexShrink: 0 }}
                 >
                   <Send size={18} />
                 </IconButton>

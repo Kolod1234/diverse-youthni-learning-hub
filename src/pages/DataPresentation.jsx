@@ -102,11 +102,11 @@ export default function DataPresentation() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eef2ff, #fdf2f8, #f3e8ff)' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Box sx={{ width: 56, height: 56, background: 'linear-gradient(to bottom right, #4f46e5, #7c3aed)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{ width: 56, height: 56, bgcolor: '#4f46e5', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Sparkles className="w-7 h-7 text-white" />
             </Box>
             <Box>
@@ -125,7 +125,7 @@ export default function DataPresentation() {
             </Card>
           </Box>
         ) : (
-          <Box sx={{ position: 'fixed', inset: 0, zIndex: 50, bgcolor: 'white' }}>
+          <Box sx={{ position: 'fixed', inset: 0, zIndex: 50, bgcolor: 'background.paper' }}>
             <SlideWorkspace
               initialSlides={generatedSlides}
               onChange={setGeneratedSlides}

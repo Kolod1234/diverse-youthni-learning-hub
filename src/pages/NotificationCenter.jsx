@@ -11,13 +11,13 @@ import { toast } from 'sonner';
 import NotificationPreferences from '@/components/notifications/NotificationPreferences';
 
 const notificationTypeConfig = {
-  logbook: { color: 'bg-purple-100 text-purple-800', icon: CheckCircle },
-  program: { color: 'bg-blue-100 text-blue-800', icon: Zap },
-  message: { color: 'bg-indigo-100 text-indigo-800', icon: Mail },
-  session_reminder: { color: 'bg-orange-100 text-orange-800', icon: AlertCircle },
-  session_started: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  quiz: { color: 'bg-red-100 text-red-800', icon: AlertCircle },
-  general: { color: 'bg-gray-100 text-gray-800', icon: Bell },
+  logbook: { color: 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-800 dark:text-indigo-300', icon: CheckCircle },
+  program: { color: 'bg-blue-100 dark:bg-blue-500/15 text-blue-800 dark:text-blue-300', icon: Zap },
+  message: { color: 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-800 dark:text-indigo-300', icon: Mail },
+  session_reminder: { color: 'bg-orange-100 dark:bg-orange-500/15 text-orange-800 dark:text-orange-300', icon: AlertCircle },
+  session_started: { color: 'bg-green-100 dark:bg-green-500/15 text-green-800 dark:text-green-300', icon: CheckCircle },
+  quiz: { color: 'bg-red-100 dark:bg-red-500/15 text-red-800 dark:text-red-300', icon: AlertCircle },
+  general: { color: 'bg-muted text-foreground', icon: Bell },
 };
 
 export default function NotificationCenter() {
@@ -114,7 +114,7 @@ export default function NotificationCenter() {
     return (
       <div
         className={`p-4 border rounded-lg hover:shadow-md transition-all cursor-pointer group ${
-          !notification.is_read ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'
+          !notification.is_read ? 'bg-blue-50 dark:bg-blue-500/15 border-blue-200' : 'bg-card border-border'
         }`}
         onClick={() => handleNotificationClick(notification)}
       >
@@ -125,8 +125,8 @@ export default function NotificationCenter() {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h4 className="font-semibold text-gray-900">{notification.title}</h4>
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">{notification.message}</p>
+                <h4 className="font-semibold text-foreground">{notification.title}</h4>
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
                 <p className="text-xs text-gray-400 mt-2">
                   {formatDistanceToNow(new Date(notification.created_date), { addSuffix: true })}
                 </p>
@@ -155,7 +155,7 @@ export default function NotificationCenter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto p-4 md:p-8">
         {/* Tabs */}
         <div className="mb-6">
@@ -183,7 +183,7 @@ export default function NotificationCenter() {
             {['all', 'unread', 'logbook', 'program', 'message', 'session_reminder', 'quiz', 'general'].includes(activeTab) && (
               <TabsContent value={activeTab} className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">Notification Center</h2>
+                  <h2 className="text-2xl font-bold text-foreground">Notification Center</h2>
                   {unreadCount > 0 && activeTab === 'all' && (
                     <Button
                       onClick={() => markAllAsReadMutation.mutate()}
@@ -221,7 +221,7 @@ export default function NotificationCenter() {
                 ) : (
                   <Card className="p-12 text-center">
                     <Bell className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg">No notifications</p>
+                    <p className="text-muted-foreground text-lg">No notifications</p>
                     <p className="text-gray-400 text-sm mt-2">You're all caught up!</p>
                   </Card>
                 )}

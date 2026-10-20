@@ -143,7 +143,7 @@ export default function AdminCoordinators() {
         {coordinatorRequests.length > 0 && (
           <Card sx={{ p: 3, mb: 3, bgcolor: '#faf5ff', border: 1, borderColor: '#e9d5ff' }}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-              <HowToRegIcon sx={{ color: '#9333ea' }} />
+              <HowToRegIcon sx={{ color: '#4f46e5' }} />
               <Typography variant="h6" fontWeight={700}>
                 Pending Coordinator Requests ({coordinatorRequests.length})
               </Typography>
@@ -194,7 +194,7 @@ export default function AdminCoordinators() {
           {/* Coordinators */}
           <Card sx={{ p: 3 }}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-              <HowToRegIcon sx={{ color: '#9333ea' }} />
+              <HowToRegIcon sx={{ color: '#4f46e5' }} />
               <Typography variant="h6" fontWeight={700}>Coordinators ({coordinators.length})</Typography>
             </Stack>
             <Stack spacing={1.5}>

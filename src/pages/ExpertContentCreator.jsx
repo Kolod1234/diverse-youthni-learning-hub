@@ -154,7 +154,7 @@ Return JSON format:
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <BookOpen className="w-8 h-8 text-purple-600" />
+          <BookOpen className="w-8 h-8 text-indigo-600" />
           <Typography variant="h4" fontWeight="bold">Expert Content Creator</Typography>
         </Box>
         <Typography variant="body1" color="text.secondary">

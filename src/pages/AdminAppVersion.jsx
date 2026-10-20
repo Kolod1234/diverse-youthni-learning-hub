@@ -144,14 +144,14 @@ export default function AdminAppVersion() {
           <Typography color="text.secondary">Manage APK downloads & in-app update prompts</Typography>
         </Box>
         <Button variant="contained" startIcon={<Plus size={18} />} onClick={() => setDialogOpen(true)}
-          sx={{ bgcolor: '#003366', '&:hover': { bgcolor: '#002244' } }}>
+          sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}>
           New Version
         </Button>
       </Box>
 
       {/* Active Version Summary */}
       {activeVersion && (
-        <Card sx={{ mb: 3, bgcolor: '#003366', color: 'white' }}>
+        <Card sx={{ mb: 3, bgcolor: '#0b2f5c', color: 'white' }}>
           <CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
               <Box>
@@ -220,7 +220,7 @@ export default function AdminAppVersion() {
           {versions.map((v) => (
             <Card key={v.id} sx={{
               border: '1px solid',
-              borderColor: v.is_active ? '#003366' : 'divider',
+              borderColor: v.is_active ? '#0b2f5c' : 'divider',
               borderWidth: v.is_active ? 2 : 1,
             }}>
               <CardContent>
@@ -269,7 +269,7 @@ export default function AdminAppVersion() {
                         startIcon={<Star size={14} />}
                         onClick={() => setActiveMutation.mutate(v)}
                         disabled={setActiveMutation.isPending}
-                        sx={{ bgcolor: '#003366', '&:hover': { bgcolor: '#002244' }, whiteSpace: 'nowrap' }}
+                        sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' }, whiteSpace: 'nowrap' }}
                       >
                         Set Active
                       </Button>
@@ -411,7 +411,7 @@ export default function AdminAppVersion() {
             variant="contained"
             onClick={() => createMutation.mutate(form)}
             disabled={!form.version_name || !form.version_code || !form.apk_url || createMutation.isPending}
-            sx={{ bgcolor: '#003366', '&:hover': { bgcolor: '#002244' } }}
+            sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}
           >
             Save Version
           </Button>

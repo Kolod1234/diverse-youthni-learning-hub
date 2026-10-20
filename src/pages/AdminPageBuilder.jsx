@@ -288,12 +288,12 @@ export default function AdminPageBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       <div className="max-w-full flex h-screen">
         {/* Left Panel - Editor */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="bg-white border-b p-4 shadow-sm">
+          <div className="bg-card border-b p-4 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -307,7 +307,7 @@ export default function AdminPageBuilder() {
                     />
                   )}
                 </h1>
-                <p className="text-gray-500 text-sm">Edit and manage page sections</p>
+                <p className="text-muted-foreground text-sm">Edit and manage page sections</p>
               </div>
               <div className="flex gap-2">
                 <PageSettings page={selectedPage} isDraft={isDraft} sections={sections} onUpdate={() => {}} />
@@ -354,10 +354,10 @@ export default function AdminPageBuilder() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-12 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border-2 border-dashed border-gray-300"
+                className="text-center py-12 bg-indigo-50 dark:bg-indigo-500/15 rounded-lg border-2 border-dashed border-border"
               >
                 <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-600 font-medium mb-4">No sections yet</p>
+                <p className="text-muted-foreground font-medium mb-4">No sections yet</p>
                 <Button onClick={() => setEditingSection({ page_name: selectedPage })}>
                   <Plus className="w-4 h-4 mr-2" />
                   Create First Section
@@ -439,12 +439,12 @@ export default function AdminPageBuilder() {
                   onClick={() => handleTemplateSelect(template)}
                   className="cursor-pointer"
                 >
-                  <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-indigo-500 hover:shadow-lg transition-all h-full">
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${template.color} flex items-center justify-center mb-4`}>
+                  <div className="bg-card border-2 border-border rounded-xl p-6 hover:border-indigo-500 hover:shadow-lg transition-all h-full">
+                    <div className={`w-12 h-12 rounded-lg bg-indigo-600 flex items-center justify-center mb-4`}>
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="font-bold text-lg mb-2">{template.name}</h3>
-                    <p className="text-sm text-gray-600">{template.description}</p>
+                    <p className="text-sm text-muted-foreground">{template.description}</p>
                   </div>
                 </motion.div>
               );

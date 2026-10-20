@@ -128,7 +128,7 @@ export default function PersonalDashboard() {
         return {
           title: 'Leadership Development',
           icon: Users,
-          color: '#7c3aed',
+          color: '#4f46e5',
           gradient: 'linear-gradient(135deg, #7c3aed 0%, #c026d3 100%)',
           stats: [
             { label: 'My Programs', value: programs.length, icon: ClipboardList },
@@ -172,9 +172,9 @@ export default function PersonalDashboard() {
     switch (interestType) {
       case 'leadership':
         return [
-          { label: 'My Programs', icon: Users, path: 'Programs', color: '#7c3aed' },
+          { label: 'My Programs', icon: Users, path: 'Programs', color: '#4f46e5' },
           { label: 'View Schedule', icon: Calendar, path: 'Programs', color: '#c026d3' },
-          { label: 'Submit Logbook', icon: ClipboardList, path: 'Programs', color: '#9333ea' },
+          { label: 'Submit Logbook', icon: ClipboardList, path: 'Programs', color: '#4f46e5' },
           { label: 'Messages', icon: AlertCircle, path: 'MessageCenter', color: '#ec4899' },
         ];
       case 'youth_work':

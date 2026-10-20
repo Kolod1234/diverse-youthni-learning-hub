@@ -57,7 +57,7 @@ export default function HomeLeadership() {
       }
 
       {/* Hero Section */}
-      <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #7c3aed, #9333ea, #c026d3)', py: 12, overflow: 'hidden' }}>
+      <Box sx={{ position: 'relative', bgcolor: '#4f46e5', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -90,8 +90,8 @@ export default function HomeLeadership() {
                   size="large"
                   endIcon={<ArrowRight size={24} />}
                   sx={{
-                    bgcolor: 'white',
-                    color: '#7c3aed',
+                    bgcolor: 'background.paper',
+                    color: '#4f46e5',
                     px: 5,
                     py: 2,
                     fontSize: '1.125rem',
@@ -140,7 +140,7 @@ export default function HomeLeadership() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Programs</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>Join and track your leadership programs</Typography>
               <Link to={createPageUrl('Programs')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#7c3aed', '&:hover': { bgcolor: '#6d28d9' } }}>
+                <Button variant="contained" sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#6d28d9' } }}>
                   View Programs
                 </Button>
               </Link>
@@ -153,7 +153,7 @@ export default function HomeLeadership() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Activities</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>View upcoming events and activities</Typography>
               <Link to={createPageUrl('Programs')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#9333ea', '&:hover': { bgcolor: '#7e22ce' } }}>
+                <Button variant="contained" sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#7e22ce' } }}>
                   View Activities
                 </Button>
               </Link>

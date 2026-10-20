@@ -57,7 +57,7 @@ export default function AppUpdateBanner() {
           gap: 2,
           px: 3,
           py: 1.5,
-          bgcolor: isForce ? '#dc2626' : '#003366',
+          bgcolor: isForce ? '#dc2626' : '#0b2f5c',
           color: 'white',
           flexWrap: 'wrap',
         }}>
@@ -75,8 +75,8 @@ export default function AppUpdateBanner() {
             size="small"
             startIcon={<Download size={16} />}
             sx={{
-              bgcolor: 'white',
-              color: isForce ? '#dc2626' : '#003366',
+              bgcolor: 'background.paper',
+              color: isForce ? '#dc2626' : '#0b2f5c',
               fontWeight: 700,
               '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' },
               flexShrink: 0,

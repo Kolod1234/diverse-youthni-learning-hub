@@ -123,14 +123,14 @@ export default function KnowledgeBase() {
     : documents.filter(d => d.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-            <Brain className="w-10 h-10 text-purple-600" />
+          <h1 className="text-4xl font-bold text-foreground mb-2 flex items-center gap-3">
+            <Brain className="w-10 h-10 text-indigo-600" />
             Knowledge Base
           </h1>
-          <p className="text-gray-600">AI-powered document storage, organization, and search</p>
+          <p className="text-muted-foreground">AI-powered document storage, organization, and search</p>
         </div>
 
         <Tabs defaultValue="search" className="space-y-6">
@@ -154,7 +154,7 @@ export default function KnowledgeBase() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
+                  <Sparkles className="w-5 h-5 text-indigo-600" />
                   Natural Language Search
                 </CardTitle>
               </CardHeader>
@@ -170,7 +170,7 @@ export default function KnowledgeBase() {
                   <Button 
                     onClick={handleAISearch}
                     disabled={isSearching || !searchQuery.trim()}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-indigo-600 hover:bg-indigo-700"
                   >
                     {isSearching ? (
                       <>
@@ -186,8 +186,8 @@ export default function KnowledgeBase() {
                   </Button>
                 </div>
 
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                  <p className="text-sm text-purple-800">
+                <div className="bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 rounded-lg p-4">
+                  <p className="text-sm text-indigo-800 dark:text-indigo-300">
                     💡 <strong>AI-powered search understands:</strong> questions, concepts, summaries, and context - not just keywords
                   </p>
                 </div>
@@ -203,7 +203,7 @@ export default function KnowledgeBase() {
                   exit={{ opacity: 0, y: -20 }}
                   className="space-y-4"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-foreground">
                     Search Results ({searchResults.length})
                   </h3>
                   {searchResults.map((doc) => (
@@ -211,14 +211,14 @@ export default function KnowledgeBase() {
                       <CardContent className="p-6" onClick={() => setSelectedDoc(doc)}>
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-start gap-3 flex-1">
-                            <FileText className="w-5 h-5 text-purple-600 mt-1" />
+                            <FileText className="w-5 h-5 text-indigo-600 mt-1" />
                             <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900 mb-1">{doc.title}</h4>
-                              <p className="text-sm text-gray-600 line-clamp-2">{doc.summary}</p>
+                              <h4 className="font-semibold text-foreground mb-1">{doc.title}</h4>
+                              <p className="text-sm text-muted-foreground line-clamp-2">{doc.summary}</p>
                             </div>
                           </div>
                           {doc.relevance_score && (
-                            <Badge className="bg-purple-100 text-purple-800">
+                            <Badge className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-800 dark:text-indigo-300">
                               {Math.round(doc.relevance_score * 100)}% match
                             </Badge>
                           )}
@@ -246,13 +246,13 @@ export default function KnowledgeBase() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Upload className="w-5 h-5 text-purple-600" />
+                  <Upload className="w-5 h-5 text-indigo-600" />
                   Upload Document
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Document Title
                   </label>
                   <Input
@@ -263,10 +263,10 @@ export default function KnowledgeBase() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Choose File
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition-colors">
+                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-indigo-400 transition-colors">
                     <input
                       type="file"
                       onChange={handleFileChange}
@@ -276,7 +276,7 @@ export default function KnowledgeBase() {
                     />
                     <label htmlFor="file-upload" className="cursor-pointer">
                       <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         {uploadFile ? uploadFile.name : 'Click to upload or drag and drop'}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
@@ -286,12 +286,12 @@ export default function KnowledgeBase() {
                   </div>
                 </div>
 
-                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-indigo-900 mb-2 flex items-center gap-2">
+                <div className="bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2 flex items-center gap-2">
                     <Brain className="w-4 h-4" />
                     AI Will Automatically:
                   </h4>
-                  <ul className="text-sm text-indigo-700 space-y-1">
+                  <ul className="text-sm text-indigo-700 dark:text-indigo-300 space-y-1">
                     <li>• Extract and analyze all text content</li>
                     <li>• Generate a comprehensive summary</li>
                     <li>• Identify key concepts and topics</li>
@@ -303,7 +303,7 @@ export default function KnowledgeBase() {
                 <Button
                   onClick={handleUpload}
                   disabled={!uploadFile || isProcessing}
-                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                  className="w-full bg-indigo-600 hover:bg-indigo-700"
                   size="lg"
                 >
                   {isProcessing ? (
@@ -346,13 +346,13 @@ export default function KnowledgeBase() {
 
             {isLoading ? (
               <div className="text-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto" />
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mx-auto" />
               </div>
             ) : filteredDocs.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
                   <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No documents yet. Upload your first document!</p>
+                  <p className="text-muted-foreground">No documents yet. Upload your first document!</p>
                 </CardContent>
               </Card>
             ) : (
@@ -366,7 +366,7 @@ export default function KnowledgeBase() {
                     <Card className="hover:shadow-lg transition-shadow h-full">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-3">
-                          <FileText className="w-5 h-5 text-purple-600" />
+                          <FileText className="w-5 h-5 text-indigo-600" />
                           <Button
                             variant="ghost"
                             size="icon"
@@ -377,11 +377,11 @@ export default function KnowledgeBase() {
                           </Button>
                         </div>
                         
-                        <h4 className="font-semibold text-gray-900 mb-2 line-clamp-1">
+                        <h4 className="font-semibold text-foreground mb-2 line-clamp-1">
                           {doc.title}
                         </h4>
                         
-                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                           {doc.summary}
                         </p>
 
@@ -427,18 +427,18 @@ export default function KnowledgeBase() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-3">
-                    <FileText className="w-6 h-6 text-purple-600 mt-1" />
+                    <FileText className="w-6 h-6 text-indigo-600 mt-1" />
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                      <h2 className="text-2xl font-bold text-foreground mb-1">
                         {selectedDoc.title}
                       </h2>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         Added {new Date(selectedDoc.created_date).toLocaleDateString()}
                       </p>
                     </div>
@@ -455,21 +455,21 @@ export default function KnowledgeBase() {
                 <div className="space-y-4">
                   {selectedDoc.category && (
                     <div>
-                      <h3 className="font-semibold text-gray-700 mb-2">Category</h3>
+                      <h3 className="font-semibold text-foreground mb-2">Category</h3>
                       <Badge>{selectedDoc.category}</Badge>
                     </div>
                   )}
 
                   <div>
-                    <h3 className="font-semibold text-gray-700 mb-2">Summary</h3>
-                    <p className="text-gray-600 bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-semibold text-foreground mb-2">Summary</h3>
+                    <p className="text-muted-foreground bg-muted rounded-lg p-4">
                       {selectedDoc.summary}
                     </p>
                   </div>
 
                   {selectedDoc.key_concepts?.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-gray-700 mb-2">Key Concepts</h3>
+                      <h3 className="font-semibold text-foreground mb-2">Key Concepts</h3>
                       <div className="flex gap-2 flex-wrap">
                         {selectedDoc.key_concepts.map((concept) => (
                           <Badge key={concept} variant="outline" className="text-sm">
@@ -482,7 +482,7 @@ export default function KnowledgeBase() {
 
                   {selectedDoc.tags?.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-gray-700 mb-2">Tags</h3>
+                      <h3 className="font-semibold text-foreground mb-2">Tags</h3>
                       <div className="flex gap-2 flex-wrap">
                         {selectedDoc.tags.map((tag) => (
                           <Badge key={tag} variant="secondary">
@@ -495,9 +495,9 @@ export default function KnowledgeBase() {
                   )}
 
                   <div>
-                    <h3 className="font-semibold text-gray-700 mb-2">Content</h3>
-                    <div className="bg-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
-                      <p className="text-gray-600 whitespace-pre-wrap text-sm">
+                    <h3 className="font-semibold text-foreground mb-2">Content</h3>
+                    <div className="bg-muted rounded-lg p-4 max-h-96 overflow-y-auto">
+                      <p className="text-muted-foreground whitespace-pre-wrap text-sm">
                         {selectedDoc.content}
                       </p>
                     </div>

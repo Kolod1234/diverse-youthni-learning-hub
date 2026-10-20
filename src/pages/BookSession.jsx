@@ -200,15 +200,15 @@ export default function BookSession() {
     return (
       <div>
         <div className="flex items-center justify-between mb-3">
-          <button onClick={() => setCalendarMonth(addMonths(calendarMonth, -1))} className="p-1 hover:bg-gray-100 rounded">
+          <button onClick={() => setCalendarMonth(addMonths(calendarMonth, -1))} className="p-1 hover:bg-muted rounded">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <span className="font-semibold text-gray-900">{format(calendarMonth, 'MMMM yyyy')}</span>
-          <button onClick={() => setCalendarMonth(addMonths(calendarMonth, 1))} className="p-1 hover:bg-gray-100 rounded">
+          <span className="font-semibold text-foreground">{format(calendarMonth, 'MMMM yyyy')}</span>
+          <button onClick={() => setCalendarMonth(addMonths(calendarMonth, 1))} className="p-1 hover:bg-muted rounded">
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-        <div className="grid grid-cols-7 text-center text-xs text-gray-500 mb-1">
+        <div className="grid grid-cols-7 text-center text-xs text-muted-foreground mb-1">
           {['Mo','Tu','We','Th','Fr','Sa','Su'].map(d => <div key={d} className="py-1 font-medium">{d}</div>)}
         </div>
         <div className="grid grid-cols-7 gap-1">
@@ -223,9 +223,9 @@ export default function BookSession() {
                 onClick={() => { if (avail) { setSelectedDate(day); setSelectedSlot(null); }}}
                 disabled={!avail}
                 className={`py-2 rounded-lg text-sm font-medium transition-all
-                  ${selected ? 'bg-purple-600 text-white' : ''}
-                  ${!selected && avail ? 'hover:bg-purple-100 text-gray-900 cursor-pointer' : ''}
-                  ${!selected && avail && today ? 'ring-2 ring-purple-400' : ''}
+                  ${selected ? 'bg-indigo-600 text-white' : ''}
+                  ${!selected && avail ? 'hover:bg-indigo-100 text-foreground cursor-pointer' : ''}
+                  ${!selected && avail && today ? 'ring-2 ring-indigo-400' : ''}
                   ${!avail ? 'text-gray-300 cursor-not-allowed' : ''}
                 `}
               >
@@ -234,8 +234,8 @@ export default function BookSession() {
             );
           })}
         </div>
-        <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-purple-600 rounded-full inline-block"></span> Selected</span>
+        <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-indigo-600 rounded-full inline-block"></span> Selected</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-gray-200 rounded-full inline-block"></span> Unavailable</span>
         </div>
       </div>
@@ -253,7 +253,7 @@ export default function BookSession() {
   const upcomingBookings = myBookings.filter(b => b.status !== 'cancelled').sort((a, b) => a.booking_date > b.booking_date ? 1 : -1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-4 mb-8">
           <Link to={createPageUrl('Tutors')}>
@@ -262,13 +262,13 @@ export default function BookSession() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
               Book a Session
             </h1>
-            <p className="text-gray-500 mt-1">Schedule a 1-on-1 or group session with a tutor</p>
+            <p className="text-muted-foreground mt-1">Schedule a 1-on-1 or group session with a tutor</p>
           </div>
         </div>
 
@@ -277,8 +277,8 @@ export default function BookSession() {
           <div className="lg:col-span-1 space-y-5">
             {/* Tutor Search & Selection */}
             <Card className="p-5">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <User className="w-4 h-4 text-purple-600" /> Choose Tutor
+              <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                <User className="w-4 h-4 text-indigo-600" /> Choose Tutor
               </h3>
               <div className="relative mb-3">
                 <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
@@ -299,16 +299,16 @@ export default function BookSession() {
                       onClick={() => { setSelectedTutor(tutor); setSelectedDate(null); setSelectedSlot(null); setSelectedCourse(null); }}
                       className={`w-full p-3 rounded-lg border-2 transition text-left ${
                         selectedTutor?.email === tutor.email
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-purple-300 bg-white'
+                          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/15'
+                          : 'border-border hover:border-indigo-300 bg-card'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-9 h-9 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-white font-semibold text-sm">{tutor.full_name?.charAt(0) || 'T'}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 text-sm truncate">{tutor.full_name}</p>
+                          <p className="font-medium text-foreground text-sm truncate">{tutor.full_name}</p>
                           <div className="flex items-center gap-2 mt-0.5">
                             {rating && (
                               <span className="flex items-center gap-0.5 text-xs text-amber-600">
@@ -318,7 +318,7 @@ export default function BookSession() {
                             <span className="text-xs text-gray-400">{tutorCourses.length} course{tutorCourses.length !== 1 ? 's' : ''}</span>
                           </div>
                           {tutor.tutor_subjects?.length > 0 && (
-                            <p className="text-xs text-gray-500 mt-0.5 truncate">{tutor.tutor_subjects.slice(0, 2).join(', ')}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5 truncate">{tutor.tutor_subjects.slice(0, 2).join(', ')}</p>
                           )}
                         </div>
                       </div>
@@ -334,22 +334,22 @@ export default function BookSession() {
             {/* Session Type */}
             {selectedTutor && (
               <Card className="p-5">
-                <h3 className="font-semibold text-gray-900 mb-3">Session Type</h3>
+                <h3 className="font-semibold text-foreground mb-3">Session Type</h3>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => { setSessionType('one_on_one'); setSelectedSlot(null); }}
-                    className={`p-3 rounded-lg border-2 transition text-center ${sessionType === 'one_on_one' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'}`}
+                    className={`p-3 rounded-lg border-2 transition text-center ${sessionType === 'one_on_one' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/15' : 'border-border hover:border-indigo-300'}`}
                   >
-                    <User className="w-5 h-5 mx-auto mb-1 text-purple-500" />
-                    <p className="text-xs font-medium text-gray-900">1-on-1</p>
+                    <User className="w-5 h-5 mx-auto mb-1 text-indigo-500" />
+                    <p className="text-xs font-medium text-foreground">1-on-1</p>
                     <p className="text-xs text-gray-400">Private</p>
                   </button>
                   <button
                     onClick={() => { setSessionType('group'); setSelectedSlot(null); }}
-                    className={`p-3 rounded-lg border-2 transition text-center ${sessionType === 'group' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'}`}
+                    className={`p-3 rounded-lg border-2 transition text-center ${sessionType === 'group' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/15' : 'border-border hover:border-indigo-300'}`}
                   >
                     <Users className="w-5 h-5 mx-auto mb-1 text-indigo-500" />
-                    <p className="text-xs font-medium text-gray-900">Group</p>
+                    <p className="text-xs font-medium text-foreground">Group</p>
                     <p className="text-xs text-gray-400">Shared</p>
                   </button>
                 </div>
@@ -359,21 +359,21 @@ export default function BookSession() {
             {/* Course (optional) */}
             {selectedTutor && getTutorCourses(selectedTutor.email).length > 0 && (
               <Card className="p-5">
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-purple-600" /> Related Course (Optional)
+                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-indigo-600" /> Related Course (Optional)
                 </h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   <button
                     onClick={() => setSelectedCourse(null)}
-                    className={`w-full p-2 rounded-lg border text-left text-sm transition ${!selectedCourse ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'}`}
+                    className={`w-full p-2 rounded-lg border text-left text-sm transition ${!selectedCourse ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/15' : 'border-border hover:border-indigo-300'}`}
                   >
-                    <span className="text-gray-500">No specific course</span>
+                    <span className="text-muted-foreground">No specific course</span>
                   </button>
                   {getTutorCourses(selectedTutor.email).map(course => (
                     <button
                       key={course.id}
                       onClick={() => setSelectedCourse(course.id)}
-                      className={`w-full p-2 rounded-lg border text-left text-sm transition ${selectedCourse === course.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'}`}
+                      className={`w-full p-2 rounded-lg border text-left text-sm transition ${selectedCourse === course.id ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/15' : 'border-border hover:border-indigo-300'}`}
                     >
                       {course.title}
                     </button>
@@ -385,19 +385,19 @@ export default function BookSession() {
             {/* My Upcoming Bookings */}
             {upcomingBookings.length > 0 && (
               <Card className="p-5">
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">My Upcoming Bookings</h3>
+                <h3 className="font-semibold text-foreground mb-3 text-sm">My Upcoming Bookings</h3>
                 <div className="space-y-2">
                   {upcomingBookings.slice(0, 3).map(b => (
-                    <div key={b.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                    <div key={b.id} className="flex items-center justify-between p-2 bg-muted rounded-lg">
                       <div>
-                        <p className="text-xs font-medium text-gray-900">{b.tutor_name || b.tutor_email}</p>
-                        <p className="text-xs text-gray-500">{b.booking_date} · {b.booking_time}</p>
+                        <p className="text-xs font-medium text-foreground">{b.tutor_name || b.tutor_email}</p>
+                        <p className="text-xs text-muted-foreground">{b.booking_date} · {b.booking_time}</p>
                       </div>
                       <Badge className={
-                        b.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                        b.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                        b.status === 'completed' ? 'bg-blue-100 text-blue-700' :
-                        'bg-red-100 text-red-700'
+                        b.status === 'confirmed' ? 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300' :
+                        b.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300' :
+                        b.status === 'completed' ? 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300' :
+                        'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300'
                       }>{b.status}</Badge>
                     </div>
                   ))}
@@ -412,13 +412,13 @@ export default function BookSession() {
               <>
                 {/* Calendar */}
                 <Card className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-purple-600" /> Select a Date
+                  <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-indigo-600" /> Select a Date
                   </h3>
                   {availability.length === 0 ? (
                     <div className="text-center py-8">
                       <Clock className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500 font-medium">No availability set</p>
+                      <p className="text-muted-foreground font-medium">No availability set</p>
                       <p className="text-sm text-gray-400">This tutor hasn't set their availability yet</p>
                     </div>
                   ) : (
@@ -429,8 +429,8 @@ export default function BookSession() {
                 {/* Time Slots */}
                 {selectedDate && (
                   <Card className="p-6">
-                    <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-purple-600" /> 
+                    <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-indigo-600" /> 
                       Available Times · {format(selectedDate, 'EEEE, MMMM d')}
                     </h3>
                     {availableSlots.length > 0 ? (
@@ -441,11 +441,11 @@ export default function BookSession() {
                             onClick={() => setSelectedSlot(slot)}
                             className={`p-3 rounded-lg border-2 transition text-center ${
                               selectedSlot?.time === slot.time
-                                ? 'border-purple-500 bg-purple-50'
-                                : 'border-gray-200 hover:border-purple-300'
+                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/15'
+                                : 'border-border hover:border-indigo-300'
                             }`}
                           >
-                            <p className="text-sm font-semibold text-gray-900">{slot.display}</p>
+                            <p className="text-sm font-semibold text-foreground">{slot.display}</p>
                             <p className="text-xs text-gray-400 mt-0.5">{slot.duration} min</p>
                             {sessionType === 'group' && slot.allowsGroup && (
                               <p className="text-xs text-indigo-500 mt-0.5">Group</p>
@@ -456,7 +456,7 @@ export default function BookSession() {
                     ) : (
                       <div className="text-center py-8">
                         <Clock className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                        <p className="text-gray-500">No available slots for this date</p>
+                        <p className="text-muted-foreground">No available slots for this date</p>
                         <p className="text-xs text-gray-400 mt-1">
                           {sessionType === 'group' ? 'Try switching to 1-on-1 or pick another date' : 'Try a different date'}
                         </p>
@@ -468,10 +468,10 @@ export default function BookSession() {
                 {/* Notes & Subject */}
                 {selectedSlot && (
                   <Card className="p-6">
-                    <h3 className="font-semibold text-gray-900 mb-4">Session Details</h3>
+                    <h3 className="font-semibold text-foreground mb-4">Session Details</h3>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Topic / Subject *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Topic / Subject *</label>
                         <Input
                           value={subject}
                           onChange={e => setSubject(e.target.value)}
@@ -479,7 +479,7 @@ export default function BookSession() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Notes for Tutor (Optional)</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Notes for Tutor (Optional)</label>
                         <Textarea
                           value={notes}
                           onChange={e => setNotes(e.target.value)}
@@ -493,38 +493,38 @@ export default function BookSession() {
 
                 {/* Booking Summary */}
                 {selectedSlot && (
-                  <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
-                    <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-purple-600" /> Booking Summary
+                  <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
+                    <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-indigo-600" /> Booking Summary
                     </h3>
                     <div className="grid sm:grid-cols-2 gap-3 mb-5">
-                      <div className="bg-white rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">Tutor</p>
-                        <p className="font-medium text-gray-900">{selectedTutor.full_name}</p>
+                      <div className="bg-card rounded-lg p-3">
+                        <p className="text-xs text-muted-foreground mb-1">Tutor</p>
+                        <p className="font-medium text-foreground">{selectedTutor.full_name}</p>
                       </div>
-                      <div className="bg-white rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">Session Type</p>
-                        <p className="font-medium text-gray-900 capitalize">{sessionType === 'one_on_one' ? '1-on-1 Private' : 'Group Session'}</p>
+                      <div className="bg-card rounded-lg p-3">
+                        <p className="text-xs text-muted-foreground mb-1">Session Type</p>
+                        <p className="font-medium text-foreground capitalize">{sessionType === 'one_on_one' ? '1-on-1 Private' : 'Group Session'}</p>
                       </div>
-                      <div className="bg-white rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">Date & Time</p>
-                        <p className="font-medium text-gray-900">{format(selectedDate, 'EEE, MMM d')} · {selectedSlot.display}</p>
+                      <div className="bg-card rounded-lg p-3">
+                        <p className="text-xs text-muted-foreground mb-1">Date & Time</p>
+                        <p className="font-medium text-foreground">{format(selectedDate, 'EEE, MMM d')} · {selectedSlot.display}</p>
                       </div>
-                      <div className="bg-white rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">Duration</p>
-                        <p className="font-medium text-gray-900">{selectedSlot.duration || 60} minutes</p>
+                      <div className="bg-card rounded-lg p-3">
+                        <p className="text-xs text-muted-foreground mb-1">Duration</p>
+                        <p className="font-medium text-foreground">{selectedSlot.duration || 60} minutes</p>
                       </div>
                       {subject && (
-                        <div className="bg-white rounded-lg p-3 sm:col-span-2">
-                          <p className="text-xs text-gray-500 mb-1">Topic</p>
-                          <p className="font-medium text-gray-900">{subject}</p>
+                        <div className="bg-card rounded-lg p-3 sm:col-span-2">
+                          <p className="text-xs text-muted-foreground mb-1">Topic</p>
+                          <p className="font-medium text-foreground">{subject}</p>
                         </div>
                       )}
                     </div>
                     <Button
                       onClick={handleBookSession}
                       disabled={createBookingMutation.isPending || !subject.trim()}
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-3"
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3"
                     >
                       {createBookingMutation.isPending ? 'Sending...' : (
                         <><CheckCircle className="w-4 h-4 mr-2" /> Send Booking Request</>
@@ -533,17 +533,17 @@ export default function BookSession() {
                     {!subject.trim() && (
                       <p className="text-xs text-red-500 mt-2 text-center">Please enter a topic/subject to continue</p>
                     )}
-                    <p className="text-xs text-gray-500 mt-2 text-center">Your tutor will confirm this request</p>
+                    <p className="text-xs text-muted-foreground mt-2 text-center">Your tutor will confirm this request</p>
                   </Card>
                 )}
               </>
             ) : (
               <Card className="p-16 text-center">
-                <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-10 h-10 text-purple-400" />
+                <div className="w-20 h-20 bg-indigo-100 dark:bg-indigo-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <User className="w-10 h-10 text-indigo-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Select a Tutor</h3>
-                <p className="text-gray-500">Choose a tutor from the list to see their availability and book a session</p>
+                <h3 className="text-xl font-semibold text-foreground mb-2">Select a Tutor</h3>
+                <p className="text-muted-foreground">Choose a tutor from the list to see their availability and book a session</p>
               </Card>
             )}
           </div>

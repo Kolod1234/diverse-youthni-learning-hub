@@ -22,11 +22,11 @@ import { format, isPast, isFuture, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
 
 const CATEGORY_COLORS = {
-  workshop: '#7c3aed',
+  workshop: '#4f46e5',
   webinar: '#2563eb',
   social: '#16a34a',
   competition: '#dc2626',
-  training: '#ea580c',
+  training: '#4f46e5',
   other: '#475569'
 };
 
@@ -95,7 +95,7 @@ export default function Events() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Hero */}
-      <Box sx={{ background: 'linear-gradient(135deg, #003366 0%, #1d4ed8 60%, #7c3aed 100%)', py: 8 }}>
+      <Box sx={{ bgcolor: '#0b2f5c', py: 8 }}>
         <Container maxWidth="xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
@@ -293,7 +293,7 @@ export default function Events() {
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {eventRsvps.filter(r => r.status === 'going').slice(0, 10).map(r => (
-                      <Avatar key={r.id} sx={{ width: 28, height: 28, fontSize: 12, bgcolor: '#003366' }} title={r.user_name}>
+                      <Avatar key={r.id} sx={{ width: 28, height: 28, fontSize: 12, bgcolor: '#0b2f5c' }} title={r.user_name}>
                         {r.user_name?.[0] || '?'}
                       </Avatar>
                     ))}

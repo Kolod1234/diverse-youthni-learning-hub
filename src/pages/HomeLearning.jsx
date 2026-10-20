@@ -65,7 +65,7 @@ export default function HomeLearning() {
       )}
 
       {/* Hero Section */}
-      <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #2563eb, #1e40af, #1e3a8a)', py: 12, overflow: 'hidden' }}>
+      <Box sx={{ position: 'relative', bgcolor: '#4f46e5', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -98,7 +98,7 @@ export default function HomeLearning() {
                   size="large"
                   endIcon={<ArrowRight size={24} />}
                   sx={{
-                    bgcolor: 'white',
+                    bgcolor: 'background.paper',
                     color: '#2563eb',
                     px: 5,
                     py: 2,
@@ -183,7 +183,7 @@ export default function HomeLearning() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Live Sessions</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>Join interactive classes</Typography>
               <Link to={createPageUrl('Sessions')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#7c3aed', '&:hover': { bgcolor: '#6d28d9' } }}>
+                <Button variant="contained" sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#6d28d9' } }}>
                   View Sessions
                 </Button>
               </Link>

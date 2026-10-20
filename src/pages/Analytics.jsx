@@ -114,7 +114,7 @@ export default function Analytics() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card sx={{ p: 2, background: 'linear-gradient(to bottom right, #eff6ff, #cffafe)', border: 1, borderColor: '#60a5fa' }}>
+            <Card sx={{ p: 2, bgcolor: 'action.hover', border: 1, borderColor: '#60a5fa' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <Box sx={{ width: 40, height: 40, bgcolor: '#dbeafe', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <TrendingUp size={20} color="#2563eb" />
@@ -132,14 +132,14 @@ export default function Analytics() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+            <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-green-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-500/15 rounded-lg flex items-center justify-center">
                   <Target className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{completedCourses}/{totalCourses}</p>
-                  <p className="text-xs text-gray-600">Completed</p>
+                  <p className="text-2xl font-bold text-foreground">{completedCourses}/{totalCourses}</p>
+                  <p className="text-xs text-muted-foreground">Completed</p>
                 </div>
               </div>
             </Card>
@@ -150,14 +150,14 @@ export default function Analytics() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Card className="p-4 bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+            <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/15 rounded-lg flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{avgScore}%</p>
-                  <p className="text-xs text-gray-600">Quiz Average</p>
+                  <p className="text-2xl font-bold text-foreground">{avgScore}%</p>
+                  <p className="text-xs text-muted-foreground">Quiz Average</p>
                 </div>
               </div>
             </Card>
@@ -168,14 +168,14 @@ export default function Analytics() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Card className="p-4 bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+            <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-orange-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-500/15 rounded-lg flex items-center justify-center">
                   <Activity className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{userProgress?.streak_days || 0}</p>
-                  <p className="text-xs text-gray-600">Day Streak</p>
+                  <p className="text-2xl font-bold text-foreground">{userProgress?.streak_days || 0}</p>
+                  <p className="text-xs text-muted-foreground">Day Streak</p>
                 </div>
               </div>
             </Card>
@@ -186,14 +186,14 @@ export default function Analytics() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <Card className="p-4 bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200">
+            <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-pink-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-pink-100 dark:bg-pink-500/15 rounded-lg flex items-center justify-center">
                   <Award className="w-5 h-5 text-pink-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{achievements.length}</p>
-                  <p className="text-xs text-gray-600">Achievements</p>
+                  <p className="text-2xl font-bold text-foreground">{achievements.length}</p>
+                  <p className="text-xs text-muted-foreground">Achievements</p>
                 </div>
               </div>
             </Card>

@@ -106,7 +106,7 @@ export default function AdminDailyFacts() {
               <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}>
                 Add Fact
               </Button>
-              <Button variant="contained" startIcon={<AutoAwesomeIcon />} onClick={generateFactWithAI} disabled={generatingFact} sx={{ bgcolor: '#9333ea', '&:hover': { bgcolor: '#7e22ce' } }}>
+              <Button variant="contained" startIcon={<AutoAwesomeIcon />} onClick={generateFactWithAI} disabled={generatingFact} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#7e22ce' } }}>
                 {generatingFact ? 'Fetching...' : 'Fetch from Sources'}
               </Button>
             </Stack>

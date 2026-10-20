@@ -104,7 +104,7 @@ export default function AdminNotifications() {
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-        <Bell size={28} color="#003366" />
+        <Bell size={28} color="#0b2f5c" />
         <Box>
           <Typography variant="h4" fontWeight={700}>Notification Centre</Typography>
           <Typography color="text.secondary">Send targeted in-app notifications and email digests to users</Typography>
@@ -218,7 +218,7 @@ export default function AdminNotifications() {
                 startIcon={<Send size={18} />}
                 onClick={handleSend}
                 disabled={!form.title || !form.message || (form.target === 'specific' && !form.specific_email) || sendMutation.isPending}
-                sx={{ bgcolor: '#003366', '&:hover': { bgcolor: '#002244' } }}
+                sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}
               >
                 Send Notification
               </Button>
@@ -230,7 +230,7 @@ export default function AdminNotifications() {
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Live Preview</Typography>
               <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}>
-                <Box sx={{ bgcolor: '#003366', color: 'white', px: 2, py: 1 }}>
+                <Box sx={{ bgcolor: '#0b2f5c', color: 'white', px: 2, py: 1 }}>
                   <Typography variant="caption" sx={{ opacity: 0.7 }}>Notification Bell → User sees:</Typography>
                 </Box>
                 <Box sx={{ p: 2, bgcolor: '#eff6ff' }}>

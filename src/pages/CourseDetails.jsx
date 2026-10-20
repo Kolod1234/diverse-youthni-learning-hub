@@ -297,7 +297,7 @@ export default function CourseDetails() {
 
   if (!course) {
     return (
-      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Box sx={{ textAlign: 'center' }}>
           <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" style={{ color: '#d1d5db' }} />
           <Typography variant="h5" fontWeight={600} sx={{ mb: 2 }}>Course not found</Typography>
@@ -431,7 +431,7 @@ export default function CourseDetails() {
                     })()}
                   
                     {isMathPathwayCourse && (
-                      <Box sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: '#f8fafc' }}>
+                      <Box sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: 'action.hover' }}>
                         <Typography fontWeight={700} sx={{ mb: 0.5 }}>Choose your CCEA Mathematics pathway</Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                           Select one valid unit pair. Your first unit is worth 45% and the completion unit is worth 55%.
@@ -570,11 +570,11 @@ export default function CourseDetails() {
                     <Chip label={`${activeMathPathwayConfig.first_unit} + ${activeMathPathwayConfig.completion_unit}`} color="primary" />
                   </Box>
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-                    <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2 }}>
+                    <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
                       <Typography fontWeight={700}>{activeMathPathwayConfig.first_unit}: First assessment unit</Typography>
                       <Typography variant="body2" color="text.secondary">Calculator examination - {activeMathPathwayConfig.first_weighting}%</Typography>
                     </Box>
-                    <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2 }}>
+                    <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
                       <Typography fontWeight={700}>{activeMathPathwayConfig.completion_unit}: Completion unit</Typography>
                       <Typography variant="body2" color="text.secondary">Non-calculator and calculator papers - {activeMathPathwayConfig.completion_weighting}%</Typography>
                     </Box>
@@ -658,7 +658,7 @@ export default function CourseDetails() {
                                          <Play size={12} color="#4f46e5" style={{ marginLeft: 2 }} />
                                        </Box>
                                      ) : (
-                                       <Box sx={{ width: 24, height: 24, bgcolor: '#f3f4f6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                       <Box sx={{ width: 24, height: 24, bgcolor: 'action.hover', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                          <Lock size={12} color="#9ca3af" />
                                        </Box>
                                      )}
@@ -671,7 +671,7 @@ export default function CourseDetails() {
                                          {lessonQuizCount > 0 && (
                                            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
                                              <Brain size={12} color="#7c3aed" />
-                                             <Typography variant="caption" sx={{ color: '#7c3aed' }}>
+                                             <Typography variant="caption" sx={{ color: '#4f46e5' }}>
                                                {lessonQuizCount} quiz{lessonQuizCount > 1 ? 'zes' : ''}
                                              </Typography>
                                            </Box>
@@ -720,7 +720,7 @@ export default function CourseDetails() {
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {quizzes.map((quiz) => (
                           <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`} style={{ textDecoration: 'none' }}>
-                            <Card sx={{ p: 2, background: 'linear-gradient(to right, #eef2ff, #faf5ff)', border: '1px solid #c7d2fe', cursor: 'pointer', '&:hover': { boxShadow: 2 }, transition: 'all 0.2s' }}>
+                            <Card sx={{ p: 2, bgcolor: 'action.hover', border: '1px solid #c7d2fe', cursor: 'pointer', '&:hover': { boxShadow: 2 }, transition: 'all 0.2s' }}>
                               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Box>
                                   <Typography fontWeight={500}>{quiz.title}</Typography>
@@ -935,7 +935,7 @@ export default function CourseDetails() {
 
             {/* Official course specification */}
             {course.syllabus_url && (
-              <Card sx={{ p: 3, border: 0, boxShadow: 1, background: 'linear-gradient(to bottom right, #fef3c7, #fed7aa)' }}>
+              <Card sx={{ p: 3, border: 0, boxShadow: 1, bgcolor: 'action.hover' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                   <Box sx={{ width: 40, height: 40, bgcolor: '#fef3c7', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <BookOpen size={20} color="#d97706" />
@@ -958,7 +958,7 @@ export default function CourseDetails() {
                     fullWidth 
                     endIcon={<ChevronRight size={16} />}
                     startIcon={<Download size={16} />}
-                    sx={{ justifyContent: 'space-between', '&:hover': { bgcolor: 'white' } }}
+                    sx={{ justifyContent: 'space-between', '&:hover': { bgcolor: 'background.paper' } }}
                   >
                     Download Syllabus PDF
                   </Button>

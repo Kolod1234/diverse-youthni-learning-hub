@@ -187,9 +187,9 @@ export default function AdminYouthWork() {
 
   if (!user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <Card className="p-8">
-          <h2 className="text-2xl font-bold text-gray-900">Admin Access Only</h2>
+          <h2 className="text-2xl font-bold text-foreground">Admin Access Only</h2>
         </Card>
       </div>
     );
@@ -203,53 +203,53 @@ export default function AdminYouthWork() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Youth Work Management</h1>
-          <p className="text-gray-600">Manage qualifications, participants, and assessments</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Youth Work Management</h1>
+          <p className="text-muted-foreground">Manage qualifications, participants, and assessments</p>
         </motion.div>
 
         {/* Visual Overview Dashboard */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
           <Card className="p-6">
             <div className="flex items-center justify-between mb-2">
-              <Users className="w-8 h-8 text-purple-600" />
-              <span className="text-3xl font-bold text-purple-900">{participants.length}</span>
+              <Users className="w-8 h-8 text-indigo-600" />
+              <span className="text-3xl font-bold text-indigo-900 dark:text-indigo-300">{participants.length}</span>
             </div>
-            <p className="text-sm font-medium text-purple-700">Total Participants</p>
+            <p className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Total Participants</p>
           </Card>
 
           <Card className="p-6">
             <div className="flex items-center justify-between mb-2">
               <Bell className="w-8 h-8 text-yellow-600" />
-              <span className="text-3xl font-bold text-yellow-900">{pendingApprovals}</span>
+              <span className="text-3xl font-bold text-yellow-900 dark:text-yellow-300">{pendingApprovals}</span>
             </div>
-            <p className="text-sm font-medium text-yellow-700">Pending Approvals</p>
+            <p className="text-sm font-medium text-yellow-700 dark:text-yellow-300">Pending Approvals</p>
           </Card>
 
           <Card className="p-6">
             <div className="flex items-center justify-between mb-2">
               <AlertCircle className="w-8 h-8 text-red-600" />
-              <span className="text-3xl font-bold text-red-900">{needsAttention.length}</span>
+              <span className="text-3xl font-bold text-red-900 dark:text-red-300">{needsAttention.length}</span>
             </div>
-            <p className="text-sm font-medium text-red-700">Needs Attention</p>
+            <p className="text-sm font-medium text-red-700 dark:text-red-300">Needs Attention</p>
           </Card>
 
           <Card className="p-6">
             <div className="flex items-center justify-between mb-2">
               <TrendingUp className="w-8 h-8 text-green-600" />
-              <span className="text-3xl font-bold text-green-900">{avgProgress}%</span>
+              <span className="text-3xl font-bold text-green-900 dark:text-green-300">{avgProgress}%</span>
             </div>
-            <p className="text-sm font-medium text-green-700">Average Progress</p>
+            <p className="text-sm font-medium text-green-700 dark:text-green-300">Average Progress</p>
           </Card>
         </div>
 
         {/* Alerts & Reminders */}
         {(needsAttention.length > 0 || pendingApprovals > 0) && (
-          <Card className="p-6 mb-8 border-l-4 border-yellow-500 bg-yellow-50">
+          <Card className="p-6 mb-8 border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-500/15">
             <div className="flex items-start gap-3">
               <Bell className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
               <div className="flex-1">
-                <h3 className="font-bold text-yellow-900 mb-2">Action Required</h3>
-                <ul className="space-y-1 text-sm text-yellow-800">
+                <h3 className="font-bold text-yellow-900 dark:text-yellow-300 mb-2">Action Required</h3>
+                <ul className="space-y-1 text-sm text-yellow-800 dark:text-yellow-300">
                   {pendingApprovals > 0 && (
                     <li>• {pendingApprovals} submission{pendingApprovals > 1 ? 's' : ''} pending approval</li>
                   )}
@@ -276,25 +276,25 @@ export default function AdminYouthWork() {
             <div className="space-y-6">
               {/* Needs Attention Section */}
               {needsAttention.length > 0 && (
-                <Card className="p-6 border-red-200 bg-red-50">
+                <Card className="p-6 border-red-200 bg-red-50 dark:bg-red-500/15">
                   <div className="flex items-center gap-2 mb-4">
                     <AlertCircle className="w-5 h-5 text-red-600" />
-                    <h3 className="font-bold text-red-900">Participants Needing Attention</h3>
+                    <h3 className="font-bold text-red-900 dark:text-red-300">Participants Needing Attention</h3>
                   </div>
                   <div className="space-y-3">
                     {needsAttention.map(progress => {
                       const qual = qualifications.find(q => q.id === progress.qualification_id);
                       const participant = allUsers.find(u => u.email === progress.participant_email);
                       return (
-                        <div key={progress.id} className="bg-white rounded-lg p-4 flex items-center justify-between">
+                        <div key={progress.id} className="bg-card rounded-lg p-4 flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <Avatar>
                               <AvatarImage src={participant?.avatar} />
                               <AvatarFallback>{progress.participant_name?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-semibold text-gray-900">{progress.participant_name}</p>
-                              <p className="text-sm text-gray-600">{qual?.title} - Unit {progress.unit_index + 1}</p>
+                              <p className="font-semibold text-foreground">{progress.participant_name}</p>
+                              <p className="text-sm text-muted-foreground">{qual?.title} - Unit {progress.unit_index + 1}</p>
                               <div className="flex items-center gap-2 mt-1">
                                 <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                                   <div 
@@ -302,7 +302,7 @@ export default function AdminYouthWork() {
                                     style={{ width: `${progress.progress_percent}%` }}
                                   />
                                 </div>
-                                <span className="text-xs text-gray-600">{progress.progress_percent}%</span>
+                                <span className="text-xs text-muted-foreground">{progress.progress_percent}%</span>
                               </div>
                             </div>
                           </div>
@@ -329,7 +329,7 @@ export default function AdminYouthWork() {
               {/* Progress Overview by Qualification */}
               <Card className="p-6">
                 <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-purple-600" />
+                  <BarChart3 className="w-5 h-5 text-indigo-600" />
                   Progress Overview by Qualification
                 </h3>
                 <div className="space-y-4">
@@ -344,8 +344,8 @@ export default function AdminYouthWork() {
                       <div key={qual.id} className="border-b pb-4 last:border-b-0">
                         <div className="flex items-center justify-between mb-2">
                           <div>
-                            <p className="font-semibold text-gray-900">{qual.title}</p>
-                            <p className="text-sm text-gray-600">
+                            <p className="font-semibold text-foreground">{qual.title}</p>
+                            <p className="text-sm text-muted-foreground">
                               {qualProgress.length} enrolled • {completed} completed
                             </p>
                           </div>
@@ -370,21 +370,21 @@ export default function AdminYouthWork() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-bold text-gray-900">{progress.participant_name}</h3>
+                          <h3 className="font-bold text-foreground">{progress.participant_name}</h3>
                           <Badge variant="outline">{qual?.title}</Badge>
                           <Badge variant="outline">Unit {progress.unit_index + 1}</Badge>
                           {progress.is_approved ? (
-                            <Badge className="bg-green-100 text-green-700">Approved</Badge>
+                            <Badge className="bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300">Approved</Badge>
                           ) : progress.is_submitted ? (
-                            <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>
+                            <Badge className="bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300">Pending</Badge>
                           ) : (
                             <Badge variant="outline">In Progress</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">{progress.participant_email}</p>
-                        <p className="text-sm text-gray-500">Progress: {progress.progress_percent}%</p>
+                        <p className="text-sm text-muted-foreground mb-2">{progress.participant_email}</p>
+                        <p className="text-sm text-muted-foreground">Progress: {progress.progress_percent}%</p>
                         {progress.coordinator_feedback && (
-                          <p className="text-sm text-gray-700 mt-2 bg-gray-50 p-2 rounded">
+                          <p className="text-sm text-foreground mt-2 bg-muted p-2 rounded">
                             <strong>Feedback:</strong> {progress.coordinator_feedback}
                           </p>
                         )}
@@ -454,9 +454,9 @@ export default function AdminYouthWork() {
                           <AvatarFallback>{participant.full_name?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <h3 className="font-bold text-gray-900">{participant.full_name}</h3>
-                          <p className="text-sm text-gray-600">{participant.email}</p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <h3 className="font-bold text-foreground">{participant.full_name}</h3>
+                          <p className="text-sm text-muted-foreground">{participant.email}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
                             {userProgress.length} workbook(s) in progress
                           </p>
                           {participant.assigned_coordinator_email && (
@@ -522,12 +522,12 @@ export default function AdminYouthWork() {
                   <div key={record.id} className="flex items-center justify-between py-2 border-b">
                     <div>
                       <p className="font-medium">{record.participant_name}</p>
-                      <p className="text-sm text-gray-600">{record.session_title} - {record.session_date}</p>
+                      <p className="text-sm text-muted-foreground">{record.session_title} - {record.session_date}</p>
                     </div>
                     <Badge className={
-                      record.status === 'present' ? 'bg-green-100 text-green-700' :
-                      record.status === 'absent' ? 'bg-red-100 text-red-700' :
-                      'bg-yellow-100 text-yellow-700'
+                      record.status === 'present' ? 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300' :
+                      record.status === 'absent' ? 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300' :
+                      'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300'
                     }>
                       {record.status}
                     </Badge>
@@ -546,8 +546,8 @@ export default function AdminYouthWork() {
                     <div>
                       <Badge className="mb-2">{qual.level}</Badge>
                       <h3 className="font-bold text-lg mb-2">{qual.title}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{qual.description}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground mb-2">{qual.description}</p>
+                      <p className="text-sm text-muted-foreground">
                         {qual.curriculum?.length || 0} Units • {qual.credit_value} Credits
                       </p>
                     </div>
@@ -579,7 +579,7 @@ export default function AdminYouthWork() {
               <div className="space-y-6 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Level
                     </label>
                     <select
@@ -596,7 +596,7 @@ export default function AdminYouthWork() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Title
                     </label>
                     <Input
@@ -610,7 +610,7 @@ export default function AdminYouthWork() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Description
                   </label>
                   <Textarea
@@ -625,7 +625,7 @@ export default function AdminYouthWork() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Credit Value
                     </label>
                     <Input
@@ -638,7 +638,7 @@ export default function AdminYouthWork() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Guided Learning Hours
                     </label>
                     <Input
@@ -655,7 +655,7 @@ export default function AdminYouthWork() {
                 {/* Curriculum Units */}
                 <div className="border-t pt-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-900">Curriculum Units</h4>
+                    <h4 className="font-semibold text-foreground">Curriculum Units</h4>
                     <Button
                       size="sm"
                       onClick={() => {
@@ -679,9 +679,9 @@ export default function AdminYouthWork() {
                   
                   <div className="space-y-4">
                     {(editingQualification.curriculum || []).map((unit, unitIdx) => (
-                      <Card key={unitIdx} className="p-4 bg-gray-50">
+                      <Card key={unitIdx} className="p-4 bg-muted">
                         <div className="flex items-start justify-between mb-3">
-                          <h5 className="font-semibold text-sm text-gray-900">Unit {unitIdx + 1}</h5>
+                          <h5 className="font-semibold text-sm text-foreground">Unit {unitIdx + 1}</h5>
                           <Button
                             size="sm"
                             variant="destructive"
@@ -700,7 +700,7 @@ export default function AdminYouthWork() {
                         <div className="space-y-3">
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                              <label className="block text-xs font-medium text-foreground mb-1">
                                 Unit Title
                               </label>
                               <Input
@@ -716,7 +716,7 @@ export default function AdminYouthWork() {
                               />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                              <label className="block text-xs font-medium text-foreground mb-1">
                                 Unit Code
                               </label>
                               <Input
@@ -735,7 +735,7 @@ export default function AdminYouthWork() {
                           
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                              <label className="block text-xs font-medium text-foreground mb-1">
                                 Credits
                               </label>
                               <Input
@@ -752,7 +752,7 @@ export default function AdminYouthWork() {
                               />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                              <label className="block text-xs font-medium text-foreground mb-1">
                                 Level
                               </label>
                               <Input
@@ -772,7 +772,7 @@ export default function AdminYouthWork() {
                           {/* Learning Outcomes */}
                           <div>
                             <div className="flex items-center justify-between mb-2">
-                              <label className="block text-xs font-medium text-gray-700">
+                              <label className="block text-xs font-medium text-foreground">
                                 Learning Outcomes / Assessment Criteria
                               </label>
                               <Button
@@ -852,7 +852,7 @@ export default function AdminYouthWork() {
                       });
                     }}
                     disabled={updateQualificationMutation.isPending}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-indigo-600 hover:bg-indigo-700"
                   >
                     Save Changes
                   </Button>
@@ -870,7 +870,7 @@ export default function AdminYouthWork() {
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Message
                 </label>
                 <Textarea
@@ -901,7 +901,7 @@ export default function AdminYouthWork() {
                     }
                   }}
                   disabled={!messageContent.trim() || sendMessageMutation.isPending}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-indigo-600 hover:bg-indigo-700"
                 >
                   <Send className="w-4 h-4 mr-2" />
                   Send Message

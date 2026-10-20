@@ -28,7 +28,7 @@ export default function HomeGuest() {
       )}
 
       {/* Hero Section */}
-      <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #1e293b, #334155, #475569)', py: 12, overflow: 'hidden' }}>
+      <Box sx={{ position: 'relative', bgcolor: '#0b2f5c', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -62,7 +62,7 @@ export default function HomeGuest() {
                   endIcon={<ArrowRight size={24} />}
                   onClick={() => base44.auth.redirectToLogin()}
                   sx={{
-                    bgcolor: 'white',
+                    bgcolor: 'background.paper',
                     color: '#1e293b',
                     px: 5,
                     py: 2,
@@ -185,14 +185,14 @@ export default function HomeGuest() {
             endIcon={<ArrowRight />}
             onClick={() => base44.auth.redirectToLogin()}
             sx={{
-              bgcolor: 'white',
+              bgcolor: 'background.paper',
               color: 'primary.main',
               px: 5,
               py: 2,
               fontSize: '1.125rem',
               fontWeight: 700,
               borderRadius: 50,
-              '&:hover': { bgcolor: '#f8fafc' }
+              '&:hover': { bgcolor: 'action.hover' }
             }}
           >
             Sign In Now

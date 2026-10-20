@@ -39,7 +39,7 @@ const getCategoryBgColor = (category) => {
     history: { bgcolor: '#ffe4e6', color: '#be123c' },
     geography: { bgcolor: '#ccfbf1', color: '#0f766e' },
   };
-  return colors[category] || { bgcolor: '#f3f4f6', color: '#4b5563' };
+  return colors[category] || { bgcolor: 'action.hover', color: '#4b5563' };
 };
 
 export default function CourseCard({ course, index = 0, user = null }) {
@@ -81,7 +81,7 @@ export default function CourseCard({ course, index = 0, user = null }) {
       >
         {/* Image Section — clickable link to course details */}
         <Link to={courseHref} style={{ textDecoration: 'none', display: 'block' }}>
-          <Box sx={{ position: 'relative', aspectRatio: '16/9', background: 'linear-gradient(to bottom right, #e5e7eb, #d1d5db)', overflow: 'hidden' }}>
+          <Box sx={{ position: 'relative', aspectRatio: '16/9', bgcolor: 'action.hover', overflow: 'hidden' }}>
             <Box
               component="img"
               className="course-card-img"
@@ -105,7 +105,7 @@ export default function CourseCard({ course, index = 0, user = null }) {
                 <Chip
                   label="⭐ Featured"
                   size="small"
-                  sx={{ background: 'linear-gradient(to right, #f59e0b, #f97316)', color: 'white', fontWeight: 700, fontSize: '0.7rem', boxShadow: 2, border: 0 }}
+                  sx={{ bgcolor: '#4f46e5', color: 'white', fontWeight: 700, fontSize: '0.7rem', boxShadow: 2, border: 0 }}
                 />
               )}
               <Chip
@@ -225,11 +225,11 @@ export default function CourseCard({ course, index = 0, user = null }) {
                     px: 2,
                     borderRadius: 3,
                     fontWeight: 700,
-                    background: 'linear-gradient(to right, #003366, #1d4ed8)',
+                    bgcolor: '#0b2f5c',
                     color: 'white',
                     boxShadow: 2,
                     '&:hover': {
-                      background: 'linear-gradient(to right, #002244, #1e3a8a)',
+                      bgcolor: '#0b2f5c',
                       boxShadow: 4,
                     },
                     transition: 'all 0.3s',

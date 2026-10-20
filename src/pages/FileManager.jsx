@@ -12,9 +12,9 @@ const getFileIcon = (category) => {
   const icons = {
     image: <Image className="w-8 h-8 text-blue-500" />,
     document: <FileText className="w-8 h-8 text-red-500" />,
-    video: <Video className="w-8 h-8 text-purple-500" />,
+    video: <Video className="w-8 h-8 text-indigo-500" />,
     audio: <Music className="w-8 h-8 text-green-500" />,
-    other: <File className="w-8 h-8 text-gray-500" />
+    other: <File className="w-8 h-8 text-muted-foreground" />
   };
   return icons[category] || icons.other;
 };
@@ -138,7 +138,7 @@ export default function FileManager() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', py: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
       <Container maxWidth="xl">
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4, gap: 2, flexWrap: 'wrap' }}>
@@ -197,7 +197,7 @@ export default function FileManager() {
               }}
             >
               {/* Icon */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 2, bgcolor: '#f3f4f6', borderRadius: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
                 {getFileIcon(file.category)}
               </Box>
 
