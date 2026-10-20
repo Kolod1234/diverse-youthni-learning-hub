@@ -185,7 +185,7 @@ export default function CoordinatorsDashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="participants" className="space-y-6">
-          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl">
+          <TabsList>
             <TabsTrigger value="participants">
               <Users className="w-4 h-4 mr-2" />
               My Participants
