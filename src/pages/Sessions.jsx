@@ -93,7 +93,7 @@ export default function Sessions() {
         animate={{ opacity: 1, y: 0 }}
         className="group"
       >
-        <Card className="p-6 hover:shadow-xl transition-all duration-300 border-l-4 border-l-purple-500">
+        <Card className="p-6 hover:shadow-xl transition-all duration-300 border-l-4 border-l-indigo-500">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
