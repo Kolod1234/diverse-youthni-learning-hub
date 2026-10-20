@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 // Some pages give these cards MUI's `sx` prop (e.g. sx={{ p: 3 }}). A plain <div> ignores it,
 // which silently dropped their padding. Render through MUI Box when `sx` is given so it applies.
 const Base = React.forwardRef(({ sx, ...props }, ref) =>
-  sx ? <Box ref={ref} sx={sx} {...props} /> : <Base ref={ref} {...props} />
+  sx ? <Box ref={ref} sx={sx} {...props} /> : <div ref={ref} {...props} />
 )
 Base.displayName = "CardBase"
 
