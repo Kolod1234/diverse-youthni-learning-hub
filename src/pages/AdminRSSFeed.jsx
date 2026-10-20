@@ -167,7 +167,7 @@ export default function AdminRSSFeed() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #eff6ff, white)' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Stack direction="row" alignItems="flex-start" justifyContent="space-between" sx={{ mb: 4, flexWrap: 'wrap', gap: 2 }}>
           <Box>

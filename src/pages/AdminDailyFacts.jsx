@@ -91,7 +91,7 @@ export default function AdminDailyFacts() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #f8fafc, #eff6ff, #f5f3ff)', py: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
       <Container maxWidth="xl">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 5, flexWrap: 'wrap', gap: 2 }}>

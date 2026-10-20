@@ -196,7 +196,7 @@ export default function AdminYouthWork() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -209,7 +209,7 @@ export default function AdminYouthWork() {
 
         {/* Visual Overview Dashboard */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-2">
               <Users className="w-8 h-8 text-purple-600" />
               <span className="text-3xl font-bold text-purple-900">{participants.length}</span>
@@ -217,7 +217,7 @@ export default function AdminYouthWork() {
             <p className="text-sm font-medium text-purple-700">Total Participants</p>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-2">
               <Bell className="w-8 h-8 text-yellow-600" />
               <span className="text-3xl font-bold text-yellow-900">{pendingApprovals}</span>
@@ -225,7 +225,7 @@ export default function AdminYouthWork() {
             <p className="text-sm font-medium text-yellow-700">Pending Approvals</p>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-2">
               <AlertCircle className="w-8 h-8 text-red-600" />
               <span className="text-3xl font-bold text-red-900">{needsAttention.length}</span>
@@ -233,7 +233,7 @@ export default function AdminYouthWork() {
             <p className="text-sm font-medium text-red-700">Needs Attention</p>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-2">
               <TrendingUp className="w-8 h-8 text-green-600" />
               <span className="text-3xl font-bold text-green-900">{avgProgress}%</span>

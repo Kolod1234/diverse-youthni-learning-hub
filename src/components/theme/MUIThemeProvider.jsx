@@ -100,6 +100,31 @@ export default function MUIThemeProvider({ children }) {
       MuiTab: {
         styleOverrides: { root: { textTransform: 'none', fontWeight: 700, minHeight: 44 } },
       },
+      // Redesign (layout L1): admin lists, forms and dialogs share one calm look.
+      MuiTableCell: {
+        styleOverrides: {
+          root: { borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#f0f1f4', paddingTop: 12, paddingBottom: 12 },
+          head: { fontSize: 13, fontWeight: 700, color: isDark ? '#c8c8d2' : '#4b5563', borderColor: isDark ? 'rgba(255,255,255,0.12)' : '#e5e7eb', backgroundColor: 'transparent' },
+        },
+      },
+      MuiTableRow: {
+        styleOverrides: { root: { '&.MuiTableRow-hover:hover': { backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#f8f9fc' } } },
+      },
+      MuiTableContainer: {
+        styleOverrides: { root: { borderRadius: 14 } },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: { root: { borderRadius: 10, backgroundColor: isDark ? 'transparent' : '#ffffff' } },
+      },
+      MuiDialogTitle: {
+        styleOverrides: { root: { fontWeight: 700, fontSize: '1.25rem' } },
+      },
+      MuiAlert: {
+        styleOverrides: { root: { borderRadius: 10 } },
+      },
+      MuiTabs: {
+        styleOverrides: { indicator: { height: 3, borderRadius: 3 } },
+      },
       MuiAppBar: {
         styleOverrides: {
           root: {

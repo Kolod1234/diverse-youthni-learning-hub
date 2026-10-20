@@ -127,7 +127,7 @@ export default function AdminStudentMessages() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Box sx={{ mb: 3 }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 0.5 }}>Send Student Messages</Typography>

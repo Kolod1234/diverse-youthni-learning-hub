@@ -55,7 +55,7 @@ export default function AdminLearningObjectives() {
 
   if (isLoading) {
     return (
-      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #f8fafc, #eef2ff)', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Stack alignItems="center" spacing={2}>
           <CircularProgress sx={{ color: '#4f46e5' }} />
           <Typography color="text.secondary">Loading lessons...</Typography>
@@ -65,7 +65,7 @@ export default function AdminLearningObjectives() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #f8fafc, #eef2ff)', p: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 4 }}>
       <Container maxWidth="md">
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 0.5 }}>Learning Objectives Manager</Typography>
@@ -89,7 +89,6 @@ export default function AdminLearningObjectives() {
               startIcon={updateAllMutation.isPending ? <CircularProgress size={16} sx={{ color: 'white' }} /> : <AutoAwesomeIcon />}
               onClick={() => updateAllMutation.mutate()}
               disabled={updateAllMutation.isPending || lessonsWithoutObjectives.length === 0}
-              sx={{ background: 'linear-gradient(to right, #4f46e5, #9333ea)', '&:hover': { background: 'linear-gradient(to right, #4338ca, #7e22ce)' } }}
             >
               {updateAllMutation.isPending ? 'Updating...' : 'Update All Learning Objectives'}
             </Button>
