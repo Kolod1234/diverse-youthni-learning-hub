@@ -254,7 +254,7 @@ export default function AdminUsers() {
                     <TableCell>USER</TableCell>
                     <TableCell>EMAIL</TableCell>
                     <TableCell>ROLE</TableCell>
-                    <TableCell>REGISTERED</TableCell>
+                    <TableCell sx={{ display: { xs: 'none', xl: 'table-cell' } }}>REGISTERED</TableCell>
                     <TableCell>STATUS</TableCell>
                     <TableCell align="right">ACTIONS</TableCell>
                   </TableRow>
@@ -264,7 +264,7 @@ export default function AdminUsers() {
                     <TableRow key={user.id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                          <Avatar src={user.avatar} sx={{ bgcolor: '#ffedd5', color: '#4f46e5' }}>
+                          <Avatar src={user.avatar} sx={{ bgcolor: 'rgba(79,70,229,0.12)', color: 'primary.main' }}>
                             {user.full_name?.charAt(0) || 'U'}
                           </Avatar>
                           <Typography variant="body2" fontWeight={500}>{user.full_name || 'Unknown'}</Typography>
@@ -282,13 +282,13 @@ export default function AdminUsers() {
                           label={user.role}
                           size="small"
                           sx={{
-                            bgcolor: user.role === 'admin' ? '#ffedd5' : '#dbeafe',
-                            color: user.role === 'admin' ? '#c2410c' : '#1d4ed8',
+                            bgcolor: user.role === 'admin' ? 'rgba(79,70,229,0.12)' : 'action.hover',
+                            color: user.role === 'admin' ? 'primary.main' : 'text.secondary',
                             fontWeight: 600,
                           }}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ display: { xs: 'none', xl: 'table-cell' } }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
                           <CalendarTodayIcon sx={{ fontSize: 14 }} />
                           <Typography variant="body2">
@@ -312,10 +312,10 @@ export default function AdminUsers() {
                             size="small"
                             startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}
                           >
-                            View Profile
+                            Profile
                           </Button>
                           {user.role !== 'admin' && <Button size="small" color={user.account_banned ? 'success' : 'error'} variant="outlined" onClick={() => { if (window.confirm(`${user.account_banned ? 'Restore' : 'Restrict'} access for ${user.full_name || user.email}?`)) banMutation.mutate({ user, banned: !user.account_banned }); }}>{user.account_banned ? 'Unban' : 'Ban'}</Button>}
-                          <IconButton size="small" onClick={() => setMessageUser(user)} sx={{ border: 1, borderColor: 'divider' }}>
+                          <IconButton size="small" aria-label={`Message ${user.full_name || user.email}`} onClick={() => setMessageUser(user)} sx={{ border: 1, borderColor: 'divider' }}>
                             <SendIcon sx={{ fontSize: 16 }} />
                           </IconButton>
                         </Box>
