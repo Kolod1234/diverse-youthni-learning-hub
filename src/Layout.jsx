@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { ThemeProvider, createTheme, useTheme as useMuiTheme } from '@mui/material/styles';
+import { ThemeProvider as MuiSubTheme, createTheme, useTheme as useMuiTheme } from '@mui/material/styles';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -345,7 +345,7 @@ function LayoutContent({ children, currentPageName }) {
       {/* In-app APK update banner (mobile users) */}
       <AppUpdateBanner />
       {/* Header */}
-      <ThemeProvider theme={headerTheme}>
+      <MuiSubTheme theme={headerTheme}>
       <AppBar 
         position="sticky" 
         elevation={scrolled ? 2 : 0}
@@ -873,7 +873,7 @@ function LayoutContent({ children, currentPageName }) {
           </Toolbar>
         </Container>
       </AppBar>
-      </ThemeProvider>
+      </MuiSubTheme>
 
       {/* Main Content with Route Transitions + Pull-to-Refresh */}
       <Box
