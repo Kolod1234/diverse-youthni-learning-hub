@@ -139,15 +139,15 @@ export default function TutorDashboard() {
         />
       )}
 
-      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-64 transition-transform duration-300 bg-card border-r border-gray-200 flex flex-col overflow-hidden md:translate-x-0 md:relative absolute z-20 h-full`}>
-        <div className="p-4 border-b border-gray-200">
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-64 transition-transform duration-300 bg-card border-r border-border flex flex-col overflow-hidden md:translate-x-0 md:relative absolute z-20 h-full`}>
+        <div className="p-4 border-b border-border">
           <div className="mb-3 flex items-center justify-between md:hidden">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Course menu</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Course menu</p>
             <button
               type="button"
               aria-label="Close menu"
               onClick={() => setSidebarOpen(false)}
-              className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-gray-700"
             >
               <X className="w-4 h-4" />
             </button>
@@ -163,13 +163,13 @@ export default function TutorDashboard() {
                   setSelectedCourseId(e.target.value);
                   setSearchParams({ courseId: e.target.value, view: currentView });
                 }}
-                className="w-full text-sm font-medium text-gray-900 bg-transparent border-none focus:outline-none cursor-pointer"
+                className="w-full text-sm font-medium text-foreground bg-transparent border-none focus:outline-none cursor-pointer"
               >
                 {courses.map(c => (
                   <option key={c.id} value={c.id}>{c.title}</option>
                 ))}
               </select>
-              <div className="text-xs text-gray-500">› Modules</div>
+              <div className="text-xs text-muted-foreground">› Modules</div>
             </div>
           </div>
         </div>
@@ -185,8 +185,8 @@ export default function TutorDashboard() {
                   setSearchParams({ courseId: selectedCourseId, view: item.view });
                   if (isMobile) setSidebarOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
-                  isActive ? 'bg-blue-50 border-l-4 border-blue-600 text-blue-700 font-medium' : 'text-gray-700'
+                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors ${
+                  isActive ? 'bg-blue-50 dark:bg-blue-500/15 border-l-4 border-blue-600 text-blue-700 dark:text-blue-300 font-medium' : 'text-foreground'
                 }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
@@ -243,7 +243,7 @@ export default function TutorDashboard() {
               {currentView === 'attendance' && <AttendanceView course={selectedCourse} />}
             </div>
 
-            <div className="hidden lg:block w-80 border-l border-gray-200 p-6 bg-gray-50 overflow-y-auto">
+            <div className="hidden lg:block w-80 border-l border-border p-6 bg-muted overflow-y-auto">
               <RightSidebarContent currentView={currentView} course={selectedCourse} />
             </div>
           </div>
@@ -432,7 +432,7 @@ function ModulesView({ courses, user }) {
   return (
     <div className="max-w-5xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Modules</h1>
+        <h1 className="text-3xl font-bold text-foreground">Modules</h1>
         <Button onClick={() => setShowCreateCourse(true)} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="w-4 h-4 mr-2" />
           Create Course
@@ -444,7 +444,7 @@ function ModulesView({ courses, user }) {
       </div>
 
       {showCreateCourse && (
-        <div className="bg-card border border-gray-200 rounded-lg p-6 mb-6">
+        <div className="bg-card border border-border rounded-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Create New Course</h3>
             <Button variant="ghost" size="icon" onClick={() => setShowCreateCourse(false)}>
@@ -492,7 +492,7 @@ function ModulesView({ courses, user }) {
       )}
 
       {showCreateLesson && (
-        <div className="bg-card border border-gray-200 rounded-lg p-6 mb-6">
+        <div className="bg-card border border-border rounded-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Create New Lesson</h3>
             <Button variant="ghost" size="icon" onClick={() => setShowCreateLesson(false)}><X className="w-4 h-4" /></Button>
@@ -551,20 +551,20 @@ function ModulesView({ courses, user }) {
 
       {courses.length === 0 ? (
         user?.role === 'admin' ? (
-          <div className="text-center py-16 bg-card border border-gray-200 rounded-lg">
+          <div className="text-center py-16 bg-card border border-border rounded-lg">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No courses yet</h3>
-            <p className="text-gray-500 mb-6">Create your first course to get started</p>
+            <h3 className="text-xl font-semibold text-foreground mb-2">No courses yet</h3>
+            <p className="text-muted-foreground mb-6">Create your first course to get started</p>
             <Button onClick={() => setShowCreateCourse(true)}><Plus className="w-4 h-4 mr-2" />Create First Course</Button>
           </div>
         ) : (
-          <div className="text-center py-16 bg-card border border-gray-200 rounded-lg">
+          <div className="text-center py-16 bg-card border border-border rounded-lg">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">0 assigned courses</h3>
-            <p className="text-gray-500 mb-2 max-w-md mx-auto">
+            <h3 className="text-xl font-semibold text-foreground mb-2">0 assigned courses</h3>
+            <p className="text-muted-foreground mb-2 max-w-md mx-auto">
               You have not been assigned to any courses yet.
             </p>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
               Please contact an admin to be added as a tutor on a course.
             </p>
           </div>
@@ -582,8 +582,8 @@ function ModulesView({ courses, user }) {
             const isExpanded = expandedCourseId === course.id;
 
             return (
-              <div key={course.id} className="bg-card border border-gray-200 rounded-lg overflow-hidden">
-                <div className="bg-indigo-50 dark:bg-indigo-500/10 px-6 py-4 border-b border-gray-200">
+              <div key={course.id} className="bg-card border border-border rounded-lg overflow-hidden">
+                <div className="bg-indigo-50 dark:bg-indigo-500/10 px-6 py-4 border-b border-border">
                   {editingCourse?.id === course.id ? (
                     <div className="space-y-4">
                       <input type="text" value={courseForm.title || ''} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} className="w-full px-3 py-2 border rounded-lg" />
@@ -600,9 +600,9 @@ function ModulesView({ courses, user }) {
                           <ChevronRight className={`w-5 h-5 text-blue-600 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                         </button>
                         <div className="flex-1">
-                          <h3 className="font-bold text-gray-900 text-lg">{course.title}</h3>
-                          <div className="flex items-center gap-3 text-sm text-gray-600 mt-1">
-                            <span className="px-2 py-0.5 bg-blue-100 rounded text-blue-700">{course.category}</span>
+                          <h3 className="font-bold text-foreground text-lg">{course.title}</h3>
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                            <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-500/15 rounded text-blue-700 dark:text-blue-300">{course.category}</span>
                             <span>•</span>
                             <span>{courseLessons.length} lessons</span>
                             <span>•</span>
@@ -622,7 +622,7 @@ function ModulesView({ courses, user }) {
                 {isExpanded && (
                   <div className="p-4">
                     {Object.keys(sections).length === 0 ? (
-                      <div className="text-center py-8 text-gray-500"><p>No lessons yet. Click "Add Lesson" to create one.</p></div>
+                      <div className="text-center py-8 text-muted-foreground"><p>No lessons yet. Click "Add Lesson" to create one.</p></div>
                     ) : (
                       <div className="space-y-3">
                         {Object.entries(sections).map(([sectionName, sectionLessons]) => {
@@ -636,10 +636,10 @@ function ModulesView({ courses, user }) {
                           };
 
                           return (
-                            <div key={sectionName} className="border border-gray-200 rounded-lg overflow-hidden">
-                              <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
-                                <h4 className="font-semibold text-gray-900 text-sm">{sectionName}</h4>
-                                <span className="text-xs text-gray-500">{sortedLessons.length} lessons</span>
+                            <div key={sectionName} className="border border-border rounded-lg overflow-hidden">
+                              <div className="bg-muted px-4 py-2 border-b border-border flex items-center justify-between">
+                                <h4 className="font-semibold text-foreground text-sm">{sectionName}</h4>
+                                <span className="text-xs text-muted-foreground">{sortedLessons.length} lessons</span>
                               </div>
                               <DragDropContext onDragEnd={handleDragEnd}>
                                 <Droppable droppableId={`section-${sectionName}`}>
@@ -650,8 +650,8 @@ function ModulesView({ courses, user }) {
                                         return (
                                           <Draggable key={lesson.id} draggableId={lesson.id} index={index}>
                                             {(provided, snapshot) => (
-                                              <div ref={provided.innerRef} {...provided.draggableProps} className={snapshot.isDragging ? 'bg-blue-50' : ''}>
-                                                <div className="px-4 py-3 hover:bg-gray-50 group">
+                                              <div ref={provided.innerRef} {...provided.draggableProps} className={snapshot.isDragging ? 'bg-blue-50 dark:bg-blue-500/15' : ''}>
+                                                <div className="px-4 py-3 hover:bg-muted group">
                                                   {editingLesson?.id === lesson.id ? (
                                                     <div className="space-y-3">
                                                       <input type="text" value={lessonForm.title || ''} onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
@@ -666,17 +666,17 @@ function ModulesView({ courses, user }) {
                                                       <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-3 flex-1">
                                                           <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing"><GripVertical className="w-4 h-4 text-gray-400 hover:text-gray-600" /></div>
-                                                          <button onClick={() => setExpandedLessonId(isLessonExpanded ? null : lesson.id)} className="hover:bg-gray-200 p-1 rounded"><ChevronRight className={`w-4 h-4 text-gray-600 transition-transform ${isLessonExpanded ? 'rotate-90' : ''}`} /></button>
+                                                          <button onClick={() => setExpandedLessonId(isLessonExpanded ? null : lesson.id)} className="hover:bg-gray-200 p-1 rounded"><ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${isLessonExpanded ? 'rotate-90' : ''}`} /></button>
                                                           <FileText className="w-4 h-4 text-gray-400" />
                                                           <div className="flex-1">
-                                                            <div className="font-medium text-gray-900 text-sm">{lesson.title}</div>
+                                                            <div className="font-medium text-foreground text-sm">{lesson.title}</div>
                                                             <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                              <span className="text-xs text-gray-500">{lesson.duration_minutes || 10} min</span>
-                                                              {lesson.video_url && <><span className="text-gray-300">•</span><span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Video</span></>}
-                                                              {lesson.google_slides_url && <><span className="text-gray-300">•</span><span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">Google Slides</span></>}
-                                                              {lesson.file_url && <><span className="text-gray-300">•</span><span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{lesson.file_type?.toUpperCase() || 'Doc'}</span></>}
-                                                              {lesson.slides && lesson.slides.length > 0 && <><span className="text-gray-300">•</span><span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">{lesson.slides.length} Slides</span></>}
-                                                              {lesson.learning_objectives && lesson.learning_objectives.length > 0 && <><span className="text-gray-300">•</span><span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">{lesson.learning_objectives.length} Objectives</span></>}
+                                                              <span className="text-xs text-muted-foreground">{lesson.duration_minutes || 10} min</span>
+                                                              {lesson.video_url && <><span className="text-gray-300">•</span><span className="text-xs bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300 px-2 py-0.5 rounded">Video</span></>}
+                                                              {lesson.google_slides_url && <><span className="text-gray-300">•</span><span className="text-xs bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded">Google Slides</span></>}
+                                                              {lesson.file_url && <><span className="text-gray-300">•</span><span className="text-xs bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">{lesson.file_type?.toUpperCase() || 'Doc'}</span></>}
+                                                              {lesson.slides && lesson.slides.length > 0 && <><span className="text-gray-300">•</span><span className="text-xs bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded">{lesson.slides.length} Slides</span></>}
+                                                              {lesson.learning_objectives && lesson.learning_objectives.length > 0 && <><span className="text-gray-300">•</span><span className="text-xs bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">{lesson.learning_objectives.length} Objectives</span></>}
                                                             </div>
                                                           </div>
                                                         </div>
@@ -689,14 +689,14 @@ function ModulesView({ courses, user }) {
                                                       {isLessonExpanded && (
                                                         <div className="px-4 pb-4 pt-2 ml-8 border-l-2 border-blue-300 bg-blue-50/50">
                                                           <div className="space-y-3 text-sm">
-                                                            {lesson.description && <div><span className="font-semibold text-gray-700">Description:</span><p className="text-gray-600 mt-1">{lesson.description}</p></div>}
-                                                            {lesson.video_url && <div><span className="font-semibold text-gray-700">Video URL:</span><a href={lesson.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1 truncate">{lesson.video_url}</a></div>}
-                                                            {lesson.google_slides_url && <div><span className="font-semibold text-gray-700">Google Slides:</span><a href={lesson.google_slides_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1 truncate">{lesson.google_slides_url}</a></div>}
-                                                            {lesson.file_url && <div><span className="font-semibold text-gray-700">Uploaded Document:</span><a href={lesson.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1">{lesson.file_type?.toUpperCase() || 'Document'} File</a></div>}
-                                                            {lesson.learning_objectives && lesson.learning_objectives.length > 0 && <div><span className="font-semibold text-gray-700">Learning Objectives:</span><ul className="list-disc list-inside mt-1 space-y-1 text-gray-600">{lesson.learning_objectives.map((obj, idx) => <li key={idx}>{obj}</li>)}</ul></div>}
-                                                            {lesson.slides && lesson.slides.length > 0 && <div><span className="font-semibold text-gray-700">Custom Slides ({lesson.slides.length}):</span><div className="mt-2 space-y-2 max-h-48 overflow-y-auto">{lesson.slides.slice(0, 5).map((slide, idx) => <div key={idx} className="bg-card border border-gray-200 rounded p-2"><div className="font-medium text-gray-800 text-xs">Slide {slide.order || idx + 1}: {slide.title}</div><div className="text-xs text-gray-500 line-clamp-1 mt-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }} /></div>)}{lesson.slides.length > 5 && <p className="text-xs text-gray-500 italic">+ {lesson.slides.length - 5} more slides</p>}</div></div>}
-                                                            {lesson.resources && lesson.resources.length > 0 && <div><span className="font-semibold text-gray-700">Resources:</span><ul className="mt-1 space-y-1">{lesson.resources.map((res, idx) => <li key={idx}><a href={res.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs">{res.name}</a></li>)}</ul></div>}
-                                                            <div className="pt-2 border-t border-gray-200 mt-3"><Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}><Button variant="outline" size="sm" className="w-full"><Edit className="w-3 h-3 mr-2" />Edit All Lesson Content</Button></Link></div>
+                                                            {lesson.description && <div><span className="font-semibold text-foreground">Description:</span><p className="text-muted-foreground mt-1">{lesson.description}</p></div>}
+                                                            {lesson.video_url && <div><span className="font-semibold text-foreground">Video URL:</span><a href={lesson.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1 truncate">{lesson.video_url}</a></div>}
+                                                            {lesson.google_slides_url && <div><span className="font-semibold text-foreground">Google Slides:</span><a href={lesson.google_slides_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1 truncate">{lesson.google_slides_url}</a></div>}
+                                                            {lesson.file_url && <div><span className="font-semibold text-foreground">Uploaded Document:</span><a href={lesson.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1">{lesson.file_type?.toUpperCase() || 'Document'} File</a></div>}
+                                                            {lesson.learning_objectives && lesson.learning_objectives.length > 0 && <div><span className="font-semibold text-foreground">Learning Objectives:</span><ul className="list-disc list-inside mt-1 space-y-1 text-muted-foreground">{lesson.learning_objectives.map((obj, idx) => <li key={idx}>{obj}</li>)}</ul></div>}
+                                                            {lesson.slides && lesson.slides.length > 0 && <div><span className="font-semibold text-foreground">Custom Slides ({lesson.slides.length}):</span><div className="mt-2 space-y-2 max-h-48 overflow-y-auto">{lesson.slides.slice(0, 5).map((slide, idx) => <div key={idx} className="bg-card border border-border rounded p-2"><div className="font-medium text-foreground text-xs">Slide {slide.order || idx + 1}: {slide.title}</div><div className="text-xs text-muted-foreground line-clamp-1 mt-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(slide.content) }} /></div>)}{lesson.slides.length > 5 && <p className="text-xs text-muted-foreground italic">+ {lesson.slides.length - 5} more slides</p>}</div></div>}
+                                                            {lesson.resources && lesson.resources.length > 0 && <div><span className="font-semibold text-foreground">Resources:</span><ul className="mt-1 space-y-1">{lesson.resources.map((res, idx) => <li key={idx}><a href={res.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs">{res.name}</a></li>)}</ul></div>}
+                                                            <div className="pt-2 border-t border-border mt-3"><Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}><Button variant="outline" size="sm" className="w-full"><Edit className="w-3 h-3 mr-2" />Edit All Lesson Content</Button></Link></div>
                                                           </div>
                                                         </div>
                                                       )}
@@ -752,50 +752,50 @@ function HomeView({ courses, user }) {
 
   return (
     <div className="max-w-5xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome, {user?.full_name?.split(' ')[0]}!</h1>
-      <p className="text-gray-500 mb-6">Your tutor workspace — manage courses, students, and sessions.</p>
+      <h1 className="text-3xl font-bold text-foreground mb-2">Welcome, {user?.full_name?.split(' ')[0]}!</h1>
+      <p className="text-muted-foreground mb-6">Your tutor workspace — manage courses, students, and sessions.</p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5"><div className="text-3xl font-bold text-blue-600">{courses.length}</div><div className="text-sm text-blue-700 mt-1">Assigned Courses</div></div>
-        <div className="bg-green-50 border border-green-100 rounded-xl p-5"><div className="text-3xl font-bold text-green-600">{totalStudents}</div><div className="text-sm text-green-700 mt-1">My Students</div></div>
-        <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5"><div className="text-3xl font-bold text-indigo-600">{completedCount}</div><div className="text-sm text-indigo-700 mt-1">Completions</div></div>
-        <div className="bg-amber-50 border border-amber-100 rounded-xl p-5"><div className="text-3xl font-bold text-amber-600">{upcomingSessions.length}</div><div className="text-sm text-amber-700 mt-1">Upcoming Sessions</div></div>
+        <div className="bg-blue-50 dark:bg-blue-500/15 border border-blue-100 rounded-xl p-5"><div className="text-3xl font-bold text-blue-600">{courses.length}</div><div className="text-sm text-blue-700 dark:text-blue-300 mt-1">Assigned Courses</div></div>
+        <div className="bg-green-50 dark:bg-green-500/15 border border-green-100 rounded-xl p-5"><div className="text-3xl font-bold text-green-600">{totalStudents}</div><div className="text-sm text-green-700 dark:text-green-300 mt-1">My Students</div></div>
+        <div className="bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 rounded-xl p-5"><div className="text-3xl font-bold text-indigo-600">{completedCount}</div><div className="text-sm text-indigo-700 dark:text-indigo-300 mt-1">Completions</div></div>
+        <div className="bg-amber-50 dark:bg-amber-500/15 border border-amber-100 rounded-xl p-5"><div className="text-3xl font-bold text-amber-600">{upcomingSessions.length}</div><div className="text-sm text-amber-700 dark:text-amber-300 mt-1">Upcoming Sessions</div></div>
       </div>
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-card border border-gray-200 rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <h2 className="text-lg font-semibold mb-4">My Courses</h2>
           <div className="space-y-3">
             {courses.slice(0, 5).map(course => {
               const courseEnrollments = enrollments.filter(e => e.course_id === course.id);
               return (
-                <div key={course.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                <div key={course.id} className="flex items-center justify-between p-3 hover:bg-muted rounded-lg">
                   <div>
-                    <div className="font-medium text-gray-900 text-sm">{course.title}</div>
-                    <div className="text-xs text-gray-500 mt-0.5 capitalize">{course.category?.replace(/_/g, ' ')} · {courseEnrollments.length} students</div>
+                    <div className="font-medium text-foreground text-sm">{course.title}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5 capitalize">{course.category?.replace(/_/g, ' ')} · {courseEnrollments.length} students</div>
                   </div>
-                  <Button component="a" href={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`} variant="outline" size="sm" className="border-slate-300 bg-card text-slate-900 hover:bg-slate-50">Manage course</Button>
+                  <Button component="a" href={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`} variant="outline" size="sm" className="border-slate-300 bg-card text-slate-900 hover:bg-muted">Manage course</Button>
                 </div>
               );
             })}
-            {courses.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No courses assigned yet.</p>}
+            {courses.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No courses assigned yet.</p>}
           </div>
         </div>
-        <div className="bg-card border border-gray-200 rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Upcoming Sessions</h2>
             <Link to={createPageUrl('ScheduleSession')}><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white"><Plus className="w-3 h-3 mr-1" /> Schedule</Button></Link>
           </div>
           <div className="space-y-3">
             {upcomingSessions.map(session => (
-              <div key={session.id} className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg">
+              <div key={session.id} className="flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-500/15 rounded-lg">
                 <Video className="w-5 h-5 text-indigo-600 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-gray-900 text-sm truncate">{session.title}</div>
-                  <div className="text-xs text-gray-500">{new Date(session.scheduled_date).toLocaleDateString('en-GB')} at {session.scheduled_time}</div>
+                  <div className="font-medium text-foreground text-sm truncate">{session.title}</div>
+                  <div className="text-xs text-muted-foreground">{new Date(session.scheduled_date).toLocaleDateString('en-GB')} at {session.scheduled_time}</div>
                 </div>
                 <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs">Start session</Button></Link>
               </div>
             ))}
-            {upcomingSessions.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No upcoming sessions.<br /><Link to={createPageUrl('ScheduleSession')} className="text-indigo-600 hover:underline">Schedule one now</Link></p>}
+            {upcomingSessions.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No upcoming sessions.<br /><Link to={createPageUrl('ScheduleSession')} className="text-indigo-600 hover:underline">Schedule one now</Link></p>}
           </div>
         </div>
       </div>
@@ -813,15 +813,15 @@ function AssignmentsView({ course }) {
   return (
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Assignments</h1>
+        <h1 className="text-3xl font-bold text-foreground">Assignments</h1>
         <Link to={createPageUrl('CreateAssignment') + `?courseId=${course?.id}`}><Button className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Add Assignment</Button></Link>
       </div>
       <div className="space-y-3">
         {assignments.map(assignment => (
-          <div key={assignment.id} className="bg-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
-            <p className="text-sm text-gray-500 mt-1">{assignment.description}</p>
-            <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+          <div key={assignment.id} className="bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <h3 className="font-semibold text-foreground">{assignment.title}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{assignment.description}</p>
+            <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
               <span>Due: {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}</span>
               <span>•</span>
               <span>{assignment.total_points || 100} points</span>
@@ -858,7 +858,7 @@ function PeopleView({ courses, selectedCourse }) {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Students</h1>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Students</h1>
       <div className="flex gap-3 mb-6 flex-wrap">
         <input type="text" placeholder="Search by email..." value={search} onChange={e => setSearch(e.target.value)} className="px-3 py-2 border rounded-lg text-sm flex-1 max-w-xs" />
         <select value={selectedCourseFilter} onChange={e => setSelectedCourseFilter(e.target.value)} className="px-3 py-2 border rounded-lg text-sm">
@@ -866,8 +866,8 @@ function PeopleView({ courses, selectedCourse }) {
           {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
         </select>
       </div>
-      <div className="bg-card border border-gray-200 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="px-6 py-4 bg-muted border-b border-border flex items-center justify-between">
           <h3 className="font-semibold">Students ({uniqueStudents.length})</h3>
           <Link to={createPageUrl('MessageCenter')}><Button size="sm" variant="outline"><MessageSquare className="w-4 h-4 mr-1" /> Message All</Button></Link>
         </div>
@@ -875,12 +875,12 @@ function PeopleView({ courses, selectedCourse }) {
           {uniqueStudents.map(enrollment => {
             const course = courses.find(c => c.id === enrollment.course_id);
             return (
-              <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+              <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-muted">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">{enrollment.created_by?.charAt(0)?.toUpperCase() || 'S'}</div>
                   <div>
-                    <div className="font-medium text-gray-900 text-sm">{enrollment.created_by}</div>
-                    <div className="text-xs text-gray-500">{course?.title} · {enrollment.progress_percent || 0}% complete</div>
+                    <div className="font-medium text-foreground text-sm">{enrollment.created_by}</div>
+                    <div className="text-xs text-muted-foreground">{course?.title} · {enrollment.progress_percent || 0}% complete</div>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -890,7 +890,7 @@ function PeopleView({ courses, selectedCourse }) {
               </div>
             );
           })}
-          {uniqueStudents.length === 0 && <div className="px-6 py-12 text-center text-gray-500 text-sm">No students found.</div>}
+          {uniqueStudents.length === 0 && <div className="px-6 py-12 text-center text-muted-foreground text-sm">No students found.</div>}
         </div>
       </div>
     </div>
@@ -936,7 +936,7 @@ function GradesView({ course, courses }) {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Grades & Assessment</h1>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Grades & Assessment</h1>
       <div className="flex gap-3 mb-6">
         <select value={selectedCourseId} onChange={e => setSelectedCourseId(e.target.value)} className="px-3 py-2 border rounded-lg text-sm">
           <option value="">Select Course</option>
@@ -944,27 +944,27 @@ function GradesView({ course, courses }) {
         </select>
       </div>
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center"><div className="text-2xl font-bold text-amber-600">{ungradedSubmissions.length}</div><div className="text-xs text-amber-700 mt-1">Awaiting Grading</div></div>
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center"><div className="text-2xl font-bold text-blue-600">{submissions.length}</div><div className="text-xs text-blue-700 mt-1">Total Submissions</div></div>
-        <div className="bg-green-50 border border-green-100 rounded-xl p-4 text-center"><div className="text-2xl font-bold text-green-600">{quizAttempts.length}</div><div className="text-xs text-green-700 mt-1">Quiz Attempts</div></div>
+        <div className="bg-amber-50 dark:bg-amber-500/15 border border-amber-100 rounded-xl p-4 text-center"><div className="text-2xl font-bold text-amber-600">{ungradedSubmissions.length}</div><div className="text-xs text-amber-700 dark:text-amber-300 mt-1">Awaiting Grading</div></div>
+        <div className="bg-blue-50 dark:bg-blue-500/15 border border-blue-100 rounded-xl p-4 text-center"><div className="text-2xl font-bold text-blue-600">{submissions.length}</div><div className="text-xs text-blue-700 dark:text-blue-300 mt-1">Total Submissions</div></div>
+        <div className="bg-green-50 dark:bg-green-500/15 border border-green-100 rounded-xl p-4 text-center"><div className="text-2xl font-bold text-green-600">{quizAttempts.length}</div><div className="text-xs text-green-700 dark:text-green-300 mt-1">Quiz Attempts</div></div>
       </div>
       {ungradedSubmissions.length > 0 && (
-        <div className="bg-card border border-gray-200 rounded-xl overflow-hidden mb-4">
-          <div className="px-6 py-4 bg-amber-50 border-b border-amber-100"><h3 className="font-semibold text-amber-800">Needs Grading ({ungradedSubmissions.length})</h3></div>
+        <div className="bg-card border border-border rounded-xl overflow-hidden mb-4">
+          <div className="px-6 py-4 bg-amber-50 dark:bg-amber-500/15 border-b border-amber-100"><h3 className="font-semibold text-amber-800 dark:text-amber-300">Needs Grading ({ungradedSubmissions.length})</h3></div>
           <div className="divide-y divide-gray-200">
             {ungradedSubmissions.slice(0, 10).map(sub => (
               <div key={sub.id} className="px-6 py-4 flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-gray-900 text-sm">{sub.student_name || sub.created_by}</div>
-                  <div className="text-xs text-gray-500">{sub.title || 'Assignment submission'}</div>
+                  <div className="font-medium text-foreground text-sm">{sub.student_name || sub.created_by}</div>
+                  <div className="text-xs text-muted-foreground">{sub.title || 'Assignment submission'}</div>
                 </div>
-                <Link to={createPageUrl('GradeAssignments') + `?assignmentId=${sub.assignment_id}&courseId=${targetCourseId}`}><Button size="sm" className="border border-slate-300 bg-card text-slate-900 hover:bg-slate-50">Grade submission</Button></Link>
+                <Link to={createPageUrl('GradeAssignments') + `?assignmentId=${sub.assignment_id}&courseId=${targetCourseId}`}><Button size="sm" className="border border-slate-300 bg-card text-slate-900 hover:bg-muted">Grade submission</Button></Link>
               </div>
             ))}
           </div>
         </div>
       )}
-      {targetCourseId && <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}><Button variant="outline" className="w-full border-slate-300 bg-card text-slate-900 hover:bg-slate-50">View all submissions and grades</Button></Link>}
+      {targetCourseId && <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}><Button variant="outline" className="w-full border-slate-300 bg-card text-slate-900 hover:bg-muted">View all submissions and grades</Button></Link>}
     </div>
   );
 }
@@ -989,14 +989,14 @@ function AnalyticsView({ course }) {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Analytics</h1>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Course Analytics</h1>
       <div className="grid grid-cols-2 gap-6 mb-6">
-        <div className="bg-card border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Engagement</h3><div className="text-3xl font-bold text-blue-600">{engagementRate}%</div><div className="text-sm text-gray-500">Students who started the course</div><div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => (e.progress_percent || 0) > 0).length} of {enrollments.length} students</div></div>
-        <div className="bg-card border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Completion</h3><div className="text-3xl font-bold text-green-600">{completionRate}%</div><div className="text-sm text-gray-500">Course completion rate</div><div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => e.is_completed).length} of {enrollments.length} completed</div></div>
+        <div className="bg-card border border-border rounded-lg p-6"><h3 className="font-semibold mb-4">Engagement</h3><div className="text-3xl font-bold text-blue-600">{engagementRate}%</div><div className="text-sm text-muted-foreground">Students who started the course</div><div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => (e.progress_percent || 0) > 0).length} of {enrollments.length} students</div></div>
+        <div className="bg-card border border-border rounded-lg p-6"><h3 className="font-semibold mb-4">Completion</h3><div className="text-3xl font-bold text-green-600">{completionRate}%</div><div className="text-sm text-muted-foreground">Course completion rate</div><div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => e.is_completed).length} of {enrollments.length} completed</div></div>
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-card border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Average Progress</h3><div className="text-3xl font-bold text-indigo-600">{avgProgress}%</div><div className="text-sm text-gray-500">Across all students</div></div>
-        <div className="bg-card border border-gray-200 rounded-lg p-6"><h3 className="font-semibold mb-4">Quiz Performance</h3><div className="text-3xl font-bold text-amber-600">{avgQuizScore}%</div><div className="text-sm text-gray-500">Average quiz score</div><div className="text-xs text-gray-400 mt-2">{quizAttempts.length} total attempts</div></div>
+        <div className="bg-card border border-border rounded-lg p-6"><h3 className="font-semibold mb-4">Average Progress</h3><div className="text-3xl font-bold text-indigo-600">{avgProgress}%</div><div className="text-sm text-muted-foreground">Across all students</div></div>
+        <div className="bg-card border border-border rounded-lg p-6"><h3 className="font-semibold mb-4">Quiz Performance</h3><div className="text-3xl font-bold text-amber-600">{avgQuizScore}%</div><div className="text-sm text-muted-foreground">Average quiz score</div><div className="text-xs text-gray-400 mt-2">{quizAttempts.length} total attempts</div></div>
       </div>
     </div>
   );
@@ -1012,18 +1012,18 @@ function DiscussionsView({ course }) {
   return (
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Discussions</h1>
+        <h1 className="text-3xl font-bold text-foreground">Discussions</h1>
         <Link to={createPageUrl('CourseDiscussion') + `?courseId=${course?.id}`}><Button className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />New Discussion</Button></Link>
       </div>
       <div className="space-y-3">
         {discussions.length > 0 ? discussions.map(discussion => (
-          <div key={discussion.id} className="bg-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <h3 className="font-semibold text-gray-900">{discussion.title}</h3>
-            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{discussion.content}</p>
-            <div className="mt-3 flex items-center gap-4 text-sm text-gray-600"><span>{discussion.replies_count || 0} replies</span><span>•</span><span>{discussion.likes_count || 0} likes</span></div>
+          <div key={discussion.id} className="bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <h3 className="font-semibold text-foreground">{discussion.title}</h3>
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{discussion.content}</p>
+            <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground"><span>{discussion.replies_count || 0} replies</span><span>•</span><span>{discussion.likes_count || 0} likes</span></div>
           </div>
         )) : (
-          <div className="bg-card border border-gray-200 rounded-lg p-8 text-center"><MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No discussions yet</h3><p className="text-gray-500">Start a discussion to engage with students</p></div>
+          <div className="bg-card border border-border rounded-lg p-8 text-center"><MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-foreground mb-2">No discussions yet</h3><p className="text-muted-foreground">Start a discussion to engage with students</p></div>
         )}
       </div>
     </div>
@@ -1041,15 +1041,15 @@ function OutcomesView({ course }) {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Learning Outcomes</h1>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Learning Outcomes</h1>
       <div className="space-y-4">
         {lessonsWithObjectives.length > 0 ? lessonsWithObjectives.map(lesson => (
-          <div key={lesson.id} className="bg-card border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900 mb-2">{lesson.title}</h3>
-            <ul className="list-disc list-inside space-y-1">{lesson.learning_objectives.map((obj, idx) => <li key={idx} className="text-sm text-gray-600">{obj}</li>)}</ul>
+          <div key={lesson.id} className="bg-card border border-border rounded-lg p-4">
+            <h3 className="font-semibold text-foreground mb-2">{lesson.title}</h3>
+            <ul className="list-disc list-inside space-y-1">{lesson.learning_objectives.map((obj, idx) => <li key={idx} className="text-sm text-muted-foreground">{obj}</li>)}</ul>
           </div>
         )) : (
-          <div className="bg-card border border-gray-200 rounded-lg p-8 text-center"><Target className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No learning outcomes yet</h3><p className="text-gray-500">Add learning objectives to your lessons</p></div>
+          <div className="bg-card border border-border rounded-lg p-8 text-center"><Target className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-foreground mb-2">No learning outcomes yet</h3><p className="text-muted-foreground">Add learning objectives to your lessons</p></div>
         )}
       </div>
     </div>
@@ -1066,18 +1066,18 @@ function QuizzesView({ course }) {
   return (
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Quizzes</h1>
+        <h1 className="text-3xl font-bold text-foreground">Quizzes</h1>
         <Link to={createPageUrl('QuizGenerator') + `?courseId=${course?.id}`}><Button className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Create Quiz</Button></Link>
       </div>
       <div className="space-y-3">
         {quizzes.length > 0 ? quizzes.map(quiz => (
-          <div key={quiz.id} className="bg-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <h3 className="font-semibold text-gray-900">{quiz.title}</h3>
-            <p className="text-sm text-gray-500 mt-1">{quiz.description}</p>
-            <div className="mt-3 flex items-center gap-4 text-sm text-gray-600"><span>{quiz.questions?.length || 0} questions</span><span>•</span><span>{quiz.total_marks || 0} points</span><span>•</span><span>{quiz.is_published ? 'Published' : 'Draft'}</span></div>
+          <div key={quiz.id} className="bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <h3 className="font-semibold text-foreground">{quiz.title}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{quiz.description}</p>
+            <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground"><span>{quiz.questions?.length || 0} questions</span><span>•</span><span>{quiz.total_marks || 0} points</span><span>•</span><span>{quiz.is_published ? 'Published' : 'Draft'}</span></div>
           </div>
         )) : (
-          <div className="bg-card border border-gray-200 rounded-lg p-8 text-center"><HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">No quizzes yet</h3><p className="text-gray-500">Create quizzes to assess student learning</p></div>
+          <div className="bg-card border border-border rounded-lg p-8 text-center"><HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-foreground mb-2">No quizzes yet</h3><p className="text-muted-foreground">Create quizzes to assess student learning</p></div>
         )}
       </div>
     </div>
@@ -1101,19 +1101,19 @@ function VideoView({ course, courses, user }) {
   return (
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Calendar & Sessions</h1>
+        <h1 className="text-3xl font-bold text-foreground">Calendar & Sessions</h1>
         <div className="flex gap-2">
           <Link to={createPageUrl('TutorBookingManager')}><Button variant="outline">Bookings {pendingBookings.length > 0 && <span className="ml-1 bg-amber-500 text-white text-xs rounded-full px-1.5">{pendingBookings.length}</span>}</Button></Link>
           <Link to={createPageUrl('ScheduleSession')}><Button className="bg-indigo-600 hover:bg-indigo-700 text-white"><Plus className="w-4 h-4 mr-2" />Schedule</Button></Link>
         </div>
       </div>
-      {pendingBookings.length > 0 && <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 flex items-center justify-between"><p className="font-semibold text-amber-900">{pendingBookings.length} booking{pendingBookings.length > 1 ? 's' : ''} pending</p><Link to={createPageUrl('TutorBookingManager')}><Button size="sm" className="bg-amber-600 text-white">Review</Button></Link></div>}
+      {pendingBookings.length > 0 && <div className="bg-amber-50 dark:bg-amber-500/15 border border-amber-200 rounded-xl p-4 mb-4 flex items-center justify-between"><p className="font-semibold text-amber-900 dark:text-amber-300">{pendingBookings.length} booking{pendingBookings.length > 1 ? 's' : ''} pending</p><Link to={createPageUrl('TutorBookingManager')}><Button size="sm" className="bg-amber-600 text-white">Review</Button></Link></div>}
       <h2 className="text-lg font-semibold mb-3">Upcoming ({upcoming.length})</h2>
       <div className="space-y-3 mb-6">
-        {upcoming.map(s => { const c = (courses || []).find(co => co.id === s.course_id); return <div key={s.id} className="bg-card border border-gray-200 rounded-xl p-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center"><Video className="w-5 h-5 text-indigo-600" /></div><div><h3 className="font-semibold text-gray-900 text-sm">{s.title}</h3><p className="text-xs text-gray-500">{new Date(s.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} at {s.scheduled_time}{c && ` · ${c.title}`}</p></div></div><Link to={createPageUrl('VideoSession') + `?id=${s.id}`}><Button className="bg-indigo-600 hover:bg-indigo-700 text-white" size="sm">Start</Button></Link></div>; })}
-        {upcoming.length === 0 && <div className="bg-card border border-gray-200 rounded-xl p-8 text-center text-gray-500"><Video className="w-10 h-10 text-gray-300 mx-auto mb-2" /><p>No upcoming sessions. <Link to={createPageUrl('ScheduleSession')} className="text-indigo-600 hover:underline">Schedule one</Link>.</p></div>}
+        {upcoming.map(s => { const c = (courses || []).find(co => co.id === s.course_id); return <div key={s.id} className="bg-card border border-border rounded-xl p-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/15 rounded-lg flex items-center justify-center"><Video className="w-5 h-5 text-indigo-600" /></div><div><h3 className="font-semibold text-foreground text-sm">{s.title}</h3><p className="text-xs text-muted-foreground">{new Date(s.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} at {s.scheduled_time}{c && ` · ${c.title}`}</p></div></div><Link to={createPageUrl('VideoSession') + `?id=${s.id}`}><Button className="bg-indigo-600 hover:bg-indigo-700 text-white" size="sm">Start</Button></Link></div>; })}
+        {upcoming.length === 0 && <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground"><Video className="w-10 h-10 text-gray-300 mx-auto mb-2" /><p>No upcoming sessions. <Link to={createPageUrl('ScheduleSession')} className="text-indigo-600 hover:underline">Schedule one</Link>.</p></div>}
       </div>
-      {past.length > 0 && <><h2 className="text-lg font-semibold mb-3">Past Sessions</h2><div className="space-y-2">{past.slice(0, 5).map(s => <div key={s.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center justify-between"><div><h3 className="font-medium text-gray-900 text-sm">{s.title}</h3><p className="text-xs text-gray-500">{new Date(s.scheduled_date).toLocaleDateString('en-GB')} · <span className="capitalize">{s.status}</span></p></div><Link to={createPageUrl('SessionRecordings') + `?sessionId=${s.id}`}><Button variant="outline" size="sm">Recording</Button></Link></div>)}</div></>}
+      {past.length > 0 && <><h2 className="text-lg font-semibold mb-3">Past Sessions</h2><div className="space-y-2">{past.slice(0, 5).map(s => <div key={s.id} className="bg-muted border border-border rounded-xl p-4 flex items-center justify-between"><div><h3 className="font-medium text-foreground text-sm">{s.title}</h3><p className="text-xs text-muted-foreground">{new Date(s.scheduled_date).toLocaleDateString('en-GB')} · <span className="capitalize">{s.status}</span></p></div><Link to={createPageUrl('SessionRecordings') + `?sessionId=${s.id}`}><Button variant="outline" size="sm">Recording</Button></Link></div>)}</div></>}
     </div>
   );
 }
@@ -1121,8 +1121,8 @@ function VideoView({ course, courses, user }) {
 function AttendanceView() {
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Attendance</h1>
-      <div className="bg-card border border-gray-200 rounded-lg p-8 text-center"><Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-gray-700 mb-2">Attendance Tracking</h3><p className="text-gray-500">Track student attendance for sessions and activities</p></div>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Attendance</h1>
+      <div className="bg-card border border-border rounded-lg p-8 text-center"><Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h3 className="text-xl font-semibold text-foreground mb-2">Attendance Tracking</h3><p className="text-muted-foreground">Track student attendance for sessions and activities</p></div>
     </div>
   );
 }
@@ -1185,17 +1185,17 @@ function RightSidebarContent({ currentView }) {
 
   return (
     <>
-      <h3 className="text-xl font-bold text-gray-900 mb-4">{content.title}</h3>
+      <h3 className="text-xl font-bold text-foreground mb-4">{content.title}</h3>
       <div className="space-y-4">
         <div>
-          <h4 className="font-semibold text-gray-900 mb-2">About this section</h4>
-          <p className="text-sm text-gray-600 leading-relaxed">{content.description}</p>
+          <h4 className="font-semibold text-foreground mb-2">About this section</h4>
+          <p className="text-sm text-muted-foreground leading-relaxed">{content.description}</p>
         </div>
         {content.tips && (
           <div className="space-y-2">
-            <h4 className="font-semibold text-gray-900 text-sm mb-2">Quick Tips</h4>
+            <h4 className="font-semibold text-foreground text-sm mb-2">Quick Tips</h4>
             {content.tips.map((tip, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-sm text-gray-600">
+              <div key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
                 <ChevronRight className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <span>{tip}</span>
               </div>

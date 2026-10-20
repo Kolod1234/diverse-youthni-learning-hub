@@ -126,11 +126,11 @@ export default function TutorBookingManager() {
   const pastBookings = bookings.filter(b => b.status === 'completed' || b.status === 'cancelled');
 
   const getStatusColor = (status) => ({
-    pending: 'bg-yellow-100 text-yellow-700',
-    confirmed: 'bg-green-100 text-green-700',
-    cancelled: 'bg-red-100 text-red-700',
-    completed: 'bg-blue-100 text-blue-700',
-  }[status] || 'bg-gray-100 text-gray-700');
+    pending: 'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300',
+    confirmed: 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300',
+    cancelled: 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300',
+    completed: 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300',
+  }[status] || 'bg-muted text-foreground');
 
   const BookingCard = ({ booking }) => {
     const isPending = booking.status === 'pending';
@@ -142,20 +142,20 @@ export default function TutorBookingManager() {
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="font-semibold text-gray-900">{booking.student_name || booking.student_email}</span>
+              <span className="font-semibold text-foreground">{booking.student_name || booking.student_email}</span>
               <Badge className={getStatusColor(booking.status)}>{booking.status}</Badge>
-              <Badge className="bg-indigo-100 text-indigo-700 text-xs">
+              <Badge className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 text-xs">
                 {booking.session_type === 'group' ? <><Users className="w-3 h-3 inline mr-1" />Group</> : <><User className="w-3 h-3 inline mr-1" />1-on-1</>}
               </Badge>
             </div>
-            <div className="flex items-center gap-3 text-sm text-gray-500 flex-wrap">
+            <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
               <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> {booking.booking_date}</span>
               <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {booking.booking_time}</span>
               <span>{booking.duration_minutes || 60} min</span>
               {booking.subject && <span className="text-indigo-600 font-medium">· {booking.subject}</span>}
             </div>
             {booking.notes && (
-              <p className="text-sm text-gray-600 mt-2 bg-gray-50 rounded-lg p-2">
+              <p className="text-sm text-muted-foreground mt-2 bg-muted rounded-lg p-2">
                 <span className="font-medium">Student notes: </span>{booking.notes}
               </p>
             )}
@@ -166,9 +166,9 @@ export default function TutorBookingManager() {
         </div>
 
         {expanded && (isPending || isConfirmed) && (
-          <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+          <div className="mt-4 pt-4 border-t border-border space-y-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Reply / Notes to Student</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Reply / Notes to Student</label>
               <Textarea
                 value={replyText[booking.id] || booking.tutor_notes || ''}
                 onChange={e => setReplyText(prev => ({ ...prev, [booking.id]: e.target.value }))}
@@ -178,7 +178,7 @@ export default function TutorBookingManager() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Meeting Link (Optional)</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Meeting Link (Optional)</label>
               <Input
                 value={meetingLinks[booking.id] || booking.meeting_link || ''}
                 onChange={e => setMeetingLinks(prev => ({ ...prev, [booking.id]: e.target.value }))}
@@ -238,33 +238,33 @@ export default function TutorBookingManager() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
               <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
               Session Management
             </h1>
-            <p className="text-gray-500 text-sm mt-0.5">Manage your availability and student bookings</p>
+            <p className="text-muted-foreground text-sm mt-0.5">Manage your availability and student bookings</p>
           </div>
         </div>
 
         {/* Summary Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           {[
-            { label: 'Pending', value: pendingBookings.length, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-            { label: 'Confirmed', value: confirmedBookings.length, color: 'text-green-600', bg: 'bg-green-50' },
-            { label: 'Completed', value: pastBookings.filter(b => b.status === 'completed').length, color: 'text-blue-600', bg: 'bg-blue-50' },
-            { label: 'Availability Slots', value: availability.filter(a => a.is_active).length, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+            { label: 'Pending', value: pendingBookings.length, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-500/15' },
+            { label: 'Confirmed', value: confirmedBookings.length, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-500/15' },
+            { label: 'Completed', value: pastBookings.filter(b => b.status === 'completed').length, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-500/15' },
+            { label: 'Availability Slots', value: availability.filter(a => a.is_active).length, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-500/15' },
           ].map(stat => (
             <Card key={stat.label} className={`p-4 ${stat.bg}`}>
               <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-              <p className="text-xs text-gray-600 mt-0.5">{stat.label}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{stat.label}</p>
             </Card>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-6">
+        <div className="flex gap-1 bg-muted rounded-xl p-1 mb-6">
           {[
             { key: 'bookings', label: 'Bookings', icon: Calendar },
             { key: 'availability', label: 'Availability', icon: Settings },
@@ -273,7 +273,7 @@ export default function TutorBookingManager() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition ${
-                activeTab === tab.key ? 'bg-card text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                activeTab === tab.key ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-gray-700'
               }`}
             >
               <tab.icon className="w-4 h-4" /> {tab.label}
@@ -291,7 +291,7 @@ export default function TutorBookingManager() {
             {/* Pending */}
             {pendingBookings.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
                   Pending Requests ({pendingBookings.length})
                 </h2>
@@ -304,7 +304,7 @@ export default function TutorBookingManager() {
             {/* Confirmed */}
             {confirmedBookings.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-400 rounded-full"></span>
                   Upcoming Confirmed ({confirmedBookings.length})
                 </h2>
@@ -317,7 +317,7 @@ export default function TutorBookingManager() {
             {/* Past */}
             {pastBookings.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
                   Past Sessions ({pastBookings.length})
                 </h2>
@@ -330,8 +330,8 @@ export default function TutorBookingManager() {
             {bookings.length === 0 && (
               <Card className="p-12 text-center">
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">No bookings yet</h3>
-                <p className="text-gray-500 text-sm">Set your availability and students will be able to book sessions with you</p>
+                <h3 className="text-lg font-semibold text-foreground mb-1">No bookings yet</h3>
+                <p className="text-muted-foreground text-sm">Set your availability and students will be able to book sessions with you</p>
                 <Button onClick={() => setActiveTab('availability')} className="mt-4" variant="outline">
                   <Settings className="w-4 h-4 mr-2" /> Set Availability
                 </Button>
@@ -344,44 +344,44 @@ export default function TutorBookingManager() {
           <div className="space-y-6">
             {/* Add Slot Form */}
             <Card className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Plus className="w-5 h-5 text-indigo-600" /> Add Availability Slot
               </h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Day of Week</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Day of Week</label>
                   <select
                     value={newSlot.day_of_week}
                     onChange={e => setNewSlot(s => ({ ...s, day_of_week: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     {DAYS.map(d => <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Start Time</label>
                   <input
                     type="time"
                     value={newSlot.start_time}
                     onChange={e => setNewSlot(s => ({ ...s, start_time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">End Time</label>
                   <input
                     type="time"
                     value={newSlot.end_time}
                     onChange={e => setNewSlot(s => ({ ...s, end_time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Session Duration (min)</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Session Duration (min)</label>
                   <select
                     value={newSlot.session_duration_minutes}
                     onChange={e => setNewSlot(s => ({ ...s, session_duration_minutes: Number(e.target.value) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     {[30, 45, 60, 90, 120].map(d => <option key={d} value={d}>{d} minutes</option>)}
                   </select>
@@ -394,12 +394,12 @@ export default function TutorBookingManager() {
                       onChange={e => setNewSlot(s => ({ ...s, allows_group: e.target.checked }))}
                       className="w-4 h-4 accent-purple-600"
                     />
-                    <span className="text-sm text-gray-700">Allow Group Sessions</span>
+                    <span className="text-sm text-foreground">Allow Group Sessions</span>
                   </label>
                 </div>
                 {newSlot.allows_group && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Group Size</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Max Group Size</label>
                     <Input
                       type="number"
                       value={newSlot.max_group_size}
@@ -423,7 +423,7 @@ export default function TutorBookingManager() {
 
             {/* Current Availability */}
             <Card className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-indigo-600" /> Your Availability Schedule
               </h2>
               {loadingAvail ? (
@@ -431,7 +431,7 @@ export default function TutorBookingManager() {
               ) : availability.length === 0 ? (
                 <div className="text-center py-8">
                   <Clock className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">No availability set yet</p>
+                  <p className="text-muted-foreground">No availability set yet</p>
                   <p className="text-xs text-gray-400 mt-1">Add slots above so students can book sessions with you</p>
                 </div>
               ) : (
@@ -444,13 +444,13 @@ export default function TutorBookingManager() {
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{day.charAt(0).toUpperCase() + day.slice(1)}</p>
                         <div className="space-y-1.5 ml-2">
                           {daySlots.map(slot => (
-                            <div key={slot.id} className={`flex items-center justify-between p-3 rounded-lg border ${slot.is_active ? 'bg-card border-gray-200' : 'bg-gray-50 border-gray-100 opacity-60'}`}>
+                            <div key={slot.id} className={`flex items-center justify-between p-3 rounded-lg border ${slot.is_active ? 'bg-card border-border' : 'bg-muted border-border opacity-60'}`}>
                               <div className="flex items-center gap-3">
                                 <Clock className="w-4 h-4 text-gray-400" />
-                                <span className="text-sm font-medium text-gray-900">{slot.start_time} – {slot.end_time}</span>
-                                <span className="text-xs text-gray-500">{slot.session_duration_minutes || 60}min slots</span>
+                                <span className="text-sm font-medium text-foreground">{slot.start_time} – {slot.end_time}</span>
+                                <span className="text-xs text-muted-foreground">{slot.session_duration_minutes || 60}min slots</span>
                                 {slot.allows_group && (
-                                  <Badge className="bg-indigo-100 text-indigo-700 text-xs">
+                                  <Badge className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 text-xs">
                                     <Users className="w-3 h-3 mr-1 inline" /> Group (max {slot.max_group_size || 5})
                                   </Badge>
                                 )}
@@ -458,7 +458,7 @@ export default function TutorBookingManager() {
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => toggleSlotMutation.mutate({ id: slot.id, is_active: !slot.is_active })}
-                                  className={`text-xs px-2 py-1 rounded-full font-medium transition ${slot.is_active ? 'bg-green-100 text-green-700 hover:bg-red-100 hover:text-red-700' : 'bg-gray-100 text-gray-500 hover:bg-green-100 hover:text-green-700'}`}
+                                  className={`text-xs px-2 py-1 rounded-full font-medium transition ${slot.is_active ? 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300 hover:bg-red-100 hover:text-red-700' : 'bg-muted text-muted-foreground hover:bg-green-100 hover:text-green-700'}`}
                                 >
                                   {slot.is_active ? 'Active' : 'Paused'}
                                 </button>

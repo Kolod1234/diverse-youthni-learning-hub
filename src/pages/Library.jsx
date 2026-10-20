@@ -630,7 +630,7 @@ export default function Library() {
         {featuredBooks.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Recommended</h2>
+              <h2 className="text-xl font-bold text-foreground">Recommended</h2>
               <button className="text-indigo-600 text-sm font-medium hover:underline">See All →</button>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -645,10 +645,10 @@ export default function Library() {
                       <img
                         src={book.cover_image}
                         alt={book.title}
-                        className="w-full aspect-[3/4] object-contain bg-gray-100 transform transition-transform duration-300 group-hover:scale-105"
+                        className="w-full aspect-[3/4] object-contain bg-muted transform transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : book.file_url?.toLowerCase().endsWith('.pdf') ? (
-                      <div className="w-full aspect-[3/4] overflow-hidden bg-gray-100 relative">
+                      <div className="w-full aspect-[3/4] overflow-hidden bg-muted relative">
                         <iframe
                           src={`${book.file_url}#page=1&toolbar=0&navpanes=0&scrollbar=0`}
                           className="w-[120%] h-[120%] border-none"
@@ -695,8 +695,8 @@ export default function Library() {
                     </div>
                   )}
                   <div className="mt-2">
-                    <h3 className="font-semibold text-gray-900 text-sm line-clamp-1">{book.title}</h3>
-                    <p className="text-xs text-gray-500">{book.author || 'Unknown Author'}</p>
+                    <h3 className="font-semibold text-foreground text-sm line-clamp-1">{book.title}</h3>
+                    <p className="text-xs text-muted-foreground">{book.author || 'Unknown Author'}</p>
                   </div>
                 </div>
               ))}
@@ -706,7 +706,7 @@ export default function Library() {
 
         {/* Categories */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Categories</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Categories</h2>
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
               <button
@@ -715,7 +715,7 @@ export default function Library() {
                 className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                   selectedCategory === cat.id
                     ? 'bg-indigo-600 text-white'
-                    : 'bg-card text-gray-700 hover:bg-gray-100'
+                    : 'bg-card text-foreground hover:bg-muted'
                 }`}
               >
                 {cat.label}
@@ -727,7 +727,7 @@ export default function Library() {
         {/* Tag Filters */}
         {allTags.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Filter by Tags</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Filter by Tags</h2>
           <div className="flex flex-wrap gap-2">
             {allTags.slice(0, 15).map((tag) => (
               <Chip
@@ -777,10 +777,10 @@ export default function Library() {
                   <img
                     src={book.cover_image}
                     alt={book.title}
-                    className="w-full aspect-[3/4] object-contain bg-gray-100 transform transition-transform duration-300 group-hover:scale-105"
+                    className="w-full aspect-[3/4] object-contain bg-muted transform transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : book.file_url?.toLowerCase().endsWith('.pdf') ? (
-                  <div className="w-full aspect-[3/4] overflow-hidden bg-gray-100 relative">
+                  <div className="w-full aspect-[3/4] overflow-hidden bg-muted relative">
                     <iframe
                       src={`${book.file_url}#page=1&toolbar=0&navpanes=0&scrollbar=0`}
                       className="w-[120%] h-[120%] border-none"
@@ -827,8 +827,8 @@ export default function Library() {
                 </div>
               )}
               <div className="mt-2">
-                <h3 className="font-semibold text-gray-900 text-sm line-clamp-1">{book.title}</h3>
-                <p className="text-xs text-gray-500">{book.author || 'Unknown Author'}</p>
+                <h3 className="font-semibold text-foreground text-sm line-clamp-1">{book.title}</h3>
+                <p className="text-xs text-muted-foreground">{book.author || 'Unknown Author'}</p>
               </div>
             </div>
           ))}
@@ -837,7 +837,7 @@ export default function Library() {
         {filteredResources.length === 0 && (
           <div className="text-center py-12">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No resources found</p>
+            <p className="text-muted-foreground">No resources found</p>
           </div>
         )}
         </Container>
@@ -893,7 +893,7 @@ export default function Library() {
                     <img
                       src={selectedBook.cover_image}
                       alt={selectedBook.title}
-                      className="w-40 h-52 rounded-lg shadow-2xl mb-3 object-cover bg-gray-100 flex-shrink-0"
+                      className="w-40 h-52 rounded-lg shadow-2xl mb-3 object-cover bg-muted flex-shrink-0"
                     />
                   )
                 ) : (
@@ -1053,8 +1053,8 @@ export default function Library() {
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between p-4 border-b bg-card">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{viewingBook.title}</h3>
-                  {viewingBook.author && <p className="text-sm text-gray-600">{viewingBook.author}</p>}
+                  <h3 className="text-lg font-semibold text-foreground">{viewingBook.title}</h3>
+                  {viewingBook.author && <p className="text-sm text-muted-foreground">{viewingBook.author}</p>}
                 </div>
                 <div className="flex gap-2">
                   <Button 

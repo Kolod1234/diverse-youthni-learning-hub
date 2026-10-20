@@ -5,7 +5,7 @@ import { Button, Card, TextField, Chip, InputLabel as MuiInputLabel } from '@mui
 const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
 const Textarea = ({ className, ...props }) => <TextField fullWidth multiline rows={3} className={className} {...props} />;
 const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'secondary' ? 'filled' : variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
-const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-gray-700 mb-1'} {...props}>{children}</label>;
+const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-foreground mb-1'} {...props}>{children}</label>;
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -278,11 +278,11 @@ export default function TutorCourseManager() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
             <X className="w-8 h-8 text-red-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600 mb-6">You have not been assigned to <strong>{course?.title}</strong>. Please contact an admin to be added as a tutor for this course.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Access Denied</h2>
+          <p className="text-muted-foreground mb-6">You have not been assigned to <strong>{course?.title}</strong>. Please contact an admin to be added as a tutor for this course.</p>
           <Button
             onClick={() => navigate(createPageUrl('TutorDashboard'))}
             className="bg-indigo-600 hover:bg-indigo-700"
@@ -303,15 +303,15 @@ export default function TutorCourseManager() {
         </Link>
 
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Course Lessons</h1>
-          <p className="text-gray-500">{course?.title}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Manage Course Lessons</h1>
+          <p className="text-muted-foreground">{course?.title}</p>
         </div>
 
         <Card className="p-6 mb-6">
         <div className="flex flex-col items-center gap-4 mb-6">
           <div className="text-center">
             <h2 className="text-xl font-semibold">Course Structure</h2>
-            <p className="text-sm text-gray-500 mt-1">Organize your course into sections and lessons. Drag to reorder.</p>
+            <p className="text-sm text-muted-foreground mt-1">Organize your course into sections and lessons. Drag to reorder.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
             <Button 
@@ -346,8 +346,8 @@ export default function TutorCourseManager() {
               <Download className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">Import from Google Slides</h3>
-              <p className="text-sm text-gray-600">Paste a Google Slides presentation link</p>
+              <h3 className="font-semibold text-foreground">Import from Google Slides</h3>
+              <p className="text-sm text-muted-foreground">Paste a Google Slides presentation link</p>
             </div>
           </div>
 
@@ -360,7 +360,7 @@ export default function TutorCourseManager() {
                   setSelectedCourseForImport(e.target.value);
                   setSelectedLessonForImport('new');
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm"
               >
                 {allCourses.map(course => (
                   <option key={course.id} value={course.id}>
@@ -374,7 +374,7 @@ export default function TutorCourseManager() {
               <select
                 value={selectedLessonForImport}
                 onChange={(e) => setSelectedLessonForImport(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value="new">Create new lesson</option>
                 {importCourseLessons.length > 0 && (
@@ -418,7 +418,7 @@ export default function TutorCourseManager() {
         </Card>
 
           {showCreate && (
-            <Card className="p-6 mb-6 bg-indigo-50 border-indigo-200">
+            <Card className="p-6 mb-6 bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">Create New Lesson</h3>
                 <Button variant="ghost" size="icon" onClick={() => setShowCreate(false)}>
@@ -461,7 +461,7 @@ export default function TutorCourseManager() {
                 <div key={sectionName}>
                   <div className="flex items-center gap-3 mb-3">
                     <div className="h-px bg-gray-200 flex-1" />
-                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
                       {sectionName}
                     </h3>
                     <div className="h-px bg-gray-200 flex-1" />
@@ -487,7 +487,7 @@ export default function TutorCourseManager() {
                         <div
                           {...provided.droppableProps}
                           ref={provided.innerRef}
-                          className={`space-y-2 ${snapshot.isDraggingOver ? 'bg-indigo-50 rounded-lg p-2' : ''}`}
+                          className={`space-y-2 ${snapshot.isDraggingOver ? 'bg-indigo-50 dark:bg-indigo-500/15 rounded-lg p-2' : ''}`}
                         >
                           {sectionLessons.map((lesson, index) => (
                             <Draggable key={lesson.id} draggableId={lesson.id} index={index}>
@@ -539,7 +539,7 @@ export default function TutorCourseManager() {
                                       </div>
                                       <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
-                                          <h3 className="font-semibold text-gray-900">{lesson.title}</h3>
+                                          <h3 className="font-semibold text-foreground">{lesson.title}</h3>
                                           {lesson.is_preview && (
                                             <Badge variant="secondary" className="text-xs" title="Status: this lesson is free to view without enrolment">
                                               <Eye className="w-3 h-3 mr-1" />
@@ -559,19 +559,19 @@ export default function TutorCourseManager() {
                                             </Badge>
                                           )}
                                           {lesson.slides?.length > 0 && (
-                                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                                            <Badge variant="secondary" className="text-xs bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300">
                                               <FileSliders className="w-3 h-3 mr-1" />
                                               {lesson.slides.length} slides
                                             </Badge>
                                           )}
                                           {lesson.learning_objectives?.length > 0 && (
-                                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                                            <Badge variant="secondary" className="text-xs bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300">
                                               <Award className="w-3 h-3 mr-1" />
                                               {lesson.learning_objectives.length} objectives
                                             </Badge>
                                           )}
                                           </div>
-                                          <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
+                                          <p className="text-sm text-muted-foreground">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
                                       <div className="flex gap-2">
                                         {/* Preview opens in a new tab via a real anchor.
@@ -590,7 +590,7 @@ export default function TutorCourseManager() {
                                           onMouseDown={(e) => e.stopPropagation()}
                                           title="Preview this lesson as a learner sees it (opens in a new tab)"
                                           aria-label={`Preview ${lesson.title} in the lesson player`}
-                                          className="inline-flex items-center justify-center h-9 px-3 rounded-md border border-blue-200 bg-blue-50 text-blue-700 no-underline hover:bg-blue-100"
+                                          className="inline-flex items-center justify-center h-9 px-3 rounded-md border border-blue-200 bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 no-underline hover:bg-blue-100"
                                         >
                                           <Eye className="w-4 h-4" />
                                         </a>
@@ -599,7 +599,7 @@ export default function TutorCourseManager() {
                                           size="sm" 
                                           onClick={() => handleExportToSlides(lesson)}
                                           disabled={exportingLesson === lesson.id || !lesson.slides?.length}
-                                          className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                          className="bg-green-50 dark:bg-green-500/15 border-green-200 text-green-700 dark:text-green-300 hover:bg-green-100"
                                           title="Export to Google Slides"
                                         >
                                           {exportingLesson === lesson.id ? (
@@ -612,7 +612,7 @@ export default function TutorCourseManager() {
                                           variant="outline" 
                                           size="sm" 
                                           onClick={() => setAnalyzingLesson(lesson)}
-                                          className="bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100"
+                                          className="bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100"
                                         >
                                           <Brain className="w-4 h-4" />
                                         </Button>
@@ -645,9 +645,9 @@ export default function TutorCourseManager() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <div className="text-center py-12 bg-muted rounded-lg">
               <Video className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 mb-4">No lessons yet. Create your first lesson to get started!</p>
+              <p className="text-muted-foreground mb-4">No lessons yet. Create your first lesson to get started!</p>
               <Button onClick={() => setShowCreate(true)} variant="outline">
                 <Plus className="w-4 h-4 mr-2" />
                 Add First Lesson
@@ -804,8 +804,8 @@ function DocumentUploadSection({ formData, setFormData, uploading, setUploading 
             ) : (
               <div className="text-center">
                 <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                <p className="text-sm font-medium text-gray-700">Upload PowerPoint, PDF, or Word</p>
-                <p className="text-xs text-gray-500 mt-1">Click to browse or drag and drop</p>
+                <p className="text-sm font-medium text-foreground">Upload PowerPoint, PDF, or Word</p>
+                <p className="text-xs text-muted-foreground mt-1">Click to browse or drag and drop</p>
               </div>
             )}
           </Button>
@@ -813,26 +813,26 @@ function DocumentUploadSection({ formData, setFormData, uploading, setUploading 
       </div>
 
       {converting && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-blue-50 dark:bg-blue-500/15 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center gap-3">
             <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-blue-900">Converting PDF to slides...</p>
-              <p className="text-xs text-blue-700">This may take a moment</p>
+              <p className="text-sm font-medium text-blue-900 dark:text-blue-300">Converting PDF to slides...</p>
+              <p className="text-xs text-blue-700 dark:text-blue-300">This may take a moment</p>
             </div>
           </div>
         </div>
       )}
 
       {formData.file_url && !converting && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+        <div className="bg-green-50 dark:bg-green-500/15 border border-green-200 rounded-lg p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-green-100 dark:bg-green-500/15 rounded-lg flex items-center justify-center">
               <FileText className="w-5 h-5 text-green-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-green-900">Document uploaded successfully!</p>
-              <p className="text-xs text-green-700">Type: {formData.file_type?.toUpperCase()}</p>
+              <p className="text-sm font-medium text-green-900 dark:text-green-300">Document uploaded successfully!</p>
+              <p className="text-xs text-green-700 dark:text-green-300">Type: {formData.file_type?.toUpperCase()}</p>
             </div>
             <Button
               variant="ghost"
@@ -847,21 +847,21 @@ function DocumentUploadSection({ formData, setFormData, uploading, setUploading 
       )}
 
       {formData.slides && formData.slides.length > 0 && formData.slides[0]?.page_number && (
-        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+        <div className="bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 rounded-lg p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/15 rounded-lg flex items-center justify-center">
               <FileSliders className="w-5 h-5 text-indigo-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-indigo-900">PDF converted to {formData.slides.length} slides!</p>
-              <p className="text-xs text-indigo-700">Each page is now a navigable slide</p>
+              <p className="text-sm font-medium text-indigo-900 dark:text-indigo-300">PDF converted to {formData.slides.length} slides!</p>
+              <p className="text-xs text-indigo-700 dark:text-indigo-300">Each page is now a navigable slide</p>
             </div>
           </div>
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <p className="text-xs text-blue-800">
+      <div className="bg-blue-50 dark:bg-blue-500/15 border border-blue-200 rounded-lg p-3">
+        <p className="text-xs text-blue-800 dark:text-blue-300">
           <strong>Supported formats:</strong> PowerPoint (.ppt, .pptx), PDF (.pdf), Word (.doc, .docx)
           <br />
           Your document will be displayed with full formatting in the lesson player with zoom and navigation controls.
@@ -898,8 +898,8 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
   return (
     <div className="grid gap-6">
       {/* Basic Info */}
-      <div className="bg-card rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Basic Information</h3>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <h3 className="font-semibold text-foreground mb-4">Basic Information</h3>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <Label>Lesson Title *</Label>
@@ -932,9 +932,9 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Rich Text Description */}
-      <div className="bg-card rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-border p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Lesson Content</h3>
+          <h3 className="font-semibold text-foreground">Lesson Content</h3>
           <ContentInsertMenu 
             onInsert={(html) => {
               const currentContent = formData.description || '';
@@ -948,14 +948,14 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
           onChange={(value) => setFormData({ ...formData, description: value })}
           placeholder="Write a comprehensive description with formatting, equations, symbols, and more..."
         />
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs text-muted-foreground mt-2">
           Use the Insert Content button to add charts, math symbols, equations, electrical symbols, 3D shapes, and more
         </p>
       </div>
 
       {/* Video Upload */}
-      <div className="bg-card rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Video Content</h3>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <h3 className="font-semibold text-foreground mb-4">Video Content</h3>
         <div className="space-y-3">
           <div>
             <Label>Video URL or Upload</Label>
@@ -969,7 +969,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
           
           <div className="flex items-center gap-3">
             <div className="h-px bg-gray-200 flex-1" />
-            <span className="text-xs text-gray-500 font-medium">OR UPLOAD VIDEO</span>
+            <span className="text-xs text-muted-foreground font-medium">OR UPLOAD VIDEO</span>
             <div className="h-px bg-gray-200 flex-1" />
           </div>
 
@@ -1006,11 +1006,11 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
           </div>
 
           {formData.video_url && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2">
+            <div className="bg-green-50 dark:bg-green-500/15 border border-green-200 rounded-lg p-3 flex items-center gap-2">
               <Video className="w-5 h-5 text-green-600" />
               <div className="flex-1">
-                <span className="text-sm font-medium text-green-900">Video configured</span>
-                <p className="text-xs text-green-700">{formData.video_url.substring(0, 50)}...</p>
+                <span className="text-sm font-medium text-green-900 dark:text-green-300">Video configured</span>
+                <p className="text-xs text-green-700 dark:text-green-300">{formData.video_url.substring(0, 50)}...</p>
               </div>
             </div>
           )}
@@ -1018,9 +1018,9 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Written Lesson Content (Slides) */}
-      <div className="bg-card rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-border p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Written Lesson Content (Slides)</h3>
+          <h3 className="font-semibold text-foreground">Written Lesson Content (Slides)</h3>
           <div className="flex items-center gap-2">
             <select
               value={formData.content_type || 'richtext'}
@@ -1066,13 +1066,13 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
               />
             </div>
             {formData.google_slides_url && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                <p className="text-sm text-green-800">
+              <div className="bg-green-50 dark:bg-green-500/15 border border-green-200 rounded-lg p-3">
+                <p className="text-sm text-green-800 dark:text-green-300">
                   ✓ Google Slides URL configured. Students will see the presentation embedded in the lesson player.
                 </p>
               </div>
             )}
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Students will see your Google Slides presentation embedded directly in the lesson player with perfect layout preservation.
             </p>
           </div>
@@ -1084,7 +1084,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
               slides={formData.slides || []}
               onChange={(slides) => setFormData({ ...formData, slides })}
             />
-            <p className="text-xs text-gray-500 mt-3">
+            <p className="text-xs text-muted-foreground mt-3">
               Create multi-page written lessons like Open University. Perfect for mixing videos with detailed text content!
             </p>
           </>
@@ -1092,21 +1092,21 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Supplementary Materials */}
-      <div className="bg-card rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Supplementary Materials</h3>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <h3 className="font-semibold text-foreground mb-4">Supplementary Materials</h3>
         <FileUploadManager
           resources={formData.resources || []}
           onChange={(resources) => setFormData({ ...formData, resources })}
         />
-        <p className="text-xs text-gray-500 mt-3">
+        <p className="text-xs text-muted-foreground mt-3">
           Upload PDFs, slides, code files, worksheets, or any other materials students need
         </p>
       </div>
 
       {/* Learning Objectives */}
-      <div className="bg-card rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Learning Objectives (CCEA)</h3>
-        <p className="text-sm text-gray-600 mb-3">What will students learn in this lesson?</p>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <h3 className="font-semibold text-foreground mb-4">Learning Objectives (CCEA)</h3>
+        <p className="text-sm text-muted-foreground mb-3">What will students learn in this lesson?</p>
 
         <div className="space-y-2">
           {(formData.learning_objectives || []).map((objective, idx) => (
@@ -1120,7 +1120,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
                   setFormData({ ...formData, learning_objectives: newObjectives });
                 }}
                 placeholder="e.g., Describe the structure and function of cells"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="flex-1 px-3 py-2 border border-border rounded-lg text-sm"
               />
               <Button
                 type="button"
@@ -1156,8 +1156,8 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       </div>
 
       {/* Options */}
-      <div className="bg-indigo-50 rounded-lg border border-indigo-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Lesson Options</h3>
+      <div className="bg-indigo-50 dark:bg-indigo-500/15 rounded-lg border border-indigo-200 p-4">
+        <h3 className="font-semibold text-foreground mb-3">Lesson Options</h3>
         
         <div className="flex items-start gap-3">
           <input 
@@ -1170,9 +1170,9 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
           <Label htmlFor="is_preview" className="cursor-pointer font-normal flex-1">
             <div className="flex items-center gap-2 mb-1">
               <Eye className="w-4 h-4 text-indigo-600" />
-              <span className="font-medium text-gray-900">Allow Free Preview</span>
+              <span className="font-medium text-foreground">Allow Free Preview</span>
             </div>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-muted-foreground">
               Make this lesson available to non-enrolled students. Great for showcasing your course quality!
             </p>
           </Label>

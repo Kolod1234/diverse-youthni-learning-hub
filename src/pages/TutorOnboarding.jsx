@@ -196,7 +196,7 @@ export default function TutorOnboarding() {
           </div>
 
           {/* Footer */}
-          <div className="border-t px-8 py-4 flex items-center justify-between bg-gray-50 rounded-b-2xl">
+          <div className="border-t px-8 py-4 flex items-center justify-between bg-muted rounded-b-2xl">
             <Button variant="ghost" onClick={() => setStep(s => s - 1)} disabled={step === 0} className="gap-2">
               <ArrowLeft className="w-4 h-4" /> Back
             </Button>
@@ -274,9 +274,9 @@ function GuideStep({ user }) {
   const [expanded, setExpanded] = useState('steps');
 
   const colorMap = {
-    purple: { bg: 'bg-indigo-50', border: 'border-indigo-200', icon: 'text-indigo-600', badge: 'bg-indigo-600', header: 'text-indigo-800' },
-    amber: { bg: 'bg-amber-50', border: 'border-amber-200', icon: 'text-amber-600', badge: 'bg-amber-500', header: 'text-amber-800' },
-    indigo: { bg: 'bg-indigo-50', border: 'border-indigo-200', icon: 'text-indigo-600', badge: 'bg-indigo-600', header: 'text-indigo-800' },
+    purple: { bg: 'bg-indigo-50 dark:bg-indigo-500/15', border: 'border-indigo-200', icon: 'text-indigo-600', badge: 'bg-indigo-600', header: 'text-indigo-800 dark:text-indigo-300' },
+    amber: { bg: 'bg-amber-50 dark:bg-amber-500/15', border: 'border-amber-200', icon: 'text-amber-600', badge: 'bg-amber-500', header: 'text-amber-800 dark:text-amber-300' },
+    indigo: { bg: 'bg-indigo-50 dark:bg-indigo-500/15', border: 'border-indigo-200', icon: 'text-indigo-600', badge: 'bg-indigo-600', header: 'text-indigo-800 dark:text-indigo-300' },
   };
 
   return (
@@ -285,8 +285,8 @@ function GuideStep({ user }) {
         <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
           <GraduationCap className="w-8 h-8 text-indigo-600" />
         </div>
-        <h3 className="text-xl font-bold text-gray-900">Welcome, {user?.full_name?.split(' ')[0] || 'Tutor'}! 🎉</h3>
-        <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+        <h3 className="text-xl font-bold text-foreground">Welcome, {user?.full_name?.split(' ')[0] || 'Tutor'}! 🎉</h3>
+        <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
           Everything you need to know to get started as a tutor on Diverse Youth NI Learning Hub.
         </p>
       </div>
@@ -325,8 +325,8 @@ function GuideStep({ user }) {
                           {item.step}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-gray-800">{item.title}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                          <p className="text-sm font-semibold text-foreground">{item.title}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
                         </div>
                       </div>
                     ))}
@@ -338,9 +338,9 @@ function GuideStep({ user }) {
                             <div key={i} className={`rounded-lg p-3 ${c.bg} border ${c.border}`}>
                               <div className="flex items-center gap-2 mb-1">
                                 <FIcon className={`w-4 h-4 ${c.icon}`} />
-                                <p className="text-xs font-semibold text-gray-800">{f.label}</p>
+                                <p className="text-xs font-semibold text-foreground">{f.label}</p>
                               </div>
-                              <p className="text-xs text-gray-500">{f.desc}</p>
+                              <p className="text-xs text-muted-foreground">{f.desc}</p>
                             </div>
                           );
                         })}
@@ -380,14 +380,14 @@ function ChecklistStep({ checklist, setChecklist }) {
   return (
     <div className="space-y-5">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Pre-Session Checklist</h3>
-        <p className="text-sm text-gray-500">Complete these before your first session to ensure a great experience.</p>
+        <h3 className="text-lg font-semibold text-foreground mb-1">Pre-Session Checklist</h3>
+        <p className="text-sm text-muted-foreground">Complete these before your first session to ensure a great experience.</p>
       </div>
 
       <div className="bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 rounded-xl p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-indigo-800">{completedCount} of {CHECKLIST_ITEMS.length} completed</span>
-          <span className="text-sm font-bold text-indigo-700">{pct}%</span>
+          <span className="text-sm font-medium text-indigo-800 dark:text-indigo-300">{completedCount} of {CHECKLIST_ITEMS.length} completed</span>
+          <span className="text-sm font-bold text-indigo-700 dark:text-indigo-300">{pct}%</span>
         </div>
         <Progress value={pct} className="h-2" />
       </div>
@@ -400,18 +400,18 @@ function ChecklistStep({ checklist, setChecklist }) {
               <label
                 key={item.id}
                 className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                  checklist[item.id] ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200 hover:border-indigo-300'
+                  checklist[item.id] ? 'bg-green-50 dark:bg-green-500/15 border-green-200' : 'bg-muted border-border hover:border-indigo-300'
                 }`}
               >
                 <div
                   onClick={() => setChecklist(c => ({ ...c, [item.id]: !c[item.id] }))}
                   className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                    checklist[item.id] ? 'bg-green-500 border-green-500' : 'border-gray-300'
+                    checklist[item.id] ? 'bg-green-500 border-green-500' : 'border-border'
                   }`}
                 >
                   {checklist[item.id] && <CheckCircle className="w-3.5 h-3.5 text-white" />}
                 </div>
-                <span className={`text-sm ${checklist[item.id] ? 'text-green-700 line-through' : 'text-gray-700'}`}>
+                <span className={`text-sm ${checklist[item.id] ? 'text-green-700 dark:text-green-300 line-through' : 'text-foreground'}`}>
                   {item.label}
                 </span>
               </label>
@@ -429,8 +429,8 @@ function ProfileStep({ profile, setProfile, uploading, fileInputRef, onUploadCli
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Your Public Profile</h3>
-        <p className="text-sm text-gray-500">This is what students will see when browsing tutors.</p>
+        <h3 className="text-lg font-semibold text-foreground mb-1">Your Public Profile</h3>
+        <p className="text-sm text-muted-foreground">This is what students will see when browsing tutors.</p>
       </div>
 
       <div className="flex items-center gap-4">
@@ -460,7 +460,7 @@ function ProfileStep({ profile, setProfile, uploading, fileInputRef, onUploadCli
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Professional Bio <span className="text-red-500">*</span></label>
+        <label className="block text-sm font-medium text-foreground mb-1">Professional Bio <span className="text-red-500">*</span></label>
         <Textarea value={profile.bio} onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))}
           placeholder="e.g. I'm a qualified Maths teacher with 8 years of experience in GCSE and A-Level tutoring..."
           rows={4} className="resize-none" />
@@ -468,7 +468,7 @@ function ProfileStep({ profile, setProfile, uploading, fileInputRef, onUploadCli
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Teaching Style</label>
+        <label className="block text-sm font-medium text-foreground mb-1">Teaching Style</label>
         <Textarea value={profile.teaching_style} onChange={e => setProfile(p => ({ ...p, teaching_style: e.target.value }))}
           placeholder="e.g. I focus on step-by-step explanations with lots of practice problems and real-world examples..."
           rows={3} className="resize-none" />
@@ -483,12 +483,12 @@ function ExpertiseStep({ expertise, setExpertise, toggleSubject, toggleQualifica
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Your Teaching Expertise</h3>
-        <p className="text-sm text-gray-500">Select the subjects and qualification levels you teach.</p>
+        <h3 className="text-lg font-semibold text-foreground mb-1">Your Teaching Expertise</h3>
+        <p className="text-sm text-muted-foreground">Select the subjects and qualification levels you teach.</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-foreground mb-2">
           Subjects <span className="text-red-500">*</span>
           {expertise.subjects.length > 0 && <span className="ml-2 text-indigo-600">({expertise.subjects.length} selected)</span>}
         </label>
@@ -496,7 +496,7 @@ function ExpertiseStep({ expertise, setExpertise, toggleSubject, toggleQualifica
           {SUBJECT_OPTIONS.map(s => (
             <button key={s} onClick={() => toggleSubject(s)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${
-                expertise.subjects.includes(s) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-card text-gray-700 border-gray-200 hover:border-indigo-300'
+                expertise.subjects.includes(s) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-card text-foreground border-border hover:border-indigo-300'
               }`}>{s}</button>
           ))}
         </div>
@@ -510,21 +510,21 @@ function ExpertiseStep({ expertise, setExpertise, toggleSubject, toggleQualifica
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Qualification Levels You Teach</label>
+        <label className="block text-sm font-medium text-foreground mb-2">Qualification Levels You Teach</label>
         <div className="flex flex-wrap gap-2">
           {QUALIFICATION_OPTIONS.map(q => (
             <button key={q} onClick={() => toggleQualification(q)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${
-                expertise.qualifications.includes(q) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-card text-gray-700 border-gray-200 hover:border-indigo-300'
+                expertise.qualifications.includes(q) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-card text-foreground border-border hover:border-indigo-300'
               }`}>{q}</button>
           ))}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Years of Teaching Experience</label>
+        <label className="block text-sm font-medium text-foreground mb-1">Years of Teaching Experience</label>
         <select value={expertise.years_experience} onChange={e => setExpertise(ex => ({ ...ex, years_experience: e.target.value }))}
-          className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+          className="w-full h-10 px-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
           <option value="">Select...</option>
           <option value="<1">Less than 1 year</option>
           <option value="1-3">1–3 years</option>
@@ -543,16 +543,16 @@ function VerificationStep({ user, verification, setVerification }) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Verification & Confirmation</h3>
-        <p className="text-sm text-gray-500">Please confirm your details before going live as a tutor.</p>
+        <h3 className="text-lg font-semibold text-foreground mb-1">Verification & Confirmation</h3>
+        <p className="text-sm text-muted-foreground">Please confirm your details before going live as a tutor.</p>
       </div>
 
-      <Card className="p-4 bg-amber-50 border-amber-200">
+      <Card className="p-4 bg-amber-50 dark:bg-amber-500/15 border-amber-200">
         <div className="flex gap-3">
           <Award className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-amber-800">Tutor Verification</p>
-            <p className="text-xs text-amber-700 mt-0.5">
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Tutor Verification</p>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
               Our team will review your profile and send you an email confirmation within 24 hours. You can start setting up your courses right away.
             </p>
           </div>
@@ -560,13 +560,13 @@ function VerificationStep({ user, verification, setVerification }) {
       </Card>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Your Full Name</label>
+        <label className="block text-sm font-medium text-foreground mb-1">Confirm Your Full Name</label>
         <Input value={verification.full_name_confirm} onChange={e => setVerification(v => ({ ...v, full_name_confirm: e.target.value }))}
           placeholder={user?.full_name || 'Your full name'} />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-foreground mb-1">
           Qualifications & Credentials <span className="text-gray-400">(optional)</span>
         </label>
         <Textarea value={verification.qualifications_detail} onChange={e => setVerification(v => ({ ...v, qualifications_detail: e.target.value }))}
@@ -576,11 +576,11 @@ function VerificationStep({ user, verification, setVerification }) {
       <label className="flex items-start gap-3 cursor-pointer group">
         <div onClick={() => setVerification(v => ({ ...v, agreed_to_terms: !v.agreed_to_terms }))}
           className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-            verification.agreed_to_terms ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300 group-hover:border-indigo-400'
+            verification.agreed_to_terms ? 'bg-indigo-600 border-indigo-600' : 'border-border group-hover:border-indigo-400'
           }`}>
           {verification.agreed_to_terms && <CheckCircle className="w-3.5 h-3.5 text-white" />}
         </div>
-        <span className="text-sm text-gray-700">
+        <span className="text-sm text-foreground">
           I confirm that the information provided is accurate, and I agree to uphold the platform's{' '}
           <span className="text-indigo-600 underline cursor-pointer">Tutor Code of Conduct</span>{' '}
           and maintain professional standards in all sessions.
@@ -600,31 +600,31 @@ function DoneStep({ user, expertise }) {
         <CheckCircle className="w-12 h-12 text-green-600" />
       </motion.div>
 
-      <h3 className="text-2xl font-bold text-gray-900 mb-2">You're all set! 🎉</h3>
-      <p className="text-gray-500 mb-8 max-w-md mx-auto">
+      <h3 className="text-2xl font-bold text-foreground mb-2">You're all set! 🎉</h3>
+      <p className="text-muted-foreground mb-8 max-w-md mx-auto">
         Your tutor profile is ready. Head to your dashboard to create courses, set your availability, and start accepting bookings.
       </p>
 
       {expertise.subjects.length > 0 && (
         <div className="mb-6">
-          <p className="text-sm font-medium text-gray-700 mb-3">Your Teaching Subjects</p>
+          <p className="text-sm font-medium text-foreground mb-3">Your Teaching Subjects</p>
           <div className="flex flex-wrap gap-2 justify-center">
             {expertise.subjects.map(s => (
-              <Badge key={s} className="bg-indigo-100 text-indigo-700 border-0"><Star className="w-3 h-3 mr-1" />{s}</Badge>
+              <Badge key={s} className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-0"><Star className="w-3 h-3 mr-1" />{s}</Badge>
             ))}
           </div>
         </div>
       )}
 
       <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 text-left">
-        <p className="text-sm font-semibold text-gray-900 mb-2">What's next?</p>
+        <p className="text-sm font-semibold text-foreground mb-2">What's next?</p>
         <ul className="space-y-1.5">
           {[
             'Set your availability so students can book sessions',
             'Create your first course to share your knowledge',
             'Check incoming booking requests from students',
           ].map(item => (
-            <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
+            <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
               <CheckCircle className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />{item}
             </li>
           ))}

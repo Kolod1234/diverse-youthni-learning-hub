@@ -137,12 +137,12 @@ export default function Tutors() {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          <div className="bg-card rounded-2xl shadow-xl p-8 border border-gray-100">
-            <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="bg-card rounded-2xl shadow-xl p-8 border border-border">
+            <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-500/15 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <GraduationCap className="w-8 h-8 text-indigo-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Tutors Access</h2>
-            <p className="text-gray-500 text-center mb-6">Enter the access code to view tutors</p>
+            <h2 className="text-2xl font-bold text-foreground text-center mb-2">Tutors Access</h2>
+            <p className="text-muted-foreground text-center mb-6">Enter the access code to view tutors</p>
             
             <form onSubmit={handleUnlock} className="space-y-4">
               <div>
@@ -195,8 +195,8 @@ export default function Tutors() {
           <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">Meet Our Expert Tutors</h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
+          <h1 className="text-4xl font-bold text-foreground mb-3">Meet Our Expert Tutors</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Learn from experienced educators and industry professionals
           </p>
           {(currentUser?.is_tutor || currentUser?.data?.is_tutor || currentUser?.role === 'admin') && (
@@ -221,8 +221,8 @@ export default function Tutors() {
                     <Sparkles className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 mb-1">Become a Tutor</h3>
-                    <p className="text-sm text-gray-600">Share your expertise and earn by teaching on our platform</p>
+                    <h3 className="font-semibold text-foreground mb-1">Become a Tutor</h3>
+                    <p className="text-sm text-muted-foreground">Share your expertise and earn by teaching on our platform</p>
                   </div>
                   <BecomeTutorButton user={currentUser} />
                 </div>
@@ -244,7 +244,7 @@ export default function Tutors() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tutors by name, email, or expertise..."
-              className="pl-12 h-14 text-lg rounded-2xl border-gray-200 focus:border-indigo-300"
+              className="pl-12 h-14 text-lg rounded-2xl border-border focus:border-indigo-300"
             />
           </div>
         </motion.div>
@@ -266,8 +266,8 @@ export default function Tutors() {
               >
                 <Card className="p-6 text-center">
                   <Icon className="w-8 h-8 text-indigo-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
+                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground">{stat.label}</p>
                 </Card>
               </motion.div>
             );
@@ -309,31 +309,31 @@ export default function Tutors() {
                     <div className="flex items-start gap-4 mb-4">
                       <Avatar className="w-16 h-16 border-2 border-indigo-100">
                         <AvatarImage src={tutor.avatar} />
-                        <AvatarFallback className="bg-indigo-100 text-indigo-600 text-xl font-semibold">
+                        <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 text-xl font-semibold">
                           {tutor.full_name?.charAt(0) || 'T'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-lg text-gray-900 mb-1 truncate">
+                        <h3 className="font-bold text-lg text-foreground mb-1 truncate">
                           {tutor.full_name || 'Expert Tutor'}
                         </h3>
                         <div className="flex items-center gap-1 mb-2">
                           {stats.rating > 0 ? (
                             <>
                               <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                              <span className="text-sm font-semibold text-gray-900">
+                              <span className="text-sm font-semibold text-foreground">
                                 {stats.rating.toFixed(1)}
                               </span>
-                              <span className="text-xs text-gray-500 ml-1">
+                              <span className="text-xs text-muted-foreground ml-1">
                                 ({stats.reviewCount} {stats.reviewCount === 1 ? 'review' : 'reviews'})
                               </span>
                             </>
                           ) : (
-                            <span className="text-xs text-gray-500">No reviews yet</span>
+                            <span className="text-xs text-muted-foreground">No reviews yet</span>
                           )}
                         </div>
                         {tutor.role === 'admin' && (
-                          <Badge className="bg-indigo-100 text-indigo-700 border-0">
+                          <Badge className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-0">
                             <Award className="w-3 h-3 mr-1" />
                             Platform Admin
                           </Badge>
@@ -342,17 +342,17 @@ export default function Tutors() {
                     </div>
 
                     {tutor.bio && (
-                     <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-1">
+                     <p className="text-sm text-muted-foreground mb-4 line-clamp-3 flex-1">
                        {tutor.bio}
                      </p>
                     )}
 
                     {tutor.expertise_subjects && tutor.expertise_subjects.length > 0 && (
                      <div className="mb-4">
-                       <p className="text-xs font-medium text-gray-500 mb-2">SUBJECTS</p>
+                       <p className="text-xs font-medium text-muted-foreground mb-2">SUBJECTS</p>
                        <div className="flex flex-wrap gap-2">
                          {tutor.expertise_subjects.map(subject => (
-                           <span key={subject} className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs capitalize">
+                           <span key={subject} className="px-2 py-1 bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs capitalize">
                              {subject}
                            </span>
                          ))}
@@ -360,7 +360,7 @@ export default function Tutors() {
                      </div>
                     )}
 
-                    <div className="flex items-center gap-4 mb-4 text-sm text-gray-600 pb-4 border-b">
+                    <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground pb-4 border-b">
                       <span className="flex items-center gap-1">
                         <BookOpen className="w-4 h-4" />
                         {stats.courseCount} courses
@@ -373,7 +373,7 @@ export default function Tutors() {
 
                     {stats.courses.length > 0 && (
                       <div className="mb-4">
-                        <p className="text-xs font-medium text-gray-500 mb-2">POPULAR COURSES</p>
+                        <p className="text-xs font-medium text-muted-foreground mb-2">POPULAR COURSES</p>
                         <div className="space-y-1">
                           {stats.courses.slice(0, 2).map(course => (
                             <Link 
@@ -415,8 +415,8 @@ export default function Tutors() {
         ) : (
           <div className="text-center py-20">
             <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No tutors found</h3>
-            <p className="text-gray-500 mb-6">Try adjusting your search query</p>
+            <h3 className="text-xl font-semibold text-foreground mb-2">No tutors found</h3>
+            <p className="text-muted-foreground mb-6">Try adjusting your search query</p>
             <Button onClick={() => setSearchQuery('')} variant="outline">
               Clear Search
             </Button>

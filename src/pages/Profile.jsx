@@ -199,7 +199,7 @@ export default function Profile() {
               <div className="lg:col-span-2">
                 <Card className="p-6 border-0 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-gray-900">About</h2>
+                    <h2 className="text-xl font-semibold text-foreground">About</h2>
                     {!isEditing && (
                       <Button variant="outlined" onClick={() => setIsEditing(true)}>
                         Edit Profile
@@ -296,28 +296,28 @@ export default function Profile() {
 
               <div className="space-y-6">
                 <Card className="p-6 border-0 shadow-sm">
-                  <h3 className="font-semibold text-gray-900 mb-4">Learning Stats</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Learning Stats</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2 text-gray-600">
+                      <span className="flex items-center gap-2 text-muted-foreground">
                         <BookOpen className="w-4 h-4" />
                         Total Courses
                       </span>
-                      <span className="font-semibold text-gray-900">{enrollments.length}</span>
+                      <span className="font-semibold text-foreground">{enrollments.length}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2 text-gray-600">
+                      <span className="flex items-center gap-2 text-muted-foreground">
                         <Clock className="w-4 h-4" />
                         Hours Learned
                       </span>
-                      <span className="font-semibold text-gray-900">{Math.round(totalHours)}</span>
+                      <span className="font-semibold text-foreground">{Math.round(totalHours)}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2 text-gray-600">
+                      <span className="flex items-center gap-2 text-muted-foreground">
                         <Award className="w-4 h-4" />
                         Achievements
                       </span>
-                      <span className="font-semibold text-gray-900">{achievements.length}</span>
+                      <span className="font-semibold text-foreground">{achievements.length}</span>
                     </div>
                   </div>
                 </Card>
@@ -327,7 +327,7 @@ export default function Profile() {
                   <p className="text-indigo-100 text-sm mb-4">
                     You're {completedCourses > 0 ? 'doing great' : 'just getting started'}! Continue your journey to unlock more achievements.
                   </p>
-                  <Button className="w-full bg-card text-indigo-600 hover:bg-gray-100">
+                  <Button className="w-full bg-card text-indigo-600 hover:bg-muted">
                     Browse Courses
                   </Button>
                 </Card>
@@ -338,7 +338,7 @@ export default function Profile() {
           {/* Achievements Tab */}
           {tabValue === 'achievements' && (
             <Card className="p-6 border-0 shadow-sm">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Achievements</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-6">Your Achievements</h2>
               {achievements.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {achievements.map((achievement, index) => (
@@ -352,7 +352,7 @@ export default function Profile() {
               ) : (
                 <div className="text-center py-12">
                   <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No achievements yet</p>
+                  <p className="text-muted-foreground">No achievements yet</p>
                   <p className="text-sm text-gray-400 mt-2">Complete courses to earn achievements!</p>
                 </div>
               )}
@@ -362,7 +362,7 @@ export default function Profile() {
           {/* Certificates Tab */}
           {tabValue === 'certificates' && (
             <Card className="p-6 border-0 shadow-sm">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Certificates</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-6">Your Certificates</h2>
               {certificates.length > 0 ? (
                 <div className="grid md:grid-cols-2 gap-6">
                   {certificates.map((cert, index) => (
@@ -381,11 +381,11 @@ export default function Profile() {
                             Download
                           </Button>
                         </div>
-                        <h3 className="font-semibold text-gray-900 mb-2">{cert.course_title}</h3>
-                        <p className="text-sm text-gray-600 mb-1">
+                        <h3 className="font-semibold text-foreground mb-2">{cert.course_title}</h3>
+                        <p className="text-sm text-muted-foreground mb-1">
                           Certificate #{cert.certificate_number}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                           Issued: {new Date(cert.issue_date).toLocaleDateString()}
                         </p>
                         {cert.final_score && (
@@ -400,7 +400,7 @@ export default function Profile() {
               ) : (
                 <div className="text-center py-12">
                   <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No certificates yet</p>
+                  <p className="text-muted-foreground">No certificates yet</p>
                   <p className="text-sm text-gray-400 mt-2">Complete courses to earn certificates!</p>
                 </div>
               )}
@@ -414,29 +414,29 @@ export default function Profile() {
               
               <div className="grid lg:grid-cols-2 gap-6">
                 <Card className="p-6 border-0 shadow-sm">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
                     <Bell className="w-5 h-5" />
                     Notifications
                   </h2>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">Email Notifications</p>
-                        <p className="text-sm text-gray-500">Receive updates about your courses</p>
+                        <p className="font-medium text-foreground">Email Notifications</p>
+                        <p className="text-sm text-muted-foreground">Receive updates about your courses</p>
                       </div>
                       <input type="checkbox" className="toggle" defaultChecked />
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">Course Reminders</p>
-                        <p className="text-sm text-gray-500">Get reminded to continue learning</p>
+                        <p className="font-medium text-foreground">Course Reminders</p>
+                        <p className="text-sm text-muted-foreground">Get reminded to continue learning</p>
                       </div>
                       <input type="checkbox" className="toggle" defaultChecked />
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">Achievement Alerts</p>
-                        <p className="text-sm text-gray-500">Celebrate your milestones</p>
+                        <p className="font-medium text-foreground">Achievement Alerts</p>
+                        <p className="text-sm text-muted-foreground">Celebrate your milestones</p>
                       </div>
                       <input type="checkbox" className="toggle" defaultChecked />
                     </div>
@@ -444,22 +444,22 @@ export default function Profile() {
                 </Card>
 
                 <Card className="p-6 border-0 shadow-sm">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
                     <Shield className="w-5 h-5" />
                     Privacy & Security
                   </h2>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-medium text-gray-900 mb-2">Account Email</p>
+                      <p className="font-medium text-foreground mb-2">Account Email</p>
                       <TextField value={user?.email || ''} disabled fullWidth size="small" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 mb-2">Password</p>
+                      <p className="font-medium text-foreground mb-2">Password</p>
                       <Button variant="outline" className="w-full">
                         Change Password
                       </Button>
                     </div>
-                    <div className="pt-4 border-t border-gray-200">
+                    <div className="pt-4 border-t border-border">
                       <Button variant="destructive" className="w-full">
                         Delete Account
                       </Button>

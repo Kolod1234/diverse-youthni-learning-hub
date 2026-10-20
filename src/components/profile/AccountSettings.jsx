@@ -101,7 +101,7 @@ export default function AccountSettings({ user }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input id="email" value={user?.email} disabled className="bg-gray-50" />
+            <Input id="email" value={user?.email} disabled className="bg-muted" />
           </div>
           <div>
             <Label htmlFor="full_name">Full Name</Label>
@@ -118,15 +118,15 @@ export default function AccountSettings({ user }) {
         </form>
 
         {/* Danger Zone */}
-        <div className="border border-red-200 rounded-lg bg-red-50 p-6 mt-8">
+        <div className="border border-red-200 rounded-lg bg-red-50 dark:bg-red-500/15 p-6 mt-8">
           <div className="flex items-start gap-3 mb-4">
             <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-red-900">Danger Zone</h3>
-              <p className="text-sm text-red-700 mt-1">Irreversible actions</p>
+              <h3 className="font-semibold text-red-900 dark:text-red-300">Danger Zone</h3>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">Irreversible actions</p>
             </div>
           </div>
-          <p className="text-sm text-red-800 mb-4">
+          <p className="text-sm text-red-800 dark:text-red-300 mb-4">
             Permanently delete your account and all associated data. This action cannot be undone.
           </p>
           <Button
@@ -144,15 +144,15 @@ export default function AccountSettings({ user }) {
           <AlertDialogContent className="max-w-sm">
             <AlertDialogTitle className="text-red-600">Delete Account</AlertDialogTitle>
             <AlertDialogDescription className="space-y-3">
-              <p className="font-semibold text-gray-900">This action cannot be undone.</p>
+              <p className="font-semibold text-foreground">This action cannot be undone.</p>
               <p>All your data will be permanently deleted. This includes:</p>
-              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+              <ul className="list-disc list-inside text-sm text-foreground space-y-1">
                 <li>Profile information</li>
                 <li>Learning progress</li>
                 <li>Enrollments and certificates</li>
               </ul>
               <div>
-                <p className="text-sm font-medium text-gray-900 mb-2">
+                <p className="text-sm font-medium text-foreground mb-2">
                   Type your email to confirm:
                 </p>
                 <Input

@@ -81,8 +81,8 @@ ${formData.message}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Get in Touch</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Get in Touch</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Have questions or need support? We're here to help. Send us a message and we'll get back to you as soon as possible.
           </p>
         </motion.div>
@@ -98,11 +98,11 @@ ${formData.message}
             <Card className="p-8 shadow-lg border-0">
               {submitted ? (
                 <div className="text-center py-12">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <div className="w-20 h-20 bg-green-100 dark:bg-green-500/15 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="w-10 h-10 text-green-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Thank You!</h3>
-                  <p className="text-gray-600 mb-6">
+                  <h3 className="text-2xl font-bold text-foreground mb-3">Thank You!</h3>
+                  <p className="text-muted-foreground mb-6">
                     We've received your message and will get back to you shortly.
                   </p>
                   <Button onClick={() => {
@@ -116,7 +116,7 @@ ${formData.message}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Your Name *
                       </label>
                       <Input
@@ -127,7 +127,7 @@ ${formData.message}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Email Address *
                       </label>
                       <Input
@@ -141,7 +141,7 @@ ${formData.message}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Subject
                     </label>
                     <Input
@@ -152,7 +152,7 @@ ${formData.message}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Message *
                     </label>
                     <Textarea
@@ -230,12 +230,12 @@ ${formData.message}
             </Card>
 
             <Card className="p-6 border-0 shadow-lg">
-              <h3 className="font-semibold text-gray-900 mb-4">Office Hours</h3>
-              <div className="space-y-2 text-sm text-gray-600">
+              <h3 className="font-semibold text-foreground mb-4">Office Hours</h3>
+              <div className="space-y-2 text-sm text-muted-foreground">
                 {contactInfo.office_hours.map((item, index) => (
                   <div key={index} className="flex justify-between">
                     <span>{item.day}</span>
-                    <span className="font-medium text-gray-900">{item.hours}</span>
+                    <span className="font-medium text-foreground">{item.hours}</span>
                   </div>
                 ))}
               </div>

@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button, Card, TextField, Chip } from '@mui/material';
 const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
 const Textarea = ({ className, rows, ...props }) => <TextField fullWidth multiline rows={rows || 4} className={className} {...props} />;
-const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-gray-700 mb-1'} {...props}>{children}</label>;
+const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-foreground mb-1'} {...props}>{children}</label>;
 const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
@@ -22,11 +22,11 @@ function ErrorState({ title, message }) {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <Card className="max-w-md w-full p-8 text-center bg-card">
-        <div className="w-14 h-14 rounded-full bg-amber-50 mx-auto mb-4 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full bg-amber-50 dark:bg-amber-500/15 mx-auto mb-4 flex items-center justify-center">
           <AlertCircle className="w-7 h-7" color="#d97706" />
         </div>
-        <h1 className="text-xl font-bold text-gray-900 mb-2">{title}</h1>
-        <p className="text-gray-600 mb-6">{message}</p>
+        <h1 className="text-xl font-bold text-foreground mb-2">{title}</h1>
+        <p className="text-muted-foreground mb-6">{message}</p>
         <Link to={createPageUrl('TutorDashboard')}>
           <Button variant="contained" className="bg-indigo-600">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -263,7 +263,7 @@ export default function GradeAssignments() {
   if (accessState !== 'granted') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-gray-500">Loading…</p>
+        <p className="text-muted-foreground">Loading…</p>
       </div>
     );
   }
@@ -283,10 +283,10 @@ export default function GradeAssignments() {
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             {mode === 'assignment' ? 'Grade Submissions' : 'All Submissions'}
           </h1>
-          <p className="text-gray-500">{heading}</p>
+          <p className="text-muted-foreground">{heading}</p>
         </div>
 
         <Card className="p-6 bg-card text-slate-900">
@@ -297,11 +297,11 @@ export default function GradeAssignments() {
               const target = assignmentForSubmission(submission);
               const maxPoints = target?.total_points;
               return (
-                <Card key={submission.id} className="p-4 bg-gray-50">
+                <Card key={submission.id} className="p-4 bg-muted">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="font-semibold text-gray-900">{submission.student_name}</h3>
-                      <p className="text-sm text-gray-500">{submission.student_email}</p>
+                      <h3 className="font-semibold text-foreground">{submission.student_name}</h3>
+                      <p className="text-sm text-muted-foreground">{submission.student_email}</p>
                       {mode === 'course' && target && (
                         <p className="text-xs text-gray-400 mt-1">Assignment: {target.title}</p>
                       )}
@@ -312,7 +312,7 @@ export default function GradeAssignments() {
                   </div>
 
                   <div className="bg-card rounded-lg p-4 mb-3">
-                    <p className="text-gray-700 whitespace-pre-wrap">{submission.content}</p>
+                    <p className="text-foreground whitespace-pre-wrap">{submission.content}</p>
                   </div>
 
                   {gradingSubmission?.id === submission.id ? (
@@ -345,9 +345,9 @@ export default function GradeAssignments() {
                   ) : (
                     <>
                       {submission.is_graded && submission.feedback && (
-                        <div className="bg-green-50 rounded-lg p-3 mb-3">
-                          <p className="text-sm font-medium text-green-900 mb-1">Feedback:</p>
-                          <p className="text-sm text-green-800">{submission.feedback}</p>
+                        <div className="bg-green-50 dark:bg-green-500/15 rounded-lg p-3 mb-3">
+                          <p className="text-sm font-medium text-green-900 dark:text-green-300 mb-1">Feedback:</p>
+                          <p className="text-sm text-green-800 dark:text-green-300">{submission.feedback}</p>
                         </div>
                       )}
                       {!submission.is_graded && (
@@ -368,7 +368,7 @@ export default function GradeAssignments() {
               );
             })}
             {displayedSubmissions.length === 0 && (
-              <p className="text-gray-500 text-center py-8">No submissions yet</p>
+              <p className="text-muted-foreground text-center py-8">No submissions yet</p>
             )}
           </div>
         </Card>

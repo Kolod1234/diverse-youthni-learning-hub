@@ -101,25 +101,25 @@ export default function Sessions() {
                   <Video className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">{session.title}</h3>
+                  <h3 className="text-lg font-bold text-foreground">{session.title}</h3>
                   {course && (
-                    <p className="text-sm text-gray-500">{course.title}</p>
+                    <p className="text-sm text-muted-foreground">{course.title}</p>
                   )}
                 </div>
               </div>
 
-              <p className="text-gray-600 text-sm mb-3">{session.description}</p>
+              <p className="text-muted-foreground text-sm mb-3">{session.description}</p>
 
               <div className="flex flex-wrap gap-3 text-sm">
-                <div className="flex items-center gap-1 text-gray-600">
+                <div className="flex items-center gap-1 text-muted-foreground">
                   <Calendar className="w-4 h-4" />
                   <span>{format(sessionDate, 'MMM d, yyyy')}</span>
                 </div>
-                <div className="flex items-center gap-1 text-gray-600">
+                <div className="flex items-center gap-1 text-muted-foreground">
                   <Clock className="w-4 h-4" />
                   <span>{session.scheduled_time} ({session.duration_minutes} min)</span>
                 </div>
-                <div className="flex items-center gap-1 text-gray-600">
+                <div className="flex items-center gap-1 text-muted-foreground">
                   <Users className="w-4 h-4" />
                   <span>{session.invited_students?.length || 0} participants</span>
                 </div>
@@ -136,7 +136,7 @@ export default function Sessions() {
                   <Badge className="bg-gray-600">Cancelled</Badge>
                 )}
                 {isHost && (
-                  <Badge variant="outline" className="border-indigo-300 text-indigo-700">Host</Badge>
+                  <Badge variant="outline" className="border-indigo-300 text-indigo-700 dark:text-indigo-300">Host</Badge>
                 )}
               </div>
             </div>
@@ -177,8 +177,8 @@ export default function Sessions() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Live Sessions</h1>
-            <p className="text-gray-500">Join live video sessions with tutors and peers</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Live Sessions</h1>
+            <p className="text-muted-foreground">Join live video sessions with tutors and peers</p>
           </div>
           {isTutorOrCoordinator && (
             <Link to={createPageUrl('ScheduleSession')}>
@@ -195,8 +195,8 @@ export default function Sessions() {
           <Card className="p-6 bg-red-50 dark:bg-red-500/10 border-red-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Live Now</p>
-                <p className="text-3xl font-bold text-gray-900">{liveSessions.length}</p>
+                <p className="text-sm text-muted-foreground mb-1">Live Now</p>
+                <p className="text-3xl font-bold text-foreground">{liveSessions.length}</p>
               </div>
               <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center">
                 <PlayCircle className="w-6 h-6 text-white" />
@@ -207,8 +207,8 @@ export default function Sessions() {
           <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Upcoming</p>
-                <p className="text-3xl font-bold text-gray-900">{upcomingSessions.length}</p>
+                <p className="text-sm text-muted-foreground mb-1">Upcoming</p>
+                <p className="text-3xl font-bold text-foreground">{upcomingSessions.length}</p>
               </div>
               <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center">
                 <Calendar className="w-6 h-6 text-white" />
@@ -216,11 +216,11 @@ export default function Sessions() {
             </div>
           </Card>
 
-          <Card className="p-6 bg-background border-gray-200">
+          <Card className="p-6 bg-background border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Completed</p>
-                <p className="text-3xl font-bold text-gray-900">{pastSessions.length}</p>
+                <p className="text-sm text-muted-foreground mb-1">Completed</p>
+                <p className="text-3xl font-bold text-foreground">{pastSessions.length}</p>
               </div>
               <div className="w-12 h-12 bg-gray-500 rounded-xl flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
@@ -231,7 +231,7 @@ export default function Sessions() {
 
         {/* Sessions Tabs */}
         <Tabs defaultValue="live" className="space-y-6">
-          <TabsList className="bg-card border border-gray-200">
+          <TabsList className="bg-card border border-border">
             <TabsTrigger value="live" className="gap-2">
               <PlayCircle className="w-4 h-4" />
               Live ({liveSessions.length})
@@ -254,8 +254,8 @@ export default function Sessions() {
             ) : (
               <Card className="p-12 text-center">
                 <PlayCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Live Sessions</h3>
-                <p className="text-gray-500">There are no active live sessions at the moment</p>
+                <h3 className="text-xl font-semibold text-foreground mb-2">No Live Sessions</h3>
+                <p className="text-muted-foreground">There are no active live sessions at the moment</p>
               </Card>
             )}
           </TabsContent>
@@ -268,8 +268,8 @@ export default function Sessions() {
             ) : (
               <Card className="p-12 text-center">
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Upcoming Sessions</h3>
-                <p className="text-gray-500 mb-6">You don't have any scheduled sessions yet</p>
+                <h3 className="text-xl font-semibold text-foreground mb-2">No Upcoming Sessions</h3>
+                <p className="text-muted-foreground mb-6">You don't have any scheduled sessions yet</p>
                 {isTutorOrCoordinator && (
                   <Link to={createPageUrl('ScheduleSession')}>
                     <Button className="bg-indigo-600 hover:bg-indigo-700">
@@ -290,8 +290,8 @@ export default function Sessions() {
             ) : (
               <Card className="p-12 text-center">
                 <CheckCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Past Sessions</h3>
-                <p className="text-gray-500">Your completed sessions will appear here</p>
+                <h3 className="text-xl font-semibold text-foreground mb-2">No Past Sessions</h3>
+                <p className="text-muted-foreground">Your completed sessions will appear here</p>
               </Card>
             )}
           </TabsContent>

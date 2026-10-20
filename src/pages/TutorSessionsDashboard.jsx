@@ -147,10 +147,10 @@ export default function TutorSessionsDashboard() {
                 </Badge>
               )}
             </div>
-            <h3 className="font-semibold text-lg text-gray-900 mb-1">{session.title}</h3>
-            <p className="text-sm text-gray-600 mb-2">{course?.title}</p>
+            <h3 className="font-semibold text-lg text-foreground mb-1">{session.title}</h3>
+            <p className="text-sm text-muted-foreground mb-2">{course?.title}</p>
             
-            <div className="flex flex-wrap gap-3 text-sm text-gray-500">
+            <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
                 {sessionDateTime && format(sessionDateTime, 'MMM d, yyyy')}
@@ -231,7 +231,7 @@ export default function TutorSessionsDashboard() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading sessions...</p>
+          <p className="text-muted-foreground">Loading sessions...</p>
         </div>
       </div>
     );
@@ -249,8 +249,8 @@ export default function TutorSessionsDashboard() {
                 Back to Dashboard
               </Button>
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900">Live Sessions</h1>
-            <p className="text-gray-600 mt-1">Manage your video sessions and track attendance</p>
+            <h1 className="text-3xl font-bold text-foreground">Live Sessions</h1>
+            <p className="text-muted-foreground mt-1">Manage your video sessions and track attendance</p>
           </div>
           <Button
             onClick={() => setShowScheduler(true)}
@@ -267,9 +267,9 @@ export default function TutorSessionsDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-blue-600 mb-1">Total Sessions</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-3xl font-bold text-foreground">{stats.total}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/15 rounded-full flex items-center justify-center">
                 <Video className="w-6 h-6 text-blue-600" />
               </div>
             </div>
@@ -279,9 +279,9 @@ export default function TutorSessionsDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-indigo-600 mb-1">Upcoming</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.upcoming}</p>
+                <p className="text-3xl font-bold text-foreground">{stats.upcoming}</p>
               </div>
-              <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-500/15 rounded-full flex items-center justify-center">
                 <Calendar className="w-6 h-6 text-indigo-600" />
               </div>
             </div>
@@ -291,9 +291,9 @@ export default function TutorSessionsDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-green-600 mb-1">Completed</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.completed}</p>
+                <p className="text-3xl font-bold text-foreground">{stats.completed}</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-500/15 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
@@ -303,9 +303,9 @@ export default function TutorSessionsDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-orange-600 mb-1">Cancelled</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.cancelled}</p>
+                <p className="text-3xl font-bold text-foreground">{stats.cancelled}</p>
               </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-500/15 rounded-full flex items-center justify-center">
                 <XCircle className="w-6 h-6 text-orange-600" />
               </div>
             </div>
@@ -333,8 +333,8 @@ export default function TutorSessionsDashboard() {
             ) : (
               <Card className="p-12 text-center">
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Upcoming Sessions</h3>
-                <p className="text-gray-600 mb-6">Schedule your first live session to get started</p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Upcoming Sessions</h3>
+                <p className="text-muted-foreground mb-6">Schedule your first live session to get started</p>
                 <Button onClick={() => setShowScheduler(true)} className="bg-indigo-600 hover:bg-indigo-700">
                   <Plus className="w-4 h-4 mr-2" />
                   Schedule Session
@@ -353,8 +353,8 @@ export default function TutorSessionsDashboard() {
             ) : (
               <Card className="p-12 text-center">
                 <Video className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Past Sessions</h3>
-                <p className="text-gray-600">Your completed sessions will appear here</p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Past Sessions</h3>
+                <p className="text-muted-foreground">Your completed sessions will appear here</p>
               </Card>
             )}
           </TabsContent>

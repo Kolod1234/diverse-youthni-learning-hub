@@ -121,11 +121,11 @@ export default function TutorDashboardOverview() {
   const isTutor = user.is_tutor || user.role === 'admin';
   if (!isTutor) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <div className="text-center p-8 max-w-md">
           <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Tutor Access Only</h2>
-          <p className="text-gray-500">You need tutor privileges to access this page.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Tutor Access Only</h2>
+          <p className="text-muted-foreground">You need tutor privileges to access this page.</p>
         </div>
       </div>
     );
@@ -147,7 +147,7 @@ export default function TutorDashboardOverview() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       <TutorSafeguardingReminder />
       {/* Hero Header */}
       <div className="bg-[#0b2f5c] text-white">
@@ -166,7 +166,7 @@ export default function TutorDashboardOverview() {
               </div>
               <div className="flex gap-3 flex-wrap">
                 <Link to={createPageUrl('TutorDashboard')}>
-                  <Button className="bg-card text-slate-900 hover:bg-slate-100 font-semibold">
+                  <Button className="bg-card text-slate-900 hover:bg-muted font-semibold">
                     <BookOpen className="w-4 h-4 mr-2" />
                     Course Dashboard
                   </Button>
@@ -228,20 +228,20 @@ export default function TutorDashboardOverview() {
                   </div>
                 </div>
                 <Link to={createPageUrl('TutorSessionsDashboard')}>
-                  <Button className="bg-card text-emerald-700 hover:bg-emerald-50 font-semibold" size="sm">View</Button>
+                  <Button className="bg-card text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 font-semibold" size="sm">View</Button>
                 </Link>
               </motion.div>
             )}
 
             {/* Pending Bookings Alert */}
             {pendingBookings.length > 0 && (
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-center justify-between">
+              <div className="bg-amber-50 dark:bg-amber-500/15 border border-amber-200 rounded-2xl p-5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/15 rounded-xl flex items-center justify-center">
                     <Clock className="w-5 h-5 text-amber-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-amber-900">{pendingBookings.length} booking request{pendingBookings.length > 1 ? 's' : ''} pending</p>
+                    <p className="font-semibold text-amber-900 dark:text-amber-300">{pendingBookings.length} booking request{pendingBookings.length > 1 ? 's' : ''} pending</p>
                     <p className="text-amber-600 text-sm">Students are waiting for your confirmation</p>
                   </div>
                 </div>
@@ -252,11 +252,11 @@ export default function TutorDashboardOverview() {
             )}
 
             {/* My Assigned Courses */}
-            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">My Assigned Courses</h2>
-                  <p className="text-sm text-gray-500">{myCourses.length} course{myCourses.length !== 1 ? 's' : ''} to teach</p>
+                  <h2 className="text-lg font-semibold text-foreground">My Assigned Courses</h2>
+                  <p className="text-sm text-muted-foreground">{myCourses.length} course{myCourses.length !== 1 ? 's' : ''} to teach</p>
                 </div>
                 <Link to={createPageUrl('TutorDashboard')}>
                   <Button variant="outline" size="sm" className="gap-1">
@@ -268,8 +268,8 @@ export default function TutorDashboardOverview() {
               {myCourses.length === 0 ? (
                 <div className="py-14 px-6 text-center text-gray-400">
                   <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-40" />
-                  <p className="font-medium text-gray-600">No courses assigned</p>
-                  <p className="text-sm mt-1 text-gray-500 max-w-md mx-auto">
+                  <p className="font-medium text-muted-foreground">No courses assigned</p>
+                  <p className="text-sm mt-1 text-muted-foreground max-w-md mx-auto">
                     Contact an admin to be assigned to a course, or open a course on{' '}
                     <Link to={createPageUrl('Explore')} className="text-blue-600 hover:underline">Explore</Link>
                     {' '}and use <strong>Request to Teach</strong>.
@@ -289,7 +289,7 @@ export default function TutorDashboardOverview() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-4 px-6 py-4 hover:bg-muted transition-colors"
                       >
                         <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
                           {course.thumbnail
@@ -297,17 +297,17 @@ export default function TutorDashboardOverview() {
                             : <BookMarked className="w-6 h-6 text-blue-500" />}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 truncate">{course.title}</p>
+                          <p className="font-medium text-foreground truncate">{course.title}</p>
                           <div className="flex flex-wrap items-center gap-3 mt-1">
-                            <span className="text-xs text-gray-500 capitalize">{course.category?.replace(/_/g, ' ')}</span>
+                            <span className="text-xs text-muted-foreground capitalize">{course.category?.replace(/_/g, ' ')}</span>
                             <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-500">{courseLessons.length} lesson{courseLessons.length !== 1 ? 's' : ''}</span>
+                            <span className="text-xs text-muted-foreground">{courseLessons.length} lesson{courseLessons.length !== 1 ? 's' : ''}</span>
                             <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
                               <Users className="w-3 h-3" /> {courseEnrollments.length} students
                             </span>
                             <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-500">{avgProg}% avg</span>
+                            <span className="text-xs text-muted-foreground">{avgProg}% avg</span>
                           </div>
                         </div>
                         <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
@@ -332,11 +332,11 @@ export default function TutorDashboardOverview() {
             </div>
 
             {/* Students Enrolled in My Courses */}
-            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">My Students</h2>
-                  <p className="text-sm text-gray-500">{totalStudents} enrolled across all courses</p>
+                  <h2 className="text-lg font-semibold text-foreground">My Students</h2>
+                  <p className="text-sm text-muted-foreground">{totalStudents} enrolled across all courses</p>
                 </div>
                 <Link to={createPageUrl('TutorDashboard') + '?view=people'}>
                   <Button variant="outline" size="sm" className="gap-1">
@@ -347,21 +347,21 @@ export default function TutorDashboardOverview() {
               {totalStudents === 0 ? (
                 <div className="py-10 text-center text-gray-400">
                   <Users className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                  <p className="text-sm font-medium text-gray-600">No students enrolled yet</p>
+                  <p className="text-sm font-medium text-muted-foreground">No students enrolled yet</p>
                 </div>
               ) : (
                 <div className="px-6 py-4">
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-blue-50 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-blue-700">{totalStudents}</p>
+                    <div className="bg-blue-50 dark:bg-blue-500/15 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{totalStudents}</p>
                       <p className="text-xs text-blue-600 mt-1">Total Students</p>
                     </div>
-                    <div className="bg-green-50 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-green-700">{completedCount}</p>
+                    <div className="bg-green-50 dark:bg-green-500/15 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-green-700 dark:text-green-300">{completedCount}</p>
                       <p className="text-xs text-green-600 mt-1">Completed</p>
                     </div>
-                    <div className="bg-indigo-50 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-indigo-700">{avgCompletion}%</p>
+                    <div className="bg-indigo-50 dark:bg-indigo-500/15 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">{avgCompletion}%</p>
                       <p className="text-xs text-indigo-600 mt-1">Avg Progress</p>
                     </div>
                   </div>
@@ -370,11 +370,11 @@ export default function TutorDashboardOverview() {
             </div>
 
             {/* Upcoming Sessions */}
-            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Upcoming Sessions</h2>
-                  <p className="text-sm text-gray-500">{allUpcomingSessions.length} scheduled</p>
+                  <h2 className="text-lg font-semibold text-foreground">Upcoming Sessions</h2>
+                  <p className="text-sm text-muted-foreground">{allUpcomingSessions.length} scheduled</p>
                 </div>
                 <div className="flex gap-2">
                   <Link to={createPageUrl('ScheduleSession')}>
@@ -392,20 +392,20 @@ export default function TutorDashboardOverview() {
               {upcomingSessions.length === 0 ? (
                 <div className="py-12 text-center text-gray-400">
                   <Video className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                  <p className="font-medium text-gray-600 text-sm">No upcoming sessions</p>
+                  <p className="font-medium text-muted-foreground text-sm">No upcoming sessions</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
                   {upcomingSessions.map(session => {
                     const course = myCourses.find(c => c.id === session.course_id);
                     return (
-                      <div key={session.id} className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50">
-                        <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <div key={session.id} className="flex items-center gap-4 px-6 py-4 hover:bg-muted">
+                        <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
                           <Video className="w-5 h-5 text-indigo-600" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 truncate">{session.title}</p>
-                          <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
+                          <p className="font-medium text-foreground truncate">{session.title}</p>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
                             <Calendar className="w-3.5 h-3.5" />
                             {new Date(session.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' })} at {session.scheduled_time}
                             {course && <span className="ml-2 text-gray-400">• {course.title}</span>}
@@ -426,8 +426,8 @@ export default function TutorDashboardOverview() {
           <div className="space-y-6">
 
             {/* Quick Actions */}
-            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm p-6">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
+              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Zap className="w-4 h-4 text-amber-500" />
                 Quick Actions
               </h3>
@@ -483,9 +483,9 @@ export default function TutorDashboardOverview() {
             </div>
 
             {/* Messages Preview */}
-            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+            <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">
                   <MessageSquare className="w-4 h-4 text-blue-500" />
                   Messages
                 </h3>
@@ -496,14 +496,14 @@ export default function TutorDashboardOverview() {
               {messages.length === 0 ? (
                 <div className="py-8 text-center">
                   <CheckCircle2 className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">All caught up!</p>
+                  <p className="text-sm text-muted-foreground">All caught up!</p>
                 </div>
               ) : (
                 <div>
                   {messages.slice(0, 3).map(msg => (
-                    <div key={msg.id} className="px-5 py-3 border-b border-gray-50 hover:bg-gray-50">
-                      <p className="text-sm font-medium text-gray-900 truncate">{msg.sender_name || msg.sender_email}</p>
-                      <p className="text-xs text-gray-500 truncate mt-0.5">{msg.content}</p>
+                    <div key={msg.id} className="px-5 py-3 border-b border-gray-50 hover:bg-muted">
+                      <p className="text-sm font-medium text-foreground truncate">{msg.sender_name || msg.sender_email}</p>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">{msg.content}</p>
                     </div>
                   ))}
                   <div className="px-5 py-3">
@@ -518,8 +518,8 @@ export default function TutorDashboardOverview() {
             </div>
 
             {/* Tutor Tools */}
-            <div className="bg-card rounded-2xl border border-gray-200 shadow-sm p-5">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <div className="bg-card rounded-2xl border border-border shadow-sm p-5">
+              <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
                 <Star className="w-4 h-4 text-amber-400" />
                 Tutor Tools
               </h3>
@@ -534,9 +534,9 @@ export default function TutorDashboardOverview() {
                   const Icon = item.icon;
                   return (
                     <Link key={item.label} to={item.href}>
-                      <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
+                      <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted transition-colors cursor-pointer group">
                         <Icon className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
-                        <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors">{item.label}</span>
+                        <span className="text-sm text-foreground group-hover:text-blue-600 transition-colors">{item.label}</span>
                         <ChevronRight className="w-3.5 h-3.5 text-gray-300 ml-auto group-hover:text-blue-400 transition-colors" />
                       </div>
                     </Link>

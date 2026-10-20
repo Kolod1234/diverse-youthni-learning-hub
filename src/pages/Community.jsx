@@ -59,11 +59,11 @@ export default function Community() {
   });
 
   const categoryColors = {
-    announcement: 'bg-blue-100 text-blue-700',
-    event: 'bg-indigo-100 text-indigo-700',
-    achievement: 'bg-yellow-100 text-yellow-700',
-    discussion: 'bg-green-100 text-green-700',
-    question: 'bg-orange-100 text-orange-700'
+    announcement: 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300',
+    event: 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300',
+    achievement: 'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300',
+    discussion: 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300',
+    question: 'bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300'
   };
 
   const pinnedPosts = posts.filter(p => p.is_pinned);
@@ -78,8 +78,8 @@ export default function Community() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Community</h1>
-            <p className="text-gray-600">Connect with fellow students and share</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Community</h1>
+            <p className="text-muted-foreground">Connect with fellow students and share</p>
           </div>
           <Button onClick={() => setShowNewPost(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2">
             <Plus className="w-4 h-4" />
@@ -97,12 +97,12 @@ export default function Community() {
                     <Badge className={categoryColors[post.category]}>{post.category}</Badge>
                     <Badge variant="outline" className="text-xs">Pinned</Badge>
                   </div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-2">{post.title}</h3>
-                  <p className="text-gray-700 mb-4">{post.content}</p>
+                  <h3 className="font-bold text-foreground text-lg mb-2">{post.title}</h3>
+                  <p className="text-foreground mb-4">{post.content}</p>
                   {post.image_url && (
                     <img src={post.image_url} alt={post.title} className="rounded-lg mb-4 max-h-64 object-cover" />
                   )}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <button 
                       onClick={() => likePostMutation.mutate({ id: post.id, likes: post.likes_count || 0 })}
                       className="flex items-center gap-1 hover:text-red-600"
@@ -122,7 +122,7 @@ export default function Community() {
             <Card key={post.id} className="p-6 hover:shadow-md transition-shadow">
               <div className="flex items-start gap-4">
                 <Avatar>
-                  <AvatarFallback className="bg-indigo-100 text-indigo-600">
+                  <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600">
                     {post.created_by?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
@@ -130,12 +130,12 @@ export default function Community() {
                   <div className="flex items-center gap-2 mb-2">
                     <Badge className={categoryColors[post.category]}>{post.category}</Badge>
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">{post.title}</h3>
-                  <p className="text-gray-700 mb-4">{post.content}</p>
+                  <h3 className="font-bold text-foreground mb-2">{post.title}</h3>
+                  <p className="text-foreground mb-4">{post.content}</p>
                   {post.image_url && (
                     <img src={post.image_url} alt={post.title} className="rounded-lg mb-4 max-h-64 object-cover" />
                   )}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <button 
                       onClick={() => likePostMutation.mutate({ id: post.id, likes: post.likes_count || 0 })}
                       className="flex items-center gap-1 hover:text-red-600"

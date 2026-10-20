@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Button, Card, TextField, Checkbox as MuiCheckbox, Switch as MuiSwitch, Select as MuiSelect, MenuItem } from '@mui/material';
 const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
 const Textarea = ({ className, rows, ...props }) => <TextField fullWidth multiline rows={rows || 4} className={className} {...props} />;
-const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-gray-700 mb-1'} {...props}>{children}</label>;
+const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-foreground mb-1'} {...props}>{children}</label>;
 const Checkbox = ({ checked, onCheckedChange, id, ...props }) => <MuiCheckbox checked={!!checked} onChange={(e) => onCheckedChange?.(e.target.checked)} id={id} size="small" {...props} />;
 const Switch = ({ checked, onCheckedChange, id, ...props }) => <MuiSwitch checked={!!checked} onChange={(e) => onCheckedChange?.(e.target.checked)} id={id} {...props} />;
 const Select = ({ value, onValueChange, children }) => {
@@ -230,13 +230,13 @@ export default function ScheduleSession() {
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
             <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
               <Video className="w-6 h-6 text-white" />
             </div>
             Schedule Live Session
           </h1>
-          <p className="text-gray-500">Set up a live video tutoring session for your students</p>
+          <p className="text-muted-foreground">Set up a live video tutoring session for your students</p>
         </div>
 
         <div className="flex gap-3 mb-6">
@@ -372,7 +372,7 @@ export default function ScheduleSession() {
               </div>
 
               {formData.is_recurring && (
-                <div className="ml-7 space-y-4 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                <div className="ml-7 space-y-4 p-4 bg-indigo-50 dark:bg-indigo-500/15 rounded-lg border border-indigo-200">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="pattern">Repeat</Label>
@@ -413,7 +413,7 @@ export default function ScheduleSession() {
                   <RefreshCw className="w-5 h-5 text-blue-600" />
                   <div>
                     <Label htmlFor="calendar-sync">Sync to Google Calendar</Label>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Automatically add to calendar and send invites
                     </p>
                   </div>
@@ -436,13 +436,13 @@ export default function ScheduleSession() {
                       checked={selectAll}
                       onCheckedChange={handleSelectAll}
                     />
-                    <label htmlFor="select-all-students" className="text-sm text-gray-600 cursor-pointer">
+                    <label htmlFor="select-all-students" className="text-sm text-muted-foreground cursor-pointer">
                       Select All
                     </label>
                   </div>
                 </div>
 
-                <div className="max-h-64 overflow-y-auto border rounded-lg p-4 bg-gray-50 space-y-2">
+                <div className="max-h-64 overflow-y-auto border rounded-lg p-4 bg-muted space-y-2">
                   {students.map((student) => (
                     <div
                       key={student.email}
@@ -457,8 +457,8 @@ export default function ScheduleSession() {
                         htmlFor={`student-${student.email}`}
                         className="flex-1 cursor-pointer"
                       >
-                        <p className="font-medium text-gray-900">{student.full_name}</p>
-                        <p className="text-xs text-gray-500">{student.email}</p>
+                        <p className="font-medium text-foreground">{student.full_name}</p>
+                        <p className="text-xs text-muted-foreground">{student.email}</p>
                       </label>
                     </div>
                   ))}

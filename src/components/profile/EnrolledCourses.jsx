@@ -37,7 +37,7 @@ export default function EnrolledCourses({ user }) {
           </CardHeader>
           <CardContent className="space-y-4">
             {inProgress.map(({ course, progress_percent, completed_lessons }) => (
-              <div key={course.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 transition">
+              <div key={course.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted transition">
                 <div className="w-20 h-20 rounded-lg overflow-hidden bg-indigo-600 flex-shrink-0">
                   {course.thumbnail ? (
                     <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
@@ -48,15 +48,15 @@ export default function EnrolledCourses({ user }) {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1">{course.title}</h3>
-                  <p className="text-sm text-gray-500 mb-3">{course.instructor}</p>
+                  <h3 className="font-semibold text-foreground mb-1">{course.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{course.instructor}</p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Progress</span>
+                      <span className="text-muted-foreground">Progress</span>
                       <span className="font-medium">{Math.round(progress_percent || 0)}%</span>
                     </div>
                     <Progress value={progress_percent || 0} className="h-2" />
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <BookOpen className="w-3 h-3" />
                         {completed_lessons?.length || 0} lessons completed
@@ -83,7 +83,7 @@ export default function EnrolledCourses({ user }) {
           </CardHeader>
           <CardContent className="space-y-4">
             {completed.map(({ course, completed_date }) => (
-              <div key={course.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 transition">
+              <div key={course.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted transition">
                 <div className="w-20 h-20 rounded-lg overflow-hidden bg-indigo-600 flex-shrink-0">
                   {course.thumbnail ? (
                     <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
@@ -96,8 +96,8 @@ export default function EnrolledCourses({ user }) {
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">{course.title}</h3>
-                      <p className="text-sm text-gray-500">{course.instructor}</p>
+                      <h3 className="font-semibold text-foreground mb-1">{course.title}</h3>
+                      <p className="text-sm text-muted-foreground">{course.instructor}</p>
                       {completed_date && (
                         <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
@@ -105,7 +105,7 @@ export default function EnrolledCourses({ user }) {
                         </p>
                       )}
                     </div>
-                    <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-xs font-medium">
                       Completed
                     </div>
                   </div>
@@ -123,8 +123,8 @@ export default function EnrolledCourses({ user }) {
         <Card>
           <CardContent className="text-center py-12">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Enrolled Courses</h3>
-            <p className="text-gray-500 mb-4">Start your learning journey today!</p>
+            <h3 className="text-lg font-semibold text-foreground mb-2">No Enrolled Courses</h3>
+            <p className="text-muted-foreground mb-4">Start your learning journey today!</p>
             <Link to={createPageUrl('Explore')}>
               <Button>Browse Courses</Button>
             </Link>
