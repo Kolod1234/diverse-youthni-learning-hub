@@ -107,11 +107,11 @@ export default function PathManager() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-muted py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Learning Path Manager</h1>
-          <p className="text-gray-600">Create structured learning paths by grouping courses</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Learning Path Manager</h1>
+          <p className="text-muted-foreground">Create structured learning paths by grouping courses</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -208,8 +208,8 @@ export default function PathManager() {
                     if (!course) return null;
 
                     return (
-                      <div key={courseId} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                        <span className="w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                      <div key={courseId} className="flex items-center gap-2 p-2 bg-muted rounded-lg">
+                        <span className="w-6 h-6 bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 rounded-full flex items-center justify-center text-sm font-semibold">
                           {index + 1}
                         </span>
                         <span className="flex-1 text-sm">{course.title}</span>
@@ -288,15 +288,15 @@ export default function PathManager() {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-gray-900">{path.title}</h3>
+                        <h3 className="font-semibold text-foreground">{path.title}</h3>
                         {path.is_published ? (
-                          <Badge className="bg-green-100 text-green-700">Published</Badge>
+                          <Badge className="bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300">Published</Badge>
                         ) : (
                           <Badge variant="secondary">Draft</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{path.description}</p>
-                      <div className="flex items-center gap-3 text-xs text-gray-500">
+                      <p className="text-sm text-muted-foreground mb-2">{path.description}</p>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <BookOpen className="w-3 h-3" />
                           {pathCourses.length} courses

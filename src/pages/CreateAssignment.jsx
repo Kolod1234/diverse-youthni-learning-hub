@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button, Card, TextField } from '@mui/material';
 const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
 const Textarea = ({ className, rows, ...props }) => <TextField fullWidth multiline rows={rows || 4} className={className} {...props} />;
-const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-gray-700 mb-1'} {...props}>{children}</label>;
+const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-foreground mb-1'} {...props}>{children}</label>;
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
 const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
@@ -91,12 +91,12 @@ export default function CreateAssignment() {
         </Link>
 
         <Card className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Assignment</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-6">Create Assignment</h1>
 
           {courses.length === 0 ? (
-            <div className="text-center py-8 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="font-medium text-amber-900 mb-2">You have no assigned courses</p>
-              <p className="text-sm text-amber-800">
+            <div className="text-center py-8 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 rounded-lg">
+              <p className="font-medium text-amber-900 dark:text-amber-300 mb-2">You have no assigned courses</p>
+              <p className="text-sm text-amber-800 dark:text-amber-300">
                 Please contact an admin to be assigned to a course before creating assignments.
               </p>
             </div>

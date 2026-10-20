@@ -288,14 +288,14 @@ export default function LessonEditor() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-indigo-600" />
-          <p className="text-gray-600">Loading editor...</p>
+          <p className="text-muted-foreground">Loading editor...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen max-h-screen flex flex-col bg-slate-50 overflow-x-hidden overflow-y-hidden">
+    <div className="h-screen max-h-screen flex flex-col bg-muted overflow-x-hidden overflow-y-hidden">
       {/* Calm, immersive editor header — owns the viewport (Layout hides public chrome).
           At <sm we collapse to: [Back] [Title — truncated] [Save] [⋯ overflow]
           so the primary Save action is never clipped at 390px, and settings/present
@@ -314,7 +314,7 @@ export default function LessonEditor() {
           <h1 className="flex-1 min-w-0 text-sm sm:text-base font-semibold text-slate-900 truncate">
             {lessonId ? (lessonForm.title || 'Edit Lesson') : 'Create New Lesson'}
           </h1>
-          <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5 shrink-0">
+          <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 rounded-full px-2 py-0.5 shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
             {lessonId ? 'Unsaved changes' : 'Not yet saved — use Save Lesson to persist'}
           </span>
@@ -424,7 +424,7 @@ export default function LessonEditor() {
           // [&>button]:z-20 lifts the Radix-default close (X at right-4/top-4)
           // ABOVE our sticky header (z-10), so a click at the X coordinate
           // hits the close button instead of being absorbed by the sticky bar.
-          className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-slate-50 p-0 [&>button]:z-30"
+          className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-muted p-0 [&>button]:z-30"
           // Stop pointer-down inside the panel from bubbling to background
           // template cards (which sit under the overlay). Radix already
           // intercepts outside-clicks at the overlay layer, but a defensive
@@ -434,7 +434,7 @@ export default function LessonEditor() {
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-6 py-4 flex items-start justify-between gap-3">
+          <div className="sticky top-0 z-10 bg-card border-b border-slate-200 px-6 py-4 flex items-start justify-between gap-3">
             <SheetHeader className="flex-1 min-w-0">
               <SheetTitle className="flex items-center gap-2 text-base">
                 <Settings2 className="w-4 h-4 text-indigo-600" />
@@ -458,7 +458,7 @@ export default function LessonEditor() {
                 size="sm"
                 aria-label="Close lesson settings"
                 onClick={(e) => e.stopPropagation()}
-                className="shrink-0 h-8 px-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 -mr-2"
+                className="shrink-0 h-8 px-2 text-slate-600 hover:text-slate-900 hover:bg-muted -mr-2"
               >
                 Close
               </Button>
@@ -499,11 +499,11 @@ export default function LessonEditor() {
       {!lessonForm.title && (
         <div className="shrink-0 px-3 sm:px-6 pt-2">
           <div className="flex items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-indigo-50/70 px-4 py-2 text-sm">
-            <div className="flex items-center gap-2 text-indigo-900">
+            <div className="flex items-center gap-2 text-indigo-900 dark:text-indigo-300">
               <Sparkles className="w-4 h-4 text-indigo-600 shrink-0" />
               <span>Add a lesson title and course in <strong>Lesson settings</strong> before saving.</span>
             </div>
-            <Button size="sm" variant="outline" onClick={() => setSettingsOpen(true)} className="shrink-0 border-indigo-300 text-indigo-700 hover:bg-indigo-100">
+            <Button size="sm" variant="outline" onClick={() => setSettingsOpen(true)} className="shrink-0 border-indigo-300 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100">
               Open settings
             </Button>
           </div>
@@ -516,7 +516,7 @@ export default function LessonEditor() {
             id="lesson-editor-save-error"
             role="alert"
             aria-live="assertive"
-            className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-900"
+            className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 dark:bg-red-500/15 px-4 py-2 text-sm text-red-900 dark:text-red-300"
           >
             <AlertCircle className="w-4 h-4 mt-0.5 text-red-600 shrink-0" />
             <div className="flex-1">

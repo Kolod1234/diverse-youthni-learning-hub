@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button, Card, TextField, Chip, Dialog as MuiDialog, DialogTitle as MuiDialogTitle, DialogContent as MuiDialogContent } from '@mui/material';
 const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
 const Textarea = ({ className, ...props }) => <TextField fullWidth multiline rows={4} className={className} {...props} />;
-const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-gray-700 mb-1'} {...props}>{children}</label>;
+const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-foreground mb-1'} {...props}>{children}</label>;
 const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
 const Dialog = ({ open, onOpenChange, children }) => <MuiDialog open={!!open} onClose={() => onOpenChange?.(false)} maxWidth="md" fullWidth>{children}</MuiDialog>;
 const DialogContent = ({ children, className }) => <MuiDialogContent className={className}>{children}</MuiDialogContent>;
@@ -219,9 +219,9 @@ export default function PathwayManager() {
 
   if (!canManage) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <Card className="p-8 text-center">
-          <p className="text-gray-600">Access restricted to educators</p>
+          <p className="text-muted-foreground">Access restricted to educators</p>
         </Card>
       </div>
     );
@@ -232,10 +232,10 @@ export default function PathwayManager() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Learning Pathways Manager</h1>
+          <h1 className="text-3xl font-bold text-foreground">Learning Pathways Manager</h1>
           <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
             <Plus className="w-5 h-5" />
             Create Pathway
@@ -247,8 +247,8 @@ export default function PathwayManager() {
             <Card key={pathway.id} className="p-6 hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-1">{pathway.title}</h3>
-                  <p className="text-sm text-gray-600 line-clamp-2">{pathway.description}</p>
+                  <h3 className="font-semibold text-lg text-foreground mb-1">{pathway.title}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{pathway.description}</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -299,7 +299,7 @@ export default function PathwayManager() {
         {pathways.length === 0 && (
           <div className="text-center py-12">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No pathways yet. Create your first one!</p>
+            <p className="text-muted-foreground">No pathways yet. Create your first one!</p>
           </div>
         )}
       </div>
@@ -401,7 +401,7 @@ export default function PathwayManager() {
           <div className="flex-1 overflow-y-auto space-y-6 mt-4">
             {/* Current Resources */}
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">Pathway Resources ({pathwayResources.length})</h3>
+              <h3 className="font-semibold text-foreground mb-3">Pathway Resources ({pathwayResources.length})</h3>
               {pathwayResources.length > 0 ? (
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable droppableId="pathway-resources">
@@ -416,14 +416,14 @@ export default function PathwayManager() {
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
-                                  className="flex items-center gap-3 bg-white p-3 rounded-lg border"
+                                  className="flex items-center gap-3 bg-card p-3 rounded-lg border"
                                 >
                                   <div {...provided.dragHandleProps}>
                                     <GripVertical className="w-5 h-5 text-gray-400" />
                                   </div>
                                   <div className="flex-1">
                                     <p className="font-medium text-sm">{resource.title}</p>
-                                    <p className="text-xs text-gray-500">{resource.author}</p>
+                                    <p className="text-xs text-muted-foreground">{resource.author}</p>
                                   </div>
                                   <Button
                                     variant="ghost"
@@ -443,19 +443,19 @@ export default function PathwayManager() {
                   </Droppable>
                 </DragDropContext>
               ) : (
-                <p className="text-gray-500 text-sm">No resources added yet</p>
+                <p className="text-muted-foreground text-sm">No resources added yet</p>
               )}
             </div>
 
             {/* Available Resources */}
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">Available Resources ({availableResources.length})</h3>
+              <h3 className="font-semibold text-foreground mb-3">Available Resources ({availableResources.length})</h3>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {availableResources.map((resource) => (
-                  <div key={resource.id} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+                  <div key={resource.id} className="flex items-center gap-3 bg-muted p-3 rounded-lg">
                     <div className="flex-1">
                       <p className="font-medium text-sm">{resource.title}</p>
-                      <p className="text-xs text-gray-500">{resource.author}</p>
+                      <p className="text-xs text-muted-foreground">{resource.author}</p>
                     </div>
                     <Button size="sm" onClick={() => handleAddResource(resource.id)}>
                       <Plus className="w-4 h-4 mr-1" />

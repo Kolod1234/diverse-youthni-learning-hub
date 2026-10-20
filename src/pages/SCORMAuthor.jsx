@@ -108,12 +108,12 @@ export default function SCORMAuthor() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-muted p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">SCORM Course Authoring</h1>
-          <p className="text-gray-600">Create and publish SCORM-compliant courses</p>
+          <p className="text-muted-foreground">Create and publish SCORM-compliant courses</p>
         </div>
 
         {/* Action Buttons */}
@@ -201,7 +201,7 @@ export default function SCORMAuthor() {
                     onUpdate={() => queryClient.invalidateQueries(['lessons', courseId])}
                   />
                 ) : (
-                  <p className="text-gray-500">Save the course first to add lessons</p>
+                  <p className="text-muted-foreground">Save the course first to add lessons</p>
                 )}
               </CardContent>
             </Card>
@@ -224,7 +224,7 @@ export default function SCORMAuthor() {
                     onUpdate={() => queryClient.invalidateQueries(['lessons', courseId])}
                   />
                 ) : (
-                  <p className="text-gray-500">Save the course first to add objectives</p>
+                  <p className="text-muted-foreground">Save the course first to add objectives</p>
                 )}
               </CardContent>
             </Card>
@@ -247,7 +247,7 @@ export default function SCORMAuthor() {
                     onUpdate={() => queryClient.invalidateQueries(['quizzes', courseId])}
                   />
                 ) : (
-                  <p className="text-gray-500">Save the course first to add assessments</p>
+                  <p className="text-muted-foreground">Save the course first to add assessments</p>
                 )}
               </CardContent>
             </Card>
@@ -271,7 +271,7 @@ export default function SCORMAuthor() {
                     onExport={handleExport}
                   />
                 ) : (
-                  <p className="text-gray-500">Save the course first to export</p>
+                  <p className="text-muted-foreground">Save the course first to export</p>
                 )}
               </CardContent>
             </Card>
@@ -284,19 +284,19 @@ export default function SCORMAuthor() {
             <Card>
               <CardContent className="pt-6">
                 <div className="text-3xl font-bold">{lessons.length}</div>
-                <p className="text-gray-600 text-sm">Lessons</p>
+                <p className="text-muted-foreground text-sm">Lessons</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6">
                 <div className="text-3xl font-bold">{quizzes.length}</div>
-                <p className="text-gray-600 text-sm">Assessments</p>
+                <p className="text-muted-foreground text-sm">Assessments</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6">
                 <div className="text-3xl font-bold">{courseData?.learning_objectives?.length || 0}</div>
-                <p className="text-gray-600 text-sm">Objectives</p>
+                <p className="text-muted-foreground text-sm">Objectives</p>
               </CardContent>
             </Card>
           </div>
