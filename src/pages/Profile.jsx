@@ -167,7 +167,7 @@ export default function Profile() {
                   <Typography variant="caption" color="text.secondary">Completed</Typography>
                 </Box>
                 <Box>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: '#f97316' }}>{Math.round(totalHours)}</Typography>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: '#4f46e5' }}>{Math.round(totalHours)}</Typography>
                   <Typography variant="caption" color="text.secondary">Hours</Typography>
                 </Box>
               </Box>
@@ -322,12 +322,12 @@ export default function Profile() {
                   </div>
                 </Card>
 
-                <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-indigo-600 to-violet-600 text-white">
+                <Card className="p-6 border-0 shadow-sm bg-indigo-600 text-white">
                   <h3 className="font-semibold mb-2">Keep Learning!</h3>
                   <p className="text-indigo-100 text-sm mb-4">
                     You're {completedCourses > 0 ? 'doing great' : 'just getting started'}! Continue your journey to unlock more achievements.
                   </p>
-                  <Button className="w-full bg-white text-indigo-600 hover:bg-gray-100">
+                  <Button className="w-full bg-card text-indigo-600 hover:bg-gray-100">
                     Browse Courses
                   </Button>
                 </Card>
@@ -372,9 +372,9 @@ export default function Profile() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <Card className="p-6 border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50">
+                      <Card className="p-6 border-2 border-amber-200 bg-indigo-600">
                         <div className="flex items-start justify-between mb-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
+                          <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
                             <Award className="w-6 h-6 text-white" />
                           </div>
                           <Button variant="outline" size="sm">

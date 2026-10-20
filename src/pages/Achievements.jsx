@@ -116,7 +116,7 @@ export default function Achievements() {
       <Container maxWidth="lg" sx={{ pb: 4 }}>
         {/* Overall Progress */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card sx={{ background: 'linear-gradient(to bottom right, #fdf2f8, #fce7f3, #f3e8ff)', borderColor: '#fed7aa', border: 1, mb: 4 }}>
+          <Card sx={{ bgcolor: 'action.hover', borderColor: '#fed7aa', border: 1, mb: 4 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Box>
@@ -126,7 +126,7 @@ export default function Achievements() {
                   <Typography variant="body2" color="textSecondary">Keep learning to unlock more!</Typography>
                 </Box>
                 <Box sx={{ textAlign: 'right' }}>
-                  <Typography variant="h4" sx={{ background: 'linear-gradient(to right, #f97316, #ec4899)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 'bold' }}>
+                  <Typography variant="h4" sx={{ bgcolor: '#4f46e5', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 'bold' }}>
                     {userProgress?.points || 0}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">Total Points</Typography>
@@ -156,7 +156,7 @@ export default function Achievements() {
                   <Card>
                     <CardContent>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                        <Box sx={{ width: 40, height: 40, background: 'linear-gradient(to bottom right, #fed7aa, #fce7f3)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Box sx={{ width: 40, height: 40, bgcolor: 'action.hover', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Icon style={{ width: 20, height: 20, color: '#b45309' }} />
                         </Box>
                         <Box sx={{ flex: 1 }}>
@@ -308,7 +308,7 @@ function SuccessStoriesCarousel() {
                         borderColor: 'white',
                         borderWidth: 2,
                         color: 'white',
-                        '&:hover': { bgcolor: 'white', color: '#111827', borderColor: 'white' },
+                        '&:hover': { bgcolor: 'background.paper', color: '#111827', borderColor: 'white' },
                         borderRadius: 50,
                         px: 3,
                         textTransform: 'none'
@@ -387,7 +387,7 @@ function SuccessStoriesCarousel() {
                 border: 'none',
                 cursor: 'pointer',
                 transition: 'all 0.3s',
-                bgcolor: selectedIndex === idx ? '#f97316' : '#d1d5db',
+                bgcolor: selectedIndex === idx ? '#4f46e5' : '#d1d5db',
                 width: selectedIndex === idx ? 32 : 8
               }}
             />

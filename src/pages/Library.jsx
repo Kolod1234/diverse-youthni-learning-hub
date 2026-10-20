@@ -48,7 +48,7 @@ function LibraryPasswordGate({ onUnlock }) {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f9fafb' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
       <Box sx={{ width: '100%', maxWidth: 400, mx: 2, textAlign: 'center' }}>
         <Box sx={{ bgcolor: '#4f46e5', p: 2, borderRadius: '50%', display: 'inline-flex', mb: 3, width: 64, height: 64, alignItems: 'center', justifyContent: 'center' }}>
           <Lock size={28} color="white" />
@@ -68,7 +68,7 @@ function LibraryPasswordGate({ onUnlock }) {
               helperText={error ? 'Incorrect password. Please try again.' : ''}
               fullWidth
               autoFocus
-              sx={{ bgcolor: 'white' }}
+              sx={{ bgcolor: 'background.paper' }}
             />
             <Button
               type="submit"
@@ -213,7 +213,7 @@ export default function Library() {
   // Show loading until auth is checked
   if (!authChecked) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f9fafb' }}>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
         <Typography color="text.secondary">Loading...</Typography>
       </Box>
     );
@@ -222,7 +222,7 @@ export default function Library() {
   // Block access if not tutor/admin
   if (!isTutorOrAdmin) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f9fafb' }}>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
         <Box sx={{ textAlign: 'center', maxWidth: 400, mx: 2 }}>
           <Box sx={{ bgcolor: '#ef4444', p: 2, borderRadius: '50%', display: 'inline-flex', mb: 3, width: 64, height: 64, alignItems: 'center', justifyContent: 'center' }}>
             <Lock size={28} color="white" />
@@ -492,7 +492,7 @@ export default function Library() {
   };
 
   return (
-    <Box ref={scrollContainerRef} sx={{ minHeight: '100vh', bgcolor: '#f9fafb', position: 'relative' }}>
+    <Box ref={scrollContainerRef} sx={{ minHeight: '100vh', bgcolor: 'background.default', position: 'relative' }}>
       {/* Pull to Refresh Indicator */}
       {isPulling && (
         <Box
@@ -572,7 +572,7 @@ export default function Library() {
                   </InputAdornment>
                 ),
               }}
-              sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              sx={{ bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
             />
           </Box>
 
@@ -622,7 +622,7 @@ export default function Library() {
                 </InputAdornment>
               ),
             }}
-            sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+            sx={{ bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
           />
         </Box>
 
@@ -640,7 +640,7 @@ export default function Library() {
                   className="cursor-pointer group relative"
                   onClick={() => window.location.href = createPageUrl('BookDetails') + '?id=' + book.id}
                 >
-                  <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
+                  <div className="bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                     {book.cover_image && book.cover_image.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
                       <img
                         src={book.cover_image}
@@ -663,7 +663,7 @@ export default function Library() {
                         <div className="absolute inset-0 z-10 cursor-pointer" style={{ pointerEvents: 'auto' }} />
                       </div>
                     ) : (
-                      <div className="w-full aspect-[3/4] bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
+                      <div className="w-full aspect-[3/4] bg-indigo-600 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
                         <BookOpen className="w-12 h-12 text-indigo-600" />
                       </div>
                     )}
@@ -715,7 +715,7 @@ export default function Library() {
                 className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                   selectedCategory === cat.id
                     ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    : 'bg-card text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 {cat.label}
@@ -772,7 +772,7 @@ export default function Library() {
               className="cursor-pointer group relative"
               onClick={() => window.location.href = createPageUrl('BookDetails') + '?id=' + book.id}
             >
-              <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
+              <div className="bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                 {book.cover_image && book.cover_image.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
                   <img
                     src={book.cover_image}
@@ -795,7 +795,7 @@ export default function Library() {
                     <div className="absolute inset-0 z-10 cursor-pointer" style={{ pointerEvents: 'auto' }} />
                   </div>
                 ) : (
-                  <div className="w-full aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
+                  <div className="w-full aspect-[3/4] bg-indigo-600 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
                     <BookOpen className="w-12 h-12 text-gray-400" />
                   </div>
                 )}
@@ -879,10 +879,10 @@ export default function Library() {
           {selectedBook && (
             <div className="flex flex-col md:flex-row h-full gap-0">
               {/* Book Cover */}
-              <div className="md:w-1/3 bg-gradient-to-br from-slate-800 to-slate-900 p-4 flex flex-col items-center overflow-y-auto">
+              <div className="md:w-1/3 bg-indigo-600 p-4 flex flex-col items-center overflow-y-auto">
                 {selectedBook.cover_image ? (
                   selectedBook.cover_image.toLowerCase().includes('.pdf') ? (
-                    <div className="w-40 h-52 rounded-lg shadow-2xl mb-3 bg-white flex-shrink-0">
+                    <div className="w-40 h-52 rounded-lg shadow-2xl mb-3 bg-card flex-shrink-0">
                       <iframe
                         src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(selectedBook.cover_image)}`}
                         className="w-full h-full rounded-lg"
@@ -897,7 +897,7 @@ export default function Library() {
                     />
                   )
                 ) : (
-                  <div className="w-40 h-52 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center mb-3 flex-shrink-0">
+                  <div className="w-40 h-52 bg-indigo-600 rounded-lg flex items-center justify-center mb-3 flex-shrink-0">
                     <BookOpen className="w-16 h-16 text-gray-400" />
                   </div>
                 )}
@@ -1051,7 +1051,7 @@ export default function Library() {
         <DialogContent sx={{ p: 0, maxWidth: '95vw', height: '95vh', overflow: 'hidden' }}>
           {viewingBook && (
             <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between p-4 border-b bg-white">
+              <div className="flex items-center justify-between p-4 border-b bg-card">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{viewingBook.title}</h3>
                   {viewingBook.author && <p className="text-sm text-gray-600">{viewingBook.author}</p>}
@@ -1072,7 +1072,7 @@ export default function Library() {
               </div>
               <div className="flex-1 flex flex-col" id="pdf-viewer-container">
                 {canEditBookUI(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
-                  <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b flex items-center justify-center gap-3">
+                  <div className="p-3 bg-indigo-600 border-b flex items-center justify-center gap-3">
                     <Button 
                       size="sm"
                       onClick={async (e) => {
