@@ -140,10 +140,10 @@ export default function TutorDashboardOverview() {
 
   const quickActions = [
     { label: 'Schedule Session', icon: Video, href: createPageUrl('ScheduleSession'), color: 'bg-indigo-600 hover:bg-indigo-700 text-white' },
-    { label: 'Manage Bookings', icon: Calendar, href: createPageUrl('TutorBookingManager'), color: 'bg-emerald-600 hover:bg-emerald-700 text-white' },
-    { label: 'Lesson Editor', icon: FileText, href: createPageUrl('LessonEditor'), color: 'bg-amber-600 hover:bg-amber-700 text-white' },
-    { label: 'Quiz Generator', icon: Zap, href: createPageUrl('QuizGenerator'), color: 'bg-pink-600 hover:bg-pink-700 text-white' },
-    { label: 'Messages', icon: MessageSquare, href: createPageUrl('MessageCenter'), color: 'bg-slate-700 hover:bg-slate-800 text-white', badge: messages.length || null },
+    { label: 'Manage Bookings', icon: Calendar, href: createPageUrl('TutorBookingManager'), color: 'bg-[#0b2f5c] hover:bg-[#12396b] text-white' },
+    { label: 'Lesson Editor', icon: FileText, href: createPageUrl('LessonEditor'), color: 'bg-indigo-600 hover:bg-indigo-700 text-white' },
+    { label: 'Quiz Generator', icon: Zap, href: createPageUrl('QuizGenerator'), color: 'bg-[#0b2f5c] hover:bg-[#12396b] text-white' },
+    { label: 'Messages', icon: MessageSquare, href: createPageUrl('MessageCenter'), color: 'bg-indigo-600 hover:bg-indigo-700 text-white', badge: messages.length || null },
   ];
 
   return (
