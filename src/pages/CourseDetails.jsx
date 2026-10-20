@@ -8,7 +8,7 @@ import { displayCurriculumSection } from '@/lib/curriculumSections';
 import { 
   Button, Card, CardContent, CardMedia, Chip, Box, Typography, Container,
   Accordion, AccordionSummary, AccordionDetails, Tabs, Tab, Avatar, Breadcrumbs,
-  FormControl, InputLabel, Select, MenuItem, Alert
+  FormControl, InputLabel, Select, MenuItem, Alert, Rating, TextField
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -196,6 +196,25 @@ export default function CourseDetails() {
     onSuccess: (_, mathPathway) => {
       setSelectedMathPathway(mathPathway);
       queryClient.invalidateQueries({ queryKey: ['enrollment', courseId, user?.email] });
+    },
+  });
+
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const submitReviewMutation = useMutation({
+    mutationFn: () => base44.entities.Review.create({
+      course_id: courseId,
+      rating: reviewRating,
+      comment: reviewComment.trim(),
+      rating_type: 'course',
+      user_name: user?.full_name || 'Student',
+      user_avatar: user?.avatar || '',
+      is_verified_purchase: true,
+    }),
+    onSuccess: () => {
+      setReviewRating(0);
+      setReviewComment('');
+      queryClient.invalidateQueries({ queryKey: ['reviews', courseId] });
     },
   });
 
@@ -741,6 +760,30 @@ export default function CourseDetails() {
                       </Box>
                     )}
                   </Box>
+
+                  {isEnrolled && !reviews.some(r => r.created_by === user?.email) && (
+                    <Box sx={{ mb: 3, p: 2, borderRadius: 2, bgcolor: 'action.hover' }}>
+                      <Typography fontWeight={600} sx={{ mb: 1 }}>Write a review</Typography>
+                      <Rating value={reviewRating} onChange={(_, v) => setReviewRating(v || 0)} />
+                      <TextField
+                        fullWidth multiline minRows={2} size="small" sx={{ mt: 1 }}
+                        placeholder="What did you think of this course?"
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        inputProps={{ maxLength: 1000 }}
+                      />
+                      {submitReviewMutation.isError && (
+                        <Alert severity="error" sx={{ mt: 1 }}>Couldn't save your review. Please try again.</Alert>
+                      )}
+                      <Button
+                        variant="contained" sx={{ mt: 1 }}
+                        disabled={reviewRating < 1 || submitReviewMutation.isPending}
+                        onClick={() => submitReviewMutation.mutate()}
+                      >
+                        {submitReviewMutation.isPending ? 'Posting...' : 'Post review'}
+                      </Button>
+                    </Box>
+                  )}
 
                   {reviews.length > 0 ? (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
