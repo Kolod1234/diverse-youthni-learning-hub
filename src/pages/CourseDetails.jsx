@@ -611,8 +611,13 @@ export default function CourseDetails() {
                     </Typography>
                   </Box>
                   
-                  {Object.entries(sections).map(([sectionName, sectionLessons]) => (
-                    <Accordion key={sectionName} defaultExpanded>
+                  {Object.entries(sections).map(([sectionName, sectionLessons], sectionIndex) => {
+                    // Wireframe M3: open only the unit you're working on (or the first one).
+                    const currentId = enrollment?.current_lesson_id;
+                    const openIndex = Math.max(0, Object.values(sections).findIndex(ls => ls.some(l => l.id === currentId)));
+                    const doneHere = sectionLessons.filter(l => enrollment?.completed_lessons?.includes(l.id)).length;
+                    return (
+                    <Accordion key={sectionName} defaultExpanded={sectionIndex === openIndex} disableGutters>
                       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 2, '&:hover': { bgcolor: 'action.hover' } }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                           <Box sx={{ width: 32, height: 32, bgcolor: 'primary.main' + '15', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -621,7 +626,7 @@ export default function CourseDetails() {
                           <Box>
                             <Typography fontWeight={600}>{sectionName}</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              {sectionLessons.length} lessons
+                              {isEnrolled ? `${doneHere} of ${sectionLessons.length} lessons done` : `${sectionLessons.length} lessons`}
                             </Typography>
                           </Box>
                         </Box>
@@ -650,11 +655,11 @@ export default function CourseDetails() {
                                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                                      {isCompleted ? (
-                                       <Box sx={{ width: 24, height: 24, bgcolor: '#d1fae5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                       <Box sx={{ width: 24, height: 24, bgcolor: 'rgba(22,163,74,0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                          <CheckCircle size={16} color="#059669" />
                                        </Box>
                                      ) : canAccess ? (
-                                       <Box sx={{ width: 24, height: 24, bgcolor: '#e0e7ff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                       <Box sx={{ width: 24, height: 24, bgcolor: 'rgba(79,70,229,0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                          <Play size={12} color="#4f46e5" style={{ marginLeft: 2 }} />
                                        </Box>
                                      ) : (
@@ -670,7 +675,7 @@ export default function CourseDetails() {
                                          )}
                                          {lessonQuizCount > 0 && (
                                            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
-                                             <Brain size={12} color="#7c3aed" />
+                                             <Brain size={12} color="#4f46e5" />
                                              <Typography variant="caption" sx={{ color: '#4f46e5' }}>
                                                {lessonQuizCount} quiz{lessonQuizCount > 1 ? 'zes' : ''}
                                              </Typography>
@@ -689,7 +694,8 @@ export default function CourseDetails() {
                         </Box>
                       </AccordionDetails>
                     </Accordion>
-                  ))}
+                    );
+                  })}
                 </Card>
               )}
 
