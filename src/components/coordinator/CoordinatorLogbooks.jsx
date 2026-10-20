@@ -15,7 +15,7 @@ export default function CoordinatorLogbooks({ coordinatorEmail }) {
     <div className="space-y-6">
       {programs.map(program => (
         <div key={program.id}>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{program.name}</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">{program.name}</h3>
           <LogbookManager
             programId={program.id}
             isAdmin={false}
@@ -28,7 +28,7 @@ export default function CoordinatorLogbooks({ coordinatorEmail }) {
       {programs.length === 0 && (
         <Card className="p-12 text-center">
           <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No programmes available</p>
+          <p className="text-muted-foreground">No programmes available</p>
         </Card>
       )}
     </div>

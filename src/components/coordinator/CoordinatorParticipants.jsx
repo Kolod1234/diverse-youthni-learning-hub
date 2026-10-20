@@ -92,7 +92,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
   if (participantsLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
     <div className="grid md:grid-cols-3 gap-6">
       {/* Participants List */}
       <div className="md:col-span-1 space-y-3">
-        <h3 className="font-semibold text-gray-900 mb-4">
+        <h3 className="font-semibold text-foreground mb-4">
           Assigned Participants ({assignedParticipants.length})
         </h3>
         {assignedParticipants.map((participant) => (
@@ -109,7 +109,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
             key={participant.email}
             className={`p-4 cursor-pointer transition-all ${
               selectedParticipant?.email === participant.email
-                ? 'ring-2 ring-purple-500 bg-purple-50'
+                ? 'ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-500/15'
                 : 'hover:shadow-md'
             }`}
             onClick={() => {
@@ -121,19 +121,19 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
             <div className="flex items-center gap-3">
               <Avatar className="w-12 h-12">
                 <AvatarImage src={participant.avatar} />
-                <AvatarFallback className="bg-indigo-100 text-indigo-700">
+                <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
                   {participant.full_name?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 truncate">
+                <p className="font-medium text-foreground truncate">
                   {participant.full_name}
                 </p>
-                <p className="text-xs text-gray-500 truncate">{participant.email}</p>
+                <p className="text-xs text-muted-foreground truncate">{participant.email}</p>
                 {participant.coordinator_rating && (
                   <div className="flex items-center gap-1 mt-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs text-muted-foreground">
                       {participant.coordinator_rating}/5
                     </span>
                   </div>
@@ -149,7 +149,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
         {assignedParticipants.length === 0 && (
           <Card className="p-8 text-center">
             <User className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">No participants assigned yet</p>
+            <p className="text-muted-foreground text-sm">No participants assigned yet</p>
           </Card>
         )}
       </div>
@@ -160,17 +160,17 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
           <Card className="p-6">
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-center gap-4">
-                <Avatar className="w-20 h-20 border-4 border-gray-200">
+                <Avatar className="w-20 h-20 border-4 border-border">
                   <AvatarImage src={selectedParticipant.avatar} />
-                  <AvatarFallback className="bg-indigo-100 text-indigo-700 text-2xl">
+                  <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 text-2xl">
                     {selectedParticipant.full_name?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900">
+                  <h3 className="text-2xl font-bold text-foreground">
                     {selectedParticipant.full_name}
                   </h3>
-                  <p className="text-gray-500 flex items-center gap-2 mt-1">
+                  <p className="text-muted-foreground flex items-center gap-2 mt-1">
                     <Mail className="w-4 h-4" />
                     {selectedParticipant.email}
                   </p>
@@ -185,16 +185,16 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
 
             {/* Bio */}
             {selectedParticipant.bio && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-semibold text-gray-900 mb-2">Bio</h4>
-                <p className="text-gray-600">{selectedParticipant.bio}</p>
+              <div className="mb-6 p-4 bg-muted rounded-lg">
+                <h4 className="font-semibold text-foreground mb-2">Bio</h4>
+                <p className="text-muted-foreground">{selectedParticipant.bio}</p>
               </div>
             )}
 
             {/* Rating Section */}
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                <label className="block text-sm font-semibold text-foreground mb-3">
                   Rating
                 </label>
                 <div className="flex gap-2">
@@ -218,7 +218,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                <label className="block text-sm font-semibold text-foreground mb-2">
                   Coordinator Notes
                 </label>
                 <Textarea
@@ -231,7 +231,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
 
               <Button 
                 onClick={handleSaveRating}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-indigo-600 hover:bg-indigo-700"
               >
                 <CheckCircle className="w-4 h-4 mr-2" />
                 Save Rating & Notes
@@ -240,7 +240,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
 
             {/* Actions */}
             <div className="border-t pt-6 space-y-3">
-              <h4 className="font-semibold text-gray-900 mb-3">Actions</h4>
+              <h4 className="font-semibold text-foreground mb-3">Actions</h4>
               <div className="flex flex-wrap gap-3">
                 <Button
                   variant="outline"
@@ -280,7 +280,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
         ) : (
           <Card className="p-12 text-center">
             <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Select a participant to view details</p>
+            <p className="text-muted-foreground">Select a participant to view details</p>
           </Card>
         )}
       </div>

@@ -69,14 +69,14 @@ export default function CoordinatorMessages({ coordinatorEmail, coordinatorName 
     <div className="grid md:grid-cols-3 gap-6">
       {/* Participants List */}
       <div className="md:col-span-1">
-        <h3 className="font-semibold text-gray-900 mb-4">Send Message To</h3>
+        <h3 className="font-semibold text-foreground mb-4">Send Message To</h3>
         <div className="space-y-2">
           {assignedParticipants.map((participant) => (
             <Card
               key={participant.email}
               className={`p-3 cursor-pointer transition-all ${
                 selectedParticipant?.email === participant.email
-                  ? 'ring-2 ring-purple-500 bg-purple-50'
+                  ? 'ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-500/15'
                   : 'hover:shadow-md'
               }`}
               onClick={() => setSelectedParticipant(participant)}
@@ -84,15 +84,15 @@ export default function CoordinatorMessages({ coordinatorEmail, coordinatorName 
               <div className="flex items-center gap-3">
                 <Avatar>
                   <AvatarImage src={participant.avatar} />
-                  <AvatarFallback className="bg-indigo-100 text-indigo-700">
+                  <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
                     {participant.full_name?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate text-sm">
+                  <p className="font-medium text-foreground truncate text-sm">
                     {participant.full_name}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">{participant.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">{participant.email}</p>
                 </div>
               </div>
             </Card>
@@ -108,15 +108,15 @@ export default function CoordinatorMessages({ coordinatorEmail, coordinatorName 
               <div className="flex items-center gap-3 mb-4">
                 <Avatar className="w-12 h-12">
                   <AvatarImage src={selectedParticipant.avatar} />
-                  <AvatarFallback className="bg-indigo-100 text-indigo-700">
+                  <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
                     {selectedParticipant.full_name?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold text-gray-900">
+                  <p className="font-semibold text-foreground">
                     {selectedParticipant.full_name}
                   </p>
-                  <p className="text-sm text-gray-500">{selectedParticipant.email}</p>
+                  <p className="text-sm text-muted-foreground">{selectedParticipant.email}</p>
                 </div>
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function CoordinatorMessages({ coordinatorEmail, coordinatorName 
               <Button
                 onClick={handleSendMessage}
                 disabled={!messageText.trim() || sendMessageMutation.isPending}
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                className="w-full bg-indigo-600 hover:bg-indigo-700"
               >
                 <Send className="w-4 h-4 mr-2" />
                 {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
@@ -142,7 +142,7 @@ export default function CoordinatorMessages({ coordinatorEmail, coordinatorName 
         ) : (
           <Card className="p-12 text-center">
             <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Select a participant to send a message</p>
+            <p className="text-muted-foreground">Select a participant to send a message</p>
           </Card>
         )}
       </div>

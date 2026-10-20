@@ -91,12 +91,12 @@ export default function CoordinatorsDashboard() {
 
   if (!user?.is_coordinator) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <Card className="p-8 max-w-md">
           <div className="text-center">
             <UserX className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-            <p className="text-gray-600">You need coordinator privileges to access this page.</p>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Access Denied</h2>
+            <p className="text-muted-foreground">You need coordinator privileges to access this page.</p>
           </div>
         </Card>
       </div>
@@ -105,12 +105,12 @@ export default function CoordinatorsDashboard() {
 
   if (user.coordinator_banned) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <Card className="p-8 max-w-md">
           <div className="text-center">
             <UserX className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Suspended</h2>
-            <p className="text-gray-600">Your coordinator access has been suspended. Please contact an administrator.</p>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Account Suspended</h2>
+            <p className="text-muted-foreground">Your coordinator access has been suspended. Please contact an administrator.</p>
           </div>
         </Card>
       </div>
@@ -119,14 +119,14 @@ export default function CoordinatorsDashboard() {
 
   if (!hasAccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md p-8 shadow-2xl">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-purple-600" />
+            <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-indigo-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Coordinators Dashboard</h2>
-            <p className="text-gray-600">Enter your password to access the dashboard</p>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Coordinators Dashboard</h2>
+            <p className="text-muted-foreground">Enter your password to access the dashboard</p>
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
@@ -140,7 +140,7 @@ export default function CoordinatorsDashboard() {
                 autoFocus
               />
             </div>
-            <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
+            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
               Access Dashboard
             </Button>
           </form>
@@ -150,7 +150,7 @@ export default function CoordinatorsDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div
@@ -160,19 +160,19 @@ export default function CoordinatorsDashboard() {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Coordinators Dashboard</h1>
-              <p className="text-gray-500 mt-1">Manage programme participants and logbooks</p>
+              <h1 className="text-3xl font-bold text-foreground">Coordinators Dashboard</h1>
+              <p className="text-muted-foreground mt-1">Manage programme participants and logbooks</p>
             </div>
             <div className="flex items-center gap-3">
-              <Avatar className="w-12 h-12 border-2 border-purple-200">
+              <Avatar className="w-12 h-12 border-2 border-indigo-200">
                 <AvatarImage src={user?.avatar} />
-                <AvatarFallback className="bg-purple-100 text-purple-700 font-bold">
+                <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-bold">
                   {user?.full_name?.charAt(0) || 'C'}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold text-gray-900">{user?.full_name}</p>
-                <Badge className="bg-purple-100 text-purple-700">Coordinator</Badge>
+                <p className="font-semibold text-foreground">{user?.full_name}</p>
+                <Badge className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">Coordinator</Badge>
               </div>
             </div>
           </div>

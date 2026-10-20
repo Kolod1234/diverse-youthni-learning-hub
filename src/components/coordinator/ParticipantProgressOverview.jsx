@@ -55,15 +55,15 @@ export default function ParticipantProgressOverview({ user }) {
     return (
       <Card className="p-12 text-center">
         <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Participants Assigned</h3>
-        <p className="text-gray-500">Participants will appear here once assigned to you</p>
+        <h3 className="text-lg font-semibold text-foreground mb-2">No Participants Assigned</h3>
+        <p className="text-muted-foreground">Participants will appear here once assigned to you</p>
       </Card>
     );
   }
 
   return (
     <Card className="p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Participant Progress Overview</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">Participant Progress Overview</h3>
       
       <div className="space-y-4">
         {participantStats.map((participant) => {
@@ -75,21 +75,21 @@ export default function ParticipantProgressOverview({ user }) {
               <div className="flex items-start gap-3 mb-3">
                 <Avatar className="w-10 h-10">
                   <AvatarImage src={participant.avatar} />
-                  <AvatarFallback className="bg-purple-100 text-purple-700">
+                  <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
                     {participant.full_name?.charAt(0) || 'P'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium text-gray-900 truncate">
+                    <p className="font-medium text-foreground truncate">
                       {participant.full_name}
                     </p>
                     <TrendIcon className={`w-4 h-4 ${trendColor}`} />
                   </div>
-                  <p className="text-xs text-gray-500">{participant.email}</p>
+                  <p className="text-xs text-muted-foreground">{participant.email}</p>
                 </div>
                 {participant.pendingLogbooks > 0 && (
-                  <Badge className="bg-orange-100 text-orange-700">
+                  <Badge className="bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300">
                     {participant.pendingLogbooks} pending
                   </Badge>
                 )}
@@ -97,23 +97,23 @@ export default function ParticipantProgressOverview({ user }) {
 
               <div className="grid grid-cols-3 gap-4 mb-3">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Total Logbooks</p>
-                  <p className="text-lg font-semibold text-gray-900">{participant.totalLogbooks}</p>
+                  <p className="text-xs text-muted-foreground mb-1">Total Logbooks</p>
+                  <p className="text-lg font-semibold text-foreground">{participant.totalLogbooks}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Total Hours</p>
-                  <p className="text-lg font-semibold text-gray-900">{participant.totalHours}h</p>
+                  <p className="text-xs text-muted-foreground mb-1">Total Hours</p>
+                  <p className="text-lg font-semibold text-foreground">{participant.totalHours}h</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Approval Rate</p>
-                  <p className="text-lg font-semibold text-gray-900">{Math.round(participant.approvalRate)}%</p>
+                  <p className="text-xs text-muted-foreground mb-1">Approval Rate</p>
+                  <p className="text-lg font-semibold text-foreground">{Math.round(participant.approvalRate)}%</p>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-500">Progress</span>
-                  <span className="font-medium text-gray-700">
+                  <span className="text-muted-foreground">Progress</span>
+                  <span className="font-medium text-foreground">
                     {participant.approvedLogbooks} / {participant.totalLogbooks} approved
                   </span>
                 </div>
