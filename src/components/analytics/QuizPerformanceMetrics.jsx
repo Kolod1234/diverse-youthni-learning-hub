@@ -8,7 +8,7 @@ const COLORS = ['#10b981', '#ef4444', '#f59e0b'];
 export default function QuizPerformanceMetrics({ quizData = [] }) {
   if (!quizData || quizData.length === 0) {
     return (
-      <Card className="p-8 text-center text-gray-500">
+      <Card className="p-8 text-center text-muted-foreground">
         <AlertCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
         <p>No quiz data available</p>
       </Card>
@@ -59,27 +59,27 @@ export default function QuizPerformanceMetrics({ quizData = [] }) {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
-          <div className="text-sm text-gray-600 mb-2">Pass Rate</div>
+          <div className="text-sm text-muted-foreground mb-2">Pass Rate</div>
           <div className="text-3xl font-bold text-green-600">{passFailData[0].percentage}%</div>
-          <div className="text-xs text-gray-500 mt-2">{passedCount} of {totalAttempts}</div>
+          <div className="text-xs text-muted-foreground mt-2">{passedCount} of {totalAttempts}</div>
         </Card>
 
         <Card className="p-6">
-          <div className="text-sm text-gray-600 mb-2">Avg Score</div>
+          <div className="text-sm text-muted-foreground mb-2">Avg Score</div>
           <div className="text-3xl font-bold text-blue-600">{averageScore}%</div>
-          <div className="text-xs text-gray-500 mt-2">Across all attempts</div>
+          <div className="text-xs text-muted-foreground mt-2">Across all attempts</div>
         </Card>
 
         <Card className="p-6">
-          <div className="text-sm text-gray-600 mb-2">Avg Time</div>
-          <div className="text-3xl font-bold text-purple-600">{Math.round(averageTimeSeconds / 60)}m</div>
-          <div className="text-xs text-gray-500 mt-2">Per attempt</div>
+          <div className="text-sm text-muted-foreground mb-2">Avg Time</div>
+          <div className="text-3xl font-bold text-indigo-600">{Math.round(averageTimeSeconds / 60)}m</div>
+          <div className="text-xs text-muted-foreground mt-2">Per attempt</div>
         </Card>
 
         <Card className="p-6">
-          <div className="text-sm text-gray-600 mb-2">Attempts</div>
+          <div className="text-sm text-muted-foreground mb-2">Attempts</div>
           <div className="text-3xl font-bold text-orange-600">{totalAttempts}</div>
-          <div className="text-xs text-gray-500 mt-2">Total quiz attempts</div>
+          <div className="text-xs text-muted-foreground mt-2">Total quiz attempts</div>
         </Card>
       </div>
 
@@ -148,7 +148,7 @@ export default function QuizPerformanceMetrics({ quizData = [] }) {
         <h3 className="font-semibold text-lg mb-4">Attempt History</h3>
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {quizData.map((attempt, idx) => (
-            <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition">
+            <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded border border-border hover:bg-muted transition">
               <div className="flex items-center gap-3">
                 {attempt.passed ? (
                   <CheckCircle className="w-5 h-5 text-green-600" />
@@ -156,15 +156,15 @@ export default function QuizPerformanceMetrics({ quizData = [] }) {
                   <AlertCircle className="w-5 h-5 text-red-600" />
                 )}
                 <div>
-                  <div className="font-medium text-gray-900">Attempt {idx + 1}</div>
-                  <div className="text-xs text-gray-500">
+                  <div className="font-medium text-foreground">Attempt {idx + 1}</div>
+                  <div className="text-xs text-muted-foreground">
                     {new Date(attempt.attempted_at).toLocaleDateString()} • {Math.round(attempt.time_spent_seconds / 60)}m
                   </div>
                 </div>
               </div>
               <div className="text-right">
                 <div className="font-bold text-lg">{attempt.score_percentage}%</div>
-                <div className="text-xs text-gray-500">{attempt.questions_correct}/{attempt.questions_answered} correct</div>
+                <div className="text-xs text-muted-foreground">{attempt.questions_correct}/{attempt.questions_answered} correct</div>
               </div>
             </div>
           ))}

@@ -124,8 +124,8 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
     return (
       <Card className="p-12 text-center">
         <Brain className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">No Quiz Data Yet</h3>
-        <p className="text-gray-500">
+        <h3 className="text-xl font-semibold text-foreground mb-2">No Quiz Data Yet</h3>
+        <p className="text-muted-foreground">
           Complete some quizzes to see your performance analysis
         </p>
       </Card>
@@ -136,43 +136,43 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
     <div className="space-y-6">
       {/* Overview Stats */}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+        <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/15 border-blue-200">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/15 rounded-lg flex items-center justify-center">
               <BarChart3 className="w-5 h-5 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-gray-900">Average Score</h3>
+            <h3 className="font-semibold text-foreground">Average Score</h3>
           </div>
           <p className="text-3xl font-bold text-blue-600">{avgScore}%</p>
-          <p className="text-sm text-gray-600 mt-1">Across {quizAttempts.length} attempts</p>
+          <p className="text-sm text-muted-foreground mt-1">Across {quizAttempts.length} attempts</p>
         </Card>
 
-        <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+        <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/15 border-green-200">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-green-100 dark:bg-green-500/15 rounded-lg flex items-center justify-center">
               <Target className="w-5 h-5 text-green-600" />
             </div>
-            <h3 className="font-semibold text-gray-900">Pass Rate</h3>
+            <h3 className="font-semibold text-foreground">Pass Rate</h3>
           </div>
           <p className="text-3xl font-bold text-green-600">{overallPassRate}%</p>
-          <p className="text-sm text-gray-600 mt-1">Overall success rate</p>
+          <p className="text-sm text-muted-foreground mt-1">Overall success rate</p>
         </Card>
 
-        <Card className="p-6 bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+        <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/15 rounded-lg flex items-center justify-center">
               {improvement >= 0 ? (
-                <TrendingUp className="w-5 h-5 text-purple-600" />
+                <TrendingUp className="w-5 h-5 text-indigo-600" />
               ) : (
-                <TrendingDown className="w-5 h-5 text-purple-600" />
+                <TrendingDown className="w-5 h-5 text-indigo-600" />
               )}
             </div>
-            <h3 className="font-semibold text-gray-900">Improvement</h3>
+            <h3 className="font-semibold text-foreground">Improvement</h3>
           </div>
           <p className={`text-3xl font-bold ${improvement >= 0 ? 'text-green-600' : 'text-orange-600'}`}>
             {improvement >= 0 ? '+' : ''}{improvement}%
           </p>
-          <p className="text-sm text-gray-600 mt-1">Recent vs older attempts</p>
+          <p className="text-sm text-muted-foreground mt-1">Recent vs older attempts</p>
         </Card>
       </div>
 
@@ -181,9 +181,9 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <AlertCircle className="w-5 h-5 text-orange-600" />
-            <h3 className="text-xl font-bold text-gray-900">Areas Needing Attention</h3>
+            <h3 className="text-xl font-bold text-foreground">Areas Needing Attention</h3>
           </div>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Focus on these topics to improve your understanding
           </p>
           
@@ -194,22 +194,22 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="p-4 bg-orange-50 border border-orange-200 rounded-lg"
+                className="p-4 bg-orange-50 dark:bg-orange-500/15 border border-orange-200 rounded-lg"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className="font-semibold text-gray-900">{area.quiz?.title}</h4>
-                      <Badge className="bg-orange-100 text-orange-800">
+                      <h4 className="font-semibold text-foreground">{area.quiz?.title}</h4>
+                      <Badge className="bg-orange-100 dark:bg-orange-500/15 text-orange-800 dark:text-orange-300">
                         {area.avgScore}% avg
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-600 mb-3">
+                    <p className="text-sm text-muted-foreground mb-3">
                       {area.course?.title}
                     </p>
                     
                     <div className="flex items-center gap-4 text-sm">
-                      <span className="text-gray-600">
+                      <span className="text-muted-foreground">
                         {area.attempts} attempt{area.attempts > 1 ? 's' : ''}
                       </span>
                       <span className="text-green-600">
@@ -244,9 +244,9 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            <h3 className="text-xl font-bold text-gray-900">Your Strengths</h3>
+            <h3 className="text-xl font-bold text-foreground">Your Strengths</h3>
           </div>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             You're excelling in these areas!
           </p>
           
@@ -257,16 +257,16 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="p-4 bg-green-50 border border-green-200 rounded-lg"
+                className="p-4 bg-green-50 dark:bg-green-500/15 border border-green-200 rounded-lg"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <CheckCircle className="w-4 h-4 text-green-600" />
-                  <h4 className="font-semibold text-gray-900 text-sm">{area.quiz?.title}</h4>
+                  <h4 className="font-semibold text-foreground text-sm">{area.quiz?.title}</h4>
                 </div>
-                <p className="text-xs text-gray-600 mb-2">{area.course?.title}</p>
+                <p className="text-xs text-muted-foreground mb-2">{area.course?.title}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-green-600">{area.avgScore}%</span>
-                  <Badge className="bg-green-100 text-green-800 text-xs">
+                  <Badge className="bg-green-100 dark:bg-green-500/15 text-green-800 dark:text-green-300 text-xs">
                     {area.attempts} attempt{area.attempts > 1 ? 's' : ''}
                   </Badge>
                 </div>
@@ -277,19 +277,19 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
       )}
 
       {/* Recommendations */}
-      <Card className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
+      <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
         <div className="flex items-center gap-2 mb-4">
           <Brain className="w-5 h-5 text-indigo-600" />
-          <h3 className="text-xl font-bold text-gray-900">Recommendations</h3>
+          <h3 className="text-xl font-bold text-foreground">Recommendations</h3>
         </div>
         
         <div className="space-y-3">
           {performanceData.weakAreas.length > 0 && (
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-indigo-100 dark:bg-indigo-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-indigo-600">1</span>
               </div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-foreground">
                 Review the content for <strong>{performanceData.weakAreas[0]?.course?.title}</strong> 
                 {' '}where you scored {performanceData.weakAreas[0]?.avgScore}%
               </p>
@@ -298,10 +298,10 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
           
           {improvement < 0 && (
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-indigo-100 dark:bg-indigo-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-indigo-600">2</span>
               </div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-foreground">
                 Your scores have decreased recently. Take a break and review fundamentals before continuing.
               </p>
             </div>
@@ -309,10 +309,10 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
           
           {quizAttempts.filter(a => !a.passed).length > 0 && (
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-indigo-100 dark:bg-indigo-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-indigo-600">3</span>
               </div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-foreground">
                 Retake failed quizzes after reviewing the lesson materials to reinforce your understanding.
               </p>
             </div>
@@ -320,10 +320,10 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
 
           {overallPassRate > 80 && (
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-green-100 dark:bg-green-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-green-600">✓</span>
               </div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-foreground">
                 Excellent work! You're doing great. Challenge yourself with more advanced topics.
               </p>
             </div>

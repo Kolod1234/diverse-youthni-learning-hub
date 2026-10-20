@@ -6,7 +6,7 @@ import { TrendingUp, TrendingDown, Activity, Clock } from 'lucide-react';
 export default function DetailedProgressChart({ progressData = [] }) {
   if (!progressData || progressData.length === 0) {
     return (
-      <Card className="p-8 text-center text-gray-500">
+      <Card className="p-8 text-center text-muted-foreground">
         <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
         <p>No progress data available</p>
       </Card>
@@ -69,7 +69,7 @@ export default function DetailedProgressChart({ progressData = [] }) {
         <h3 className="font-semibold text-lg mb-4">User Progress Details</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
                 <th className="px-4 py-2 text-left font-semibold">User</th>
                 <th className="px-4 py-2 text-left font-semibold">Time Spent</th>
@@ -85,8 +85,8 @@ export default function DetailedProgressChart({ progressData = [] }) {
                 const statusColor = item.completion_status === 'completed' ? 'text-green-600' : 'text-blue-600';
 
                 return (
-                  <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">
+                  <tr key={idx} className="border-b border-border hover:bg-muted">
+                    <td className="px-4 py-3 font-medium text-foreground">
                       {item.user_email?.split('@')[0] || 'User'}
                     </td>
                     <td className="px-4 py-3">{minutes}m</td>

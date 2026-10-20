@@ -148,7 +148,7 @@ export default function CourseAnalytics() {
     };
   });
 
-  const COLORS = ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981'];
+  const COLORS = ['#6366F1', '#4f46e5', '#EC4899', '#F59E0B', '#10B981'];
 
   return (
     <div className="min-h-screen bg-background">
@@ -161,17 +161,17 @@ export default function CourseAnalytics() {
               Back to Dashboard
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Course Analytics</h1>
-          <p className="text-gray-500">{course?.title}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Course Analytics</h1>
+          <p className="text-muted-foreground">{course?.title}</p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Total Students', value: totalStudents, icon: Users, color: 'bg-blue-50', iconColor: 'text-blue-600' },
-            { label: 'Avg Progress', value: `${avgProgress}%`, icon: TrendingUp, color: 'bg-indigo-50', iconColor: 'text-indigo-600' },
-            { label: 'Completion Rate', value: `${completionRate}%`, icon: CheckCircle, color: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-            { label: 'Avg Quiz Score', value: `${avgQuizScore}%`, icon: Brain, color: 'bg-amber-50', iconColor: 'text-amber-600' },
+            { label: 'Total Students', value: totalStudents, icon: Users, color: 'bg-blue-50 dark:bg-blue-500/15', iconColor: 'text-blue-600' },
+            { label: 'Avg Progress', value: `${avgProgress}%`, icon: TrendingUp, color: 'bg-indigo-50 dark:bg-indigo-500/15', iconColor: 'text-indigo-600' },
+            { label: 'Completion Rate', value: `${completionRate}%`, icon: CheckCircle, color: 'bg-emerald-50 dark:bg-emerald-500/15', iconColor: 'text-emerald-600' },
+            { label: 'Avg Quiz Score', value: `${avgQuizScore}%`, icon: Brain, color: 'bg-amber-50 dark:bg-amber-500/15', iconColor: 'text-amber-600' },
           ].map((stat, idx) => {
             const Icon = stat.icon;
             return (
@@ -185,8 +185,8 @@ export default function CourseAnalytics() {
                   <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-3`}>
                     <Icon className={`w-6 h-6 ${stat.iconColor}`} />
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
+                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground">{stat.label}</p>
                 </Card>
               </motion.div>
             );
@@ -195,7 +195,7 @@ export default function CourseAnalytics() {
 
         {/* Charts and Data */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="bg-card border border-gray-200 p-1 rounded-xl mb-6">
+          <TabsList className="bg-card border border-border p-1 rounded-xl mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="quizzes">Quiz Performance</TabsTrigger>
@@ -204,7 +204,7 @@ export default function CourseAnalytics() {
           <TabsContent value="overview">
             <div className="grid lg:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Progress Distribution</h3>
+                <h3 className="font-semibold text-foreground mb-4">Progress Distribution</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={progressDistribution}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -217,7 +217,7 @@ export default function CourseAnalytics() {
               </Card>
 
               <Card className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Completion Status</h3>
+                <h3 className="font-semibold text-foreground mb-4">Completion Status</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -250,7 +250,7 @@ export default function CourseAnalytics() {
           <TabsContent value="students">
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="font-semibold text-gray-900">Student Performance</h3>
+                <h3 className="font-semibold text-foreground">Student Performance</h3>
                 <Button variant="outline" size="sm">
                   <Download className="w-4 h-4 mr-2" />
                   Export CSV
@@ -262,8 +262,8 @@ export default function CourseAnalytics() {
                   <Card key={student.id} className="p-4 hover:shadow-md transition-all">
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <p className="font-semibold text-gray-900">{student.name}</p>
-                        <p className="text-sm text-gray-500">{student.email}</p>
+                        <p className="font-semibold text-foreground">{student.name}</p>
+                        <p className="text-sm text-muted-foreground">{student.email}</p>
                       </div>
                       <Link to={createPageUrl('StudentAnalytics') + `?studentEmail=${student.email}&courseId=${courseId}`}>
                         <Button variant="outline" size="sm">
@@ -275,15 +275,15 @@ export default function CourseAnalytics() {
 
                     <div className="grid grid-cols-3 gap-4 mb-3">
                       <div>
-                        <p className="text-xs text-gray-500">Progress</p>
+                        <p className="text-xs text-muted-foreground">Progress</p>
                         <p className="text-lg font-bold text-indigo-600">{student.progress}%</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Quizzes</p>
+                        <p className="text-xs text-muted-foreground">Quizzes</p>
                         <p className="text-lg font-bold text-indigo-600">{student.quizzesTaken}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Avg Score</p>
+                        <p className="text-xs text-muted-foreground">Avg Score</p>
                         <p className="text-lg font-bold text-emerald-600">{student.avgQuizScore}%</p>
                       </div>
                     </div>
@@ -297,7 +297,7 @@ export default function CourseAnalytics() {
 
           <TabsContent value="quizzes">
             <Card className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-6">Quiz Performance Analysis</h3>
+              <h3 className="font-semibold text-foreground mb-6">Quiz Performance Analysis</h3>
               
               {quizPerformance.length > 0 ? (
                 <div className="space-y-6">
@@ -314,14 +314,14 @@ export default function CourseAnalytics() {
 
                   <div className="space-y-3">
                     {quizPerformance.map((quiz, idx) => (
-                      <Card key={idx} className="p-4 bg-gray-50">
+                      <Card key={idx} className="p-4 bg-muted">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium text-gray-900">{quiz.name}</h4>
+                          <h4 className="font-medium text-foreground">{quiz.name}</h4>
                           <Badge variant="secondary">{quiz.attempts} attempts</Badge>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <p className="text-xs text-gray-500">Average Score</p>
+                            <p className="text-xs text-muted-foreground">Average Score</p>
                             <div className="flex items-center gap-2">
                               <p className="text-xl font-bold text-indigo-600">{quiz.avgScore}%</p>
                               {quiz.avgScore >= 70 ? (
@@ -332,7 +332,7 @@ export default function CourseAnalytics() {
                             </div>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500">Pass Rate</p>
+                            <p className="text-xs text-muted-foreground">Pass Rate</p>
                             <p className="text-xl font-bold text-emerald-600">{quiz.passRate}%</p>
                           </div>
                         </div>
@@ -343,7 +343,7 @@ export default function CourseAnalytics() {
               ) : (
                 <div className="text-center py-12">
                   <Brain className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No quiz data available yet</p>
+                  <p className="text-muted-foreground">No quiz data available yet</p>
                 </div>
               )}
             </Card>

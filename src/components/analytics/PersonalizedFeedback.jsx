@@ -97,33 +97,33 @@ Provide feedback in the following JSON format:
   };
 
   const getPriorityColor = (priority) => {
-    if (priority === 'high') return 'bg-red-100 text-red-800 border-red-200';
-    if (priority === 'medium') return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (priority === 'high') return 'bg-red-100 dark:bg-red-500/15 text-red-800 dark:text-red-300 border-red-200';
+    if (priority === 'medium') return 'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-800 dark:text-yellow-300 border-yellow-200';
+    return 'bg-blue-100 dark:bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-200';
   };
 
   return (
     <div className="space-y-6">
       {!feedback && !generating && (
-        <Card className="p-12 text-center bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
+        <Card className="p-12 text-center bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
           >
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Brain className="w-10 h-10 text-purple-600" />
+            <div className="w-20 h-20 bg-indigo-100 dark:bg-indigo-500/15 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Brain className="w-10 h-10 text-indigo-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl font-bold text-foreground mb-3">
               AI-Powered Learning Insights
             </h2>
-            <p className="text-gray-600 max-w-md mx-auto mb-8">
+            <p className="text-muted-foreground max-w-md mx-auto mb-8">
               Get personalized feedback and recommendations based on your learning data, 
               quiz performance, and progress patterns.
             </p>
             <Button 
               onClick={generateFeedback}
               size="lg"
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              className="bg-indigo-600 hover:bg-indigo-700"
             >
               <Sparkles className="w-5 h-5 mr-2" />
               Generate AI Insights
@@ -135,10 +135,10 @@ Provide feedback in the following JSON format:
       {generating && (
         <Card className="p-12 text-center">
           <Loader2 className="w-12 h-12 text-indigo-600 animate-spin mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             Analyzing Your Learning Data...
           </h3>
-          <p className="text-gray-500">
+          <p className="text-muted-foreground">
             AI is generating personalized insights and recommendations
           </p>
         </Card>
@@ -152,12 +152,12 @@ Provide feedback in the following JSON format:
             className="space-y-6"
           >
             {/* Overall Assessment */}
-            <Card className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
+            <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
               <div className="flex items-center gap-2 mb-4">
                 <Brain className="w-6 h-6 text-indigo-600" />
-                <h3 className="text-xl font-bold text-gray-900">Overall Assessment</h3>
+                <h3 className="text-xl font-bold text-foreground">Overall Assessment</h3>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-foreground leading-relaxed">
                 {feedback.overall_assessment}
               </p>
             </Card>
@@ -167,7 +167,7 @@ Provide feedback in the following JSON format:
               <Card className="p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Award className="w-5 h-5 text-green-600" />
-                  <h3 className="text-lg font-bold text-gray-900">Your Strengths</h3>
+                  <h3 className="text-lg font-bold text-foreground">Your Strengths</h3>
                 </div>
                 <ul className="space-y-3">
                   {feedback.strengths?.map((strength, idx) => (
@@ -176,7 +176,7 @@ Provide feedback in the following JSON format:
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
-                      className="flex items-start gap-2 text-sm text-gray-700"
+                      className="flex items-start gap-2 text-sm text-foreground"
                     >
                       <span className="text-green-600 mt-0.5">✓</span>
                       <span>{strength}</span>
@@ -188,7 +188,7 @@ Provide feedback in the following JSON format:
               <Card className="p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp className="w-5 h-5 text-orange-600" />
-                  <h3 className="text-lg font-bold text-gray-900">Growth Areas</h3>
+                  <h3 className="text-lg font-bold text-foreground">Growth Areas</h3>
                 </div>
                 <ul className="space-y-3">
                   {feedback.areas_for_improvement?.map((area, idx) => (
@@ -197,7 +197,7 @@ Provide feedback in the following JSON format:
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
-                      className="flex items-start gap-2 text-sm text-gray-700"
+                      className="flex items-start gap-2 text-sm text-foreground"
                     >
                       <span className="text-orange-600 mt-0.5">→</span>
                       <span>{area}</span>
@@ -211,7 +211,7 @@ Provide feedback in the following JSON format:
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Target className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-xl font-bold text-gray-900">Personalized Recommendations</h3>
+                <h3 className="text-xl font-bold text-foreground">Personalized Recommendations</h3>
               </div>
               
               <div className="space-y-4">
@@ -221,25 +221,25 @@ Provide feedback in the following JSON format:
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1 }}
-                    className="p-4 bg-gray-50 rounded-lg border border-gray-200"
+                    className="p-4 bg-muted rounded-lg border border-border"
                   >
                     <div className="flex items-start justify-between gap-3 mb-2">
-                      <h4 className="font-semibold text-gray-900">{rec.title}</h4>
+                      <h4 className="font-semibold text-foreground">{rec.title}</h4>
                       <Badge className={getPriorityColor(rec.priority)}>
                         {rec.priority}
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-700">{rec.description}</p>
+                    <p className="text-sm text-foreground">{rec.description}</p>
                   </motion.div>
                 ))}
               </div>
             </Card>
 
             {/* Next Steps */}
-            <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+            <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/15 border-blue-200">
               <div className="flex items-center gap-2 mb-4">
                 <Calendar className="w-5 h-5 text-blue-600" />
-                <h3 className="text-xl font-bold text-gray-900">Your Next Steps</h3>
+                <h3 className="text-xl font-bold text-foreground">Your Next Steps</h3>
               </div>
               
               <div className="space-y-3">
@@ -251,17 +251,17 @@ Provide feedback in the following JSON format:
                     transition={{ delay: idx * 0.1 }}
                     className="flex items-start gap-3"
                   >
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-6 h-6 bg-blue-100 dark:bg-blue-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                       <span className="text-xs font-bold text-blue-600">{idx + 1}</span>
                     </div>
-                    <p className="text-sm text-gray-700">{step}</p>
+                    <p className="text-sm text-foreground">{step}</p>
                   </motion.div>
                 ))}
               </div>
             </Card>
 
             {/* Motivation */}
-            <Card className="p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+            <Card className="p-6 bg-indigo-600 text-white">
               <div className="flex items-center gap-2 mb-3">
                 <Zap className="w-6 h-6" />
                 <h3 className="text-xl font-bold">Keep Going!</h3>

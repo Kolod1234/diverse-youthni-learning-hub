@@ -6,7 +6,7 @@ import { AlertTriangle, TrendingDown, Eye } from 'lucide-react';
 export default function LessonDropoffAnalytics({ lessonMetrics = [] }) {
   if (!lessonMetrics || lessonMetrics.length === 0) {
     return (
-      <Card className="p-8 text-center text-gray-500">
+      <Card className="p-8 text-center text-muted-foreground">
         <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
         <p>No lesson metrics available</p>
       </Card>
@@ -35,21 +35,21 @@ export default function LessonDropoffAnalytics({ lessonMetrics = [] }) {
     <div className="space-y-6">
       {/* High Risk Alert */}
       {highRiskLessons.length > 0 && (
-        <Card className="p-6 bg-red-50 border-red-200 border-2">
-          <h3 className="font-semibold text-lg flex items-center gap-2 text-red-900 mb-3">
+        <Card className="p-6 bg-red-50 dark:bg-red-500/15 border-red-200 border-2">
+          <h3 className="font-semibold text-lg flex items-center gap-2 text-red-900 dark:text-red-300 mb-3">
             <AlertTriangle className="w-5 h-5" />
             High Drop-Off Rate Lessons
           </h3>
           <div className="space-y-2">
             {highRiskLessons.map((lesson, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-white rounded border border-red-100">
+              <div key={idx} className="flex items-center justify-between p-3 bg-card rounded border border-red-100">
                 <div>
-                  <div className="font-medium text-gray-900">Lesson {lesson.lesson_id?.substring(0, 8)}</div>
-                  <div className="text-sm text-gray-600">{lesson.total_attempts || 0} total attempts</div>
+                  <div className="font-medium text-foreground">Lesson {lesson.lesson_id?.substring(0, 8)}</div>
+                  <div className="text-sm text-muted-foreground">{lesson.total_attempts || 0} total attempts</div>
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-red-600">{Math.round(lesson.drop_off_rate || 0)}%</div>
-                  <div className="text-xs text-gray-500">Drop-off rate</div>
+                  <div className="text-xs text-muted-foreground">Drop-off rate</div>
                 </div>
               </div>
             ))}
@@ -99,7 +99,7 @@ export default function LessonDropoffAnalytics({ lessonMetrics = [] }) {
         <h3 className="font-semibold text-lg mb-4">Lesson Performance Summary</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
                 <th className="px-4 py-2 text-left font-semibold">Lesson</th>
                 <th className="px-4 py-2 text-left font-semibold">Attempts</th>
@@ -120,7 +120,7 @@ export default function LessonDropoffAnalytics({ lessonMetrics = [] }) {
                     : '🟢 Good';
 
                 return (
-                  <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr key={idx} className="border-b border-border hover:bg-muted">
                     <td className="px-4 py-3 font-medium">Lesson {lesson.lesson_id?.substring(0, 8)}</td>
                     <td className="px-4 py-3">{lesson.total_attempts || 0}</td>
                     <td className="px-4 py-3">{lesson.total_completions || 0}</td>
@@ -130,7 +130,7 @@ export default function LessonDropoffAnalytics({ lessonMetrics = [] }) {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`font-semibold ${lesson.drop_off_rate > 30 ? 'text-red-600' : 'text-gray-600'}`}>
+                      <span className={`font-semibold ${lesson.drop_off_rate > 30 ? 'text-red-600' : 'text-muted-foreground'}`}>
                         {Math.round(lesson.drop_off_rate || 0)}%
                       </span>
                     </td>

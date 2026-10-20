@@ -25,7 +25,7 @@ export default function PerformanceTrendChart({ email }) {
   return (
     <Card className="p-6 mb-6">
       <h3 className="font-semibold mb-1">Learning Growth</h3>
-      <p className="text-gray-500 text-sm mb-4">
+      <p className="text-muted-foreground text-sm mb-4">
         Cumulative best-score points over time — GCSE and A-Level.
       </p>
 
@@ -36,13 +36,13 @@ export default function PerformanceTrendChart({ email }) {
       )}
 
       {!isLoading && error && (
-        <p className="text-gray-500 text-sm py-4">
+        <p className="text-muted-foreground text-sm py-4">
           Trend unavailable: {error?.response?.data?.error || error?.message}
         </p>
       )}
 
       {!isLoading && !error && series.length === 0 && (
-        <p className="text-gray-500 text-sm py-4">
+        <p className="text-muted-foreground text-sm py-4">
           No topic-check history yet — the growth chart appears once the student submits their first topic check.
         </p>
       )}

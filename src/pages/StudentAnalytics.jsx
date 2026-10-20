@@ -84,16 +84,16 @@ export default function StudentAnalytics() {
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Student Analytics</h1>
-          <p className="text-gray-500">{student?.full_name} • {course?.title}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Student Analytics</h1>
+          <p className="text-muted-foreground">{student?.full_name} • {course?.title}</p>
         </div>
 
         <div className="grid md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Progress', value: `${enrollment?.progress_percent || 0}%`, icon: TrendingUp, color: 'bg-blue-50', iconColor: 'text-blue-600' },
-            { label: 'Completed Lessons', value: enrollment?.completed_lessons?.length || 0, icon: CheckCircle, color: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-            { label: 'Avg Quiz Score', value: `${avgQuizScore}%`, icon: Award, color: 'bg-indigo-50', iconColor: 'text-indigo-600' },
-            { label: 'Assignments Done', value: submissions.length, icon: Clock, color: 'bg-orange-50', iconColor: 'text-orange-600' },
+            { label: 'Progress', value: `${enrollment?.progress_percent || 0}%`, icon: TrendingUp, color: 'bg-blue-50 dark:bg-blue-500/15', iconColor: 'text-blue-600' },
+            { label: 'Completed Lessons', value: enrollment?.completed_lessons?.length || 0, icon: CheckCircle, color: 'bg-emerald-50 dark:bg-emerald-500/15', iconColor: 'text-emerald-600' },
+            { label: 'Avg Quiz Score', value: `${avgQuizScore}%`, icon: Award, color: 'bg-indigo-50 dark:bg-indigo-500/15', iconColor: 'text-indigo-600' },
+            { label: 'Assignments Done', value: submissions.length, icon: Clock, color: 'bg-orange-50 dark:bg-orange-500/15', iconColor: 'text-orange-600' },
           ].map((stat) => {
             const Icon = stat.icon;
             return (
@@ -101,8 +101,8 @@ export default function StudentAnalytics() {
                 <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-3`}>
                   <Icon className={`w-6 h-6 ${stat.iconColor}`} />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-sm text-muted-foreground">{stat.label}</p>
               </Card>
             );
           })}
@@ -112,7 +112,7 @@ export default function StudentAnalytics() {
 
         <Card className="p-6 mb-6">
           <h3 className="font-semibold mb-1">Ranking Points Breakdown</h3>
-          <p className="text-gray-500 text-sm mb-4">
+          <p className="text-muted-foreground text-sm mb-4">
             Best-score topic-check points, saved pass status and reading progress across courses.
           </p>
           <PointsBreakdownPanel email={studentEmail} />
@@ -124,13 +124,13 @@ export default function StudentAnalytics() {
             <div className="space-y-3">
               {quizAttempts.length > 0 ? quizAttempts.map((attempt, idx) => (
                 <div key={idx} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">Attempt {idx + 1}</span>
+                  <span className="text-sm text-foreground">Attempt {idx + 1}</span>
                   <Badge variant={attempt.passed ? 'default' : 'secondary'}>
                     {attempt.score}% {attempt.passed ? '✓' : '✗'}
                   </Badge>
                 </div>
               )) : (
-                <p className="text-gray-500 text-sm">No quiz attempts yet</p>
+                <p className="text-muted-foreground text-sm">No quiz attempts yet</p>
               )}
             </div>
           </Card>
@@ -140,11 +140,11 @@ export default function StudentAnalytics() {
             <div className="space-y-3">
               {gradedSubmissions.length > 0 ? gradedSubmissions.map((sub, idx) => (
                 <div key={idx} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">Assignment {idx + 1}</span>
+                  <span className="text-sm text-foreground">Assignment {idx + 1}</span>
                   <Badge>{sub.grade} pts</Badge>
                 </div>
               )) : (
-                <p className="text-gray-500 text-sm">No graded assignments yet</p>
+                <p className="text-muted-foreground text-sm">No graded assignments yet</p>
               )}
             </div>
           </Card>
