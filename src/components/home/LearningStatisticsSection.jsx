@@ -67,7 +67,7 @@ export default function LearningStatisticsSection() {
     },
     {
       icon: Target,
-      value: `${avgRating}/5`,
+      value: reviews.length > 0 ? `${avgRating}/5` : '—',
       label: 'Average Rating',
       color: 'from-pink-500 to-pink-600',
       bgColor: 'bg-pink-50 dark:bg-pink-950/30'
