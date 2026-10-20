@@ -283,9 +283,9 @@ export default function CourseDetails() {
 
   if (loadingCourse) {
     return (
-      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
         <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Box sx={{ '& > *': { bgcolor: 'grey.200', borderRadius: 4, mb: 2 } }}>
+          <Box sx={{ '& > *': { bgcolor: 'grey.200', borderRadius: '14px', mb: 2 } }}>
             <Box sx={{ height: 256 }} />
             <Box sx={{ height: 32, width: '66%' }} />
             <Box sx={{ height: 16, width: '50%' }} />
@@ -312,9 +312,9 @@ export default function CourseDetails() {
   return (
     <CoursePasswordProtection user={user}>
       <CourseSEO course={course} />
-      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Hero Section */}
-      <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #4f46e5, #7c3aed, #9333ea)', color: 'white' }}>
+      <Box sx={{ position: 'relative', bgcolor: '#0b2f5c', color: 'white' }}>
         {user?.role === 'admin' && (
             <Link to={createPageUrl('AdminCourseBuilder') + `?course=${courseId}`} style={{ textDecoration: 'none' }}>
               <Button 
@@ -322,9 +322,10 @@ export default function CourseDetails() {
                 variant="contained"
                 size="small"
                 sx={{ 
-                  position: 'absolute', 
-                  top: 16, 
-                  right: 16, 
+                  position: { xs: 'static', md: 'absolute' },
+                  m: { xs: 2, md: 0 },
+                  top: 16,
+                  right: 16,
                   zIndex: 20, 
                   bgcolor: 'rgba(255,255,255,0.2)', 
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
@@ -335,7 +336,6 @@ export default function CourseDetails() {
               </Button>
             </Link>
           )}
-        <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.2)' }} />
         <Container maxWidth="xl" sx={{ position: 'relative', py: 6 }}>
           <Breadcrumbs separator={<ChevronRight size={16} />} sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, '& a': { color: 'rgba(255,255,255,0.7)', '&:hover': { color: 'white' } } }}>
             <Link to={createPageUrl('Dashboard')} style={{ textDecoration: 'none', color: 'inherit' }}>Dashboard</Link>
@@ -383,7 +383,6 @@ export default function CourseDetails() {
                   <Chip icon={<Clock size={16} />} label={`${course.duration_hours || 0} hours`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
                   <Chip icon={<BookOpen size={16} />} label={`${visibleLessons.length} lessons`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
                   <Chip icon={<Globe size={16} />} label="English" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
-                  <Chip icon={<Award size={16} />} label="Certificate" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
                 </Box>
                 </motion.div>
                 </Box>
@@ -412,12 +411,24 @@ export default function CourseDetails() {
                       <Typography variant="h4" fontWeight={700}>
                         {course.price === 0 ? 'Free' : `£${course.price}`}
                       </Typography>
-                      {course.price > 0 && (
-                        <Typography variant="h6" sx={{ color: 'text.secondary', textDecoration: 'line-through' }}>
-                          £{Math.round(course.price * 1.5)}
-                        </Typography>
-                      )}
                     </Box>
+                    {isEnrolled && visibleLessons.length > 0 && (() => {
+                      const done = enrollment?.completed_lessons?.length || 0;
+                      const pct = Math.min(100, Math.round((done / visibleLessons.length) * 100));
+                      return (
+                        <Box sx={{ mb: 2.5 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
+                            <Typography variant="body2">Your progress</Typography>
+                            <Typography variant="body2" fontWeight={700}>{pct}%</Typography>
+                          </Box>
+                          <Box role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Course progress"
+                            sx={{ height: 10, borderRadius: 5, bgcolor: 'action.hover', overflow: 'hidden' }}>
+                            <Box sx={{ height: '100%', width: `${pct}%`, bgcolor: 'success.main' }} />
+                          </Box>
+                          <Typography variant="caption" color="text.secondary">{done} of {visibleLessons.length} lessons done</Typography>
+                        </Box>
+                      );
+                    })()}
                   
                     {isMathPathwayCourse && (
                       <Box sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: '#f8fafc' }}>
@@ -470,7 +481,7 @@ export default function CourseDetails() {
                         size="large"
                         component={Link}
                         to={createPageUrl('TutorCourseManager') + `?courseId=${courseId}`}
-                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
+                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: '10px' }}
                       >
                         Manage Course
                       </Button>
@@ -489,7 +500,7 @@ export default function CourseDetails() {
                             navigate(`${createPageUrl('LessonPlayerClassic')}?course=${courseId}&lesson=${targetLessonId}`);
                           }
                         }}
-                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
+                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: '10px' }}
                       >
                         {isMathPathwayCourse && !enrollment?.math_pathway ? 'Save pathway to continue' : 'Continue Learning'}
                       </Button>
@@ -499,7 +510,7 @@ export default function CourseDetails() {
                         fullWidth
                         size="large"
                         disabled
-                        sx={{ py: 2, fontSize: '1rem', borderRadius: 3 }}
+                        sx={{ py: 2, fontSize: '1rem', borderRadius: '10px' }}
                       >
                         Curriculum review in progress
                       </Button>
@@ -510,7 +521,7 @@ export default function CourseDetails() {
                         size="large"
                         onClick={() => enrollMutation.mutate()}
                         disabled={enrollMutation.isPending || (isMathPathwayCourse && !selectedMathPathway)}
-                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
+                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: '10px' }}
                       >
                         {isMathPathwayCourse && !selectedMathPathway
                           ? 'Choose a pathway first'
@@ -522,16 +533,16 @@ export default function CourseDetails() {
                   
                     <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CheckCircle size={16} color="#10b981" />
-                        <Typography variant="body2">Lifetime access</Typography>
+                        <CheckCircle size={16} color="#16a34a" />
+                        <Typography variant="body2">Self-paced: learn any time</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CheckCircle size={16} color="#10b981" />
-                        <Typography variant="body2">Certificate of completion</Typography>
+                        <CheckCircle size={16} color="#16a34a" />
+                        <Typography variant="body2">Quizzes and worked solutions</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CheckCircle size={16} color="#10b981" />
-                        <Typography variant="body2">Downloadable resources</Typography>
+                        <CheckCircle size={16} color="#16a34a" />
+                        <Typography variant="body2">Track your progress lesson by lesson</Typography>
                       </Box>
                     </Box>
                   </CardContent>
@@ -548,7 +559,7 @@ export default function CourseDetails() {
           <Box sx={{ minWidth: 0 }}>
             {isMathPathwayCourse && (
               activeMathPathwayConfig ? (
-                <Card sx={{ mb: 3, p: 3, borderRadius: 4, border: '1px solid #bfdbfe', bgcolor: '#eff6ff' }}>
+                <Card sx={{ mb: 3, p: 3, borderRadius: '14px', border: '1px solid #bfdbfe', bgcolor: '#eff6ff' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 2 }}>
                     <Box>
                       <Typography variant="h6" fontWeight={700}>{activeMathPathwayConfig.label}</Typography>
@@ -590,7 +601,7 @@ export default function CourseDetails() {
             </Tabs>
 
               {tabValue === 'curriculum' && (
-                <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider' }}>
+                <Card sx={{ borderRadius: '14px', boxShadow: 1, border: '1px solid', borderColor: 'divider' }}>
                   <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography fontWeight={500}>
                       {Object.keys(sections).length} sections • {visibleLessons.length} lessons
@@ -683,7 +694,7 @@ export default function CourseDetails() {
               )}
 
               {tabValue === 'overview' && (
-                <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3 }}>
+                <Card sx={{ borderRadius: '14px', boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3 }}>
                   <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>About This Course</Typography>
                   <Typography color="text.secondary" sx={{ lineHeight: 1.7, mb: 3 }}>{course.description}</Typography>
                   
@@ -747,7 +758,7 @@ export default function CourseDetails() {
               )}
 
               {tabValue === 'reviews' && (
-                <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3 }}>
+                <Card sx={{ borderRadius: '14px', boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                     <Typography variant="h6" fontWeight={600}>Student Reviews</Typography>
                     {actualCourseRating && (
@@ -828,7 +839,7 @@ export default function CourseDetails() {
               )}
 
               {tabValue === 'discussion' && (
-                <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3, textAlign: 'center' }}>
+                <Card sx={{ borderRadius: '14px', boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3, textAlign: 'center' }}>
                   <MessageSquare size={48} color="#4f46e5" style={{ margin: '0 auto 16px' }} />
                   <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>Join the Discussion</Typography>
                   <Typography color="text.secondary" sx={{ mb: 2 }}>Connect with other students and instructors</Typography>
