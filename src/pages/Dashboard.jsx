@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button, Tabs, Tab, Card, Box, Typography, Container } from '@mui/material';
+import { Button, Tabs, Tab, Card, Box, Typography, Container, Chip } from '@mui/material';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
