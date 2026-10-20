@@ -123,7 +123,7 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
             <select 
               value={formData.category} 
               onChange={(e) => setFormData({ ...formData, category: e.target.value })} 
-              className="w-full px-3 py-2 border rounded-lg bg-white"
+              className="w-full px-3 py-2 border rounded-lg bg-background text-foreground"
             >
               <option value="youth_work">Youth Work</option>
               <option value="gcse_books">GCSE Books</option>
@@ -163,7 +163,7 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
 
             <div className="space-y-3">
               <div>
-                <Label className="text-sm text-gray-600 mb-2 block">Upload Custom Cover</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">Upload Custom Cover</Label>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -185,7 +185,7 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
 
               {book?.file_url?.toLowerCase().includes('.pdf') && (
                 <div>
-                  <Label className="text-sm text-gray-600 mb-2 block">Extract Page as Cover</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Extract Page as Cover</Label>
                   {!showPageSelector ? (
                     <Button 
                       variant="outline"
