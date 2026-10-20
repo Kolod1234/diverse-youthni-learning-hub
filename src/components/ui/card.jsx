@@ -1,9 +1,18 @@
 import * as React from "react"
 
+import Box from "@mui/material/Box"
+
 import { cn } from "@/lib/utils"
 
+// Some pages give these cards MUI's `sx` prop (e.g. sx={{ p: 3 }}). A plain <div> ignores it,
+// which silently dropped their padding. Render through MUI Box when `sx` is given so it applies.
+const Base = React.forwardRef(({ sx, ...props }, ref) =>
+  sx ? <Box ref={ref} sx={sx} {...props} /> : <Base ref={ref} {...props} />
+)
+Base.displayName = "CardBase"
+
 const Card = React.forwardRef(({ className, ...props }, ref) => (
-  <div
+  <Base
     ref={ref}
     className={cn("rounded-xl border bg-card text-card-foreground shadow", className)}
     {...props} />
@@ -11,7 +20,7 @@ const Card = React.forwardRef(({ className, ...props }, ref) => (
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
-  <div
+  <Base
     ref={ref}
     className={cn("flex flex-col space-y-1.5 p-6", className)}
     {...props} />
@@ -19,7 +28,7 @@ const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
 CardHeader.displayName = "CardHeader"
 
 const CardTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <div
+  <Base
     ref={ref}
     className={cn("font-semibold leading-none tracking-tight", className)}
     {...props} />
@@ -27,7 +36,7 @@ const CardTitle = React.forwardRef(({ className, ...props }, ref) => (
 CardTitle.displayName = "CardTitle"
 
 const CardDescription = React.forwardRef(({ className, ...props }, ref) => (
-  <div
+  <Base
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props} />
@@ -35,12 +44,12 @@ const CardDescription = React.forwardRef(({ className, ...props }, ref) => (
 CardDescription.displayName = "CardDescription"
 
 const CardContent = React.forwardRef(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  <Base ref={ref} className={cn("p-6 pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
 const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
-  <div
+  <Base
     ref={ref}
     className={cn("flex items-center p-6 pt-0", className)}
     {...props} />
