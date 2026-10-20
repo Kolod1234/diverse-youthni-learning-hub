@@ -192,7 +192,7 @@ export default function TutorDashboardOverview() {
                     transition={{ delay: i * 0.07 }}
                     className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5"
                   >
-                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-background ${stat.color} mb-3`}>
+                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-600 text-white mb-3`}>
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <p className="text-3xl font-bold text-white">{stat.value}</p>
