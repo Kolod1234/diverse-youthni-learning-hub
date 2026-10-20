@@ -1358,7 +1358,7 @@ export default function EnhancedLessonPlayer({
     '[&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain [&_video]:h-auto [&_video]:max-w-full [&_video]:rounded-xl [&_svg]:h-auto [&_svg]:max-w-full [&_figure]:my-7 [&_figure]:overflow-visible',
     '[&_math]:mx-1 [&_math]:inline-block [&_math]:align-middle [&_math]:font-serif [&_math]:text-[1.1em] [&_math]:text-[#0b1b32]',
     '[&_.key-rule]:my-6 [&_.key-rule]:rounded-xl [&_.key-rule]:border [&_.key-rule]:border-emerald-200 [&_.key-rule]:bg-emerald-50 [&_.key-rule]:p-5',
-    '[&_.notation-note]:my-6 [&_.notation-note]:rounded-xl [&_.notation-note]:border [&_.notation-note]:border-orange-200 [&_.notation-note]:bg-orange-50 [&_.notation-note]:p-5',
+    '[&_.notation-note]:my-6 [&_.notation-note]:rounded-xl [&_.notation-note]:border [&_.notation-note]:border-indigo-200 [&_.notation-note]:bg-indigo-50 [&_.notation-note]:p-5',
     '[&_.worked-example]:my-6 [&_.worked-example]:rounded-xl [&_.worked-example]:border [&_.worked-example]:border-blue-200 [&_.worked-example]:bg-blue-50 [&_.worked-example]:p-5',
     '[&_.method-steps]:my-6 [&_.method-steps]:rounded-xl [&_.method-steps]:border [&_.method-steps]:border-indigo-200 [&_.method-steps]:bg-indigo-50 [&_.method-steps]:p-5',
     '[&_.practice-block]:my-6 [&_.practice-block]:rounded-xl [&_.practice-block]:border [&_.practice-block]:border-amber-200 [&_.practice-block]:bg-amber-50 [&_.practice-block]:p-5',
@@ -1386,12 +1386,12 @@ export default function EnhancedLessonPlayer({
           onClick={() => navigate('/CourseDetails?id=' + courseId)}
           className="mb-4 flex w-full items-start gap-3 text-left"
         >
-          <BookOpen className="mt-0.5 h-5 w-5 shrink-0 text-orange-400" />
+          <BookOpen className="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" />
           <span>
             <span className="block text-[11px] uppercase tracking-[0.16em] text-slate-400">CCEA course</span>
             <span className="mt-1 block text-sm font-semibold leading-5 text-white">{course?.title || 'Course'}</span>
             {selectedMathPathwayLabel && (
-              <span className="mt-2 inline-flex rounded-md border border-orange-400/40 bg-orange-400/10 px-2 py-1 text-[11px] font-bold text-orange-300">
+              <span className="mt-2 inline-flex rounded-md border border-indigo-400/40 bg-indigo-400/10 px-2 py-1 text-[11px] font-bold text-indigo-300">
                 {selectedMathPathwayLabel}
               </span>
             )}
@@ -1402,7 +1402,7 @@ export default function EnhancedLessonPlayer({
           <span>{completedIds.length} of {sortedLessons.length} lessons</span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-white/15">
-          <div className="h-full rounded-full bg-orange-500 transition-all" style={{ width: lessonProgress + '%' }} />
+          <div className="h-full rounded-full bg-indigo-600 transition-all" style={{ width: lessonProgress + '%' }} />
         </div>
         <div className="relative mt-5">
           <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
@@ -1411,7 +1411,7 @@ export default function EnhancedLessonPlayer({
             placeholder="Search course outline"
             value={searchQuery}
             onChange={event => setSearchQuery(event.target.value)}
-            className="h-11 w-full rounded-lg border border-white/15 bg-white/5 pl-10 pr-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-orange-400"
+            className="h-11 w-full rounded-lg border border-white/15 bg-white/5 pl-10 pr-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-indigo-400"
           />
         </div>
       </div>
@@ -1453,8 +1453,8 @@ export default function EnhancedLessonPlayer({
                         aria-current={current ? 'page' : undefined}
                         className={'relative mb-1 flex min-h-12 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ' + (current ? 'bg-[#16314f] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white')}
                       >
-                        {current && <span className="absolute inset-y-2 right-0 w-1 rounded-l-full bg-orange-500" />}
-                        <span className={'inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold ' + (completed ? 'border-emerald-400 bg-emerald-500 text-white' : current ? 'border-orange-400 text-orange-300' : 'border-slate-600 text-slate-400')}>
+                        {current && <span className="absolute inset-y-2 right-0 w-1 rounded-l-full bg-indigo-600" />}
+                        <span className={'inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold ' + (completed ? 'border-emerald-400 bg-emerald-500 text-white' : current ? 'border-indigo-400 text-indigo-300' : 'border-slate-600 text-slate-400')}>
                           {completed ? <Check className="h-3.5 w-3.5" /> : index + 1}
                         </span>
                         <span className="min-w-0 flex-1">
@@ -1462,7 +1462,7 @@ export default function EnhancedLessonPlayer({
                           {relevantUnitCodes.length > 0 && (
                             <span className="mt-1 flex flex-wrap gap-1" aria-label={`CCEA pathway units ${relevantUnitCodes.join(', ')}`}>
                               {relevantUnitCodes.map(unitCode => (
-                                <span key={unitCode} className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-orange-300">
+                                <span key={unitCode} className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-indigo-300">
                                   {unitCode}
                                 </span>
                               ))}
@@ -1487,9 +1487,9 @@ export default function EnhancedLessonPlayer({
   );
 
   return (
-    <div ref={containerRef} className={'flex h-[100dvh] overscroll-y-none overflow-hidden bg-[#071326] text-white ' + (isFullscreen ? 'fixed inset-0 z-[100]' : '')}>
+    <div ref={containerRef} className={'flex h-[100dvh] overscroll-y-none overflow-hidden bg-[#0b2f5c] text-white ' + (isFullscreen ? 'fixed inset-0 z-[100]' : '')}>
       {showSidebar && (
-        <aside className="hidden h-full w-[288px] shrink-0 flex-col border-r border-white/10 bg-[#07182b] lg:flex">
+        <aside className="hidden h-full w-[288px] shrink-0 flex-col border-r border-white/10 bg-[#0a2850] lg:flex">
           {outlineContent}
         </aside>
       )}
@@ -1502,14 +1502,14 @@ export default function EnhancedLessonPlayer({
             className="absolute inset-0 bg-black/60"
             aria-label="Close course outline"
           />
-          <aside className="relative flex h-full w-[min(88vw,320px)] flex-col bg-[#07182b] shadow-2xl">
+          <aside className="relative flex h-full w-[min(88vw,320px)] flex-col bg-[#0a2850] shadow-2xl">
             {outlineContent}
           </aside>
         </div>
       )}
 
-      <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#eef1f5]">
-        <header className="z-30 flex min-h-[72px] shrink-0 items-center justify-between border-b border-white/10 bg-[#071326] px-3 text-white sm:px-5">
+      <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#f6f7fb]">
+        <header className="z-30 flex min-h-[72px] shrink-0 items-center justify-between border-b border-white/10 bg-[#0b2f5c] px-3 text-white sm:px-5">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <button
               type="button"
@@ -1543,7 +1543,7 @@ export default function EnhancedLessonPlayer({
             <button
               type="button"
               onClick={() => toggleTool('ai')}
-              className={'inline-flex h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:gap-2 ' + (showAI ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
+              className={'inline-flex h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:gap-2 ' + (showAI ? 'bg-indigo-600 text-white' : 'text-slate-200 hover:bg-white/10')}
               aria-label="Open AI learning assistant"
               title="AI learning assistant"
             >
@@ -1552,7 +1552,7 @@ export default function EnhancedLessonPlayer({
             <button
               type="button"
               onClick={() => toggleTool('notes')}
-              className={'inline-flex h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:gap-2 ' + (showNotes ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
+              className={'inline-flex h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:gap-2 ' + (showNotes ? 'bg-indigo-600 text-white' : 'text-slate-200 hover:bg-white/10')}
               aria-label="Open notes"
               title="Notes"
             >
@@ -1570,7 +1570,7 @@ export default function EnhancedLessonPlayer({
             <button
               type="button"
               onClick={() => toggleTool('quiz')}
-              className={'inline-flex h-11 w-11 items-center justify-center rounded-lg sm:hidden ' + (showQuizPanel ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
+              className={'inline-flex h-11 w-11 items-center justify-center rounded-lg sm:hidden ' + (showQuizPanel ? 'bg-indigo-600 text-white' : 'text-slate-200 hover:bg-white/10')}
               aria-label="Open lesson tools"
             >
               <Settings className="h-5 w-5" />
@@ -1612,7 +1612,7 @@ export default function EnhancedLessonPlayer({
                 >
                 <div className="lesson-page-meta mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5">
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-600">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-indigo-600">
                       Page {currentContentSlide + 1} of {contentSlides.length} <span className="mx-1.5 text-slate-300">•</span> {displayCurriculumSection(lesson.section, course) || 'Lesson'}
                     </p>
                     <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
@@ -1622,7 +1622,7 @@ export default function EnhancedLessonPlayer({
                   <button
                     type="button"
                     onClick={() => toggleBookmark(currentPageKey)}
-                    className={'inline-flex h-11 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition ' + (isBookmarked ? 'border-orange-300 bg-orange-50 text-orange-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300')}
+                    className={'inline-flex h-11 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition ' + (isBookmarked ? 'border-indigo-300 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300')}
                     aria-label={isBookmarked ? 'Remove page bookmark' : 'Bookmark this page'}
                   >
                     {isBookmarked ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
@@ -1684,7 +1684,7 @@ export default function EnhancedLessonPlayer({
                   type="button"
                   key={tool.id}
                   onClick={() => toggleTool(tool.id)}
-                  className={'flex min-h-16 w-full flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium transition ' + (tool.active ? 'bg-[#071326] text-white' : 'text-slate-600 hover:bg-white hover:text-[#071326]')}
+                  className={'flex min-h-16 w-full flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium transition ' + (tool.active ? 'bg-[#0b2f5c] text-white' : 'text-slate-600 hover:bg-white hover:text-[#0b2f5c]')}
                   aria-pressed={tool.active}
                 >
                   <ToolIcon className="h-5 w-5" />
@@ -1698,7 +1698,7 @@ export default function EnhancedLessonPlayer({
             <aside className="fixed inset-x-0 bottom-[72px] top-[72px] z-[70] flex flex-col overflow-hidden border-t border-slate-200 bg-white text-slate-900 shadow-2xl sm:left-auto sm:w-[360px] sm:border-l sm:border-t-0 lg:relative lg:inset-auto lg:z-20 lg:w-[360px] lg:shrink-0 lg:shadow-none">
               <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-5">
                 <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-[#0b1b32]">
-                  {showAI && <><Sparkles className="h-5 w-5 text-orange-500" /> Learning assistant</>}
+                  {showAI && <><Sparkles className="h-5 w-5 text-indigo-600" /> Learning assistant</>}
                   {showNotes && <><MessageSquare className="h-5 w-5 text-indigo-600" /> Page notes</>}
                   {showQuizPanel && <><Brain className="h-5 w-5 text-violet-600" /> Practice questions</>}
                 </h3>
@@ -1715,7 +1715,7 @@ export default function EnhancedLessonPlayer({
                         type="button"
                         key={tab}
                         onClick={() => setAiTab(tab)}
-                        className={'min-h-10 rounded-md px-2 text-xs font-semibold capitalize ' + (aiTab === tab ? 'bg-[#071326] text-white' : 'text-slate-600 hover:bg-slate-100')}
+                        className={'min-h-10 rounded-md px-2 text-xs font-semibold capitalize ' + (aiTab === tab ? 'bg-[#0b2f5c] text-white' : 'text-slate-600 hover:bg-slate-100')}
                       >
                         {tab}
                       </button>
@@ -1730,27 +1730,27 @@ export default function EnhancedLessonPlayer({
                           value={aiQuestion}
                           onChange={event => setAiQuestion(event.target.value)}
                           placeholder="What would you like explained?"
-                          className="min-h-28 w-full resize-y rounded-lg border border-slate-300 p-3 text-sm outline-none focus:border-orange-500"
+                          className="min-h-28 w-full resize-y rounded-lg border border-slate-300 p-3 text-sm outline-none focus:border-indigo-500"
                         />
                         <button
                           type="button"
                           onClick={() => { askAI(aiQuestion, activeContentSlide?.content || lesson.title); setAiQuestion(''); }}
                           disabled={!aiQuestion.trim() || aiLoading}
-                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 text-sm font-bold text-[#071326] hover:bg-orange-400 disabled:opacity-50"
+                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-bold text-[#0b2f5c] hover:bg-indigo-500 disabled:opacity-50"
                         >
                           {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Ask
                         </button>
                       </div>
                     )}
                     {aiTab === 'summary' && (
-                      <button type="button" onClick={() => summariseSlide(activeContentSlide?.content || '')} disabled={aiLoading} className="min-h-11 w-full rounded-lg bg-[#071326] px-4 text-sm font-semibold text-white disabled:opacity-50">
+                      <button type="button" onClick={() => summariseSlide(activeContentSlide?.content || '')} disabled={aiLoading} className="min-h-11 w-full rounded-lg bg-[#0b2f5c] px-4 text-sm font-semibold text-white disabled:opacity-50">
                         {aiLoading ? 'Creating summary…' : 'Summarise this page'}
                       </button>
                     )}
                     {aiTab === 'define' && (
                       <div className="space-y-3">
-                        <input value={defineTerm} onChange={event => setDefineTerm(event.target.value)} placeholder="Enter a word or term" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-orange-500" />
-                        <button type="button" onClick={() => { defineWord(defineTerm); setDefineTerm(''); }} disabled={!defineTerm.trim() || aiLoading} className="min-h-11 w-full rounded-lg bg-[#071326] px-4 text-sm font-semibold text-white disabled:opacity-50">Explain this term</button>
+                        <input value={defineTerm} onChange={event => setDefineTerm(event.target.value)} placeholder="Enter a word or term" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-indigo-500" />
+                        <button type="button" onClick={() => { defineWord(defineTerm); setDefineTerm(''); }} disabled={!defineTerm.trim() || aiLoading} className="min-h-11 w-full rounded-lg bg-[#0b2f5c] px-4 text-sm font-semibold text-white disabled:opacity-50">Explain this term</button>
                       </div>
                     )}
                     {aiTab === 'translate' && (
@@ -1758,7 +1758,7 @@ export default function EnhancedLessonPlayer({
                         <select value={targetLanguage} onChange={event => setTargetLanguage(event.target.value)} className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm">
                           <option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="zh">Chinese</option><option value="ar">Arabic</option><option value="ur">Urdu</option><option value="pl">Polish</option>
                         </select>
-                        <button type="button" onClick={() => translateSlide(activeContentSlide?.content || '', targetLanguage)} disabled={aiLoading} className="min-h-11 w-full rounded-lg bg-[#071326] px-4 text-sm font-semibold text-white disabled:opacity-50">Translate this page</button>
+                        <button type="button" onClick={() => translateSlide(activeContentSlide?.content || '', targetLanguage)} disabled={aiLoading} className="min-h-11 w-full rounded-lg bg-[#0b2f5c] px-4 text-sm font-semibold text-white disabled:opacity-50">Translate this page</button>
                       </div>
                     )}
                     {(aiResponse || aiSummary || aiTranslation) && (
@@ -1812,7 +1812,7 @@ export default function EnhancedLessonPlayer({
               <span className="hidden sm:inline">Use ← / → to navigate</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
-              <div className="h-full rounded-full bg-orange-500 transition-all duration-300" style={{ width: pageProgress + '%' }} />
+              <div className="h-full rounded-full bg-indigo-600 transition-all duration-300" style={{ width: pageProgress + '%' }} />
             </div>
           </div>
 
@@ -1827,7 +1827,7 @@ export default function EnhancedLessonPlayer({
               value={currentContentSlide}
               onChange={event => setCurrentContentSlide(Number(event.target.value))}
               aria-label="Choose lesson page"
-              className="hidden h-11 max-w-[210px] rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 outline-none focus:border-orange-500 md:block"
+              className="hidden h-11 max-w-[210px] rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 outline-none focus:border-indigo-500 md:block"
             >
               {contentSlides.map((slide, index) => <option key={index} value={index}>Page {index + 1}: {slide.title || 'Untitled'}</option>)}
             </select>
@@ -1850,7 +1850,7 @@ export default function EnhancedLessonPlayer({
             disabled={isLastPage && !nextLesson && !canOpenTopicQuiz}
             aria-label={canOpenTopicQuiz ? 'Open topic quiz' : isLastPage ? 'Go to next topic' : 'Go to next page'}
             title={canOpenTopicQuiz ? 'Topic quiz' : isLastPage ? 'Next topic' : 'Next page'}
-            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-orange-500 px-4 text-sm font-bold text-[#071326] shadow-sm hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5"
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-bold text-[#0b2f5c] shadow-sm hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5"
           >
             <span className="hidden sm:inline">{canOpenTopicQuiz ? 'Topic quiz' : isLastPage ? 'Next topic' : 'Next page'}</span><ChevronRight className="h-5 w-5" />
           </button>
