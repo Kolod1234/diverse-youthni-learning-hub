@@ -146,7 +146,8 @@ export default function Sessions() {
             <div className="flex flex-col gap-2">
               <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}>
                 <Button 
-                  size="sm"
+                  size="small"
+                  variant="contained"
                   className={
                     session.status === 'live' 
                       ? 'bg-indigo-600 hover:bg-indigo-700'
@@ -184,7 +185,7 @@ export default function Sessions() {
           </div>
           {isTutorOrCoordinator && (
             <Link to={createPageUrl('ScheduleSession')}>
-              <Button className="bg-indigo-600 hover:bg-indigo-700">
+              <Button variant="contained">
                 <Plus className="w-4 h-4 mr-2" />
                 Schedule Session
               </Button>
@@ -245,7 +246,7 @@ export default function Sessions() {
                 <p className="text-muted-foreground mb-6">You don't have any scheduled sessions yet</p>
                 {isTutorOrCoordinator && (
                   <Link to={createPageUrl('ScheduleSession')}>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+                    <Button variant="contained">
                       <Plus className="w-4 h-4 mr-2" />
                       Schedule Your First Session
                     </Button>
