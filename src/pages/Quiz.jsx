@@ -74,7 +74,7 @@ export default function Quiz() {
     queryKey: ['course', quiz?.course_id],
     queryFn: async () => {
       const courses = await base44.entities.Course.filter({ id: quiz.course_id });
-      return courses[0];
+      return courses[0] || null; // React Query treats `undefined` as an error
     },
     enabled: !!quiz?.course_id && quiz.course_id !== 'null',
   });
