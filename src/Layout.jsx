@@ -11,7 +11,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   AppBar, Toolbar, Button, IconButton, Avatar, Menu as MuiMenu, MenuItem, 
-  Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton,
+  Divider, List, ListItem, ListItemIcon, ListItemText,
   Box, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
