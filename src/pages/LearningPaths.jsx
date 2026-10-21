@@ -130,7 +130,8 @@ export default function LearningPaths() {
                       </div>
                     )}
 
-                    <Link to={createPageUrl('PathDetails') + `?id=${path.id}`}>
+                    {/* There is no PathDetails page; continue straight into the path's current course. */}
+                    <Link to={currentCourse ? createPageUrl('CourseDetails') + `?id=${currentCourse.id}` : createPageUrl('Explore')}>
                       <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
                         Continue Path
                         <ArrowRight className="w-4 h-4 ml-2" />
@@ -205,7 +206,7 @@ export default function LearningPaths() {
                       </div>
 
                       {isEnrolled ? (
-                        <Link to={createPageUrl('PathDetails') + `?id=${path.id}`}>
+                        <Link to={createPageUrl('Dashboard') + '?as=student'}>
                           <Button variant="outline" className="w-full">
                             View Progress
                           </Button>
