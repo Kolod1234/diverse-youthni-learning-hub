@@ -44,7 +44,12 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
   });
 
   const updateParticipantMutation = useMutation({
-    mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
+    // Server function: coordinators may only change notes/rating/ban on their own assigned participants.
+    mutationFn: async ({ userId, data }) => {
+      const res = await base44.functions.invoke('coordinatorUpdateParticipant', { userId, data });
+      if (!res.data?.ok) throw new Error(res.data?.error || 'Could not update participant');
+      return res.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['assigned-participants']);
       queryClient.invalidateQueries(['all-users']);
