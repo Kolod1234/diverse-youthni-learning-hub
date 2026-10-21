@@ -248,6 +248,7 @@ export const PAGES = {
     "LiveSessionHost": LiveSessionHost,
     "MessageCenter": MessageCenter,
     "NotificationCenter": NotificationCenter,
+    "PartnerSchools": PartnerSchools,
     "PastPaperSolver": PastPaperSolver,
     "PathManager": PathManager,
     "PathwayManager": PathwayManager,
