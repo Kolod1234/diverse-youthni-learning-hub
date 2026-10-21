@@ -61,75 +61,84 @@ export default function ParticipantProgressOverview({ user }) {
     );
   }
 
+  // Wireframe L5: three summary tiles, then one row per participant.
+  const totals = {
+    hours: participantStats.reduce((sum, p) => sum + p.totalHours, 0),
+    pending: participantStats.reduce((sum, p) => sum + p.pendingLogbooks, 0),
+  };
+  const tiles = [
+    ['Participants', participantStats.length],
+    ['Hours logged', `${totals.hours}h`],
+    ['Logbooks to check', totals.pending],
+  ];
+
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold text-foreground mb-4">Participant Progress Overview</h3>
-      
-      <div className="space-y-4">
-        {participantStats.map((participant) => {
-          const TrendIcon = participant.trend === 'up' ? TrendingUp : participant.trend === 'down' ? TrendingDown : Minus;
-          const trendColor = participant.trend === 'up' ? 'text-green-600' : participant.trend === 'down' ? 'text-red-600' : 'text-gray-400';
-          
-          return (
-            <Card key={participant.email} className="p-4">
-              <div className="flex items-start gap-3 mb-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={participant.avatar} />
-                  <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
-                    {participant.full_name?.charAt(0) || 'P'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium text-foreground truncate">
-                      {participant.full_name}
-                    </p>
-                    <TrendIcon className={`w-4 h-4 ${trendColor}`} />
-                  </div>
-                  <p className="text-xs text-muted-foreground">{participant.email}</p>
-                </div>
-                {participant.pendingLogbooks > 0 && (
-                  <Badge className="bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300">
-                    {participant.pendingLogbooks} pending
-                  </Badge>
-                )}
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 mb-3">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Total Logbooks</p>
-                  <p className="text-lg font-semibold text-foreground">{participant.totalLogbooks}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Total Hours</p>
-                  <p className="text-lg font-semibold text-foreground">{participant.totalHours}h</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Approval Rate</p>
-                  <p className="text-lg font-semibold text-foreground">{Math.round(participant.approvalRate)}%</p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Progress</span>
-                  <span className="font-medium text-foreground">
-                    {participant.approvedLogbooks} / {participant.totalLogbooks} approved
-                  </span>
-                </div>
-                <Progress value={participant.approvalRate} className="h-2" />
-              </div>
-
-              {participant.pendingLogbooks > 0 && (
-                <div className="mt-3 flex items-center gap-2 text-xs text-orange-600">
-                  <Clock className="w-3 h-3" />
-                  <span>{participant.pendingLogbooks} logbook(s) awaiting review</span>
-                </div>
-              )}
-            </Card>
-          );
-        })}
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {tiles.map(([label, value]) => (
+          <Card key={label} className="p-5">
+            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="text-3xl font-bold text-foreground mt-1">{value}</p>
+          </Card>
+        ))}
       </div>
-    </Card>
+
+      <Card className="overflow-x-auto">
+        <h3 className="text-lg font-semibold text-foreground px-5 pt-5 pb-3">Participant progress</h3>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-muted-foreground border-b border-border">
+              <th className="px-5 py-2 font-medium">Participant</th>
+              <th className="px-3 py-2 font-medium">Logbooks approved</th>
+              <th className="px-3 py-2 font-medium">Hours</th>
+              <th className="px-5 py-2 font-medium">To check</th>
+            </tr>
+          </thead>
+          <tbody>
+            {participantStats.map((participant) => {
+              const TrendIcon = participant.trend === 'up' ? TrendingUp : participant.trend === 'down' ? TrendingDown : Minus;
+              const trendColor = participant.trend === 'up' ? 'text-green-600' : participant.trend === 'down' ? 'text-red-600' : 'text-muted-foreground';
+              return (
+                <tr key={participant.email} className="border-b border-border last:border-0">
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-9 h-9">
+                        <AvatarImage src={participant.avatar} />
+                        <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
+                          {participant.full_name?.charAt(0) || 'P'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground truncate flex items-center gap-1.5">
+                          {participant.full_name}
+                          <TrendIcon className={`w-4 h-4 ${trendColor}`} aria-label={`Hours trend: ${participant.trend}`} />
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">{participant.email}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-3 py-3 min-w-[160px]">
+                    <div className="flex items-center gap-2">
+                      <Progress value={participant.approvalRate} className="h-2 flex-1" />
+                      <span className="text-foreground whitespace-nowrap">{participant.approvedLogbooks} / {participant.totalLogbooks}</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-3 text-foreground">{participant.totalHours}h</td>
+                  <td className="px-5 py-3">
+                    {participant.pendingLogbooks > 0 ? (
+                      <Badge className="bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300">
+                        <Clock className="w-3 h-3 mr-1 inline" />{participant.pendingLogbooks} pending
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground flex items-center gap-1"><CheckCircle className="w-4 h-4 text-green-600" />Up to date</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </Card>
+    </div>
   );
 }
