@@ -164,7 +164,7 @@ export default function LessonPlayerRise() {
           lesson={lesson}
           currentIndex={currentLessonIndex}
           totalLessons={courseLessons.length}
-          onBackClick={() => navigate(createPageUrl('CourseDetails') + `?courseId=${courseId}`)}
+          onBackClick={() => navigate(createPageUrl('CourseDetails') + `?id=${courseId}`)}
           onExitClick={() => navigate(createPageUrl('Dashboard'))}
         />
 
