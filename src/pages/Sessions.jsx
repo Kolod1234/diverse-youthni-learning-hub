@@ -97,8 +97,10 @@ export default function Sessions() {
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
-                  <Video className="w-6 h-6 text-white" />
+                {/* Wireframe L6: a date block instead of an icon, so the day reads at a glance. */}
+                <div className="w-14 shrink-0 rounded-xl overflow-hidden text-center border border-border" aria-hidden="true">
+                  <div className="bg-[#0b2f5c] text-white text-xs font-semibold uppercase py-0.5">{format(sessionDate, 'MMM')}</div>
+                  <div className="text-xl font-bold text-foreground py-1">{format(sessionDate, 'd')}</div>
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-foreground">{session.title}</h3>
@@ -177,7 +179,7 @@ export default function Sessions() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Live Sessions</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Live sessions</h1>
             <p className="text-muted-foreground">Join live video sessions with tutors and peers</p>
           </div>
           {isTutorOrCoordinator && (
@@ -190,47 +192,18 @@ export default function Sessions() {
           )}
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 bg-red-50 dark:bg-red-500/10 border-red-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Live Now</p>
-                <p className="text-3xl font-bold text-foreground">{liveSessions.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center">
-                <PlayCircle className="w-6 h-6 text-white" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Upcoming</p>
-                <p className="text-3xl font-bold text-foreground">{upcomingSessions.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-white" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-background border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Completed</p>
-                <p className="text-3xl font-bold text-foreground">{pastSessions.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-gray-500 rounded-xl flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-white" />
-              </div>
-            </div>
-          </Card>
-        </div>
+        {/* Wireframe L6: no count tiles (the tabs carry the counts); anything live now is pinned above the tabs. */}
+        {liveSessions.length > 0 && (
+          <section aria-label="Live now" className="mb-8 space-y-4">
+            <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" aria-hidden="true" />Live now
+            </h2>
+            {liveSessions.map(session => <SessionCard key={session.id} session={session} />)}
+          </section>
+        )}
 
         {/* Sessions Tabs */}
-        <Tabs defaultValue="live" className="space-y-6">
+        <Tabs defaultValue="upcoming" className="space-y-6">
           <TabsList className="bg-card border border-border">
             <TabsTrigger value="live" className="gap-2">
               <PlayCircle className="w-4 h-4" />
