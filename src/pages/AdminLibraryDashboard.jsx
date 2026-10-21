@@ -237,7 +237,7 @@ export default function AdminLibraryDashboard() {
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="downloads" fill="#4f46e5" />
-                  <Bar dataKey="views" fill="#06b6d4" />
+                  <Bar dataKey="views" fill="#4f46e5" />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -255,7 +255,7 @@ export default function AdminLibraryDashboard() {
                   <Tooltip />
                   <Legend />
                   <Line type="monotone" dataKey="downloads" stroke="#4f46e5" strokeWidth={2} />
-                  <Line type="monotone" dataKey="views" stroke="#06b6d4" strokeWidth={2} />
+                  <Line type="monotone" dataKey="views" stroke="#4f46e5" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
@@ -271,7 +271,7 @@ export default function AdminLibraryDashboard() {
                   <XAxis type="number" />
                   <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 12 }} />
                   <Tooltip />
-                  <Bar dataKey="activities" fill="#f97316" />
+                  <Bar dataKey="activities" fill="#0b2f5c" />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -290,7 +290,7 @@ export default function AdminLibraryDashboard() {
                     labelLine={false}
                     label={({ name, value }) => `${name}: ${value}`}
                     outerRadius={80}
-                    fill="#8884d8"
+                    fill="#4f46e5"
                     dataKey="value"
                   >
                     {categoryDistribution.map((entry, index) => (
@@ -314,7 +314,7 @@ export default function AdminLibraryDashboard() {
                     <XAxis dataKey="keyword" tick={{ fontSize: 12 }} />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="count" fill="#8b5cf6" />
+                    <Bar dataKey="count" fill="#0b2f5c" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (

@@ -201,7 +201,7 @@ export default function LearningImpactDashboard() {
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     outerRadius={80}
-                    fill="#8884d8"
+                    fill="#4f46e5"
                     dataKey="value"
                   >
                     {categoryChartData.map((entry, index) => (

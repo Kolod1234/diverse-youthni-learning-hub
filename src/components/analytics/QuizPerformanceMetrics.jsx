@@ -97,7 +97,7 @@ export default function QuizPerformanceMetrics({ quizData = [] }) {
             <YAxis yAxisId="right" orientation="right" label={{ value: 'Time (min)', angle: 90, position: 'insideRight' }} />
             <Tooltip />
             <Legend />
-            <Line yAxisId="left" type="monotone" dataKey="score" stroke="#3b82f6" strokeWidth={2} name="Score %" />
+            <Line yAxisId="left" type="monotone" dataKey="score" stroke="#4f46e5" strokeWidth={2} name="Score %" />
             <Line yAxisId="right" type="monotone" dataKey="time" stroke="#ef4444" strokeWidth={2} name="Time (min)" />
           </LineChart>
         </ResponsiveContainer>
@@ -116,7 +116,7 @@ export default function QuizPerformanceMetrics({ quizData = [] }) {
                 labelLine={false}
                 label={({ name, percentage }) => `${name}: ${percentage}%`}
                 outerRadius={80}
-                fill="#8884d8"
+                fill="#4f46e5"
                 dataKey="value"
               >
                 {COLORS.map((color, index) => (
@@ -137,7 +137,7 @@ export default function QuizPerformanceMetrics({ quizData = [] }) {
               <XAxis dataKey="name" />
               <YAxis label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }} />
               <Tooltip />
-              <Bar dataKey="accuracy" fill="#8b5cf6" />
+              <Bar dataKey="accuracy" fill="#0b2f5c" />
             </BarChart>
           </ResponsiveContainer>
         </Card>

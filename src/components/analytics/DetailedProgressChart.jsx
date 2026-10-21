@@ -40,7 +40,7 @@ export default function DetailedProgressChart({ progressData = [] }) {
             <XAxis dataKey="timeSpent" name="Time Spent (min)" />
             <YAxis dataKey="slideCount" name="Slides Viewed" />
             <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-            <Scatter name="User Progress" data={timeProgressData} fill="#3b82f6" />
+            <Scatter name="User Progress" data={timeProgressData} fill="#4f46e5" />
           </ScatterChart>
         </ResponsiveContainer>
       </Card>
@@ -58,8 +58,8 @@ export default function DetailedProgressChart({ progressData = [] }) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="engagement" fill="#8b5cf6" name="Engagement Score" />
-            <Bar dataKey="slides" fill="#ec4899" name="Slides Viewed" />
+            <Bar dataKey="engagement" fill="#0b2f5c" name="Engagement Score" />
+            <Bar dataKey="slides" fill="#0b2f5c" name="Slides Viewed" />
           </BarChart>
         </ResponsiveContainer>
       </Card>

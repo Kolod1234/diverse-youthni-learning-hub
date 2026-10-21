@@ -211,7 +211,7 @@ export default function CourseAnalytics() {
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="count" fill="#6366F1" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="count" fill="#4f46e5" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
@@ -230,7 +230,7 @@ export default function CourseAnalytics() {
                       labelLine={false}
                       label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                       outerRadius={100}
-                      fill="#8884d8"
+                      fill="#4f46e5"
                       dataKey="value"
                     >
                       {[
@@ -307,7 +307,7 @@ export default function CourseAnalytics() {
                       <XAxis dataKey="name" />
                       <YAxis />
                       <Tooltip />
-                      <Bar dataKey="avgScore" fill="#6366F1" name="Avg Score %" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="avgScore" fill="#4f46e5" name="Avg Score %" radius={[8, 8, 0, 0]} />
                       <Bar dataKey="passRate" fill="#10B981" name="Pass Rate %" radius={[8, 8, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>

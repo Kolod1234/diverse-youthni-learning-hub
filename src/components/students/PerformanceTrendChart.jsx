@@ -58,11 +58,11 @@ export default function PerformanceTrendChart({ email }) {
               <Legend />
               <Line
                 type="monotone" dataKey="gcse" name="GCSE points"
-                stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }}
+                stroke="#4f46e5" strokeWidth={2} dot={{ r: 3 }}
               />
               <Line
                 type="monotone" dataKey="alevel" name="A-Level points"
-                stroke="#9333ea" strokeWidth={2} dot={{ r: 3 }}
+                stroke="#0b2f5c" strokeWidth={2} dot={{ r: 3 }}
               />
             </LineChart>
           </ResponsiveContainer>

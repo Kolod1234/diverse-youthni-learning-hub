@@ -84,7 +84,7 @@ export default function AttendanceStatistics({ selectedDate }) {
                     labelLine={false}
                     label={({ name, value }) => `${name}: ${value}`}
                     outerRadius={80}
-                    fill="#8884d8"
+                    fill="#4f46e5"
                     dataKey="value"
                   >
                     {chartData.map((entry, index) => (

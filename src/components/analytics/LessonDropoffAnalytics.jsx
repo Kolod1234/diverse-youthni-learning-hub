@@ -69,7 +69,7 @@ export default function LessonDropoffAnalytics({ lessonMetrics = [] }) {
             <Legend />
             <Bar dataKey="completion" fill="#10b981" name="Completion %" />
             <Bar dataKey="dropOff" fill="#ef4444" name="Drop-Off %" />
-            <Bar dataKey="engagement" fill="#3b82f6" name="Engagement %" />
+            <Bar dataKey="engagement" fill="#4f46e5" name="Engagement %" />
           </BarChart>
         </ResponsiveContainer>
       </Card>
@@ -89,7 +89,7 @@ export default function LessonDropoffAnalytics({ lessonMetrics = [] }) {
             <Tooltip />
             <Legend />
             <Line yAxisId="left" type="monotone" dataKey="rate" stroke="#10b981" strokeWidth={2} name="Completion %" />
-            <Line yAxisId="right" type="monotone" dataKey="attempts" stroke="#3b82f6" strokeWidth={2} name="Attempts" />
+            <Line yAxisId="right" type="monotone" dataKey="attempts" stroke="#4f46e5" strokeWidth={2} name="Attempts" />
           </LineChart>
         </ResponsiveContainer>
       </Card>
