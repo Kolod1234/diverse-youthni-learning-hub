@@ -34,7 +34,10 @@ Deno.serve(async (req) => {
                 return false;
             });
 
-        return Response.json(availableUsers);
+        // Send only what a contact list shows, never whole account records.
+        const CONTACT_FIELDS = ['id', 'email', 'full_name', 'username', 'avatar', 'role', 'is_tutor', 'is_coordinator'];
+        return Response.json(availableUsers.map(u =>
+            Object.fromEntries(CONTACT_FIELDS.filter(k => u[k] !== undefined).map(k => [k, u[k]]))));
     } catch (error) {
         return Response.json({ error: error.message }, { status: 500 });
     }
