@@ -235,9 +235,13 @@ function LayoutContent({ children, currentPageName }) {
   // Keep non-admins out of admin-only pages.
   useEffect(() => {
     if (!user) return;
-    const isStaffOnlyPage = currentPageName?.startsWith('Admin') && user.is_tutor !== true;
+    // Tutor tools and analytics: tutors and admins only (coordinators and students are sent home).
+    const TUTOR_ONLY_PAGES = new Set(['CourseAnalytics', 'DetailedCourseAnalytics', 'StudentAnalytics', 'GradeAssignments',
+      'QuizGenerator', 'CreateAssignment', 'TutorCourseManager', 'TutorBookingManager', 'TutorSessionsDashboard',
+      'TutorDashboard', 'TutorDashboardOverview', 'TutorDashboardCanvas', 'KahootAnalytics']);
+    const isStaffOnlyPage = (currentPageName?.startsWith('Admin') || TUTOR_ONLY_PAGES.has(currentPageName)) && user.is_tutor !== true;
     if ((ADMIN_ONLY_PAGES.has(currentPageName) || isStaffOnlyPage) && user.role !== 'admin') {
-      navigate(createPageUrl(user.is_tutor ? 'TutorDashboardOverview' : 'Dashboard'), { replace: true });
+      navigate(createPageUrl(roleHome(user)), { replace: true });
     }
   }, [user, currentPageName]);
 

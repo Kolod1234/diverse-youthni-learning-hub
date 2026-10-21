@@ -15,7 +15,7 @@ export const ADMIN_NAV_GROUPS = [
     ['AdminLibrary', 'Library'], ['AdminEvents', 'Events'], ['AdminDiscover', 'Discover'], ['AdminReviews', 'Reviews'],
     ['AdminQuotes', 'Quotes'], ['AdminDailyFacts', 'Daily facts'], ['AdminStudentOfMonth', 'Student of the month'],
     ['AdminRSSFeed', 'News & RSS'], ['AdminLearningObjectives', 'Learning objectives'], ['AdminMathSolutionAudit', 'Maths solution audit'],
-    ['/admin-project-submissions', 'Project submissions'], ['/tutor-leaderboard', 'Student leaderboard'],
+    ['/tutor-leaderboard', 'Student leaderboard'],
   ] },
   { name: 'COMMUNICATION', links: [
     ['AdminSupportChats', 'Support chats'], ['AdminStudentMessages', 'Student messages'], ['AdminReminders', 'Reminders'],
