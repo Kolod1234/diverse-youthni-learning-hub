@@ -110,6 +110,7 @@ export function buildNav({ user, can, PERMISSIONS, canAccessPastPaperSolver, tut
     ] },
     isAdmin && { name: 'Admin', items: [
       page('AdminDashboard', 'Admin dashboard', DashboardIcon),
+      page('PartnerSchools', 'Partner schools (preview)', SchoolIcon),
       { ...page('AdminUsers', 'Users and all admin tools', AdminPanelSettingsIcon), hint: 'The full admin menu sits on the left of every admin page.' },
     ] },
     { name: 'Help', items: [page('ContactUs', 'Contact us', SupportAgentIcon)] },

@@ -111,6 +111,8 @@ const ADMIN_ONLY_PAGES = new Set([
   'AdminLearningObjectives', 'AdminMathSolutionAudit',
   // Library books are for in-house lesson preparation only.
   'Library', 'BookDetails', 'AdminLibrary', 'AdminLibraryDashboard',
+  // Partner Schools is a preview of the next phase (sample data only).
+  'PartnerSchools',
 ]);
 
 // Pull-to-refresh hook (mobile only)

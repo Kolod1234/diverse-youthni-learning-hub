@@ -9,6 +9,7 @@ export const ADMIN_NAV_GROUPS = [
     ['AdminDashboard', 'Dashboard'], ['AdminUsers', 'Users'], ['AdminRolesPermissions', 'Roles & permissions'],
     ['AdminCoordinators', 'Coordinators'], ['AdminTeachingRequests', 'Teaching requests'], ['AdminTutorMonitor', 'Tutor monitor'],
     ['AdminAttendance', 'Attendance'], ['AdminYouthWork', 'Youth Work'], ['/admin-parent-links', 'Parent verification'],
+    ['PartnerSchools', 'Partner schools (preview)'],
   ] },
   { name: 'CONTENT', links: [
     ['AdminCourseBuilder', 'Course builder'], ['AdminPageBuilder', 'Page builder'], ['CourseIntegrityValidator', 'Course validator'],
