@@ -172,13 +172,13 @@ export default function TutorDashboardOverview() {
                   </Button>
                 </Link>
                 <Link to={createPageUrl('TutorDashboard')}>
-                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                  <Button variant="outline" className="bg-transparent border-white/60 text-white hover:bg-white/10 hover:text-white">
                     <BookOpen className="w-4 h-4 mr-2" />
                     Course Dashboard
                   </Button>
                 </Link>
                 <Link to={createPageUrl('TutorSetup')}>
-                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                  <Button variant="outline" className="bg-transparent border-white/60 text-white hover:bg-white/10 hover:text-white">
                     <UserCheck className="w-4 h-4 mr-2" />
                     Edit Profile
                   </Button>
