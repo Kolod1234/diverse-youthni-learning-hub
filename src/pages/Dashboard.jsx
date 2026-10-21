@@ -55,10 +55,8 @@ export default function Dashboard() {
         navigate(createPageUrl('TutorDashboardOverview'), { replace: true });
         return;
       }
-      
-      if (userData?.is_coordinator && !userData?.is_tutor) {
-        setAccessDenied(true);
-      }
+      // Coordinators can be learners too, and this page only shows the signed-in person's
+      // own courses, so they are no longer turned away (their own home is My participants).
     };
     loadUser();
   }, []);
