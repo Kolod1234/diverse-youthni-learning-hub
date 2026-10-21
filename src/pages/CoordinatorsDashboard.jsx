@@ -140,7 +140,7 @@ export default function CoordinatorsDashboard() {
                 autoFocus
               />
             </div>
-            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
+            <Button type="submit" variant="contained" fullWidth size="large">
               Access Dashboard
             </Button>
           </form>
