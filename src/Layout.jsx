@@ -353,6 +353,8 @@ function LayoutContent({ children, currentPageName }) {
     </>
   );
 
+  const pageSection = sectionFor(currentPageName, user);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* In-app APK update banner (mobile users) */}
