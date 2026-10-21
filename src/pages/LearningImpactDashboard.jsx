@@ -7,7 +7,8 @@ import {
 import { BarChart3, TrendingUp, Users, Award, CheckCircle, Clock, RefreshCw } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+// Redesign palette: indigo, navy, yellow, then lighter tints for extra slices.
+const COLORS = ['#4f46e5', '#0b2f5c', '#fbbf24', '#818cf8', '#3b6aa0'];
 
 export default function LearningImpactDashboard() {
   const [user, setUser] = useState(null);
@@ -84,7 +85,7 @@ export default function LearningImpactDashboard() {
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <BarChart3 className="w-8 h-8 text-blue-600" />
+            <BarChart3 className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
             <Typography variant="h4" fontWeight="bold">Learning Impact Dashboard</Typography>
           </Box>
           <Button
@@ -106,7 +107,7 @@ export default function LearningImpactDashboard() {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Award className="w-8 h-8 text-blue-600" />
+                <Award className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
                 <Box>
                   <Typography variant="h4" fontWeight="bold">{totalAcademies}</Typography>
                   <Typography variant="body2" color="text.secondary">Total Academies</Typography>
@@ -123,7 +124,7 @@ export default function LearningImpactDashboard() {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Users className="w-8 h-8 text-green-600" />
+                <Users className="w-8 h-8 text-[#0b2f5c] dark:text-indigo-300" />
                 <Box>
                   <Typography variant="h4" fontWeight="bold">{totalEnrollments}</Typography>
                   <Typography variant="body2" color="text.secondary">Total Enrollments</Typography>
@@ -155,7 +156,7 @@ export default function LearningImpactDashboard() {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <TrendingUp className="w-8 h-8 text-orange-600" />
+                <TrendingUp className="w-8 h-8 text-[#0b2f5c] dark:text-indigo-300" />
                 <Box>
                   <Typography variant="h4" fontWeight="bold">{courseCompletionRate}%</Typography>
                   <Typography variant="body2" color="text.secondary">Course Completion</Typography>
@@ -179,8 +180,8 @@ export default function LearningImpactDashboard() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="enrolled" fill="#0088FE" name="Enrolled" />
-                  <Bar dataKey="certified" fill="#00C49F" name="Certified" />
+                  <Bar dataKey="enrolled" fill="#4f46e5" name="Enrolled" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="certified" fill="#0b2f5c" name="Certified" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -217,27 +218,30 @@ export default function LearningImpactDashboard() {
         <Grid size={12}>
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Key Insights</Typography>
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white', borderRadius: 2 }}>
-                    <Typography variant="h5" fontWeight="bold">{totalEnrollments}</Typography>
-                    <Typography variant="body2">Active Learners</Typography>
+              {/* Wireframe L3: a plain table under the charts instead of repeating the tiles. */}
+              <Typography variant="h6" sx={{ mb: 2 }}>Academies</Typography>
+              {academyPerformance.length === 0 ? (
+                <Typography color="text.secondary">No academies yet.</Typography>
+              ) : (
+                <Box sx={{ overflowX: 'auto' }}>
+                  <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse', fontSize: 14,
+                    '& th': { textAlign: 'left', color: 'text.secondary', fontWeight: 500, py: 1, px: 1.5, borderBottom: 1, borderColor: 'divider' },
+                    '& td': { py: 1.25, px: 1.5, borderBottom: 1, borderColor: 'divider' },
+                    '& tr:last-of-type td': { borderBottom: 0 } }}>
+                    <thead><tr><th>Academy</th><th>Enrolled</th><th>Certified</th><th>Certification rate</th></tr></thead>
+                    <tbody>
+                      {academyPerformance.map(a => (
+                        <tr key={a.name}>
+                          <td>{a.name}</td><td>{a.enrolled}</td><td>{a.certified}</td>
+                          <td><Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 140 }}>
+                            <LinearProgress variant="determinate" value={a.rate} sx={{ flex: 1, height: 6, borderRadius: 3 }} />{a.rate}%
+                          </Box></td>
+                        </tr>
+                      ))}
+                    </tbody>
                   </Box>
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Box sx={{ p: 2, bgcolor: 'success.main', color: 'white', borderRadius: 2 }}>
-                    <Typography variant="h5" fontWeight="bold">{certifiedStudents}</Typography>
-                    <Typography variant="body2">Certificates Issued</Typography>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Box sx={{ p: 2, bgcolor: 'warning.main', color: 'white', borderRadius: 2 }}>
-                    <Typography variant="h5" fontWeight="bold">{Math.round((completedCourses / (totalCourseEnrollments || 1)) * 100)}%</Typography>
-                    <Typography variant="body2">Overall Completion</Typography>
-                  </Box>
-                </Grid>
-              </Grid>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>
