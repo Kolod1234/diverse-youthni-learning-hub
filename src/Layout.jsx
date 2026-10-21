@@ -489,10 +489,7 @@ function LayoutContent({ children, currentPageName }) {
                 </MenuItem>
               </MuiMenu>
 
-              {/* Phone: same Menu drawer as desktop */}
-              <IconButton onClick={() => setMobileMenuOpen(true)} aria-label="Open menu" sx={{ display: { xs: 'flex', md: 'none' } }}>
-                <Menu size={24} />
-              </IconButton>
+              {/* Phones open the same Menu drawer from the bottom bar (wireframe M7), so no second button here. */}
             </Box>
           </Toolbar>
         </Container>
