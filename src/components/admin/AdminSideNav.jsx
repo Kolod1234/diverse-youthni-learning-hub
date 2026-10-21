@@ -8,13 +8,14 @@ export const ADMIN_NAV_GROUPS = [
   { name: 'PEOPLE', links: [
     ['AdminDashboard', 'Dashboard'], ['AdminUsers', 'Users'], ['AdminRolesPermissions', 'Roles & permissions'],
     ['AdminCoordinators', 'Coordinators'], ['AdminTeachingRequests', 'Teaching requests'], ['AdminTutorMonitor', 'Tutor monitor'],
-    ['AdminAttendance', 'Attendance'], ['AdminYouthWork', 'Youth Work'],
+    ['AdminAttendance', 'Attendance'], ['AdminYouthWork', 'Youth Work'], ['/admin-parent-links', 'Parent verification'],
   ] },
   { name: 'CONTENT', links: [
     ['AdminCourseBuilder', 'Course builder'], ['AdminPageBuilder', 'Page builder'], ['CourseIntegrityValidator', 'Course validator'],
     ['AdminLibrary', 'Library'], ['AdminEvents', 'Events'], ['AdminDiscover', 'Discover'], ['AdminReviews', 'Reviews'],
     ['AdminQuotes', 'Quotes'], ['AdminDailyFacts', 'Daily facts'], ['AdminStudentOfMonth', 'Student of the month'],
     ['AdminRSSFeed', 'News & RSS'], ['AdminLearningObjectives', 'Learning objectives'], ['AdminMathSolutionAudit', 'Maths solution audit'],
+    ['/admin-project-submissions', 'Project submissions'], ['/tutor-leaderboard', 'Student leaderboard'],
   ] },
   { name: 'COMMUNICATION', links: [
     ['AdminSupportChats', 'Support chats'], ['AdminStudentMessages', 'Student messages'], ['AdminReminders', 'Reminders'],
@@ -41,7 +42,7 @@ export default function AdminSideNav({ current }) {
           {group.links.map(([page, label]) => {
             const on = current === page;
             return (
-              <Button key={page} component={Link} to={createPageUrl(page)} fullWidth aria-current={on ? 'page' : undefined}
+              <Button key={page} component={Link} to={page.startsWith('/') ? page : createPageUrl(page)} fullWidth aria-current={on ? 'page' : undefined}
                 sx={{ justifyContent: 'flex-start', minHeight: 38, px: 1.25, fontWeight: on ? 700 : 400,
                   color: on ? 'primary.main' : 'text.primary', bgcolor: on ? 'rgba(79,70,229,0.10)' : 'transparent' }}>
                 {label}
