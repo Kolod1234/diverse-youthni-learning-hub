@@ -223,6 +223,15 @@ function LayoutContent({ children, currentPageName }) {
     if (target) navigate(createPageUrl(target) + location.search, { replace: true });
   }, [currentPageName]);
 
+  // Each role has its own dashboard (wireframes M5 student, M6 admin, L4 tutor, L5 coordinator).
+  // Staff still reach their own learning page through "My learning" (?as=student).
+  useEffect(() => {
+    if (!user || currentPageName !== 'Dashboard') return;
+    if (new URLSearchParams(location.search).get('as') === 'student') return;
+    const home = roleHome(user);
+    if (home !== 'Dashboard') navigate(createPageUrl(home), { replace: true });
+  }, [user, currentPageName, location.search]);
+
   // Keep non-admins out of admin-only pages.
   useEffect(() => {
     if (!user) return;
