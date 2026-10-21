@@ -165,8 +165,14 @@ export default function TutorDashboardOverview() {
 
               </div>
               <div className="flex gap-3 flex-wrap">
+                {/* Wireframe L4: scheduling is the main action on Tutor home. */}
+                <Link to={createPageUrl('ScheduleSession')}>
+                  <Button className="bg-[#fbbf24] text-slate-900 hover:bg-[#f59e0b] font-semibold">
+                    + Schedule a session
+                  </Button>
+                </Link>
                 <Link to={createPageUrl('TutorDashboard')}>
-                  <Button className="bg-card text-slate-900 hover:bg-muted font-semibold">
+                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
                     <BookOpen className="w-4 h-4 mr-2" />
                     Course Dashboard
                   </Button>
@@ -224,11 +230,11 @@ export default function TutorDashboardOverview() {
                   </div>
                   <div>
                     <p className="font-semibold">You have {todaySessions.length} session{todaySessions.length > 1 ? 's' : ''} today!</p>
-                    <p className="text-emerald-100 text-sm">{todaySessions[0]?.title} at {todaySessions[0]?.scheduled_time}</p>
+                    <p className="text-indigo-100 text-sm">{todaySessions[0]?.title} at {todaySessions[0]?.scheduled_time}</p>
                   </div>
                 </div>
                 <Link to={createPageUrl('TutorSessionsDashboard')}>
-                  <Button className="bg-card text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 font-semibold" size="sm">View</Button>
+                  <Button className="bg-white text-indigo-700 hover:bg-indigo-50 font-semibold" size="sm">View</Button>
                 </Link>
               </motion.div>
             )}
