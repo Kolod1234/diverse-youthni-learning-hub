@@ -35,6 +35,7 @@ const ArrowLeft = _w(ArrowBackIcon), Video = _w(VideocamIcon), Calendar = _w(Cal
 const Users = _w(PeopleIcon), Plus = _w(AddIcon), Repeat = _w(RepeatIcon), RefreshCw = _w(RefreshIcon);
 import AvailabilityManager from '@/components/tutor/AvailabilityManager';
 import UpcomingSessionsList from '@/components/tutor/UpcomingSessionsList';
+import { listUsers } from '@/api/listUsers';
 
 export default function ScheduleSession() {
   const [user, setUser] = useState(null);
@@ -82,7 +83,7 @@ export default function ScheduleSession() {
 
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
-    queryFn: () => base44.entities.User.list('-created_date', 500),
+    queryFn: () => listUsers({ sort: '-created_date', limit: 500 }),
   });
 
   const students = enrollments

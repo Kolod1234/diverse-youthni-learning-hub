@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar, Clock, Users, X } from 'lucide-react';
+import { listUsers } from '@/api/listUsers';
 
 export default function SessionScheduler({ courses, onClose, onSuccess }) {
   const [user, setUser] = useState(null);
@@ -41,7 +42,7 @@ export default function SessionScheduler({ courses, onClose, onSuccess }) {
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: () => listUsers(),
   });
 
   const createSessionMutation = useMutation({

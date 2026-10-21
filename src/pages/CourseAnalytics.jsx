@@ -38,6 +38,7 @@ const Brain = _w(PsychologyIcon), Clock = _w(AccessTimeIcon), CheckCircle = _w(C
 const BarChart3 = _w(BarChartIcon), Download = _w(DownloadIcon), MessageSquare = _w(ChatIcon);
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { listUsers } from '@/api/listUsers';
 
 export default function CourseAnalytics() {
   const [user, setUser] = useState(null);
@@ -87,7 +88,7 @@ export default function CourseAnalytics() {
 
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
-    queryFn: () => base44.entities.User.list('-created_date', 500),
+    queryFn: () => listUsers({ sort: '-created_date', limit: 500 }),
   });
 
   // Statistics

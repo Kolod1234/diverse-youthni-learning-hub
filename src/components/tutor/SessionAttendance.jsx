@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Users, CheckCircle, XCircle, Clock, Download } from 'lucide-react';
 import { format } from 'date-fns';
+import { listUsers } from '@/api/listUsers';
 
 export default function SessionAttendance({ session, onClose }) {
   const { data: participants = [] } = useQuery({
@@ -16,7 +17,7 @@ export default function SessionAttendance({ session, onClose }) {
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: () => listUsers(),
   });
 
   const attendedEmails = participants.map(p => p.participant_email);

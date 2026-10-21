@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import PointsBreakdownPanel from '@/components/students/PointsBreakdownPanel';
 import PerformanceTrendChart from '@/components/students/PerformanceTrendChart';
+import { listUsers } from '@/api/listUsers';
 
 export default function StudentAnalytics() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -24,7 +25,7 @@ export default function StudentAnalytics() {
   const { data: student } = useQuery({
     queryKey: ['student', studentEmail],
     queryFn: async () => {
-      const users = await base44.entities.User.filter({ email: studentEmail });
+      const users = await listUsers({ filter: { email: studentEmail } });
       return users[0];
     },
     enabled: !!studentEmail,

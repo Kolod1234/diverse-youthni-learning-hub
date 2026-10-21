@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { Calendar, Clock, Users, Repeat, Video } from 'lucide-react';
 import { toast } from 'sonner';
+import { listUsers } from '@/api/listUsers';
 
 export default function EnhancedSessionScheduler({ onScheduled }) {
   const queryClient = useQueryClient();
@@ -39,7 +40,7 @@ export default function EnhancedSessionScheduler({ onScheduled }) {
   const { data: students = [] } = useQuery({
     queryKey: ['students'],
     queryFn: async () => {
-      const users = await base44.entities.User.list();
+      const users = await listUsers();
       return users.filter(u => u.role !== 'admin');
     }
   });

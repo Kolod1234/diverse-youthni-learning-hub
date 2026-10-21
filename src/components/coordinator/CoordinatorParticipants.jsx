@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { listUsers } from '@/api/listUsers';
 
 export default function CoordinatorParticipants({ coordinatorEmail }) {
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -22,7 +23,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
   const { data: assignedParticipants = [], isLoading: participantsLoading } = useQuery({
     queryKey: ['assigned-participants', coordinatorEmail],
     queryFn: async () => {
-      const allUsers = await base44.entities.User.list('full_name', 1000);
+      const allUsers = await listUsers({ sort: 'full_name', limit: 1000 });
       const filtered = allUsers.filter(u => {
         const isAssigned = u.assigned_coordinator_email === coordinatorEmail;
         const notCoordinator = !u.is_coordinator;

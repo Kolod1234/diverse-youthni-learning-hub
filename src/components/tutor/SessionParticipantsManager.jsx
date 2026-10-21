@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Users, UserPlus, UserMinus } from 'lucide-react';
+import { listUsers } from '@/api/listUsers';
 
 export default function SessionParticipantsManager({ session, onClose, onUpdate }) {
   const [showAddStudent, setShowAddStudent] = useState(false);
@@ -16,7 +17,7 @@ export default function SessionParticipantsManager({ session, onClose, onUpdate 
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: () => listUsers(),
   });
 
   const updateSessionMutation = useMutation({

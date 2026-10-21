@@ -23,6 +23,7 @@ import ParticipantManager from '@/components/programs/ParticipantManager';
 import LogbookManager from '@/components/programs/LogbookManager';
 import ProgramDetailsCard from '@/components/programs/ProgramDetailsCard';
 import ProgramForm from '@/components/programs/ProgramForm';
+import { listUsers } from '@/api/listUsers';
 
 export default function Programs() {
   const [user, setUser] = useState(null);
@@ -63,7 +64,7 @@ export default function Programs() {
       
       // Notify program coordinators/admins about new enrollment
       try {
-        const coordinators = await base44.entities.User.filter({ role: 'admin' });
+        const coordinators = await listUsers({ filter: { role: 'admin' } });
         for (const coord of coordinators) {
           await base44.functions.invoke('sendNotification', {
             recipient_email: coord.email,

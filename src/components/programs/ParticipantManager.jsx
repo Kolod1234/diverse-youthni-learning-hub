@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Plus, User, UserCog, Trash2, Edit } from 'lucide-react';
 import { toast } from 'sonner';
+import { listUsers } from '@/api/listUsers';
 
 export default function ParticipantManager({ programId, isAdmin, isMentor }) {
   const [showForm, setShowForm] = useState(false);
@@ -31,7 +32,7 @@ export default function ParticipantManager({ programId, isAdmin, isMentor }) {
 
   const { data: users = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list('-created_date', 1000),
+    queryFn: () => listUsers({ sort: '-created_date', limit: 1000 }),
   });
 
   const mentors = users.filter(u => u.is_tutor || u.role === 'admin');

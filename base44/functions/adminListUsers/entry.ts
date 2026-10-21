@@ -6,6 +6,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 const STAFF_FIELDS = [
   'id', 'email', 'full_name', 'role', 'avatar', 'is_tutor', 'is_coordinator', 'coordinator_banned',
   'account_banned', 'youth_work_blocked', 'assigned_coordinator_email', 'created_date',
+  'username', 'coordinator_notes', 'coordinator_rating', 'participant_banned',
 ];
 const FILTERABLE = ['email', 'assigned_coordinator_email', 'is_coordinator', 'is_tutor', 'role'];
 

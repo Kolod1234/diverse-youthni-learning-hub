@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+import { listUsers } from '@/api/listUsers';
 
 export default function CoordinatorMessages({ coordinatorEmail, coordinatorName }) {
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -16,7 +17,7 @@ export default function CoordinatorMessages({ coordinatorEmail, coordinatorName 
   const { data: assignedParticipants = [] } = useQuery({
     queryKey: ['assigned-participants', coordinatorEmail],
     queryFn: async () => {
-      const allUsers = await base44.entities.User.list('full_name', 1000);
+      const allUsers = await listUsers({ sort: 'full_name', limit: 1000 });
       return allUsers.filter(u => 
         u.assigned_coordinator_email === coordinatorEmail && 
         !u.is_coordinator && 

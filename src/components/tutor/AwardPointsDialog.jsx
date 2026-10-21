@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Award, Zap, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { listUsers } from '@/api/listUsers';
 
 export default function AwardPointsDialog({ open, onOpenChange, courseId }) {
   const [selectedStudent, setSelectedStudent] = useState('');
@@ -30,7 +31,7 @@ export default function AwardPointsDialog({ open, onOpenChange, courseId }) {
 
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
-    queryFn: () => base44.entities.User.list('-created_date', 500),
+    queryFn: () => listUsers({ sort: '-created_date', limit: 500 }),
     enabled: open,
   });
 

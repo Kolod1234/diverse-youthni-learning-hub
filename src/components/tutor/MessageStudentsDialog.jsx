@@ -16,6 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Send, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import AIMessageAssistant from './AIMessageAssistant';
+import { listUsers } from '@/api/listUsers';
 
 export default function MessageStudentsDialog({ open, onOpenChange, courseId, courseName }) {
   const [message, setMessage] = useState('');
@@ -31,7 +32,7 @@ export default function MessageStudentsDialog({ open, onOpenChange, courseId, co
 
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
-    queryFn: () => base44.entities.User.list('-created_date', 500),
+    queryFn: () => listUsers({ sort: '-created_date', limit: 500 }),
     enabled: open,
   });
 
