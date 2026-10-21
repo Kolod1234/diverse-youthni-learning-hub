@@ -71,7 +71,7 @@ import ThemeToggle from '@/components/theme/ThemeToggle';
 import ThemeProvider from '@/components/theme/ThemeProvider';
 import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
 import AdminSideNav, { ADMIN_NAV_PAGES } from '@/components/admin/AdminSideNav';
-import SectionTabs, { sectionFor } from '@/components/layout/SectionTabs';
+import SectionTabs, { SectionSideNav, sectionFor } from '@/components/layout/SectionTabs';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
@@ -927,10 +927,15 @@ function LayoutContent({ children, currentPageName }) {
             transition={{ duration: 0.2, ease: 'easeInOut' }}
             style={{ width: '100%' }}
           >
-            <SectionTabs section={sectionFor(currentPageName, user)} current={currentPageName} />
+            <SectionTabs section={pageSection} current={currentPageName} />
             {user?.role === 'admin' && ADMIN_NAV_PAGES.has(currentPageName) ? (
               <Box sx={{ display: 'flex', alignItems: 'flex-start', maxWidth: 1440, mx: 'auto' }}>
                 <AdminSideNav current={currentPageName} />
+                <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
+              </Box>
+            ) : pageSection?.side ? (
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', maxWidth: 1440, mx: 'auto' }}>
+                <SectionSideNav section={pageSection} current={currentPageName} />
                 <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
               </Box>
             ) : children}
