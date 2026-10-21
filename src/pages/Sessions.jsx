@@ -205,13 +205,13 @@ export default function Sessions() {
         {/* Sessions Tabs */}
         <Tabs defaultValue="upcoming" className="space-y-6">
           <TabsList className="bg-card border border-border">
-            <TabsTrigger value="live" className="gap-2">
-              <PlayCircle className="w-4 h-4" />
-              Live ({liveSessions.length})
-            </TabsTrigger>
             <TabsTrigger value="upcoming" className="gap-2">
               <Calendar className="w-4 h-4" />
               Upcoming ({upcomingSessions.length})
+            </TabsTrigger>
+            <TabsTrigger value="live" className="gap-2">
+              <PlayCircle className="w-4 h-4" />
+              Live ({liveSessions.length})
             </TabsTrigger>
             <TabsTrigger value="past" className="gap-2">
               <CheckCircle className="w-4 h-4" />
