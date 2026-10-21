@@ -24,6 +24,8 @@ import { createPageUrl } from '@/utils';
 export default function YouthWork() {
   const [user, setUser] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState('all');
+  // Which tab (Curriculum / Requirements / Effective Practice) each qualification card shows.
+  const [qualTab, setQualTab] = useState({});
 
   useEffect(() => {
     const loadUser = async () => {
@@ -206,7 +208,7 @@ export default function YouthWork() {
 
                 <CardContent>
                   <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-                    <Tabs defaultValue={0}>
+                    <Tabs value={(qualTab[qual.id || index] || 0)} onChange={(_, v) => setQualTab(t => ({ ...t, [qual.id || index]: v }))} variant="scrollable" allowScrollButtonsMobile>
                       <Tab label="Curriculum" />
                       <Tab label="Requirements" />
                       <Tab label="Effective Practice" />
@@ -214,6 +216,7 @@ export default function YouthWork() {
                   </Box>
 
                   <Box sx={{ p: 2 }}>
+                    <Box hidden={(qualTab[qual.id || index] || 0) !== 0}>
                     {qual.curriculum && qual.curriculum.length > 0 ? (
                         <Box sx={{ mb: 2 }}>
                           {qual.curriculum.map((unit, idx) => (
@@ -257,6 +260,9 @@ export default function YouthWork() {
                         </Typography>
                       )}
 
+                    </Box>
+
+                    <Box hidden={(qualTab[qual.id || index] || 0) !== 1}>
                     {(qual.entry_requirements || qual.progression_routes) && (
                       <Box sx={{ mb: 2 }}>
                         {qual.entry_requirements && (
@@ -281,6 +287,12 @@ export default function YouthWork() {
                       </Box>
                     )}
 
+                    {!qual.entry_requirements && !qual.progression_routes && (
+                      <Typography color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>Requirements details coming soon</Typography>
+                    )}
+                    </Box>
+
+                    <Box hidden={(qualTab[qual.id || index] || 0) !== 2}>
                     {qual.effective_practice_model ? (
                       <Box>
                         {qual.effective_practice_model.purpose && (
@@ -326,6 +338,7 @@ export default function YouthWork() {
                         Effective practice model details coming soon
                       </Typography>
                     )}
+                    </Box>
                   </Box>
                 </CardContent>
               </Card>
