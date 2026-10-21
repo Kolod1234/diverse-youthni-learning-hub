@@ -72,6 +72,7 @@ import ThemeProvider from '@/components/theme/ThemeProvider';
 import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
 import AdminSideNav, { ADMIN_NAV_PAGES } from '@/components/admin/AdminSideNav';
 import SectionTabs, { SectionSideNav, sectionFor } from '@/components/layout/SectionTabs';
+import { buildNav, roleHome, isActive as isNavActive, NavDrawer } from '@/components/layout/MainNav';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
@@ -354,6 +355,7 @@ function LayoutContent({ children, currentPageName }) {
   );
 
   const pageSection = sectionFor(currentPageName, user);
+  const nav = buildNav({ user, can, PERMISSIONS, canAccessPastPaperSolver, tutorPages: TUTOR_PAGES });
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -394,343 +396,24 @@ function LayoutContent({ children, currentPageName }) {
               </IconButton>
             )}
 
-            {/* Desktop Navigation */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, mr: 2 }}>
-              <Button
-                component={Link}
-                to={createPageUrl('Home')}
-                startIcon={<Home size={20} />}
-                sx={{
-                  color: location.pathname === createPageUrl('Home') || location.pathname === '/' ? 'primary.main' : 'text.secondary',
-                  bgcolor: location.pathname === createPageUrl('Home') || location.pathname === '/' ? 'primary.main' + '15' : 'transparent',
-                  '&:hover': { bgcolor: 'action.hover' },
-                  px: 2, py: 1, borderRadius: 2
-                }}
-              >
-                Home
+            {/* Desktop navigation: the role's top links, then one Menu button for everything else. */}
+            <Box component="nav" aria-label="Main" sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, mr: 2 }}>
+              {nav.primary.map(item => {
+                const on = isNavActive(item, currentPageName);
+                const Icon = item.icon;
+                return (
+                  <Button key={item.label} component={Link} to={item.to} startIcon={<Icon sx={{ fontSize: 20 }} />}
+                    aria-current={on ? 'page' : undefined}
+                    sx={{ color: on ? 'primary.main' : 'text.secondary', bgcolor: on ? 'rgba(251,191,36,0.12)' : 'transparent',
+                      '&:hover': { bgcolor: 'action.hover' }, px: 2, py: 1, borderRadius: 2 }}>
+                    {item.label}
+                  </Button>
+                );
+              })}
+              <Button onClick={() => setMobileMenuOpen(true)} startIcon={<Menu size={20} />}
+                sx={{ color: 'text.secondary', '&:hover': { bgcolor: 'action.hover' }, px: 2, py: 1, borderRadius: 2 }}>
+                Menu
               </Button>
-              <Button
-                component={Link}
-                to={createPageUrl('Explore')}
-                startIcon={<Compass size={20} />}
-                sx={{
-                  color: location.pathname.includes('Explore') ? 'primary.main' : 'text.secondary',
-                  bgcolor: location.pathname.includes('Explore') ? 'primary.main' + '15' : 'transparent',
-                  '&:hover': { bgcolor: 'action.hover' },
-                  px: 2, py: 1, borderRadius: 2
-                }}
-              >
-                Explore
-              </Button>
-              {user?.role === 'admin' && (
-              <Button
-                component={Link}
-                to={createPageUrl('Library')}
-                startIcon={<BookOpen size={20} />}
-                sx={{
-                  color: location.pathname.includes('Library') ? 'primary.main' : 'text.secondary',
-                  bgcolor: location.pathname.includes('Library') ? 'primary.main' + '15' : 'transparent',
-                  '&:hover': { bgcolor: 'action.hover' },
-                  px: 2, py: 1, borderRadius: 2
-                }}
-              >
-                Library
-              </Button>
-              )}
-              {isTutorOrAdmin ? (
-                <Button
-                  component={Link}
-                  to={createPageUrl('TutorDashboardOverview')}
-                  startIcon={<BookOpen size={20} />}
-                  sx={{
-                    color: location.pathname.includes('TutorDashboard') ? 'primary.main' : 'text.secondary',
-                    bgcolor: location.pathname.includes('TutorDashboard') ? 'primary.main' + '15' : 'transparent',
-                    '&:hover': { bgcolor: 'action.hover' },
-                    px: 2, py: 1, borderRadius: 2
-                  }}
-                >
-                  My Courses
-                </Button>
-              ) : (
-                <Button
-                  component={Link}
-                  to={createPageUrl('Dashboard')}
-                  startIcon={<BookOpen size={20} />}
-                  sx={{
-                    color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary',
-                    bgcolor: location.pathname.includes('Dashboard') ? 'primary.main' + '15' : 'transparent',
-                    '&:hover': { bgcolor: 'action.hover' },
-                    px: 2, py: 1, borderRadius: 2
-                  }}
-                >
-                  My Learning
-                </Button>
-              )}
-
-              {/* More Menu */}
-              <Button
-                onClick={(e) => setMoreMenuAnchor(e.currentTarget)}
-                startIcon={<MoreVertical size={20} />}
-                sx={{
-                  color: 'text.secondary',
-                  '&:hover': { bgcolor: 'action.hover' },
-                  px: 2, py: 1, borderRadius: 2
-                }}
-              >
-                More
-              </Button>
-              <MuiMenu
-                anchorEl={moreMenuAnchor}
-                open={Boolean(moreMenuAnchor)}
-                onClose={() => setMoreMenuAnchor(null)}
-                disableEnforceFocus
-                disableRestoreFocus
-                disableAutoFocusItem
-                PaperProps={{
-                  sx: { width: 280, maxHeight: 600, borderRadius: 3, mt: 1 }
-                }}
-              >
-                <MenuItem component={Link} to={createPageUrl('Tutors')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><GraduationCap size={20} color="#2563eb" /></ListItemIcon>
-                  <ListItemText primary="Tutors" />
-                </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('YouthWork')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
-                  <ListItemText primary="Youth Work (OCN)" />
-                </MenuItem>
-                <MenuItem component={Link} to="/laboratory" onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
-                  <ListItemText primary="Virtual Laboratory 🧪" />
-                </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('CCEAPastPapers')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
-                  <ListItemText primary="CCEA Past Papers" />
-                </MenuItem>
-                {canAccessPastPaperSolver && (
-                  <MenuItem component={Link} to={createPageUrl('PastPaperSolver')} onClick={() => setMoreMenuAnchor(null)}>
-                    <ListItemIcon><BookOpen size={20} color="#4f46e5" /></ListItemIcon>
-                    <ListItemText primary="DYNI Past Paper Solver 🧠" />
-                  </MenuItem>
-                )}
-                <MenuItem component={Link} to={createPageUrl('Sessions')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><Video size={20} color="#dc2626" /></ListItemIcon>
-                  <ListItemText primary="Live Sessions" />
-                </MenuItem>
-                {(user?.is_tutor || user?.is_coordinator || user?.role === 'admin') && (
-                  <MenuItem component={Link} to="/kahoot-host" onClick={() => setMoreMenuAnchor(null)}>
-                    <ListItemIcon><Sparkles size={20} color="#f59e0b" /></ListItemIcon>
-                    <ListItemText primary="Strands of Ideas" />
-                  </MenuItem>
-                )}
-                <Divider />
-                <MenuItem component={Link} to={createPageUrl('MessageCenter')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
-                  <ListItemText primary="Messages" />
-                </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('Achievements')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                  <ListItemText primary="Achievements" />
-                </MenuItem>
-                <Divider />
-                <MenuItem component={Link} to={createPageUrl('ContactUs')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
-                  <ListItemText primary="Contact Us" />
-                </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('Events')} onClick={() => setMoreMenuAnchor(null)}>
-                  <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
-                  <ListItemText primary="Events" />
-                </MenuItem>
-                <Divider />
-                {user && !user.is_coordinator && user.role !== 'admin' && (
-                  <>
-                    <MenuItem onClick={() => { setMoreMenuAnchor(null); setTimeout(() => setShowCoordinatorDialog(true), 50); }}>
-                      <ListItemIcon><UserCheck size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary={user?.coordinator_request_status === 'rejected' ? 'Reapply as Coordinator' : 'Become a Coordinator'} />
-                    </MenuItem>
-                    <Divider />
-                  </>
-                )}
-                {user && !user.is_tutor && user.role !== 'admin' && (
-                  <>
-                    <MenuItem onClick={() => { setMoreMenuAnchor(null); setTimeout(() => setShowTutorDialog(true), 50); }}>
-                      <ListItemIcon><GraduationCap size={20} color="#4f46e5" /></ListItemIcon>
-                      <ListItemText primary={user?.tutor_request_status === 'rejected' ? 'Reapply as Tutor' : 'Become a Tutor'} />
-                    </MenuItem>
-                    <Divider />
-                  </>
-                )}
-                {isCoordinator && !isTutorOrAdmin && (
-                  <>
-                    <Divider />
-                    <MenuItem component={Link} to={createPageUrl('CoordinatorsDashboard')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
-                      <ListItemText primary="Coordinators Dashboard" />
-                    </MenuItem>
-                  </>
-                )}
-                {(isTutorOrAdmin || can(PERMISSIONS.CREATE_LESSON)) && (
-                  <>
-                    <Divider />
-                    <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
-                      CONTENT CREATOR TOOLS
-                    </Typography>
-                    {can(PERMISSIONS.CREATE_COURSE) && (
-                      <MenuItem component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><Settings size={20} color="#2563eb" /></ListItemIcon>
-                        <ListItemText primary="Tutor Overview" />
-                      </MenuItem>
-                    )}
-                    {can(PERMISSIONS.CREATE_COURSE) && (
-                      <MenuItem component={Link} to={createPageUrl('TutorBookingManager')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
-                        <ListItemText primary="Manage Bookings" />
-                      </MenuItem>
-                    )}
-                    {can(PERMISSIONS.CREATE_LESSON) && (
-                      <MenuItem component={Link} to={createPageUrl('LessonEditor')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
-                        <ListItemText primary="Lesson Editor" />
-                      </MenuItem>
-                    )}
-                    <MenuItem component={Link} to={createPageUrl('Templates')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
-                      <ListItemText primary="Templates" />
-                    </MenuItem>
-                  </>
-                )}
-                {can(PERMISSIONS.ACCESS_ADMIN_PANEL) && (
-                  <>
-                    <Divider />
-                    <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
-                      ADMIN PANEL
-                    </Typography>
-                    <MenuItem component={Link} to={createPageUrl('AdminDashboard')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Settings size={20} color="#dc2626" /></ListItemIcon>
-                      <ListItemText primary="Admin Panel" />
-                    </MenuItem>
-                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
-                      PEOPLE
-                    </Typography>
-                    {can(PERMISSIONS.MANAGE_ROLES) && (
-                      <MenuItem component={Link} to={createPageUrl('AdminRolesPermissions')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><Shield size={20} color="#f59e0b" /></ListItemIcon>
-                        <ListItemText primary="Roles & Permissions" />
-                      </MenuItem>
-                    )}
-                    <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
-                      <ListItemText primary="Manage Coordinators" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminTeachingRequests')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="Teaching Requests" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminTutorMonitor')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Tutor Monitor" />
-                    </MenuItem>
-                    <MenuItem component={Link} to="/admin-parent-links" onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><UserCheck size={20} color="#0d9488" /></ListItemIcon>
-                      <ListItemText primary="Parent Verification" />
-                    </MenuItem>
-                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
-                      CONTENT
-                    </Typography>
-                    <MenuItem component={Link} to={createPageUrl('AdminPageBuilder')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><LayoutIcon size={20} color="#8b5cf6" /></ListItemIcon>
-                      <ListItemText primary="Page Builder" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('CourseIntegrityValidator')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><CheckCircle size={20} color="#10b981" /></ListItemIcon>
-                      <ListItemText primary="Course Validator" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminLibrary')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
-                      <ListItemText primary="Manage Library" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminEvents')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="Event Manager" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminDiscover')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
-                      <ListItemText primary="Manage Discover" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminReviews')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#ea580c" /></ListItemIcon>
-                      <ListItemText primary="Manage Reviews" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminQuotes')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#ec4899" /></ListItemIcon>
-                      <ListItemText primary="Manage Quotes" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminDailyFacts')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#0d9488" /></ListItemIcon>
-                      <ListItemText primary="Manage Facts" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminStudentOfMonth')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                      <ListItemText primary="Student of Month" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminRSSFeed')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#2563eb" /></ListItemIcon>
-                      <ListItemText primary="Manage RSS Feed" />
-                    </MenuItem>
-                    <MenuItem component={Link} to="/admin-project-submissions" onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Project Submissions" />
-                    </MenuItem>
-                    <MenuItem component={Link} to="/tutor-leaderboard" onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                      <ListItemText primary="Student Leaderboard" />
-                    </MenuItem>
-                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
-                      COMMUNICATION
-                    </Typography>
-                    <MenuItem component={Link} to={createPageUrl('AdminSupportChats')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#0ea5e9" /></ListItemIcon>
-                      <ListItemText primary="Support Chats" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
-                      <ListItemText primary="Send Student Messages" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
-                      <ListItemText primary="Student Reminders" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminNotifications')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
-                      <ListItemText primary="Notification Centre" />
-                    </MenuItem>
-                    <Typography variant="caption" sx={{ px: 2, pt: 1.5, pb: 0.5, display: 'block', color: 'text.disabled', fontSize: '0.7rem', letterSpacing: 0.5 }}>
-                      SYSTEM
-                    </Typography>
-                    <MenuItem component={Link} to={createPageUrl('AdminAppVersion')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#16a34a" /></ListItemIcon>
-                      <ListItemText primary="App Version Manager" />
-                    </MenuItem>
-                  </>
-                )}
-
-                {isTutorOrAdmin && !isAdmin && (
-                  <>
-                    <Divider />
-                    <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
-                      <ListItemText primary="Student Reminders" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
-                      <ListItemText primary="Send Student Messages" />
-                    </MenuItem>
-                    <MenuItem component={Link} to="/tutor-leaderboard" onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                      <ListItemText primary="Student Leaderboard" />
-                    </MenuItem>
-                  </>
-                )}
-              </MuiMenu>
             </Box>
 
             {/* Right Side */}
@@ -770,25 +453,25 @@ function LayoutContent({ children, currentPageName }) {
                   <Typography variant="body2" fontWeight={600}>{user?.full_name || 'User'}</Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-all' }}>{user?.email}</Typography>
                 </Box>
-                <MenuItem component={Link} to={createPageUrl('Dashboard')} onClick={() => setUserMenuAnchor(null)}>
+                <MenuItem component={Link} to={createPageUrl(nav.home)} onClick={() => setUserMenuAnchor(null)}>
+                  <ListItemIcon><LayoutIcon size={18} /></ListItemIcon>
+                  <ListItemText primary="My dashboard" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('Profile')} onClick={() => setUserMenuAnchor(null)}>
                   <ListItemIcon><User size={18} /></ListItemIcon>
-                  <ListItemText primary="My Dashboard" />
-                </MenuItem>
-                <MenuItem component={Link} to="/parent-dashboard" onClick={() => setUserMenuAnchor(null)}>
-                  <ListItemIcon><Users size={18} /></ListItemIcon>
-                  <ListItemText primary="Parent Dashboard" />
-                </MenuItem>
-                <MenuItem onClick={() => { navigate(createPageUrl('WelcomeCover'), { state: { forceShow: true } }); setUserMenuAnchor(null); }}>
-                  <ListItemIcon><Home size={18} /></ListItemIcon>
-                  <ListItemText primary="Change Pathway" />
+                  <ListItemText primary="Profile" />
                 </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('Settings')} onClick={() => setUserMenuAnchor(null)}>
                   <ListItemIcon><Settings size={18} /></ListItemIcon>
                   <ListItemText primary="Settings" />
                 </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('Dashboard')} onClick={() => setUserMenuAnchor(null)}>
-                  <ListItemIcon><Award size={18} /></ListItemIcon>
-                  <ListItemText primary="Achievements" />
+                <MenuItem component={Link} to="/parent-dashboard" onClick={() => setUserMenuAnchor(null)}>
+                  <ListItemIcon><Users size={18} /></ListItemIcon>
+                  <ListItemText primary="Parent dashboard" />
+                </MenuItem>
+                <MenuItem onClick={() => { navigate(createPageUrl('WelcomeCover'), { state: { forceShow: true } }); setUserMenuAnchor(null); }}>
+                  <ListItemIcon><Home size={18} /></ListItemIcon>
+                  <ListItemText primary="Change pathway" />
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={() => { setLogoutDialogOpen(true); setUserMenuAnchor(null); }} sx={{ color: 'error.main' }}>
@@ -797,93 +480,10 @@ function LayoutContent({ children, currentPageName }) {
                 </MenuItem>
               </MuiMenu>
 
-              {/* Mobile Menu */}
-              <IconButton onClick={() => setMobileMenuOpen(true)} sx={{ display: { xs: 'flex', md: 'none' } }}>
+              {/* Phone: same Menu drawer as desktop */}
+              <IconButton onClick={() => setMobileMenuOpen(true)} aria-label="Open menu" sx={{ display: { xs: 'flex', md: 'none' } }}>
                 <Menu size={24} />
               </IconButton>
-              <Drawer
-                anchor="right"
-                open={mobileMenuOpen}
-                onClose={() => setMobileMenuOpen(false)}
-                PaperProps={{ sx: { width: 280 } }}
-              >
-                <Box sx={{ pt: 3, pb: 2 }}>
-                  <List>
-                    <ListItemButton component={Link} to={createPageUrl('Home')} onClick={() => setMobileMenuOpen(false)}>
-                      <ListItemIcon><Home size={20} /></ListItemIcon>
-                      <ListItemText primary="Home" />
-                    </ListItemButton>
-                    <ListItemButton component={Link} to={createPageUrl('Explore')} onClick={() => setMobileMenuOpen(false)}>
-                      <ListItemIcon><Compass size={20} /></ListItemIcon>
-                      <ListItemText primary="Explore" />
-                    </ListItemButton>
-                    {user?.role === 'admin' && (
-                    <ListItemButton component={Link} to={createPageUrl('Library')} onClick={() => setMobileMenuOpen(false)}>
-                      <ListItemIcon><BookOpen size={20} /></ListItemIcon>
-                      <ListItemText primary="Library" />
-                    </ListItemButton>
-                    )}
-                    {isTutorOrAdmin ? (
-                      <ListItemButton component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMobileMenuOpen(false)}>
-                        <ListItemIcon><BookOpen size={20} /></ListItemIcon>
-                        <ListItemText primary="My Courses" />
-                      </ListItemButton>
-                    ) : (
-                      <ListItemButton component={Link} to={createPageUrl('Dashboard')} onClick={() => setMobileMenuOpen(false)}>
-                        <ListItemIcon><BookOpen size={20} /></ListItemIcon>
-                        <ListItemText primary="My Learning" />
-                      </ListItemButton>
-                    )}
-                    {(user?.is_tutor || user?.is_coordinator || user?.role === 'admin') && (
-                      <ListItemButton component={Link} to="/kahoot-host" onClick={() => setMobileMenuOpen(false)}>
-                        <ListItemIcon><Sparkles size={20} /></ListItemIcon>
-                        <ListItemText primary="Strands of Ideas" />
-                      </ListItemButton>
-                    )}
-                    <ListItemButton component={Link} to="/laboratory" onClick={() => setMobileMenuOpen(false)}>
-                      <ListItemIcon><Sparkles size={20} /></ListItemIcon>
-                      <ListItemText primary="Virtual Laboratory 🧪" />
-                    </ListItemButton>
-                    {canAccessPastPaperSolver && (
-                      <ListItemButton component={Link} to={createPageUrl('PastPaperSolver')} onClick={() => setMobileMenuOpen(false)}>
-                        <ListItemIcon><BookOpen size={20} /></ListItemIcon>
-                        <ListItemText primary="DYNI Past Paper Solver" />
-                      </ListItemButton>
-                    )}
-
-                    {isCoordinator && !isTutorOrAdmin && (
-                      <ListItemButton component={Link} to={createPageUrl('CoordinatorsDashboard')} onClick={() => setMobileMenuOpen(false)}>
-                        <ListItemIcon><User size={20} /></ListItemIcon>
-                        <ListItemText primary="Coordinators Dashboard" />
-                      </ListItemButton>
-                    )}
-
-                    {isTutorOrAdmin && (
-                      <>
-                        <Divider sx={{ my: 1 }} />
-                        <ListItemButton component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMobileMenuOpen(false)}>
-                          <ListItemIcon><Settings size={20} /></ListItemIcon>
-                          <ListItemText primary="Tutor Overview" />
-                        </ListItemButton>
-                        <ListItemButton component={Link} to={createPageUrl('Templates')} onClick={() => setMobileMenuOpen(false)}>
-                          <ListItemIcon><ClipboardList size={20} /></ListItemIcon>
-                          <ListItemText primary="Templates" />
-                        </ListItemButton>
-                      </>
-                    )}
-
-                    {isAdmin && (
-                      <>
-                        <Divider sx={{ my: 1 }} />
-                        <ListItemButton component={Link} to={createPageUrl('AdminDashboard')} onClick={() => setMobileMenuOpen(false)}>
-                          <ListItemIcon><Settings size={20} /></ListItemIcon>
-                          <ListItemText primary="Admin Panel" />
-                        </ListItemButton>
-                      </>
-                    )}
-                  </List>
-                </Box>
-              </Drawer>
             </Box>
           </Toolbar>
         </Container>
@@ -968,35 +568,40 @@ function LayoutContent({ children, currentPageName }) {
         }}
       >
         <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-around', alignItems: 'center' }}>
-          {[
-            { label: 'Courses', page: 'Explore', icon: Compass, match: 'Explore' },
-            isTutorOrAdmin
-              ? { label: 'My Courses', page: 'TutorDashboardOverview', icon: BookOpen, match: 'TutorDashboard' }
-              : { label: 'Progress', page: 'Dashboard', icon: BarChart3, match: 'Dashboard' },
-            ...(user?.role === 'admin' ? [{ label: 'Library', page: 'Library', icon: BookOpen, match: 'Library' }] : []),
-            { label: 'Profile', page: 'Profile', icon: User, match: 'Profile' },
-          ].map(({ label, page, icon: Icon, match }) => {
-            const isActive = location.pathname.includes(match);
-            const href = createPageUrl(page);
+          {nav.primary.slice(0, 3).map((item) => {
+            const on = isNavActive(item, currentPageName);
+            const Icon = item.icon;
             return (
               <Link
-                key={page}
-                to={href}
+                key={item.label}
+                to={item.to}
+                aria-current={on ? 'page' : undefined}
                 onClick={() => {
                   // Save current scroll before navigating away
                   tabScrollPositions.current[location.pathname] = window.scrollY;
                 }}
                 style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
               >
-                <Icon size={24} color={isActive ? '#4f46e5' : '#6b7280'} />
-                <Typography variant="caption" sx={{ color: isActive ? 'primary.main' : 'text.secondary', fontWeight: isActive ? 600 : 400, fontSize: '0.7rem' }}>
-                  {label}
+                <Icon sx={{ fontSize: 24, color: on ? '#4f46e5' : 'text.secondary' }} />
+                <Typography variant="caption" sx={{ color: on ? 'primary.main' : 'text.secondary', fontWeight: on ? 600 : 400, fontSize: '0.7rem' }}>
+                  {item.label}
                 </Typography>
               </Link>
             );
           })}
+          <Box component="button" type="button" onClick={() => setMobileMenuOpen(true)}
+            sx={{ border: 0, bgcolor: 'transparent', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', p: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center', color: 'text.secondary' }}>
+            <Menu size={24} />
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>Menu</Typography>
+          </Box>
         </Box>
       </Box>
+
+      <NavDrawer open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} groups={nav.groups} currentPageName={currentPageName}
+        actions={[
+          ...(user && !user.is_coordinator && user.role !== 'admin' ? [{ label: user.coordinator_request_status === 'rejected' ? 'Reapply as a coordinator' : 'Become a coordinator', onClick: () => setShowCoordinatorDialog(true) }] : []),
+          ...(user && !user.is_tutor && user.role !== 'admin' ? [{ label: user.tutor_request_status === 'rejected' ? 'Reapply as a tutor' : 'Become a tutor', onClick: () => setShowTutorDialog(true) }] : []),
+        ]} />
 
       {/* Become Tutor / Coordinator Dialogs - rendered outside MuiMenu to avoid focus trapping issues */}
       <BecomeTutorButton user={user} externalOpen={showTutorDialog} onExternalOpenChange={setShowTutorDialog} />
