@@ -58,7 +58,7 @@ export default function DetailedProgressChart({ progressData = [] }) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="engagement" fill="#0b2f5c" name="Engagement Score" />
+            <Bar dataKey="engagement" fill="#4f46e5" name="Engagement Score" />
             <Bar dataKey="slides" fill="#0b2f5c" name="Slides Viewed" />
           </BarChart>
         </ResponsiveContainer>
