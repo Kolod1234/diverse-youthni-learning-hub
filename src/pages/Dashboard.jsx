@@ -207,15 +207,20 @@ export default function Dashboard() {
 
         <ParentalConsentCountdown user={user} />
 
-        {enrollments.length === 0 && !loadingEnrollments ? (
-          <Card sx={{ textAlign: 'center', py: 8, px: 3 }}>
-            <BookOpen size={48} color="#4f46e5" />
-            <Typography variant="h5" fontWeight={700} sx={{ mt: 2, mb: 1 }}>Start your learning journey</Typography>
-            <Typography color="text.secondary" sx={{ mb: 3 }}>Pick a free course to begin. Your progress will show here.</Typography>
-            <Button component={Link} to={createPageUrl('Explore')} variant="contained">Browse courses</Button>
-          </Card>
-        ) : (
+        {/* The full M5 layout always shows; with no courses yet, the navy card invites a first course instead. */}
           <>
+            {!resumeCourse && !loadingEnrollments && (
+              <Box component={Link} to={createPageUrl('Explore')}
+                sx={{ bgcolor: '#0b2f5c', color: '#fff', borderRadius: '14px', p: { xs: 2.5, md: 3 }, textDecoration: 'none', display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', justifyContent: 'space-between',
+                  '&:hover': { bgcolor: '#12396b' } }}>
+                <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
+                  <Typography sx={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.06em', color: '#dbe4f0' }}>START YOUR LEARNING JOURNEY</Typography>
+                  <Typography sx={{ fontSize: '1.375rem', fontWeight: 700, my: 0.5 }}>Pick a free course to begin</Typography>
+                  <Typography variant="body2" sx={{ color: '#dbe4f0' }}>Your progress will show here once you start.</Typography>
+                </Box>
+                <Box sx={{ minHeight: 48, px: 3, display: 'inline-flex', alignItems: 'center', borderRadius: '10px', bgcolor: '#fff', color: '#0b2f5c', fontWeight: 700 }}>Browse courses</Box>
+              </Box>
+            )}
             {resumeCourse && (
               <Box component={Link} to={resumeHref}
                 sx={{ bgcolor: '#0b2f5c', color: '#fff', borderRadius: '14px', p: { xs: 2.5, md: 3 }, textDecoration: 'none', display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', justifyContent: 'space-between',
@@ -286,9 +291,14 @@ export default function Dashboard() {
                         );
                       })
                     ) : (
-                      <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-                        {tabValue === 'completed' ? 'No completed courses yet.' : 'No courses in progress.'}
-                      </Typography>
+                      <Box sx={{ py: 4, textAlign: 'center' }}>
+                        <Typography color="text.secondary" sx={{ mb: 1.5 }}>
+                          {tabValue === 'completed' ? 'No completed courses yet.' : 'No courses in progress.'}
+                        </Typography>
+                        {tabValue !== 'completed' && (
+                          <Button component={Link} to={createPageUrl('Explore')} variant="outlined">Browse courses</Button>
+                        )}
+                      </Box>
                     )}
                   </>
                 )}
@@ -316,7 +326,6 @@ export default function Dashboard() {
               </Box>
             </Box>
           </>
-        )}
       </Container>
     </Box>
   );
