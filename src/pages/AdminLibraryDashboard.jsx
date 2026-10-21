@@ -237,7 +237,7 @@ export default function AdminLibraryDashboard() {
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="downloads" fill="#4f46e5" />
-                  <Bar dataKey="views" fill="#4f46e5" />
+                  <Bar dataKey="views" fill="#0b2f5c" />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -255,7 +255,7 @@ export default function AdminLibraryDashboard() {
                   <Tooltip />
                   <Legend />
                   <Line type="monotone" dataKey="downloads" stroke="#4f46e5" strokeWidth={2} />
-                  <Line type="monotone" dataKey="views" stroke="#4f46e5" strokeWidth={2} />
+                  <Line type="monotone" dataKey="views" stroke="#0b2f5c" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
