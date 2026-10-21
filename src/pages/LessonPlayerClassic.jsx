@@ -310,18 +310,28 @@ export default function LessonPlayerClassic() {
   });
 
   const { data: enrollment, refetch: refetchEnrollment } = useQuery({
-    queryKey: ['enrollment', courseId],
+    queryKey: ['enrollment', courseId, user?.email],
     queryFn: async () => {
       if (!courseId || courseId === 'null' || courseId === 'undefined') {
         return null;
       }
-      const enrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
-      return enrollments[0];
+      // Only ever the viewer's own enrolment: admins can read everyone's, and without this
+      // an admin marking a lesson complete could update another learner's record.
+      const enrollments = await base44.entities.Enrollment.filter({ course_id: courseId, created_by: user.email });
+      return enrollments[0] || null;
     },
-    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined',
+    enabled: !!user?.email && !!courseId && courseId !== 'null' && courseId !== 'undefined',
     retry: 3,
     staleTime: 2 * 60 * 1000
   });
+
+  // Remember the lesson the learner is on, so My learning's Continue card can bring them back to it.
+  useEffect(() => {
+    if (!enrollment?.id || !lessonId || enrollment.current_lesson_id === lessonId) return;
+    base44.entities.Enrollment.update(enrollment.id, { current_lesson_id: lessonId })
+      .then(() => queryClient.invalidateQueries({ queryKey: ['enrollments'] }))
+      .catch(() => {});
+  }, [enrollment?.id, lessonId]);
 
   const mathPathwayUnits = {
     m1_m5: ['M1', 'M5'],
