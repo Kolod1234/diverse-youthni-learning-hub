@@ -433,11 +433,14 @@ Return JSON:
           </div>
 
           {/* Past Papers */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <label className="flex items-center gap-2 cursor-pointer mb-3">
-              <input type="checkbox" checked={includePastPapers} onChange={e => setIncludePastPapers(e.target.checked)} className="w-4 h-4 text-amber-600 rounded" />
-              <span className="font-medium text-amber-800 flex items-center gap-2"><BookOpen className="w-4 h-4" />Include Past Paper Questions</span>
+          {/* The past-paper question bank isn't set up yet, so this option is shown as coming soon. */}
+          <div className="bg-muted border border-border rounded-lg p-4">
+            <label className="flex items-center gap-2 mb-1 opacity-70 cursor-not-allowed">
+              <input type="checkbox" checked={false} disabled readOnly className="w-4 h-4 rounded" />
+              <span className="font-medium text-foreground flex items-center gap-2"><BookOpen className="w-4 h-4" />Include Past Paper Questions</span>
+              <span className="ml-1 text-xs font-semibold uppercase tracking-wide bg-[#fbbf24] text-slate-900 rounded-full px-2 py-0.5">Coming soon</span>
             </label>
+            <p className="text-xs text-muted-foreground">Mixing in real past paper questions will be available once the question bank is added.</p>
             {includePastPapers && (
               <div className="space-y-3 mt-2">
                 <p className="text-xs text-amber-700">Matched past paper questions will be mixed in and labelled with year and exam board.</p>
