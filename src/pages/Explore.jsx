@@ -76,6 +76,18 @@ export default function Explore() {
     if (instructorParam) {
       setSearchQuery(instructorParam);
     }
+
+    // Subject tiles link here with ?category=Mathematics or ?category=english.
+    // Match a category id or label ("english" covers both English categories); otherwise search for it.
+    const categoryParam = (urlParams.get('category') || '').trim();
+    if (categoryParam) {
+      const want = categoryParam.toLowerCase().replace(/\s+/g, '_');
+      const ids = categories
+        .filter(c => c.id === want || c.label.toLowerCase() === categoryParam.toLowerCase() || c.id.startsWith(want + '_'))
+        .map(c => c.id);
+      if (ids.length) setSelectedCategories(ids);
+      else setSearchQuery(categoryParam);
+    }
   }, []);
 
   const { data: courses = [], isLoading, refetch: refetchCourses } = useQuery({
