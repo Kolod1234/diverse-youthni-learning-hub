@@ -48,8 +48,10 @@ export default function BookSession() {
   const { data: allTutors = [] } = useQuery({
     queryKey: ['all-tutors'],
     queryFn: async () => {
-      const users = await base44.entities.User.list('-created_date', 500);
-      return users.filter(u => u.is_tutor === true || u.role === 'admin');
+      // Students can't list user accounts directly (access rules), so use the server function,
+      // which returns tutors' public profiles only.
+      const res = await base44.functions.invoke('getAllTutors');
+      return (res.data?.users || []).filter(u => u.is_tutor === true || u.role === 'admin');
     },
     onSuccess: (tutors) => {
       if (pendingTutorEmail) {
