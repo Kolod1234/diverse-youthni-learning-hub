@@ -129,6 +129,7 @@ import Library from './pages/Library';
 import LiveSessionHost from './pages/LiveSessionHost';
 import MessageCenter from './pages/MessageCenter';
 import NotificationCenter from './pages/NotificationCenter';
+import PartnerSchools from './pages/PartnerSchools';
 import PastPaperSolver from './pages/PastPaperSolver.jsx';
 import PathManager from './pages/PathManager';
 import PathwayManager from './pages/PathwayManager';
