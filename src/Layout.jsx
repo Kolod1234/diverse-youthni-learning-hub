@@ -73,6 +73,7 @@ import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
 import AdminSideNav, { ADMIN_NAV_PAGES } from '@/components/admin/AdminSideNav';
 import SectionTabs, { SectionSideNav, sectionFor } from '@/components/layout/SectionTabs';
 import { buildNav, roleHome, isActive as isNavActive, NavDrawer } from '@/components/layout/MainNav';
+import ComingSoon, { COMING_SOON_PAGES, NEEDS_ITEM } from '@/components/layout/ComingSoon';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
@@ -370,6 +371,15 @@ function LayoutContent({ children, currentPageName }) {
   const pageSection = sectionFor(currentPageName, user);
   const nav = buildNav({ user, can, PERMISSIONS, canAccessPastPaperSolver, tutorPages: TUTOR_PAGES });
 
+  // Unfinished features show a Coming soon card; detail pages opened without an item point back to their list.
+  const soon = COMING_SOON_PAGES[currentPageName];
+  const needsItem = NEEDS_ITEM[currentPageName];
+  const pageBody = soon
+    ? <ComingSoon title={soon.title} text={`${soon.text} We're still building this part of the Learning Hub.`} />
+    : needsItem && !new URLSearchParams(location.search).get('id')
+      ? <ComingSoon badge={null} title={`Choose ${needsItem.what} first`} text={`This page shows one ${needsItem.what.replace(/^an? /, '')} at a time.`} actionLabel={needsItem.backLabel} actionTo={createPageUrl(needsItem.back)} />
+      : children;
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* In-app APK update banner (mobile users) */}
@@ -543,14 +553,14 @@ function LayoutContent({ children, currentPageName }) {
             {user?.role === 'admin' && ADMIN_NAV_PAGES.has(currentPageName) ? (
               <Box sx={{ display: 'flex', alignItems: 'flex-start', maxWidth: 1440, mx: 'auto' }}>
                 <AdminSideNav current={currentPageName} />
-                <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>{pageBody}</Box>
               </Box>
             ) : pageSection?.side ? (
               <Box sx={{ display: 'flex', alignItems: 'flex-start', maxWidth: 1440, mx: 'auto' }}>
                 <SectionSideNav section={pageSection} current={currentPageName} />
-                <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>{pageBody}</Box>
               </Box>
-            ) : children}
+            ) : pageBody}
           </motion.div>
         </AnimatePresence>
       </Box>
