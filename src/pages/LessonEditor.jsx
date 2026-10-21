@@ -300,18 +300,19 @@ export default function LessonEditor() {
           At <sm we collapse to: [Back] [Title — truncated] [Save] [⋯ overflow]
           so the primary Save action is never clipped at 390px, and settings/present
           remain reachable through the overflow menu. ≥sm preserves the full inline row. */}
-      <div className="shrink-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
+      {/* Redesign (wireframe L2): navy toolbar, white outline buttons, solid white Save. */}
+      <div className="shrink-0 z-20 bg-[#0b2f5c] text-white">
         <div className="w-full max-w-screen-2xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
-          <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0 text-slate-600 hover:text-slate-900 px-2 sm:px-3">
+          <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0 text-white/85 hover:text-white hover:bg-white/10 px-2 sm:px-3">
             <ArrowLeft className="w-4 h-4 sm:mr-1.5" />
             <span className="hidden sm:inline">Back</span>
           </Button>
-          <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 shrink-0" aria-hidden="true">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-white/50 shrink-0" aria-hidden="true">
             <span>/</span>
-            <span className="text-slate-500">Lesson Editor</span>
+            <span className="text-white/70">Lesson editor</span>
             <span>/</span>
           </div>
-          <h1 className="flex-1 min-w-0 text-sm sm:text-base font-semibold text-slate-900 truncate">
+          <h1 className="flex-1 min-w-0 text-sm sm:text-base font-semibold text-white truncate">
             {lessonId ? (lessonForm.title || 'Edit Lesson') : 'Create New Lesson'}
           </h1>
           <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 rounded-full px-2 py-0.5 shrink-0">
@@ -325,6 +326,7 @@ export default function LessonEditor() {
               type="button"
               variant="outline"
               size="sm"
+              className="bg-transparent border-white/70 text-white hover:bg-white/10 hover:text-white"
               onClick={() => setSettingsOpen(true)}
               title="Lesson settings (title, description, video, document, objectives…)"
             >
@@ -335,6 +337,7 @@ export default function LessonEditor() {
               type="button"
               variant="outline"
               size="sm"
+              className="bg-transparent border-white/70 text-white hover:bg-white/10 hover:text-white"
               onClick={() => setPresenting(true)}
               disabled={!(lessonForm.slides || []).length}
               title={(lessonForm.slides || []).length ? 'Launch full-screen presenter' : 'Add slides to present'}
@@ -350,7 +353,7 @@ export default function LessonEditor() {
                 || (!lessonId && !lessonForm.course_id && !urlCourseValid)
                 || saveMutation.isPending
               }
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-white text-[#0b2f5c] font-bold hover:bg-indigo-50"
               aria-describedby={saveError ? 'lesson-editor-save-error' : undefined}
             >
               {saveMutation.isPending ? (
@@ -377,7 +380,7 @@ export default function LessonEditor() {
                 || (!lessonId && !lessonForm.course_id && !urlCourseValid)
                 || saveMutation.isPending
               }
-              className="bg-indigo-600 hover:bg-indigo-700 px-3"
+              className="bg-white text-[#0b2f5c] font-bold hover:bg-indigo-50 px-3"
               aria-label="Save lesson"
               aria-describedby={saveError ? 'lesson-editor-save-error' : undefined}
             >
@@ -392,7 +395,7 @@ export default function LessonEditor() {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="px-2" aria-label="More actions">
+                <Button variant="outline" size="sm" className="px-2 bg-transparent border-white/70 text-white hover:bg-white/10 hover:text-white" aria-label="More actions">
                   <MoreVertical className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
