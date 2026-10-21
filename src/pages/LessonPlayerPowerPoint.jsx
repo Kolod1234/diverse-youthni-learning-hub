@@ -136,12 +136,13 @@ export default function LessonPlayerPowerPoint() {
   });
 
   const { data: enrollment, refetch: refetchEnrollment } = useQuery({
-    queryKey: ['enrollment', courseId],
+    queryKey: ['enrollment', courseId, user?.email],
     queryFn: async () => {
-      const e = await base44.entities.Enrollment.filter({ course_id: courseId });
-      return e[0];
+      // The viewer's own enrolment only (admins can read everyone's).
+      const e = await base44.entities.Enrollment.filter({ course_id: courseId, created_by: user.email });
+      return e[0] || null;
     },
-    enabled: !!courseId
+    enabled: !!courseId && !!user?.email
   });
 
   const { data: quizzes = [] } = useQuery({
