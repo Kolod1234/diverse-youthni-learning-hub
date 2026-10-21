@@ -1409,7 +1409,7 @@ export default function LessonPlayerClassic() {
           onSearch: () => searchInputRef.current?.focus(),
           onBookmark: () => setShowBookmarksSheet(true),
           onNotes: () => setShowNotesSheet(true),
-          onDiscussion: () => navigate(`/CourseDiscussion?id=${courseId}`),
+          onDiscussion: () => navigate(`/CourseDiscussion?courseId=${courseId}`),
           onShare: () => {
             if (navigator.share) {
               navigator.share({
@@ -1428,7 +1428,7 @@ export default function LessonPlayerClassic() {
         lesson={lesson}
         onOpenNotes={() => setShowNotesSheet(true)}
         onAddBookmark={() => setShowBookmarksSheet(true)}
-        onOpenDiscussion={() => navigate(`/CourseDiscussion?id=${courseId}`)}
+        onOpenDiscussion={() => navigate(`/CourseDiscussion?courseId=${courseId}`)}
       />
 
       {/* Notes Sheet */}

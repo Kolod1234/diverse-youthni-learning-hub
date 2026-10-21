@@ -885,7 +885,7 @@ function PeopleView({ courses, selectedCourse }) {
                 </div>
                 <div className="flex gap-2">
                   <Link to={createPageUrl('StudentAnalytics') + `?studentEmail=${enrollment.created_by}&courseId=${enrollment.course_id}`}><Button variant="outline" size="sm">Analytics</Button></Link>
-                  <Link to={createPageUrl('MessageCenter') + `?to=${enrollment.created_by}`}><Button variant="outline" size="sm"><MessageSquare className="w-3 h-3" /></Button></Link>
+                  <Link to={createPageUrl('MessageCenter') + `?recipient=${enrollment.created_by}`}><Button variant="outline" size="sm"><MessageSquare className="w-3 h-3" /></Button></Link>
                 </div>
               </div>
             );
