@@ -108,7 +108,8 @@ export default function Home() {
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['home-courses'],
-    queryFn: () => base44.entities.Course.list('-enrolled_count', 50),
+    // All courses (not just the first 50), so the Home figures match Explore and the About section.
+    queryFn: () => base44.entities.Course.list('-enrolled_count', 500),
     staleTime: 5 * 60 * 1000,
   });
 
