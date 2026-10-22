@@ -168,6 +168,8 @@ export default function Home() {
           The old section components below are kept unused for now, so any of them can be restored. */}
       <RedesignHero images={heroImages.length > 0 ? heroImages : carouselImages} user={user} />
       <HomeQuickStart courses={visibleCourses} />
+      {/* Who we are and why the Hub exists, with live figures (wireframe M1 'about' band). */}
+      <Suspense fallback={null}><AboutUsSection /></Suspense>
       <HomeCommunity photos={carouselImages} reviews={realReviews} posts={blogPosts} />
     </Box>
   );
