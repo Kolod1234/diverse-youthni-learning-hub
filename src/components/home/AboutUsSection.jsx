@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Users, Trophy, MapPin, Heart } from 'lucide-react';
+import { BookOpen, Layers, GraduationCap, Heart } from 'lucide-react';
 
 export default function AboutUsSection() {
   const { data: siteContent = [] } = useQuery({
@@ -15,22 +15,32 @@ export default function AboutUsSection() {
     return item?.value || defaultValue;
   };
 
+  // Live figures from the courses themselves, never typed-in numbers: they stay true as courses are added.
+  // (Learner numbers aren't shown: enrolments are private, so a public page can't count them honestly.)
+  const { data: courses = [], isLoading } = useQuery({
+    queryKey: ['courses'],
+    queryFn: () => base44.entities.Course.list('-created_date', 500),
+    staleTime: 5 * 60 * 1000,
+  });
+  const published = courses.filter(c => c.is_published === true);
+  const fmt = (n) => (isLoading ? '…' : n.toLocaleString('en-GB'));
   const stats = [
-    { icon: Users, label: 'Active Students', value: getContent('about_stat_students', '500+') },
-    { icon: Trophy, label: 'Courses Offered', value: getContent('about_stat_courses', '50+') },
-    { icon: MapPin, label: 'Success Rate', value: getContent('about_stat_success', '95%') },
-    { icon: Heart, label: 'Years Experience', value: getContent('about_stat_years', '10+') },
+    { icon: GraduationCap, label: 'Courses', value: fmt(published.length) },
+    { icon: BookOpen, label: 'Lessons', value: fmt(published.reduce((sum, c) => sum + (Number(c.total_lessons) || 0), 0)) },
+    { icon: Layers, label: 'Subjects', value: fmt(new Set(published.map(c => c.category).filter(Boolean)).size) },
+    // The organisation's own fact, set by staff in site content.
+    { icon: Heart, label: 'Working with young people', value: getContent('about_stat_years', 'Since 2017') },
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-background to-muted/30">
+    <section className="py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="bg-card rounded-3xl overflow-hidden shadow-xl border border-border"
+          className="bg-card rounded-[14px] overflow-hidden border border-border"
         >
           <div className="grid md:grid-cols-2 gap-0">
             {/* Image Section */}
@@ -84,7 +94,7 @@ export default function AboutUsSection() {
                       transition={{ delay: idx * 0.1 }}
                       className="bg-muted/50 rounded-xl p-4 text-center"
                     >
-                      <Icon className="w-8 h-8 text-primary mx-auto mb-2" />
+                      <Icon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-2" />
                       <div className="text-2xl font-bold text-foreground">{stat.value}</div>
                       <div className="text-sm text-muted-foreground">{stat.label}</div>
                     </motion.div>
