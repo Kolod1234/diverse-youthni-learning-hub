@@ -30,6 +30,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { createPageUrl } from '@/utils';
 import { SECTIONS } from '@/components/layout/SectionTabs';
 import { ADMIN_NAV_PAGES } from '@/components/admin/AdminSideNav';
+import { PARTNER_PAGES } from '@/components/partner/PartnerPreview';
 
 // Redesign: ONE list of links per role. The top bar, the phone bottom bar and the Menu drawer
 // all read from this, so they can never disagree again (the old header had five separate lists).
@@ -67,7 +68,7 @@ export function buildNav({ user, can, PERMISSIONS, canAccessPastPaperSolver, tut
   const community = page('Community', 'Community', ForumIcon, { match: sectionPages('Community') });
   const tutorHome = page('TutorDashboardOverview', 'Tutor home', SchoolIcon, { match: sectionPages('Tutor') });
   const coordHome = page('CoordinatorsDashboard', 'My participants', GroupsIcon);
-  const adminHome = page('AdminDashboard', 'Admin', AdminPanelSettingsIcon, { match: ['AdminDashboard', ...ADMIN_NAV_PAGES] });
+  const adminHome = page('AdminDashboard', 'Admin', AdminPanelSettingsIcon, { match: ['AdminDashboard', ...ADMIN_NAV_PAGES, ...PARTNER_PAGES] });
   const home = page('Home', 'Home', HomeIcon);
   const explore = page('Explore', 'Explore', ExploreIcon);
 
@@ -110,7 +111,7 @@ export function buildNav({ user, can, PERMISSIONS, canAccessPastPaperSolver, tut
     ] },
     isAdmin && { name: 'Admin', items: [
       page('AdminDashboard', 'Admin dashboard', DashboardIcon),
-      page('PartnerSchools', 'Partner schools (preview)', SchoolIcon),
+      page('PartnerSchools', 'Partner schools (preview)', SchoolIcon, { match: PARTNER_PAGES }),
       { ...page('AdminUsers', 'Users and all admin tools', AdminPanelSettingsIcon), hint: 'The full admin menu sits on the left of every admin page.' },
     ] },
     { name: 'Help', items: [page('ContactUs', 'Contact us', SupportAgentIcon)] },

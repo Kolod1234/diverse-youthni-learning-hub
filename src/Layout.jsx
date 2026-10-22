@@ -74,6 +74,7 @@ import AdminSideNav, { ADMIN_NAV_PAGES } from '@/components/admin/AdminSideNav';
 import SectionTabs, { SectionSideNav, sectionFor } from '@/components/layout/SectionTabs';
 import { buildNav, roleHome, isActive as isNavActive, NavDrawer } from '@/components/layout/MainNav';
 import ComingSoon, { COMING_SOON_PAGES, NEEDS_ITEM } from '@/components/layout/ComingSoon';
+import { PARTNER_PAGES, PARTNER_ADMIN_PAGES } from '@/components/partner/PartnerPreview';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
@@ -111,8 +112,8 @@ const ADMIN_ONLY_PAGES = new Set([
   'AdminLearningObjectives', 'AdminMathSolutionAudit',
   // Library books are for in-house lesson preparation only.
   'Library', 'BookDetails', 'AdminLibrary', 'AdminLibraryDashboard',
-  // Partner Schools is a preview of the next phase (sample data only).
-  'PartnerSchools',
+  // Partner Schools is a preview of the next phase (sample data only): every one of its pages.
+  ...PARTNER_PAGES,
 ]);
 
 // Pull-to-refresh hook (mobile only)
@@ -552,9 +553,10 @@ function LayoutContent({ children, currentPageName }) {
             style={{ width: '100%' }}
           >
             <SectionTabs section={pageSection} current={currentPageName} />
-            {user?.role === 'admin' && ADMIN_NAV_PAGES.has(currentPageName) ? (
+            {user?.role === 'admin' && (ADMIN_NAV_PAGES.has(currentPageName) || PARTNER_ADMIN_PAGES.includes(currentPageName)) ? (
               <Box sx={{ display: 'flex', alignItems: 'flex-start', maxWidth: 1440, mx: 'auto' }}>
-                <AdminSideNav current={currentPageName} />
+                {/* The Partner Schools admin screens all highlight their one menu entry. */}
+                <AdminSideNav current={PARTNER_ADMIN_PAGES.includes(currentPageName) ? 'PartnerSchools' : currentPageName} />
                 <Box sx={{ flex: 1, minWidth: 0 }}>{pageBody}</Box>
               </Box>
             ) : pageSection?.side ? (
