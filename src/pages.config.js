@@ -130,6 +130,14 @@ import LiveSessionHost from './pages/LiveSessionHost';
 import MessageCenter from './pages/MessageCenter';
 import NotificationCenter from './pages/NotificationCenter';
 import PartnerSchools from './pages/PartnerSchools';
+import PartnerJoinSchool from './pages/PartnerJoinSchool';
+import PartnerClasses from './pages/PartnerClasses';
+import PartnerInviteStudents from './pages/PartnerInviteStudents';
+import PartnerSchoolDashboard from './pages/PartnerSchoolDashboard';
+import PartnerSchoolSetup from './pages/PartnerSchoolSetup';
+import PartnerSeatRequests from './pages/PartnerSeatRequests';
+import PartnerSeatCodes from './pages/PartnerSeatCodes';
+import PartnerSchoolSeats from './pages/PartnerSchoolSeats';
 import PastPaperSolver from './pages/PastPaperSolver.jsx';
 import PathManager from './pages/PathManager';
 import PathwayManager from './pages/PathwayManager';
@@ -250,6 +258,14 @@ export const PAGES = {
     "MessageCenter": MessageCenter,
     "NotificationCenter": NotificationCenter,
     "PartnerSchools": PartnerSchools,
+    "PartnerJoinSchool": PartnerJoinSchool,
+    "PartnerClasses": PartnerClasses,
+    "PartnerInviteStudents": PartnerInviteStudents,
+    "PartnerSchoolDashboard": PartnerSchoolDashboard,
+    "PartnerSchoolSetup": PartnerSchoolSetup,
+    "PartnerSeatRequests": PartnerSeatRequests,
+    "PartnerSeatCodes": PartnerSeatCodes,
+    "PartnerSchoolSeats": PartnerSchoolSeats,
     "PastPaperSolver": PastPaperSolver,
     "PathManager": PathManager,
     "PathwayManager": PathwayManager,
