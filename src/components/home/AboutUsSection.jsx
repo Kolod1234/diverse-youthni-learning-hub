@@ -22,7 +22,8 @@ export default function AboutUsSection() {
     queryFn: () => base44.entities.Course.list('-created_date', 500),
     staleTime: 5 * 60 * 1000,
   });
-  const published = courses.filter(c => c.is_published === true);
+  // Same rule as Home and Explore (a course shows unless it is explicitly hidden), so every figure on the page agrees.
+  const published = courses.filter(c => c.is_published !== false);
   const fmt = (n) => (isLoading ? '…' : n.toLocaleString('en-GB'));
   const stats = [
     { icon: GraduationCap, label: 'Courses', value: fmt(published.length) },
