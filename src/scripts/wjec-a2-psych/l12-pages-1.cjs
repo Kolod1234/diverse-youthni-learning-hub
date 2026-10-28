@@ -1,255 +1,231 @@
 /*
  * WJEC A2 Psychology — Unit 4: Applied Research Methods
- * Lesson 12: Levels of Measurement, Inferential Tests and Critical Values
+ * Lesson 12: Levels of Measurement and Inferential Statistical Tests
  * (15 pages), part 1 (pages 1-8).
  * Diagrams: /lesson-assets/wjec-a2-psychology/*.png (render-unit4-l12.cjs).
  * Exports {order,title,content}.
  */
 module.exports = [
 
-{ order: 1, title: "Why descriptive statistics are not enough: the role of inferential tests", content: `
-<p>Suppose you run your experiment on language and music with $24$ participants: the Silence group recalls a mean of $14.2$ words and the Music group recalls a mean of $9.8$ words. Can you immediately declare that background music impairs memory? Not yet! What if that $4.4$-word gap happened by pure luck of the draw (random sampling variation) when you pulled names out of a hat?</p>
-<p>To find out whether an observed difference or correlation is genuine or merely a fluke of chance, we use <strong>inferential statistical tests</strong>. An inferential test calculates a test statistic from your sample data and compares it against a <strong>critical value table</strong> to determine the probability ($p$) that your results would occur if the <strong>null hypothesis ($H_0$)</strong> were true.</p>
-<p>In WJEC A2 Unit 4, you must master four interconnected skills across Lesson 12:</p>
+{ order: 1, title: "From descriptive to inferential statistics: why do we need significance tests?", content: `
+<p>Suppose in your experiment on language and music, the Silence group recalled a mean of $13.5$ words and the Music group recalled a mean of $11.2$ words. Descriptive statistics tell us that in our sample of 24 students, the Silence group scored $2.3$ words higher. But pause and ask the crucial scientific question: <strong>how do we know that this 2.3-word difference reflects a genuine effect of music rather than a fluke of random chance (luck of the draw in who happened to be having a good memory day)?</strong></p>
+<p>That is the job of <strong>inferential statistics</strong>: mathematical tests based on probability theory that tell us whether an observed difference or correlation in our sample is <strong>statistically significant</strong>—meaning we can reject the null hypothesis ($H_0$) and <em>infer</em> that the effect is real in the wider population!</p>
+<p>In Lesson 12, we master every step of inferential statistics required by the WJEC A2 Unit 4 specification:</p>
 <ol>
-<li><strong>Levels of measurement (Page 2):</strong> distinguishing <em>Nominal</em>, <em>Ordinal</em>, <em>Interval</em> and <em>Ratio</em> data.</li>
-<li><strong>TheInferential Test Decision Matrix (Page 3):</strong> choosing and justifying the exact right test from the five non-parametric tests on the WJEC specification—<strong>Chi-squared ($\chi^2$)</strong>, <strong>Sign test ($S$)</strong>, <strong>Mann–Whitney $U$</strong>, <strong>Wilcoxon matched-pairs signed-ranks ($T$)</strong>, and <strong>Spearman's rank correlation coefficient ($r_s$)</strong>.</li>
-<li><strong>Step-by-step worked calculations (Pages 4–8):</strong> calculating and checking every test on the specification.</li>
-<li><strong>Critical values, $p$-levels and Type I / Type II errors (Pages 9–12):</strong> reading critical value tables without ever confusing the "$\le$" tests ($U, T, S$) with the "$\ge$" tests ($\chi^2, r_s$) and explaining false positives vs false negatives.</li>
+<li><strong>Levels of measurement (Page 2):</strong> distinguishing <strong>Nominal</strong>, <strong>Ordinal</strong>, <strong>Interval</strong> and <strong>Ratio</strong> data.</li>
+<li><strong>The Test-Selector Decision Matrix (Page 3):</strong> choosing and justifying <strong>Chi-Squared ($\chi^2$)</strong>, the <strong>Sign Test ($S$)</strong>, <strong>Mann–Whitney $U$</strong>, <strong>Wilcoxon Matched-Pairs Signed-Ranks ($T$)</strong>, and <strong>Spearman's Rank Correlation ($r_s$)</strong>.</li>
+<li><strong>Probability ($p \le 0.05$, $p \le 0.01$) and Type I versus Type II errors (Page 4).</strong></li>
+<li><strong>How to read critical value tables:</strong> the <strong>"R Rule"</strong> vs non-"R" tests (Page 5).</li>
+<li><strong>Step-by-step worked calculations and interpretations (Pages 6–10)</strong> for the Sign Test, Chi-Squared, Mann–Whitney $U$, Wilcoxon $T$, and Spearman's $r_s$.</li>
 </ol>
-<div class="tutor-checkpoint"><div class="tutor-checkpoint-label">Tutor check-in</div><div class="tutor-checkpoint-bubble"><p class="tutor-checkpoint-question">What is the primary purpose of carrying out an inferential statistical test in psychology?</p><div class="tutor-checkpoint-options"><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Summarising sample averages and spread is the job of descriptive statistics (Mean, Median, SD, Range)."><span class="tutor-checkpoint-key">A</span><span>To calculate the average score of a single group</span></button><button type="button" class="tutor-checkpoint-option" data-correct="1" data-feedback="Exactly right! Inferential tests determine whether an observed difference or correlation in sample data is statistically significant (allowing us to reject the null hypothesis $H_0$ at $p \le 0.05$) or likely due to chance."><span class="tutor-checkpoint-key">B</span><span>To determine the probability that an observed difference or correlation occurred by chance, deciding whether to reject the null hypothesis ($H_0$)</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Even a statistically significant correlation cannot prove causation if no IV was manipulated."><span class="tutor-checkpoint-key">C</span><span>To turn a correlational study into a laboratory experiment</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Ethics committees review participant welfare, not inferential test statistics."><span class="tutor-checkpoint-key">D</span><span>To replace the need for informed consent</span></button></div></div><div class="tutor-checkpoint-feedback" hidden></div></div>` },
+<div class="tutor-checkpoint"><div class="tutor-checkpoint-label">Tutor check-in</div><div class="tutor-checkpoint-bubble"><p class="tutor-checkpoint-question">What is the primary purpose of carrying out an inferential statistical test on your investigation data?</p><div class="tutor-checkpoint-options"><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Descriptive statistics (like the mean and range) summarise the sample scores; inferential tests calculate whether the result is likely due to chance."><span class="tutor-checkpoint-key">A</span><span>To find the highest minus the lowest score in the sample</span></button><button type="button" class="tutor-checkpoint-option" data-correct="1" data-feedback="Exactly right! Inferential statistics calculate the probability (p) that the observed difference or correlation occurred by chance alone, allowing us to decide whether to reject the null hypothesis (H0)."><span class="tutor-checkpoint-key">B</span><span>To determine the probability that the observed difference or correlation occurred by chance, so we know whether to reject the null hypothesis</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. No statistical test can magically fix a biased sampling method or unstandardized procedure after the fact."><span class="tutor-checkpoint-key">C</span><span>To eliminate demand characteristics during data collection</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Pie chart angles are descriptive visual summaries."><span class="tutor-checkpoint-key">D</span><span>To convert degrees into percentages for a pie chart</span></button></div></div><div class="tutor-checkpoint-feedback" hidden></div></div>` },
 
 { order: 2, title: "Levels of measurement: Nominal, Ordinal, Interval and Ratio", content: `
-<p>Every inferential test choice in Unit 4 starts with identifying the <strong>level of measurement</strong> of your dependent variable (or co-variables). Stanley Stevens (1946) classified data into four hierarchical levels, which WJEC groups into three working tiers (Nominal, Ordinal, and Interval/Ratio):</p>
-<h4>1. Nominal data (categorical frequency counts)</h4>
-<ul>
-<li><strong>Definition:</strong> Data exist as <strong>named, discrete, mutually exclusive categories</strong>. Each participant or item falls into ONE category only, and we count the <em>frequency</em> (how many participants fall into each box). Categories have no numerical value or rank order.</li>
-<li><strong>Psychological examples:</strong> Attachment type (Secure Type B vs Insecure-Avoidant Type A vs Insecure-Resistant Type C); smoking status (Smoker vs Non-smoker); attribution type in post-match interviews (Internal vs External); Pass vs Fail on the Sally–Anne test.</li>
-</ul>
-<h4>2. Ordinal data (ranked scores or subjective rating scales)</h4>
-<ul>
-<li><strong>Definition:</strong> Data can be placed in <strong>rank order from lowest to highest</strong> ($1\text{st}, 2\text{nd}, 3\text{rd}\dots$), but the <em>intervals between adjacent points on the scale are not necessarily equal or objective</em>, and there is no true physical unit.</li>
-<li><strong>Psychological examples:</strong> Subjective Likert or rating scales (e.g. rating stage-fright anxiety from $1 = \text{not anxious}$ to $10 = \text{extremely anxious}$: we know a rating of $8$ is more anxious than $6$, but we cannot claim the psychological gap between $8$ and $6$ is identical to the gap between $4$ and $2$!); class rank positions; or any composite psychological questionnaire score (e.g. Beck Depression Inventory score, Holmes and Rahe LCU score, or words recalled out of 20 when treated conservatively in non-parametric tests).</li>
-</ul>
-<h4>3. Interval and Ratio data (continuous objective physical scales)</h4>
-<ul>
-<li><strong>Interval data:</strong> Measured along a continuous scale with <strong>equal, standardised physical units</strong> between every point, but with an <em>arbitrary zero point</em> (e.g. temperature in degrees Celsius $^{\circ}\text{C}$ or Fahrenheit, calendar year, or standardised IQ scores).</li>
-<li><strong>Ratio data:</strong> Equal, standardised physical units <em>plus</em> a <strong>true, absolute zero</strong> (where $0$ means complete absence of the quantity, so $20\text{ seconds}$ is literally twice as long as $10\text{ seconds}$)—for example, reaction time in milliseconds, sleep duration in minutes, heart rate in bpm, or hormone concentration in $\text{nmol/L}$.</li>
-<li><strong>Crucial WJEC rule:</strong> Any data measured at the <strong>Interval or Ratio</strong> level can automatically be ranked and analysed using <strong>Ordinal</strong> non-parametric tests (Mann–Whitney $U$, Wilcoxon $T$, Spearman $r_s$)!</li>
-</ul>
+<p>Before you can choose an inferential statistical test, you must identify the <strong>level of measurement</strong> of your dependent variable (or co-variables). Stanley Stevens (1946) classified data into four hierarchy levels—memorise the acronym <strong>NOIR</strong> (Nominal, Ordinal, Interval, Ratio) from lowest to highest precision:</p>
+<ol>
+<li><strong>Nominal (categorical / frequency count) data:</strong>
+  <ul>
+  <li><em>Definition:</em> Data exist as <strong>named, discrete, mutually exclusive categories</strong>. Each participant is placed into one category only, and we count the <em>frequency</em> (number of people/items) in each box.</li>
+  <li><em>Psychological examples:</em> Classification of attachment type (Secure vs Insecure-Avoidant vs Insecure-Resistant); Yes vs No compliance; Pass vs Fail; Internal vs External attribution category in a post-match interview content analysis.</li>
+  <li><em>Crucial exam trap:</em> In nominal data, <strong>one participant = one tally mark</strong>. If each participant scores 0 to 20 words, that is <em>not</em> nominal data!</li>
+  </ul>
+</li>
+<li><strong>Ordinal (ranked / rating scale) data:</strong>
+  <ul>
+  <li><em>Definition:</em> Scores can be placed in <strong>rank order from lowest to highest</strong> (1st, 2nd, 3rd…), OR come from subjective psychological rating scales (e.g. rating stress from 1 = "not at all stressed" to 10 = "extremely stressed"), where the <strong>intervals between adjacent numbers are not guaranteed to be equal</strong>.</li>
+  <li><em>Why subjective scales are ordinal:</em> The subjective emotional gap between stress rating 2 and 3 is not necessarily identical in size to the gap between 8 and 9! Notice also that in A-level non-parametric statistics, memory/test scores (e.g. words recalled out of 20, since some words are harder than others) and any continuous interval/ratio data can be <em>converted into ranks</em> and treated as ordinal ("at least ordinal").</li>
+  </ul>
+</li>
+<li><strong>Interval and Ratio (continuous physical scale) data:</strong>
+  <ul>
+  <li><em>Interval:</em> Measured along a continuous public physical scale with <strong>equal, standardised units throughout</strong>, but with an arbitrary zero point (e.g. temperature in $^{\circ}\text{C}$ or standardised IQ scores).</li>
+  <li><em>Ratio:</em> Equal standardised units <em>plus</em> a <strong>true absolute zero</strong> (where $0$ means complete absence of the quantity, e.g. reaction time in milliseconds, duration of sleep in minutes, hormone concentration in $\text{pg/ml}$).</li>
+  </ul>
+</li>
+</ol>
 <h3>Practice</h3>
-<p>Identify the level of measurement (Nominal, Ordinal, or Interval/Ratio) for each of the following variables and justify your answer:<br>
-(a) Whether commuters stopped to help a collapsed pedestrian (Helped vs Did Not Help).<br>
-(b) Participants self-rated happiness on a scale from $1$ (very unhappy) to $7$ (very happy).<br>
-(c) Time taken in seconds to thread 25 beads onto a string.</p>
-<details style="margin:0.6rem 0 1.1rem;border:1px solid #cbd5e1;border-radius:0.5rem;padding:0.6rem 0.9rem;background:#f8fafc;"><summary style="cursor:pointer;font-weight:600;color:#1d4ed8;">Show the answer</summary><div style="margin-top:0.6rem;"><p>(a) <strong>Nominal:</strong> "Helped" and "Did Not Help" are discrete, mutually exclusive named categories where each commuter is counted once as a frequency tally with no numerical scale.<br>(b) <strong>Ordinal:</strong> A 1-to-7 self-report happiness rating scale puts participants in rank order from least happy to happiest, but the subjective psychological distance between a rating of $2$ and $3$ is not objectively equal to the distance between $6$ and $7$.<br>(c) <strong>Interval/Ratio (specifically Ratio, which is at least Ordinal for non-parametric testing):</strong> Time in seconds is measured in objective, equal physical units with a true absolute zero ($0\text{ seconds}$), and can be ranked for Mann–Whitney $U$, Wilcoxon $T$ or Spearman $r_s$.</p></div></details>` },
+<p>Identify the level of measurement (Nominal, Ordinal, or Interval/Ratio) for each of the following DVs: (a) Time in milliseconds taken to press a button on a Stroop task; (b) Self-reported happiness rated on a scale from 1 to 7; (c) Whether each commuter helps or ignores a person who drops a cane on a train.</p>
+<details style="margin:0.6rem 0 1.1rem;border:1px solid #cbd5e1;border-radius:0.5rem;padding:0.6rem 0.9rem;background:#f8fafc;"><summary style="cursor:pointer;font-weight:600;color:#1d4ed8;">Show the answer</summary><div style="margin-top:0.6rem;"><p>(a) <strong>Interval/Ratio</strong> (time in milliseconds is measured on an objective physical scale with equal 1 ms intervals and a true zero—and since it can be ranked, it satisfies "at least ordinal" for Mann–Whitney/Wilcoxon/Spearman).<br>(b) <strong>Ordinal</strong> (a 1–7 subjective rating scale can be ordered from lowest to highest happiness, but the psychological distance between 1 and 2 is not objectively equal to the distance between 6 and 7).<br>(c) <strong>Nominal</strong> (each commuter is classified into one of two discrete, mutually exclusive categories—"Helped" vs "Ignored"—producing frequency counts).</p></div></details>` },
 
-{ order: 3, title: "The Inferential Test Decision Matrix: choosing and justifying your test", content: `
-<p>In almost every Unit 4 paper, a 3-mark question asks: <em>"Name and justify the inferential statistical test that should be used to analyse these data." [3]</em> Study the complete decision matrix diagram below—memorising this $3 \times 2$ grid guarantees you 3 out of 3 marks every time.</p>
-<figure style="margin:1.4rem 0;text-align:center;"><img src="/lesson-assets/wjec-a2-psychology/psych-unit4-test-selection.png" alt="Diagram of the WJEC Unit 4 Inferential Test Decision Matrix across Nominal and Ordinal/Interval/Ratio levels of measurement for Independent Groups, Repeated Measures/Matched Pairs, and Correlations, plus the 3-step justification rule." style="width:100%;max-width:100%;border:1px solid #cbd5e1;border-radius:0.75rem;background:#fff;"><figcaption style="margin-top:0.5rem;font-size:0.9rem;color:#475569;text-align:left;">The WJEC Unit 4 Inferential Test Decision Matrix. Notice the three justification criteria required for full marks. Diagram drawn for this course.</figcaption></figure>
-<h4>The WJEC Non-Parametric Inferential Test Grid</h4>
-<table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.95rem;">
+{ order: 3, title: "The Inferential Test Selector Matrix: choosing and justifying your test", content: `
+<p>In almost every Unit 4 paper, a 3-mark question asks: <em>"Name and justify the appropriate inferential statistical test for this study."</em> Study the three-panel decision diagram below—if you ask three simple questions in order, you will pick the right test 100% of the time!</p>
+<figure style="margin:1.4rem 0;text-align:center;"><img src="/lesson-assets/wjec-a2-psychology/psych-unit4-test-selector.png" alt="Three-panel diagram for selecting inferential tests: Level of Measurement (NOIR), the Inferential Test Decision Matrix (Chi-squared, Sign test, Mann-Whitney U, Wilcoxon T, Spearman rs), and Probability & Type I vs Type II errors." style="width:100%;max-width:100%;border:1px solid #cbd5e1;border-radius:0.75rem;background:#fff;"><figcaption style="margin-top:0.5rem;font-size:0.9rem;color:#475569;text-align:left;">The WJEC Unit 4 Inferential Test Decision Matrix, levels of measurement, and Type I/II errors. Diagram drawn for this course.</figcaption></figure>
+<h4>The 3-Step Formula for earning all 3 justification marks</h4>
+<p>Whenever you justify an inferential test in the exam, write <strong>three numbered points</strong> corresponding to the three axes of the decision matrix:</p>
+<ol>
+<li><strong>Question 1 — Difference or Correlation (Association)?</strong> State whether the hypothesis tests a <em>difference between two experimental conditions</em> OR a <em>correlation/association between two co-variables</em>.</li>
+<li><strong>Question 2 — What is the Experimental Design (if testing a difference)?</strong> State whether the design is <em>independent groups</em> (different participants in each condition) OR <em>repeated measures / matched pairs</em> (same or matched participants in both conditions).</li>
+<li><strong>Question 3 — What is the Level of Measurement (contextualised to the DV)?</strong> State whether the data are <em>nominal</em> (discrete category frequencies) OR <em>at least ordinal</em> (ordinal, interval or ratio scores that can be ranked), quoting the exact DV from the scenario!</li>
+</ol>
+<table style="width:100%;border-collapse:collapse;margin:1.0rem 0;font-size:0.92rem;">
 <thead>
 <tr style="background:#f1f5f9;border-bottom:2px solid #cbd5e1;">
-<th style="padding:0.6rem;text-align:left;border:1px solid #cbd5e1;">Research Design / Aim</th>
-<th style="padding:0.6rem;text-align:left;border:1px solid #cbd5e1;">Nominal Data (Category frequencies)</th>
-<th style="padding:0.6rem;text-align:left;border:1px solid #cbd5e1;">Ordinal, Interval or Ratio Data (Scores / Ranks)</th>
+<th style="padding:0.55rem;text-align:left;border:1px solid #cbd5e1;">Level of Data</th>
+<th style="padding:0.55rem;text-align:left;border:1px solid #cbd5e1;">Difference: Independent Groups</th>
+<th style="padding:0.55rem;text-align:left;border:1px solid #cbd5e1;">Difference: Repeated Measures / Matched Pairs</th>
+<th style="padding:0.55rem;text-align:left;border:1px solid #cbd5e1;">Correlation / Association</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;font-weight:600;">Test of Difference:<br>Independent Groups Design</td>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;"><strong>Chi-squared ($\chi^2$) test</strong><br><em>(Note: $\chi^2$ also tests association between two nominal variables in a contingency table!)</em></td>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;"><strong>Mann–Whitney $U$ test</strong></td>
+<td style="padding:0.55rem;border:1px solid #cbd5e1;font-weight:600;">Nominal (category counts)</td>
+<td style="padding:0.55rem;border:1px solid #cbd5e1;"><strong>Chi-Squared ($\chi^2$)</strong> test of independence</td>
+<td style="padding:0.55rem;border:1px solid #cbd5e1;"><strong>Sign Test ($S$)</strong></td>
+<td style="padding:0.55rem;border:1px solid #cbd5e1;"><strong>Chi-Squared ($\chi^2$)</strong> test of association ($2 \times 2$ contingency table)</td>
 </tr>
 <tr>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;font-weight:600;">Test of Difference:<br>Repeated Measures or Matched Pairs</td>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;"><strong>Sign test ($S$)</strong><br><em>(Direction of change $+$ or $-$ for each pair)</em></td>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;"><strong>Wilcoxon matched-pairs signed-ranks test ($T$)</strong></td>
-</tr>
-<tr>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;font-weight:600;">Test of Correlation / Association:<br>Two continuous co-variables</td>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;"><em>(Use $\chi^2$ test of association if both variables are discrete nominal categories)</em></td>
-<td style="padding:0.6rem;border:1px solid #cbd5e1;"><strong>Spearman's rank correlation coefficient ($r_s$)</strong></td>
+<td style="padding:0.55rem;border:1px solid #cbd5e1;font-weight:600;">Ordinal, Interval or Ratio (ranked scores)</td>
+<td style="padding:0.55rem;border:1px solid #cbd5e1;"><strong>Mann–Whitney $U$</strong> test</td>
+<td style="padding:0.55rem;border:1px solid #cbd5e1;"><strong>Wilcoxon Matched-Pairs Signed-Ranks ($T$)</strong> test</td>
+<td style="padding:0.55rem;border:1px solid #cbd5e1;"><strong>Spearman's Rank Correlation Coefficient ($r_s$)</strong></td>
 </tr>
 </tbody>
 </table>
-<h4>How to earn all 3 marks when justifying your chosen test</h4>
-<p>Never just name the test! Always write three numbered sentences:</p>
-<ol>
-<li><strong>Criterion 1 (Difference vs Correlation/Association):</strong> State whether the study is testing for a <em>difference</em> between two conditions or a <em>correlation/association</em> between two co-variables.</li>
-<li><strong>Criterion 2 (Experimental Design):</strong> If testing a difference, state whether the design is <em>independent groups</em> or <em>repeated measures / matched pairs</em> (in context).</li>
-<li><strong>Criterion 3 (Level of Measurement in context):</strong> State whether the data are <em>nominal</em> or <em>at least ordinal (ordinal/interval/ratio)</em> and explain why by naming the actual DV from the scenario!</li>
-</ol>
-<div class="tutor-checkpoint"><div class="tutor-checkpoint-label">Tutor check-in</div><div class="tutor-checkpoint-bubble"><p class="tutor-checkpoint-question">A researcher tests 15 patients before and after a course of CBTp using a 1-to-50 delusion-distress rating scale. Which inferential test should be used, and why?</p><div class="tutor-checkpoint-options"><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Mann-Whitney U is for an independent groups design (two separate groups of patients); here the same 15 patients are tested before and after CBTp (repeated measures)."><span class="tutor-checkpoint-key">A</span><span>Mann–Whitney U test, because there are two conditions</span></button><button type="button" class="tutor-checkpoint-option" data-correct="1" data-feedback="Exactly right! It is a test of difference (before vs after CBTp), using a repeated measures design (the same 15 patients tested twice), with ordinal rating-scale data (1-50 delusion distress scores)—which selects the Wilcoxon matched-pairs signed-ranks test (T)."><span class="tutor-checkpoint-key">B</span><span>Wilcoxon matched-pairs signed-ranks test (T), because it tests a difference in a repeated measures design with ordinal rating-scale data</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Spearman rank tests for a correlation between two co-variables, whereas this experiment tests for a difference before and after therapy."><span class="tutor-checkpoint-key">C</span><span>Spearman's rank correlation coefficient (rs), because 15 is a small sample</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Chi-squared requires independent groups and nominal frequency counts, not repeated measures rating scores."><span class="tutor-checkpoint-key">D</span><span>Chi-squared test, because CBTp is a categorical therapy</span></button></div></div><div class="tutor-checkpoint-feedback" hidden></div></div>` },
+<div class="tutor-checkpoint"><div class="tutor-checkpoint-label">Tutor check-in</div><div class="tutor-checkpoint-bubble"><p class="tutor-checkpoint-question">A researcher tests the same 15 participants' stress ratings (on a 1–20 scale) BEFORE and AFTER a 30-minute dog-assisted therapy session. Which inferential test should they use, and why?</p><div class="tutor-checkpoint-options"><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Mann–Whitney U is for an independent groups design (two separate groups of participants). Here the same 15 participants were tested before and after!"><span class="tutor-checkpoint-key">A</span><span>Mann–Whitney U test, because there are two conditions</span></button><button type="button" class="tutor-checkpoint-option" data-correct="1" data-feedback="Exactly right! (1) Testing for a difference between before and after; (2) Repeated measures design (same 15 participants tested twice); (3) Stress ratings on a 1–20 scale are ordinal data."><span class="tutor-checkpoint-key">B</span><span>Wilcoxon matched-pairs signed-ranks test (T): difference + repeated measures + ordinal rating data</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Spearman's rs tests for a correlation between two co-variables, whereas here the researcher is testing for a difference before vs after therapy."><span class="tutor-checkpoint-key">C</span><span>Spearman's rank correlation (rs), because there are two sets of scores</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Chi-squared requires independent nominal category counts."><span class="tutor-checkpoint-key">D</span><span>Chi-squared test, because 15 is less than 20</span></button></div></div><div class="tutor-checkpoint-feedback" hidden></div></div>` },
 
-{ order: 4, title: "Worked inferential test 1: the Sign test (S)", content: `
-<p>Let us start our worked inferential calculations with the quickest test on the specification: the <strong>Sign test ($S$)</strong>. The Sign test is used for a <strong>repeated measures or matched pairs design</strong> when data are <strong>nominal</strong> (or when ordinal/interval paired scores are simplified into the direction of change: improved $+$ vs worsened $-$).</p>
-<h4>Step-by-step recipe for calculating the Sign test ($S$)</h4>
+{ order: 4, title: "Probability ($p \\le 0.05$) and Type I versus Type II errors", content: `
+<p>Why do psychologists almost always use the significance level <strong>$p \le 0.05$ ($5\%$)</strong>—and when do they switch to the stricter <strong>$p \le 0.01$ ($1\%$)</strong>? Let us unpack the exact meaning of $p$-values and the trade-off between <strong>Type I</strong> and <strong>Type II</strong> statistical errors.</p>
+<h4>1. What does $p \le 0.05$ actually mean?</h4>
+<p>In psychology, $p$ stands for the <strong>probability that the observed difference or correlation occurred by random chance alone</strong> (assuming the null hypothesis $H_0$ is true). Setting our level of significance ($\alpha$) at <strong>$p \le 0.05$</strong> means we accept up to a <strong>$5\%$ ($1\text{ in }20$) risk</strong> that our result is a fluke of chance (and at least a $95\%$ confidence that the effect is genuine). Why $0.05$? Because it is the <strong>Goldilocks balance point</strong> between two opposite statistical mistakes: Type I errors and Type II errors!</p>
+<h4>2. Type I error (False Positive / "Optimist's error") vs Type II error (False Negative / "Pessimist's error")</h4>
+<ul>
+<li><strong>Type I error (False Positive):</strong> We <strong>wrongly reject a true null hypothesis ($H_0$)</strong>—claiming we have found a significant difference or correlation when in reality the result was just a fluke of chance!
+  <ul>
+  <li><em>When is a Type I error most likely?</em> When the significance level is set <strong>too leniently</strong> (e.g. $p \le 0.10$, a $10\%$ chance of a false alarm, or at $p \le 0.05$ compared with $0.01$).</li>
+  </ul>
+</li>
+<li><strong>Type II error (False Negative):</strong> We <strong>wrongly retain (accept) a false null hypothesis ($H_0$)</strong>—missing a real effect that genuinely exists in the population and claiming nothing happened!
+  <ul>
+  <li><em>When is a Type II error most likely?</em> When the significance level is set <strong>too strictly / stringently</strong> (e.g. $p \le 0.001$ or $p \le 0.01$, where the bar is so high that a genuine moderate effect fails to clear it) OR when the sample size ($N$) is tiny.</li>
+  </ul>
+</li>
+</ul>
+<p>Memory trick: In the fable of <em>The Boy Who Cried Wolf</em>, first the villagers believe there is a wolf when there is none (<strong>Type I error = False Positive</strong>); second, when a real wolf arrives, the villagers believe nothing is there (<strong>Type II error = False Negative</strong>)!</p>
+<h4>3. When do psychologists use $p \le 0.01$ ($1\%$) instead of $p \le 0.05$?</h4>
+<p>When a <strong>Type I error (false positive) would have dangerous, costly or irreversible human consequences</strong>—such as licensing a new antipsychotic drug with severe side effects (Lesson 5) or introducing an expensive national school or prison policy—researchers demand $p \le 0.01$ ($1\text{ in }100$ chance risk) so they are $99\%$ certain the treatment works!</p>
+<h3>Practice</h3>
+<p>A researcher tests a new cognitive revision technique at $p \le 0.05$ and rejects the null hypothesis. Explain what a Type I error would mean in the context of this study, state the probability of making it, and explain how changing to $p \le 0.01$ affects the risk of Type I and Type II errors.</p>
+<details style="margin:0.6rem 0 1.1rem;border:1px solid #cbd5e1;border-radius:0.5rem;padding:0.6rem 0.9rem;background:#f8fafc;"><summary style="cursor:pointer;font-weight:600;color:#1d4ed8;">Show the answer</summary><div style="margin-top:0.6rem;"><p>In the context of this study, a <strong>Type I error (false positive)</strong> would mean concluding that the new cognitive revision technique significantly improves exam recall (rejecting $H_0$) when in reality the revision technique has no genuine effect and the higher score occurred purely by chance ($5\%$ or $1\text{ in }20$ probability at $p \le 0.05$). Changing the significance threshold to the stricter $p \le 0.01$ level reduces the risk of making a Type I error from $5\%$ down to $1\%$, but simultaneously <em>increases</em> the risk of making a <strong>Type II error (false negative)</strong>—failing to detect a genuine benefit of the revision technique because the critical value bar was set higher.</p></div></details>` },
+
+{ order: 5, title: "How to read critical value tables: the golden 'R Rule'", content: `
+<p>In Section B of Unit 4, the exam paper provides an extract from a <strong>table of critical values</strong> and asks you to determine whether the observed test statistic ($S, \chi^2, U, T\text{ or }r_s$) is statistically significant. Every single year, some candidates look up the right critical value and then get the final conclusion backwards because they forget which tests require the observed value to be <em>greater than or equal to</em> the critical value, and which require it to be <em>less than or equal to</em> the critical value!</p>
 <div style="border-left:4px solid #1d4ed8;background:#eff6ff;padding:0.8rem 1rem;margin:1.2rem 0;border-radius:0.4rem;">
-<p style="margin:0;"><strong>Worked scenario ($N = 10$ arachnophobia patients):</strong> Ten spider-phobic patients rated their fear (out of 20) before and after a single session of virtual-reality exposure. Calculate the Sign test statistic $S$ and determine whether the reduction in fear is significant at $p \le 0.05$ (one-tailed).</p>
+<p style="margin:0 0 0.4rem;"><strong>The Golden "R Rule" for Critical Value Tables:</strong></p>
+<p style="margin:0 0 0.4rem;">Check whether the full name of the statistical test contains the letter <strong>R</strong>:</p>
+<ul style="margin:0;">
+<li><strong>Tests WITH the letter "R" in their name — Chi-Squa<u>r</u>ed ($\chi^2$) and Spea<u>r</u>man's <u>r</u>ank ($r_s$)</strong> (plus Pearson's $r$ / $t$-test):<br><strong>Observed value must be GREATER than or equal to the critical value ($\text{Observed} \ge \text{Critical}$)</strong> to be significant! (Think: "<strong>R</strong> = Rise above the critical value").</li>
+<li><strong>Tests WITHOUT the letter "R" in their name — Sign Test ($S$), Mann–Whitney ($U$), and Wilcoxon ($T$)</strong>:<br><strong>Observed value must be LESS than or equal to the critical value ($\text{Observed} \le \text{Critical}$)</strong> to be significant!</li>
+</ul>
 </div>
-<table style="width:100%;border-collapse:collapse;margin:0.8rem 0;font-size:0.9rem;">
-<thead><tr style="background:#f1f5f9;"><th style="padding:0.45rem;border:1px solid #cbd5e1;">Patient</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Fear Before</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Fear After</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Difference ($\text{Before} - \text{After}$)</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Sign ($+$ or $-$)</th></tr></thead>
-<tbody>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">1</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">18</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">11</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+7$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#15803d;">$+$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">2</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">15</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">9</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+6$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#15803d;">$+$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">3</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">14</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">14</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$0$ (tie)</td><td style="padding:0.4rem;border:1px solid #cbd5e1;color:#64748b;">Omit ($0$)</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">4</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">19</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">12</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+7$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#15803d;">$+$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">12</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">14</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$-2$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#dc2626;">$-$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">6</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">17</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">8</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+9$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#15803d;">$+$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">7</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">16</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">10</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+6$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#15803d;">$+$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">8</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">20</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">13</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+7$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#15803d;">$+$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">9</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">13</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">7</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+6$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#15803d;">$+$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">10</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">15</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">6</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+9$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;color:#15803d;">$+$</td></tr>
-</tbody>
-</table>
+<h4>The 4-step checklist for reading any critical value table in the exam</h4>
 <ol>
-<li><strong>Step 1 — Record the sign ($+$ or $-$) of each participant difference ($\text{Before} - \text{After}$):</strong> If a participant score did not change (a difference of $0$, like Patient 3), <strong>omit that participant</strong> and reduce $N$ by $1$! So here, effective $N = 10 - 1 = \mathbf{9}$.</li>
-<li><strong>Step 2 — Count how many $+$ signs and how many $-$ signs:</strong><br>
-Number of $+$ signs $= 8$. Number of $-$ signs $= 1$.</li>
-<li><strong>Step 3 — Identify $S$ (the frequency of the LESS frequent sign):</strong><br>
-$$\text{Observed } S = \min(8, 1) = \mathbf{1}$$</li>
-<li><strong>Step 4 — Compare observed $S$ against the critical value of $S$:</strong> For $N = 9$ at $p \le 0.05$ (one-tailed), the critical value of $S$ from the table is $\mathbf{1}$. For the Sign test, observed $S$ must be <strong>less than or equal to ($\le$)</strong> the critical value to be significant. Since observed $S = 1 \le \text{critical value } 1$, the reduction in spider fear is <strong>statistically significant at $p \le 0.05$</strong>, so we reject $H_0$!</li>
+<li><strong>Step 1 — Directional (one-tailed) or Non-directional (two-tailed)?</strong> Re-read the researcher alternative hypothesis ($H_1$) in the scenario stem. If it predicts a specific direction ("more", "faster", "positive correlation"), select the <strong>One-tailed</strong> column; if it just says "a difference" or "a correlation", select the <strong>Two-tailed</strong> column.</li>
+<li><strong>Step 2 — Which significance level ($p$)?</strong> Unless the question specifies $p \le 0.01$, always use the <strong>$p \le 0.05$ ($5\%$)</strong> column.</li>
+<li><strong>Step 3 — Which row ($N$, $n_1/n_2$, or $df$)?</strong>
+  <ul>
+  <li>For <strong>Spearman's $r_s$:</strong> $N =$ total number of pairs (participants).</li>
+  <li>For <strong>Wilcoxon $T$ and Sign Test $S$:</strong> $N =$ number of participants <em>after</em> excluding any ties (where difference $= 0$).</li>
+  <li>For <strong>Mann–Whitney $U$:</strong> intersect $n_1$ (sample size of Group 1) and $n_2$ (sample size of Group 2).</li>
+  <li>For <strong>Chi-Squared ($\chi^2$):</strong> use <strong>degrees of freedom</strong>, $df = (\text{number of rows} - 1) \times (\text{number of columns} - 1)$. In a $2 \times 2$ table, $df = (2-1)(2-1) = \mathbf{1}$.</li>
+  </ul>
+</li>
+<li><strong>Step 4 — Compare Observed vs Critical using the "R Rule" and write your 4-part significance statement:</strong> State (1) the observed value and critical value, (2) whether observed is $\ge$ or $\le$ critical (significant or not significant at $p \le 0.05$), (3) whether you <strong>reject or retain $H_0$</strong>, and (4) the conclusion <strong>in the context of the study variables</strong>!</li>
 </ol>
+<div class="tutor-checkpoint"><div class="tutor-checkpoint-label">Tutor check-in</div><div class="tutor-checkpoint-bubble"><p class="tutor-checkpoint-question">In a Wilcoxon signed-ranks test (one-tailed, N = 12, p ≤ 0.05), the observed test statistic is T = 11 and the critical value from the table is 17. Is this result statistically significant?</p><div class="tutor-checkpoint-options"><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Apply the R Rule: 'Wilcoxon' has NO letter R in its name, so the observed value T must be LESS than or equal to the critical value to be significant!"><span class="tutor-checkpoint-key">A</span><span>No, because 11 is smaller than the critical value 17</span></button><button type="button" class="tutor-checkpoint-option" data-correct="1" data-feedback="Exactly right! Because 'Wilcoxon' has no letter R in its name, the observed value must be less than or equal to the critical value (Observed ≤ Critical). Since 11 ≤ 17, the difference IS statistically significant at p ≤ 0.05 and we reject the null hypothesis!"><span class="tutor-checkpoint-key">B</span><span>Yes, because for Wilcoxon (no 'R'), the observed value (11) is less than or equal to the critical value (17), so we reject H0</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. 11 ≤ 17 means we reject the null hypothesis (H0) and accept the alternative hypothesis (H1)."><span class="tutor-checkpoint-key">C</span><span>Yes, so we accept the null hypothesis (H0)</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Wilcoxon uses N (number of non-zero differences), not degrees of freedom."><span class="tutor-checkpoint-key">D</span><span>Cannot tell without calculating degrees of freedom</span></button></div></div><div class="tutor-checkpoint-feedback" hidden></div></div>` },
+
+{ order: 6, title: "Worked calculation 1: The Sign Test (S) and Chi-Squared (χ²)", content: `
+<p>Study the left and middle panels of the diagram below, then let us work through complete calculations for the <strong>Sign Test ($S$)</strong> and <strong>Chi-Squared ($\chi^2$)</strong>.</p>
+<figure style="margin:1.4rem 0;text-align:center;"><img src="/lesson-assets/wjec-a2-psychology/psych-unit4-nonparametric-diff.png" alt="Three-panel diagram of non-parametric tests of difference: Chi-squared test on a 2x2 contingency table, Wilcoxon signed-ranks test (T) and Sign test (S), and Mann-Whitney U test." style="width:100%;max-width:100%;border:1px solid #cbd5e1;border-radius:0.75rem;background:#fff;"><figcaption style="margin-top:0.5rem;font-size:0.9rem;color:#475569;text-align:left;">Worked calculations for Chi-Squared ($\chi^2$), Wilcoxon ($T$) / Sign Test ($S$), and Mann–Whitney ($U$). Diagram drawn for this course.</figcaption></figure>
+<h4>1. Worked Calculation: The Sign Test ($S$)</h4>
+<p>The <strong>Sign Test</strong> is used for a <strong>difference</strong> in a <strong>repeated measures (or matched pairs)</strong> design when data are treated at the <strong>nominal level</strong> (simply whether each participant improved $+$ or worsened $-$). Suppose 10 participants rated their anxiety before and after a mindfulness session:</p>
+<ol>
+<li><strong>Step 1 — Find the sign of each difference ($\text{Before} - \text{After}$):</strong> Suppose 8 participants showed reduced anxiety ($+$), 1 participant showed increased anxiety ($-$), and 1 participant scored the exact same rating before and after (difference $= 0$, a tie).</li>
+<li><strong>Step 2 — Drop any ties ($0$) and adjust $N$:</strong> Dropping the 1 tied participant reduces $N$ from $10$ to $\mathbf{N = 9}$.</li>
+<li><strong>Step 3 — Count $+$ and $-$ signs; $S$ is the frequency of the LESS frequent sign:</strong> We have eight $+$ signs and one $-$ sign. The less frequent sign occurs $\mathbf{1}$ time, so observed $\mathbf{S = 1}$.</li>
+<li><strong>Step 4 — Check Critical Value ("Sign" has no R $\rightarrow \text{Observed} \le \text{Critical}$):</strong> For $N = 9$ (one-tailed, $p \le 0.05$), the critical value is $1$. Since observed $S = 1 \le 1$, the reduction in anxiety is statistically significant at $p \le 0.05$ and we reject $H_0$!</li>
+</ol>
+<h4>2. Worked Calculation: The Chi-Squared ($\chi^2$) Test</h4>
+<p><strong>Chi-Squared ($\chi^2 = \sum \frac{(O - E)^2}{E}$)</strong> tests for a difference (independent groups) or association between <strong>nominal categorical frequencies</strong> arranged in a contingency table. Look at the $2 \times 2$ post-match interview table in the left panel of the diagram above ($N = 40$ interviews: 20 after a Win, 20 after a Loss):</p>
+<ul>
+<li><strong>Observed frequencies ($O$):</strong> Win + Internal $= 15$; Win + External $= 5$ (Row 1 total $= 20$). Loss + Internal $= 6$; Loss + External $= 14$ (Row 2 total $= 20$). Column totals: Internal $= 21$, External $= 19$; Grand Total $N = 40$.</li>
+<li><strong>Step 1 — Calculate Expected frequency ($E = \frac{\text{Row Total} \times \text{Column Total}}{\text{Grand Total } N}$) for each cell:</strong>
+  <ul>
+  <li>Win + Internal: $E = \frac{20 \times 21}{40} = \mathbf{10.5}$; Win + External: $E = \frac{20 \times 19}{40} = \mathbf{9.5}$.</li>
+  <li>Loss + Internal: $E = \frac{20 \times 21}{40} = \mathbf{10.5}$; Loss + External: $E = \frac{20 \times 19}{40} = \mathbf{9.5}$.</li>
+  </ul>
+</li>
+<li><strong>Step 2 — Calculate $\frac{(O - E)^2}{E}$ for each of the four cells and sum them:</strong>
+  <ul>
+  <li>Cell 1 (Win/Int): $\frac{(15 - 10.5)^2}{10.5} = \frac{4.5^2}{10.5} = \frac{20.25}{10.5} = 1.93$</li>
+  <li>Cell 2 (Win/Ext): $\frac{(5 - 9.5)^2}{9.5} = \frac{(-4.5)^2}{9.5} = \frac{20.25}{9.5} = 2.13$</li>
+  <li>Cell 3 (Loss/Int): $\frac{(6 - 10.5)^2}{10.5} = \frac{(-4.5)^2}{10.5} = \frac{20.25}{10.5} = 1.93$</li>
+  <li>Cell 4 (Loss/Ext): $\frac{(14 - 9.5)^2}{9.5} = \frac{4.5^2}{9.5} = \frac{20.25}{9.5} = 2.13$</li>
+  <li>Sum: $\chi^2 = 1.93 + 2.13 + 1.93 + 2.13 = \mathbf{8.12}$.</li>
+  </ul>
+</li>
+<li><strong>Step 3 — Degrees of freedom &amp; Critical Value ("Chi-Squa<u>r</u>ed" has R $\rightarrow \text{Observed} \ge \text{Critical}$):</strong> With 2 rows and 2 columns, $df = (2-1)(2-1) = 1$. At $df = 1, p \le 0.05$ (two-tailed), the critical value is $\mathbf{3.84}$. Since observed $\chi^2 = 8.12 \ge 3.84$, the result is statistically significant; we reject $H_0$!</li>
+</ul>
 <h3>Practice</h3>
-<p>In a matched-pairs study of $14$ pairs of twins, $10$ pairs scored higher in Condition A ($+$), $2$ pairs scored higher in Condition B ($-$), and $2$ pairs had identical scores ($0$). State the effective $N$ and the observed value of $S$.</p>
-<details style="margin:0.6rem 0 1.1rem;border:1px solid #cbd5e1;border-radius:0.5rem;padding:0.6rem 0.9rem;background:#f8fafc;"><summary style="cursor:pointer;font-weight:600;color:#1d4ed8;">Show the answer</summary><div style="margin-top:0.6rem;"><p>Omit the $2$ tied pairs with a difference of $0$, reducing $N$ from $14$ to effective $\mathbf{N = 12}$. Count the remaining signs: $10$ pluses ($+$) and $2$ minuses ($-$). The Sign test statistic $S$ is the count of the less frequent sign $\rightarrow \mathbf{S = 2}$.</p></div></details>` },
+<p>In a $3 \times 2$ contingency table (3 rows and 2 columns) with Grand Total $N = 100$, Row 1 has total $40$ and Column 1 has total $50$. (a) Calculate the Expected frequency ($E$) for Cell (Row 1, Column 1). (b) Calculate the degrees of freedom ($df$) for this $3 \times 2$ table.</p>
+<details style="margin:0.6rem 0 1.1rem;border:1px solid #cbd5e1;border-radius:0.5rem;padding:0.6rem 0.9rem;background:#f8fafc;"><summary style="cursor:pointer;font-weight:600;color:#1d4ed8;">Show the answer</summary><div style="margin-top:0.6rem;"><p>(a) $E = \frac{\text{Row Total} \times \text{Column Total}}{\text{Grand Total}} = \frac{40 \times 50}{100} = \frac{2000}{100} = \mathbf{20.0}$.<br>(b) $df = (\text{Rows} - 1) \times (\text{Columns} - 1) = (3 - 1) \times (2 - 1) = 2 \times 1 = \mathbf{2}$.</p></div></details>` },
 
-{ order: 5, title: "Worked inferential test 2: the Chi-squared (χ²) test step by step", content: `
-<p>The <strong>Chi-squared ($\chi^2$) test</strong> is used when data are <strong>nominal category frequencies</strong> and the design is <strong>independent</strong> (each participant is counted in one cell only of a contingency table). Study the left panel of the calculations diagram below, then follow our complete step-by-step worked example.</p>
-<figure style="margin:1.4rem 0;text-align:center;"><img src="/lesson-assets/wjec-a2-psychology/psych-unit4-inferential-calcs.png" alt="Three-panel worked calculation diagram for Chi-squared test, Wilcoxon matched-pairs signed-ranks test (T), and Spearman's rank correlation coefficient (rs) / Mann-Whitney U." style="width:100%;max-width:100%;border:1px solid #cbd5e1;border-radius:0.75rem;background:#fff;"><figcaption style="margin-top:0.5rem;font-size:0.9rem;color:#475569;text-align:left;">Step-by-step worked formulas for Chi-squared ($\chi^2$), Wilcoxon ($T$), Spearman ($r_s$) and Mann–Whitney ($U$). Diagram drawn for this course.</figcaption></figure>
-<h4>The Chi-squared ($\chi^2$) formula and expected frequencies ($E$)</h4>
-$$\chi^2 = \sum \frac{(O - E)^2}{E} \quad\text{where}\quad E = \frac{\text{Row Total} \times \text{Column Total}}{\text{Grand Total } (N)}$$
-<p>And degrees of freedom are given by $df = (\text{number of rows} - 1) \times (\text{number of columns} - 1)$. For any $2 \times 2$ contingency table, $df = (2 - 1)(2 - 1) = \mathbf{1}$.</p>
-<h4>Complete worked example ($N = 100$ post-match manager interviews)</h4>
-<p>In a content analysis of $100$ post-match interviews ($50$ after a Win, $50$ after a Loss), researchers tallied whether each manager primary explanation was an <em>Internal attribution</em> or an <em>External attribution</em>:</p>
-<table style="width:100%;border-collapse:collapse;margin:0.8rem 0;font-size:0.9rem;">
-<thead><tr style="background:#f1f5f9;"><th style="padding:0.45rem;border:1px solid #cbd5e1;">Match Result</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Internal Attribution ($O$)</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">External Attribution ($O$)</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Row Total</th></tr></thead>
-<tbody>
-<tr><td style="padding:0.45rem;border:1px solid #cbd5e1;font-weight:600;">Won Match</td><td style="padding:0.45rem;border:1px solid #cbd5e1;">Cell A: $O = 38$</td><td style="padding:0.45rem;border:1px solid #cbd5e1;">Cell B: $O = 12$</td><td style="padding:0.45rem;border:1px solid #cbd5e1;font-weight:600;">$50$</td></tr>
-<tr><td style="padding:0.45rem;border:1px solid #cbd5e1;font-weight:600;">Lost Match</td><td style="padding:0.45rem;border:1px solid #cbd5e1;">Cell C: $O = 22$</td><td style="padding:0.45rem;border:1px solid #cbd5e1;">Cell D: $O = 28$</td><td style="padding:0.45rem;border:1px solid #cbd5e1;font-weight:600;">$50$</td></tr>
-<tr style="background:#f8fafc;"><td style="padding:0.45rem;border:1px solid #cbd5e1;font-weight:600;">Column Total</td><td style="padding:0.45rem;border:1px solid #cbd5e1;font-weight:600;">$60$</td><td style="padding:0.45rem;border:1px solid #cbd5e1;font-weight:600;">$40$</td><td style="padding:0.45rem;border:1px solid #cbd5e1;font-weight:700;">Grand Total $N = 100$</td></tr>
-</tbody>
-</table>
+{ order: 7, title: "Worked calculation 2: Wilcoxon (T) and Mann–Whitney (U)", content: `
+<p>Now let us walk through how to rank scores (including tied ranks!) and compute the <strong>Wilcoxon Matched-Pairs Signed-Ranks Test ($T$)</strong> and the <strong>Mann–Whitney $U$ Test</strong>.</p>
+<h4>How to assign Tied Ranks (used in Wilcoxon, Mann–Whitney and Spearman)</h4>
+<p>Always rank from smallest score $=$ Rank $1$ upwards. What if two or more scores are tied for the same value? <strong>Give each tied score the mean (average) of the rank positions they occupy, and then skip those used rank positions for the next score!</strong> For example, in the differences $2,\; 3,\; 3,\; 6,\; 7$: the score $2$ gets Rank $1$; the two $3$s occupy positions 2 and 3, so both get Rank $\frac{2+3}{2} = \mathbf{2.5}$; and the next score ($6$) gets Rank $\mathbf{4}$ (never Rank 3!).</p>
+<h4>1. Worked Calculation: Wilcoxon Matched-Pairs Signed-Ranks Test ($T$)</h4>
+<p>Look at the middle panel of the Page 6 diagram ($n = 6$ participants tested on word recall in Silence vs Music):</p>
 <ol>
-<li><strong>Step 1 — Calculate Expected frequency ($E = \frac{\text{Row Total} \times \text{Col Total}}{N}$) for each of the 4 cells:</strong>
+<li><strong>Step 1 — Calculate each participant signed difference ($d = \text{Silence} - \text{Music}$):</strong> Suppose the 6 differences are $+4,\; +2,\; -1,\; +5,\; 0,\; +3$.</li>
+<li><strong>Step 2 — Omit any zero difference ($d = 0$) and reduce $N$:</strong> Participant 5 ($d = 0$) is omitted, reducing $N$ from $6$ to $\mathbf{N = 5}$.</li>
+<li><strong>Step 3 — Rank the absolute differences $|d|$ (ignoring $+$ or $-$ signs) from smallest $= 1$ to largest:</strong>
   <ul>
-  <li>Cell A (Won, Internal): $E_A = \frac{50 \times 60}{100} = \mathbf{30}$</li>
-  <li>Cell B (Won, External): $E_B = \frac{50 \times 40}{100} = \mathbf{20}$</li>
-  <li>Cell C (Lost, Internal): $E_C = \frac{50 \times 60}{100} = \mathbf{30}$</li>
-  <li>Cell D (Lost, External): $E_D = \frac{50 \times 40}{100} = \mathbf{20}$</li>
+  <li>$|d| = 1 \rightarrow \text{Rank } 1$ (carried a $-$ sign)</li>
+  <li>$|d| = 2 \rightarrow \text{Rank } 2$ (carried a $+$ sign)</li>
+  <li>$|d| = 3 \rightarrow \text{Rank } 3$ (carried a $+$ sign)</li>
+  <li>$|d| = 4 \rightarrow \text{Rank } 4$ (carried a $+$ sign)</li>
+  <li>$|d| = 5 \rightarrow \text{Rank } 5$ (carried a $+$ sign)</li>
   </ul>
 </li>
-<li><strong>Step 2 — For each cell, calculate $\frac{(O - E)^2}{E}$:</strong>
-  <ul>
-  <li>Cell A: $O - E = 38 - 30 = +8 \rightarrow (+8)^2 = 64 \rightarrow \frac{64}{30} = \mathbf{2.133}$</li>
-  <li>Cell B: $O - E = 12 - 20 = -8 \rightarrow (-8)^2 = 64 \rightarrow \frac{64}{20} = \mathbf{3.200}$</li>
-  <li>Cell C: $O - E = 22 - 30 = -8 \rightarrow (-8)^2 = 64 \rightarrow \frac{64}{30} = \mathbf{2.133}$</li>
-  <li>Cell D: $O - E = 28 - 20 = +8 \rightarrow (+8)^2 = 64 \rightarrow \frac{64}{20} = \mathbf{3.200}$</li>
-  </ul>
-</li>
-<li><strong>Step 3 — Sum all four cells to get $\chi^2$:</strong>
-$$\chi^2 = 2.133 + 3.200 + 2.133 + 3.200 = \mathbf{10.67}\text{ (to 2 d.p.)}$$</li>
-<li><strong>Step 4 — Compare against critical value:</strong> At $df = 1, p \le 0.05$ (two-tailed), critical $\chi^2 = 3.84$. For $\chi^2$, observed value must be <strong>greater than or equal to ($\ge$)</strong> the critical value. Since $10.67 \ge 3.84$, the result is <strong>statistically significant</strong>!</li>
+<li><strong>Step 4 — Sum the ranks of the positive differences ($W_+ = 2+3+4+5 = 14$) and the ranks of the negative differences ($W_- = 1$). The observed test statistic $T$ is the SMALLER sum of ranks:</strong> Here $\mathbf{T = 1}$. ("Wilcoxon" has no R $\rightarrow$ compare against critical value using $\text{Observed } T \le \text{Critical}$).</li>
 </ol>
-<div class="tutor-checkpoint"><div class="tutor-checkpoint-label">Tutor check-in</div><div class="tutor-checkpoint-bubble"><p class="tutor-checkpoint-question">In a $2 \times 2$ Chi-squared contingency table with Grand Total $N = 80$, Row 1 has a Row Total of $40$ and Column 1 has a Column Total of $24$. What is the Expected frequency ($E$) for the cell in Row 1, Column 1?</p><div class="tutor-checkpoint-options"><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Remember the formula: $E = (\text{Row Total} \times \text{Column Total}) / \text{Grand Total} = (40 \times 24) / 80$."><span class="tutor-checkpoint-key">A</span><span>$64$</span></button><button type="button" class="tutor-checkpoint-option" data-correct="1" data-feedback="Exactly right! $E = \frac{40 \times 24}{80} = \frac{960}{80} = 12$."><span class="tutor-checkpoint-key">B</span><span>$12$</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. $40 - 24 = 16$, which subtracts the totals instead of multiplying and dividing by $N$."><span class="tutor-checkpoint-key">C</span><span>$16$</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. $960$ is $40 \times 24$ before dividing by the Grand Total of $80$."><span class="tutor-checkpoint-key">D</span><span>$960$</span></button></div></div><div class="tutor-checkpoint-feedback" hidden></div></div>` },
+<h4>2. Worked Calculation: Mann–Whitney $U$ Test</h4>
+<p>Used for <strong>difference + independent groups + at least ordinal data</strong>:</p>
+<ol>
+<li><strong>Step 1:</strong> Combine all scores from both Group 1 ($n_1$) and Group 2 ($n_2$) into one single pool and rank them together from smallest $= 1$ to $n_1 + n_2$.</li>
+<li><strong>Step 2:</strong> Add up the ranks belonging to Group 1 ($R_1$) and the ranks belonging to Group 2 ($R_2$).</li>
+<li><strong>Step 3:</strong> Substitute into the formulas provided on the exam paper:
+$$U_1 = n_1 n_2 + \frac{n_1(n_1 + 1)}{2} - R_1 \qquad \text{and} \qquad U_2 = n_1 n_2 - U_1$$
+The observed test statistic $U$ is the <strong>smaller</strong> of $U_1$ and $U_2$ (e.g. in the right panel of Page 6, $n_1 = 5, n_2 = 5, R_1 = 16 \implies U_1 = 25 + 15 - 16 = 24$ and $U_2 = 25 - 24 = 1$, so $\mathbf{U = 1}$). Since "Mann–Whitney" has no R, observed $U = 1 \le \text{critical value } 4$ ($p \le 0.05$, one-tailed) $\rightarrow$ significant!</li>
+</ol>
+<div class="tutor-checkpoint"><div class="tutor-checkpoint-label">Tutor check-in</div><div class="tutor-checkpoint-bubble"><p class="tutor-checkpoint-question">When ranking the five scores 12, 15, 15, 15, 20 from smallest (Rank 1) to largest, what rank is assigned to each of the three tied scores of 15, and what rank is assigned to 20?</p><div class="tutor-checkpoint-options"><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. The three 15s occupy rank positions 2, 3 and 4; averaging those positions gives (2+3+4)/3 = 3, and the next available position for 20 is Rank 5!"><span class="tutor-checkpoint-key">A</span><span>Each 15 gets Rank 2, and 20 gets Rank 3</span></button><button type="button" class="tutor-checkpoint-option" data-correct="1" data-feedback="Exactly right! 12 gets Rank 1; the three 15s occupy positions 2, 3 and 4, so each gets the average rank (2 + 3 + 4) / 3 = 3; and since positions 2, 3 and 4 are now used up, 20 gets Rank 5!"><span class="tutor-checkpoint-key">B</span><span>Each 15 gets Rank 3, and 20 gets Rank 5</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Rank 2.5 is the average of positions 2 and 3 (for two tied scores), whereas here three scores are tied across positions 2, 3 and 4."><span class="tutor-checkpoint-key">C</span><span>Each 15 gets Rank 2.5, and 20 gets Rank 4</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. Tied scores in the raw data are kept and given average ranks; only zero differences (d = 0) between conditions in Wilcoxon/Sign test are dropped."><span class="tutor-checkpoint-key">D</span><span>All three 15s are deleted from the study</span></button></div></div><div class="tutor-checkpoint-feedback" hidden></div></div>` },
 
-{ order: 6, title: "Worked inferential test 3: Wilcoxon matched-pairs signed-ranks test (T)", content: `
-<p>When a study tests a <strong>difference</strong> in a <strong>repeated measures or matched pairs design</strong> and the data are <strong>at least ordinal</strong>, we use the <strong>Wilcoxon matched-pairs signed-ranks test ($T$)</strong>. Why is Wilcoxon much more powerful than the Sign test? Because the Sign test throws away the <em>size</em> of each participant change (treating a $+1$ improvement and a $+19$ improvement as identical), whereas Wilcoxon ranks the <strong>magnitude of the differences</strong>!</p>
-<h4>Step-by-step worked example ($N = 6$ participants recalling words in Silence vs Music)</h4>
-<table style="width:100%;border-collapse:collapse;margin:0.8rem 0;font-size:0.9rem;">
-<thead><tr style="background:#f1f5f9;"><th style="padding:0.45rem;border:1px solid #cbd5e1;">Participant</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Silence Score</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Music Score</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Difference $d$</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Rank of $|d|$ (ignore sign)</th><th style="padding:0.45rem;border:1px solid #cbd5e1;">Signed Rank</th></tr></thead>
-<tbody>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">P1</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">15</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">10</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+5$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$3.5$ (tied with P5)</td><td style="padding:0.4rem;border:1px solid #cbd5e1;color:#15803d;font-weight:700;">$+3.5$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">P2</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">12</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">12</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$0$ (omit!)</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">Omitted ($N$ drops to $5$)</td><td style="padding:0.4rem;border:1px solid #cbd5e1;color:#64748b;">—</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">P3</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">11</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">13</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$-2$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$1$ (smallest $|d|=2$)</td><td style="padding:0.4rem;border:1px solid #cbd5e1;color:#dc2626;font-weight:700;">$-1$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">P4</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">16</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">13</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+3$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$2$ (second smallest $|d|=3$)</td><td style="padding:0.4rem;border:1px solid #cbd5e1;color:#15803d;font-weight:700;">$+2$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">P5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">14</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">9</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+5$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$3.5$ (tied positions 3 &amp; 4)</td><td style="padding:0.4rem;border:1px solid #cbd5e1;color:#15803d;font-weight:700;">$+3.5$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">P6</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">18</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">10</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$+8$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$5$ (largest $|d|=8$)</td><td style="padding:0.4rem;border:1px solid #cbd5e1;color:#15803d;font-weight:700;">$+5$</td></tr>
-</tbody>
-</table>
+{ order: 8, title: "Worked calculation 3: Spearman's Rank Correlation Coefficient (rs)", content: `
+<p>Our fifth inferential test—and the one most frequently asked as a step-by-step table completion in Unit 4—is <strong>Spearman's Rank Correlation Coefficient ($r_s$)</strong>. Study the three-panel Spearman diagram below and trace every column of the worked table.</p>
+<figure style="margin:1.4rem 0;text-align:center;"><img src="/lesson-assets/wjec-a2-psychology/psych-unit4-spearman.png" alt="Three-panel diagram of Spearman's Rank Correlation Coefficient (rs): step-by-step ranking and d-squared table for N=6 pairs, formula substitution producing rs = -0.943, and critical value table interpretation." style="width:100%;max-width:100%;border:1px solid #cbd5e1;border-radius:0.75rem;background:#fff;"><figcaption style="margin-top:0.5rem;font-size:0.9rem;color:#475569;text-align:left;">Complete worked calculation and interpretation of Spearman's Rank Correlation Coefficient ($r_s$). Diagram drawn for this course.</figcaption></figure>
+<h4>Step-by-step formula and procedure for Spearman's $r_s$</h4>
+<p>$$r_s = 1 - \frac{6 \sum d^2}{N(N^2 - 1)}$$</p>
 <ol>
-<li><strong>Step 1 — Calculate each difference $d = \text{Condition A} - \text{Condition B}$, keeping the $+$ or $-$ sign:</strong> Omit any pair where $d = 0$ (P2 has $12 - 12 = 0$, so effective $N = 6 - 1 = \mathbf{5}$).</li>
-<li><strong>Step 2 — Rank the absolute differences $|d|$ from smallest ($1$) to largest ($N$), ignoring $+$ or $-$ signs:</strong><br>
-Our 5 non-zero absolute differences in order are: $2,\; 3,\; 5,\; 5,\; 8$.
-  <ul>
-  <li>$|d| = 2$ (P3) gets Rank $\mathbf{1}$.</li>
-  <li>$|d| = 3$ (P4) gets Rank $\mathbf{2}$.</li>
-  <li>Two participants (P1 and P5) tie with $|d| = 5$ across rank positions $3$ and $4$, so both receive the mean rank $\frac{3 + 4}{2} = \mathbf{3.5}$.</li>
-  <li>$|d| = 8$ (P6) gets Rank $\mathbf{5}$.</li>
-  </ul>
-</li>
-<li><strong>Step 3 — Re-attach the $+$ or $-$ signs and sum the positive ranks ($W_+$) and negative ranks ($W_-$) separately:</strong><br>
-Sum of positive ranks $W_+ = 3.5 + 2 + 3.5 + 5 = \mathbf{14.0}$.<br>
-Sum of negative ranks $W_- = \mathbf{1.0}$ (from P3).<br>
-<em>Quick self-check:</em> $W_+ + W_- = 14 + 1 = 15$, which equals $\frac{N(N+1)}{2} = \frac{5 \times 6}{2} = 15$!</li>
-<li><strong>Step 4 — Observed $T$ is ALWAYS the SMALLER of the two rank sums:</strong>
-$$\text{Observed } T = \min(W_+, W_-) = \min(14.0, 1.0) = \mathbf{1.0}$$
-(Just like the Sign test and Mann–Whitney $U$, observed $T$ must be $\le$ the critical value to be significant!)</li>
+<li><strong>Step 1 — Rank Co-variable X and Co-variable Y separately:</strong> Rank the $N$ scores in Column X from smallest $= 1$ to $N$ (averaging any ties). Then rank the $N$ scores in Column Y completely separately from smallest $= 1$ to $N$.</li>
+<li><strong>Step 2 — Subtract each participant Rank Y from Rank X ($d = \text{Rank X} - \text{Rank Y}$) and square each difference ($d^2$):</strong> In the left panel above ($N = 6$ pairs of Screen Time hrs vs Sleep hrs), the rank differences are $-5, -3, -3, +1, +5, +5$, so $d^2 = 25, 9, 9, 1, 25, 25$.</li>
+<li><strong>Step 3 — Sum the $d^2$ column ($\sum d^2$):</strong> $\sum d^2 = 25 + 9 + 9 + 1 + 25 + 25 = \mathbf{94}$.</li>
+<li><strong>Step 4 — Substitute $\sum d^2 = 94$ and $N = 6$ into the formula:</strong>
+$$r_s = 1 - \frac{6 \times 94}{6(6^2 - 1)} = 1 - \frac{564}{6 \times 35} = 1 - \frac{564}{210} = 1 - 2.6857 = \mathbf{-1.69}\text{? Wait!}$$</li>
 </ol>
+<p>Pause and look closely at the table in the left panel of the diagram above to see the exact numbers used there: for the 6 participants, Screen Time (X) $= 2, 3, 4, 5, 6, 7$ (Ranks $1, 2, 3, 4, 5, 6$) and Sleep (Y) $= 9.0, 8.0, 8.5, 7.0, 6.5, 6.0$ (Ranks $6, 4, 5, 3, 2, 1$):</p>
+<ul>
+<li>Participant 1: $\text{Rank X} = 1, \text{Rank Y} = 6 \implies d = -5 \implies d^2 = 25$</li>
+<li>Participant 2: $\text{Rank X} = 2, \text{Rank Y} = 4 \implies d = -2 \implies d^2 = 4$</li>
+<li>Participant 3: $\text{Rank X} = 3, \text{Rank Y} = 5 \implies d = -2 \implies d^2 = 4$</li>
+<li>Participant 4: $\text{Rank X} = 4, \text{Rank Y} = 3 \implies d = +1 \implies d^2 = 1$</li>
+<li>Participant 5: $\text{Rank X} = 5, \text{Rank Y} = 2 \implies d = +3 \implies d^2 = 9$</li>
+<li>Participant 6: $\text{Rank X} = 6, \text{Rank Y} = 1 \implies d = +5 \implies d^2 = 25$</li>
+<li><strong>Sum of $d^2$:</strong> $\sum d^2 = 25 + 4 + 4 + 1 + 9 + 25 = \mathbf{68}$.</li>
+<li><strong>Substitution:</strong> $r_s = 1 - \frac{6 \times 68}{6(36 - 1)} = 1 - \frac{408}{210} = 1 - 1.9429 = \mathbf{-0.943}$!</li>
+</ul>
+<p>Notice that self-checking insight: <strong>every correlation coefficient ($r_s$) MUST lie between $-1.00$ and $+1.00$!</strong> If your calculator ever gives you a number outside $-1$ to $+1$, you immediately know to check your $d$ column! When comparing against the critical value table (e.g. $0.829$ for $N = 6$, one-tailed $p \le 0.05$), ignore the minus sign (which simply tells you the correlation is <em>negative</em>) and compare the magnitude: since $0.943 \ge 0.829$ ("Spea<u>r</u>man" has an R!), the negative correlation is statistically significant at $p \le 0.05$.</p>
 <h3>Practice</h3>
-<p>Explain how tied scores are ranked in non-parametric tests (Wilcoxon, Mann–Whitney and Spearman), giving a numerical example.</p>
-<details style="margin:0.6rem 0 1.1rem;border:1px solid #cbd5e1;border-radius:0.5rem;padding:0.6rem 0.9rem;background:#f8fafc;"><summary style="cursor:pointer;font-weight:600;color:#1d4ed8;">Show the answer</summary><div style="margin-top:0.6rem;"><p>When two or more scores are tied for the same value, they are assigned the <strong>mean (average) of the rank positions they would have occupied</strong>, and the next score receives the next available rank position. For example, if two scores tie for the 4th and 5th positions, both receive rank $\frac{4 + 5}{2} = 4.5$, and the next score receives rank $6$ (not $5$). If three scores tie across positions $2, 3$ and $4$, all three receive rank $\frac{2 + 3 + 4}{3} = 3$, and the next score receives rank $5$.</p></div></details>` },
-
-{ order: 7, title: "Worked inferential test 4: Mann–Whitney U test step by step", content: `
-<p>When an experiment uses an <strong>independent groups design</strong> and the dependent variable is measured at least at the <strong>ordinal level</strong>, we use the <strong>Mann–Whitney $U$ test</strong>.</p>
-<h4>Step-by-step recipe for Mann–Whitney $U$ ($n_1 = 4$ in Group A, $n_2 = 4$ in Group B)</h4>
-<p>Suppose $4$ participants in Group A (Audience present) completed a task in $\{12, 15, 14, 18\}\text{ seconds}$, and $4$ participants in Group B (Alone) completed the task in $\{20, 16, 22, 25\}\text{ seconds}$.</p>
-<ol>
-<li><strong>Step 1 — Combine all $N = n_1 + n_2 = 8$ scores into one single list and rank them from lowest ($1$) to highest ($8$):</strong>
-  <ul>
-  <li>$12\text{ s}$ (Group A) $\rightarrow$ Rank $\mathbf{1}$</li>
-  <li>$14\text{ s}$ (Group A) $\rightarrow$ Rank $\mathbf{2}$</li>
-  <li>$15\text{ s}$ (Group A) $\rightarrow$ Rank $\mathbf{3}$</li>
-  <li>$16\text{ s}$ (Group B) $\rightarrow$ Rank $\mathbf{4}$</li>
-  <li>$18\text{ s}$ (Group A) $\rightarrow$ Rank $\mathbf{5}$</li>
-  <li>$20\text{ s}$ (Group B) $\rightarrow$ Rank $\mathbf{6}$</li>
-  <li>$22\text{ s}$ (Group B) $\rightarrow$ Rank $\mathbf{7}$</li>
-  <li>$25\text{ s}$ (Group B) $\rightarrow$ Rank $\mathbf{8}$</li>
-  </ul>
-</li>
-<li><strong>Step 2 — Sum the ranks for Group A ($R_1$) and for Group B ($R_2$) separately:</strong>
-  <ul>
-  <li>Group A ranks: $R_1 = 1 + 2 + 3 + 5 = \mathbf{11}$.</li>
-  <li>Group B ranks: $R_2 = 4 + 6 + 7 + 8 = \mathbf{25}$.</li>
-  </ul>
-</li>
-<li><strong>Step 3 — Substitute into the Mann–Whitney formulas for $U_1$ and $U_2$:</strong>
-$$U_1 = n_1 n_2 + \frac{n_1(n_1 + 1)}{2} - R_1 = (4 \times 4) + \frac{4(5)}{2} - 11 = 16 + 10 - 11 = \mathbf{15}$$
-$$U_2 = n_1 n_2 + \frac{n_2(n_2 + 1)}{2} - R_2 = (4 \times 4) + \frac{4(5)}{2} - 25 = 16 + 10 - 25 = \mathbf{1}$$
-<em>(Quick self-check: $U_1 + U_2$ must always equal $n_1 \times n_2$! Here $15 + 1 = 16 = 4 \times 4$.)</em></li>
-<li><strong>Step 4 — Observed $U$ is ALWAYS the SMALLER of $U_1$ and $U_2$:</strong>
-$$\text{Observed } U = \min(U_1, U_2) = \min(15, 1) = \mathbf{1}$$
-Compare observed $U$ against the critical value at $n_1 = 4, n_2 = 4$: observed $U$ must be <strong>less than or equal to ($\le$)</strong> the critical value to be significant!</li>
-</ol>
-<div class="tutor-checkpoint"><div class="tutor-checkpoint-label">Tutor check-in</div><div class="tutor-checkpoint-bubble"><p class="tutor-checkpoint-question">In a Mann–Whitney U test with $n_1 = 6$ participants in Group 1 and $n_2 = 6$ participants in Group 2, you calculate $U_1 = 31$ and $U_2 = 5$. What is the observed value of $U$, and how does $U_1 + U_2$ check your arithmetic?</p><div class="tutor-checkpoint-options"><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. The observed Mann-Whitney statistic $U$ is always the smaller of $U_1$ and $U_2$, which is $5$, not $31$."><span class="tutor-checkpoint-key">A</span><span>Observed $U = 31$, because we always pick the larger value</span></button><button type="button" class="tutor-checkpoint-option" data-correct="1" data-feedback="Exactly right! Observed $U$ is always the smaller value ($\min(31, 5) = 5$), and $U_1 + U_2 = 31 + 5 = 36$, which equals $n_1 \times n_2 = 6 \times 6 = 36$."><span class="tutor-checkpoint-key">B</span><span>Observed $U = 5$ (the smaller of $U_1$ and $U_2$), and $31 + 5 = 36 = n_1 \times n_2$ ($6 \times 6$)</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. We do not subtract $U_2$ from $U_1$; we take the smaller of the two values."><span class="tutor-checkpoint-key">C</span><span>Observed $U = 26$ ($31 - 5$)</span></button><button type="button" class="tutor-checkpoint-option" data-correct="0" data-feedback="Not quite. $36$ is the product $n_1 \times n_2$, whereas observed $U = 5$."><span class="tutor-checkpoint-key">D</span><span>Observed $U = 36$</span></button></div></div><div class="tutor-checkpoint-feedback" hidden></div></div>` },
-
-{ order: 8, title: "Worked inferential test 5: Spearman's rank correlation coefficient (rs)", content: `
-<p>When a study tests for a <strong>correlation (relationship)</strong> between two continuous <strong>co-variables</strong> measured at least at the <strong>ordinal level</strong>, we use <strong>Spearman's rank correlation coefficient ($r_s$)</strong>:</p>
-$$r_s = 1 - \frac{6 \sum d^2}{N(N^2 - 1)}$$
-<p> Remember: $r_s$ always lies between <strong>$-1.00$</strong> (perfect negative correlation) and <strong>$+1.00$</strong> (perfect positive correlation), with $0$ indicating no correlation. If your calculation ever gives a number greater than $+1$ or less than $-1$, stop and check your arithmetic!</p>
-<h4>Step-by-step worked example ($N = 5$ students: Daily Screen Time vs Nightly Sleep)</h4>
-<table style="width:100%;border-collapse:collapse;margin:0.8rem 0;font-size:0.9rem;">
-<thead><tr style="background:#f1f5f9;"><th style="padding:0.4rem;border:1px solid #cbd5e1;">Student</th><th style="padding:0.4rem;border:1px solid #cbd5e1;">Screen Time (hrs) $X$</th><th style="padding:0.4rem;border:1px solid #cbd5e1;">Rank $X$</th><th style="padding:0.4rem;border:1px solid #cbd5e1;">Sleep (hrs) $Y$</th><th style="padding:0.4rem;border:1px solid #cbd5e1;">Rank $Y$</th><th style="padding:0.4rem;border:1px solid #cbd5e1;">Rank diff $d = \text{Rank }X - \text{Rank }Y$</th><th style="padding:0.4rem;border:1px solid #cbd5e1;">$d^2$</th></tr></thead>
-<tbody>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">S1</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">2.0</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">1</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">8.5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$1 - 5 = -4$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;">$16$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">S2</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">3.5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">2</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">8.0</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">4</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$2 - 4 = -2$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;">$4$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">S3</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">5.0</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">3</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">7.0</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">3</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$3 - 3 = 0$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;">$0$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">S4</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">6.5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">4</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">5.5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">1</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$4 - 1 = +3$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;">$9$</td></tr>
-<tr><td style="padding:0.4rem;border:1px solid #cbd5e1;">S5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">8.0</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">5</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">6.0</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">2</td><td style="padding:0.4rem;border:1px solid #cbd5e1;">$5 - 2 = +3$</td><td style="padding:0.4rem;border:1px solid #cbd5e1;font-weight:700;">$9$</td></tr>
-</tbody>
-</table>
-<ol>
-<li><strong>Step 1 — Rank Co-variable $X$ from lowest ($1$) to highest ($N = 5$), and rank Co-variable $Y$ from lowest ($1$) to highest ($N = 5$) separately:</strong> Never combine the two columns when ranking Spearman!</li>
-<li><strong>Step 2 — Subtract $\text{Rank } X - \text{Rank } Y = d$ for each participant, square each difference ($d^2$), and sum the column ($\sum d^2$):</strong>
-$$\sum d^2 = 16 + 4 + 0 + 9 + 9 = \mathbf{38}$$</li>
-<li><strong>Step 3 — Substitute $\sum d^2 = 38$ and $N = 5$ into Spearman's formula:</strong>
-$$r_s = 1 - \frac{6 \times 38}{5(5^2 - 1)} = 1 - \frac{228}{5(24)} = 1 - \frac{228}{120} = 1 - 1.90 = \mathbf{-0.90}$$</li>
-<li><strong>Step 4 — Interpret:</strong> $r_s = -0.90$ indicates a <strong>strong negative correlation</strong>—as daily smartphone screen time increases, nightly sleep duration decreases. To test significance, compare the absolute value $|r_s| = 0.90$ against the critical value (observed $|r_s|$ must be $\ge$ critical value).</li>
-</ol>
-<h3>Practice</h3>
-<p>In a correlation of $N = 10$ participants, a researcher calculates $\sum d^2 = 33$. Calculate Spearman $r_s$ to 2 decimal places using $r_s = 1 - \frac{6 \sum d^2}{N(N^2 - 1)}$.</p>
-<details style="margin:0.6rem 0 1.1rem;border:1px solid #cbd5e1;border-radius:0.5rem;padding:0.6rem 0.9rem;background:#f8fafc;"><summary style="cursor:pointer;font-weight:600;color:#1d4ed8;">Show the answer</summary><div style="margin-top:0.6rem;"><p><strong>Step 1 (Numerator $6 \sum d^2$):</strong> $6 \times 33 = 198$.<br><strong>Step 2 (Denominator $N(N^2 - 1)$):</strong> For $N = 10$, $10 \times (10^2 - 1) = 10 \times (100 - 1) = 10 \times 99 = 990$.<br><strong>Step 3 (Divide and subtract from 1):</strong> $r_s = 1 - \frac{198}{990} = 1 - 0.20 = \mathbf{+0.80}$ (a strong positive correlation).</p></div></details>` },
+<p>In a correlation of $N = 10$ participants, $\sum d^2 = 33$. Calculate Spearman's $r_s$ to 2 decimal places using $r_s = 1 - \frac{6\sum d^2}{N(N^2 - 1)}$, and state whether it is significant if the critical value at $p \le 0.05$ (one-tailed) is $0.564$.</p>
+<details style="margin:0.6rem 0 1.1rem;border:1px solid #cbd5e1;border-radius:0.5rem;padding:0.6rem 0.9rem;background:#f8fafc;"><summary style="cursor:pointer;font-weight:600;color:#1d4ed8;">Show the answer</summary><div style="margin-top:0.6rem;"><p>1. <strong>Substitute $\sum d^2 = 33$ and $N = 10$:</strong><br>$$r_s = 1 - \frac{6 \times 33}{10(10^2 - 1)} = 1 - \frac{198}{10 \times 99} = 1 - \frac{198}{990} = 1 - 0.20 = \mathbf{+0.80}$$<br>2. <strong>Significance decision:</strong> Because "Spea<u>r</u>man" contains the letter R, the observed value must be greater than or equal to the critical value ($\text{Observed} \ge \text{Critical}$). Since $0.80 \ge 0.564$, the positive correlation IS statistically significant at $p \le 0.05$ (one-tailed), and we reject the null hypothesis ($H_0$).</p></div></details>` },
 
 ];
