@@ -114,6 +114,23 @@ across every subject, curriculum and qualification level.
   src/components/lesson/tutorCheckpoint.js. New lessons in all subsequent
   courses must include checkpoints in this format from the start.
 
+## Course status: WJEC A2 Psychology (Units 3 & 4 — Complete, 14 lessons)
+- Qualification: WJEC GCE A2 Psychology (Unit 3: Implications in the Real World;
+  Unit 4: Applied Research Methods). Course ID: `6aaafa7af2774c68d1a04fb1`.
+- Outline lives in `scripts/wjec-a2-psych/outline.cjs` (14 lessons: Lessons 1–6
+  cover all six Unit 3 Section A behaviours — Addictive, Autistic Spectrum,
+  Bullying, Criminal, Schizophrenia, Stress; Lessons 7–9 cover all five Unit 3
+  Section B controversies — Cultural Bias, Sexism, Ethical Costs, Non-Human
+  Animals, Scientific Status; Lessons 10–14 cover Unit 4 Applied Research
+  Methods — Personal Investigations, Descriptive Statistics & Graphs,
+  Inferential Non-Parametric Tests, Novel Scenarios & Reliability/Validity, and
+  Full Units 3 & 4 Exam Practice).
+- Every lesson has 15 substantive pages (7,000–8,700 words per lesson),
+  interactive `.tutor-checkpoint` blocks, hidden-answer practice questions, and
+  3 custom Canvas-rendered PNG diagrams in `public/lesson-assets/wjec-a2-psychology/`
+  (42 PNGs in total, rendered via `scripts/wjec-a2-psych/render-unit3-l1..9.cjs`
+  and `render-unit4-l10..14.cjs`).
+
 ## Course plan: WJEC A2 Criminology (Diploma Extension, from Sept 2026)
 - Qualification: WJEC Level 3 Applied Diploma in Criminology, Diploma
   Extension course (Units 3 and 4). Unit 3 Crime Scene to Courtroom is
