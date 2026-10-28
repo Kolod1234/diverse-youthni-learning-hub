@@ -13,7 +13,7 @@ export default function TopicQuizModal({ open, lesson, hasNextTopic = false, alr
       <DialogHeader className="shrink-0 border-b bg-muted p-5 pr-12 text-left sm:p-6">
         <p className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary"><Brain className="h-5 w-5" /> Topic check</p>
         <DialogTitle className="text-xl leading-snug sm:text-2xl">{lesson?.title}</DialogTitle>
-        <DialogDescription>{alreadyPassed ? 'You have already passed. Reread freely or take an optional retake to improve your points.' : 'Score at least 70% once to unlock the next topic. You can reread passed topics anytime.'}</DialogDescription>
+        <DialogDescription>{alreadyPassed ? 'You have already passed. Reread freely or take an optional retake to improve your points.' : 'Score 70% or more to record a pass and earn points. Every topic stays open to you in any order.'}</DialogDescription>
       </DialogHeader>
       <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
         {check.isPending ? <div role="status" className="flex min-h-48 items-center justify-center gap-3"><Loader2 className="h-6 w-6 animate-spin" />Preparing questions from this lesson…</div>

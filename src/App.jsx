@@ -23,7 +23,6 @@ import AdminParentLinks from './pages/AdminParentLinks';
 import TutorLeaderboard from './pages/TutorLeaderboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import TopicCheckGate from '@/components/lesson/topicCheck/TopicCheckGate';
 import UsernameSetupGate from '@/components/account/UsernameSetupGate';
 import AgeVerificationGate from '@/components/account/AgeVerificationGate';
 import AccountAccessGate from '@/components/account/AccountAccessGate';
@@ -33,8 +32,8 @@ const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
 const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}><TopicCheckGate page={currentPageName}>{children}</TopicCheckGate></Layout>
-  : <TopicCheckGate page={currentPageName}>{children}</TopicCheckGate>;
+  <Layout currentPageName={currentPageName}>{children}</Layout>
+  : children;
 
 const AuthenticatedApp = () => {
   const { user, isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, checkAppState } = useAuth();

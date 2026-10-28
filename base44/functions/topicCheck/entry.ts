@@ -12,15 +12,15 @@ export default async function(req) {
     if (!['access','status','start','submit','reading','reading_status','complete'].includes(action) || typeof lessonId !== 'string' || !lessonId) return Response.json({ error: 'A valid action and lesson are required.' }, { status: 400 });
     const lesson = await base44.entities.Lesson.get(lessonId);
     if (!lesson) return Response.json({ error: 'Lesson not found.' }, { status: 404 });
-    if (action === 'access') return Response.json(await topicAccess(base44, user, lesson));
+    if (action === 'access') return Response.json(topicAccess(user));
     const db = base44.asServiceRole.entities;
     if (action === 'status') {
       const summary = topicSummary(await allRows(db.TopicCheckAttempt, { user_id: user.id, lesson_id: lesson.id, status: 'submitted' }));
       if (summary.passed) await syncCourseCompletion(base44, user, lesson);
       return Response.json(summary);
     }
-    const access = await topicAccess(base44, user, lesson);
-    if (!access.allowed) return Response.json({ error: 'Pass the preceding topic first.', prerequisite: access.prerequisite }, { status: 403 });
+    const access = topicAccess(user);
+    if (!access.allowed) return Response.json({ error: 'Topic access is not available.' }, { status: 403 });
     if (action === 'reading_status' || action === 'reading') {
       if (!isStudent(user)) return Response.json({ page_index: 0, pages_viewed: 0 });
       const records = await allRows(db.LessonProgress, { user_email: user.email, lesson_id: lesson.id, course_id: lesson.course_id });
