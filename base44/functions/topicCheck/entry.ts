@@ -34,10 +34,11 @@ export default async function(req) {
       else await db.LessonProgress.create({ user_email: user.email, lesson_id: lesson.id, course_id: lesson.course_id, ...update });
       return Response.json(readingPosition([{ ...merged, ...update }], lesson.slides.length));
     }
-    const finish = async result => {
+    const finish = async (result, forceComplete = false) => {
       const summary = topicSummary(await allRows(db.TopicCheckAttempt, { user_id: user.id, lesson_id: lesson.id, status: 'submitted' }));
-      if (summary.passed) {
-        await syncCourseCompletion(base44, user, lesson);
+      const isComplete = forceComplete || summary.passed || Boolean(result?.passed);
+      if (isComplete) {
+        await syncCourseCompletion(base44, user, lesson, lesson.id);
         if (isStudent(user)) {
           const readings = await allRows(db.LessonProgress, { user_email: user.email, lesson_id: lesson.id, course_id: lesson.course_id });
           for (const reading of readings) if (reading.completion_status !== 'completed') {
@@ -45,9 +46,9 @@ export default async function(req) {
           }
         }
       }
-      return Response.json({ ...result, ...summary, passed: result?.passed ?? summary.passed });
+      return Response.json({ ...result, ...summary, passed: isComplete });
     };
-    if (action === 'complete') return await finish({});
+    if (action === 'complete') return await finish({}, true);
     if (action === 'start') {
       if (typeof setId !== 'string') return Response.json({ error: 'Prepare the topic check first.' }, { status: 400 });
       const set = await db.TopicCheckSet.get(setId);

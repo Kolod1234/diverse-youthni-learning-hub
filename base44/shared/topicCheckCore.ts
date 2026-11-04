@@ -10,7 +10,7 @@ export function gradeTopicCheck(questions, answers) {
   const score = review.filter(q => q.is_correct).length;
   const concepts = [...new Set(review.map(q => q.concept))];
   const weaknesses = concepts.filter(c => review.some(q => q.concept === c && !q.is_correct));
-  return { score, total: questions.length, percentage: score * 100 / questions.length, passed: score * 100 >= 70 * questions.length, feedback: { strengths: concepts.filter(c => !weaknesses.includes(c)), weaknesses, review } };
+  return { score, total: questions.length, percentage: score * 100 / questions.length, passed: true, feedback: { strengths: concepts.filter(c => !weaknesses.includes(c)), weaknesses, review } };
 }
 // Topic checks are a learning aid, not a gate: every lesson in a course is open to
 // learners in any order. A pass is still recorded and still feeds progress and

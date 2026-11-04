@@ -185,8 +185,7 @@ export default function LessonPlayerPowerPoint() {
     if (user && (user.role === 'admin' || user.is_tutor)) { setIsLessonLocked(false); return; }
     const sorted = [...courseLessons].sort((a, b) => a.order - b.order);
     if (sorted[0]?.id === lessonId) { setIsLessonLocked(false); return; }
-    // Unlock keys retired: lesson access is open and progression is gated by
-    // the 70% study check instead.
+    // Unlock keys retired: lesson access and progression are open.
     setIsLessonLocked(false);
   }, [lesson, enrollment, courseLessons, lessonId, user]);
 

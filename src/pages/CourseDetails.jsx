@@ -622,7 +622,7 @@ export default function CourseDetails() {
                             const hasActiveKey = lessonKeys.some(k => k.lesson_id === lesson.id && k.is_active);
                             const isFirstLesson = index === 0 && sectionLessons === Object.values(sections)[0];
                             const hasRequiredMathPathway = !isMathPathwayCourse || !isEnrolled || !!enrollment?.math_pathway || user?.role === 'admin' || user?.is_tutor;
-                            const canAccess = hasRequiredMathPathway && ((user?.role === 'admin' || user?.is_tutor) || isFirstLesson || hasActiveKey || lesson.is_preview);
+                            const canAccess = hasRequiredMathPathway && (isEnrolled || (user?.role === 'admin' || user?.is_tutor) || isFirstLesson || hasActiveKey || lesson.is_preview);
                             const lessonQuizCount = quizzes.filter(q => q.lesson_id === lesson.id).length;
 
                              return (

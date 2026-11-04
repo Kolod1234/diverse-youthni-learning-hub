@@ -109,7 +109,7 @@ export default async function(req) {
             title: lesson?.title || 'Lesson',
             best_percentage: hasAttempt ? roundPoints(best) : null,
             points: roundPoints(hasAttempt ? best : 0),
-            passed: hasAttempt && best >= 70,
+            passed: hasAttempt,
             attempts: topic.count,
             reading: {
               pages_viewed: pagesViewed,
@@ -142,7 +142,7 @@ export default async function(req) {
     return Response.json({
       student: { id: student.id, full_name: student.full_name || '', email: student.email },
       scope: isAdmin ? 'all' : 'assigned',
-      scoring: 'One point per best percentage point per topic; retakes add only improvements; reading tracked separately; previous 70% passes stay valid.',
+      scoring: 'One point per best percentage point per topic; retakes add only improvements; reading tracked separately with no minimum pass score required.',
       totals: { gcse: roundPoints(totals.gcse), alevel: roundPoints(totals.alevel) },
       courses
     });
