@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
+    // Hover styles only on devices that really hover (mouse/trackpad): on phones a tap no
+    // longer leaves a card zoomed or highlighted. Applies to every `hover:` class site-wide.
+    future: { hoverOnlyWhenSupported: true },
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
