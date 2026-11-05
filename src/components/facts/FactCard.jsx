@@ -19,7 +19,7 @@ export default function FactCard({ fact, index = 0 }) {
       whileHover={{ y: -4, shadow: 'lg' }}
       className="h-full"
     >
-      <div className="h-full bg-white rounded-xl border border-gray-200/50 overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+      <div className="h-full bg-card rounded-xl border border-gray-200/50 overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
         {/* Category header */}
         <div
           className="px-6 py-4 flex items-center gap-3"

@@ -219,13 +219,13 @@ export default function PublishToClassroom({ lesson, course }) {
               <p><strong>Description:</strong> {lesson.description || 'No description'}</p>
               <div className="flex gap-2 mt-2">
                 {lesson.google_slides_url && (
-                  <div className="flex items-center gap-1 text-xs bg-white px-2 py-1 rounded border">
+                  <div className="flex items-center gap-1 text-xs bg-card px-2 py-1 rounded border">
                     <ExternalLink className="w-3 h-3" />
                     Google Slides
                   </div>
                 )}
                 {lesson.file_url && (
-                  <div className="flex items-center gap-1 text-xs bg-white px-2 py-1 rounded border">
+                  <div className="flex items-center gap-1 text-xs bg-card px-2 py-1 rounded border">
                     <ExternalLink className="w-3 h-3" />
                     Document
                   </div>

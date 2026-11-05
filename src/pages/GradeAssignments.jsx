@@ -28,7 +28,7 @@ function ErrorState({ title, message }) {
         <h1 className="text-xl font-bold text-foreground mb-2">{title}</h1>
         <p className="text-muted-foreground mb-6">{message}</p>
         <Link to={createPageUrl('TutorDashboard')}>
-          <Button variant="contained" className="bg-indigo-600">
+          <Button variant="contained" className="bg-indigo-600 text-white">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Tutor Dashboard
           </Button>
@@ -335,7 +335,7 @@ export default function GradeAssignments() {
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="contained" onClick={() => handleGrade(submission)} size="sm" className="bg-indigo-600" disabled={gradeMutation.isPending}>
+                        <Button variant="contained" onClick={() => handleGrade(submission)} size="sm" className="bg-indigo-600 text-white" disabled={gradeMutation.isPending}>
                           <Save className="w-4 h-4 mr-2" />
                           {gradeMutation.isPending ? 'Saving…' : 'Submit Grade'}
                         </Button>

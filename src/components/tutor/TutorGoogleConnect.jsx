@@ -71,7 +71,7 @@ export default function TutorGoogleConnect() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+    <div className="bg-card rounded-2xl border border-gray-200 shadow-sm p-5">
       <h3 className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
         <Link2 className="w-4 h-4 text-blue-500" />
         Google Calendar

@@ -138,7 +138,7 @@ export default function LessonKeyManager() {
         </div>
       </Card>
 
-      <div className="bg-white rounded-xl border overflow-hidden">
+      <div className="bg-card rounded-xl border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b">

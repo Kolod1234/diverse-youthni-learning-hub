@@ -68,7 +68,7 @@ export default function TemplateCreator({ onClose, onSave, initialData = null })
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-5xl h-[90vh] flex flex-col bg-white">
+      <Card className="w-full max-w-5xl h-[90vh] flex flex-col bg-card">
         {/* Header */}
         <div className="p-6 border-b flex items-center justify-between">
           <div>

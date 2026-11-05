@@ -285,7 +285,7 @@ export default function TutorCourseManager() {
           <p className="text-muted-foreground mb-6">You have not been assigned to <strong>{course?.title}</strong>. Please contact an admin to be added as a tutor for this course.</p>
           <Button variant="contained"
             onClick={() => navigate(createPageUrl('TutorDashboard'))}
-            className="bg-indigo-600 hover:bg-indigo-700"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             Back to Dashboard
           </Button>
@@ -316,14 +316,14 @@ export default function TutorCourseManager() {
           <div className="flex flex-wrap justify-center gap-2">
             <Button variant="contained" 
               onClick={() => setShowAIGenerator(true)} 
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               <Brain className="w-4 h-4 mr-2" />
               AI Generator
             </Button>
             <Button variant="contained"
               onClick={() => navigate(`${createPageUrl('LessonEditor')}?courseId=${courseId}`)}
-              className="bg-indigo-600"
+              className="bg-indigo-600 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Lesson
@@ -400,7 +400,7 @@ export default function TutorCourseManager() {
             <Button variant="contained"
               onClick={handleImportFromSlides}
               disabled={!importUrl || importingSlides}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               {importingSlides ? (
                 <>
@@ -436,7 +436,7 @@ export default function TutorCourseManager() {
                 <Button variant="contained" 
                   onClick={handleCreate} 
                   disabled={createLessonMutation.isPending || !lessonForm.title}
-                  className="bg-indigo-600"
+                  className="bg-indigo-600 text-white"
                 >
                   {createLessonMutation.isPending ? (
                     <>
@@ -513,7 +513,7 @@ export default function TutorCourseManager() {
                                           }} 
                                           size="sm"
                                           disabled={updateLessonMutation.isPending || !lessonForm.title}
-                                          className="bg-indigo-600"
+                                          className="bg-indigo-600 text-white"
                                         >
                                           {updateLessonMutation.isPending ? (
                                             <>
@@ -1036,7 +1036,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
                 onClick={onSave}
                 disabled={isSaving}
                 size="sm"
-                className="bg-indigo-600"
+                className="bg-indigo-600 text-white"
               >
                 {isSaving ? (
                   <>

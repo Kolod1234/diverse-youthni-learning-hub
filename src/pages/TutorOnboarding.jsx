@@ -211,7 +211,7 @@ export default function TutorOnboarding() {
             <Button variant="contained"
               onClick={handleNext}
               disabled={!canProceed() || saveUserMutation.isPending}
-              className="bg-indigo-600 gap-2 min-w-[120px]"
+              className="bg-indigo-600 gap-2 min-w-[120px] text-white"
             >
               {saveUserMutation.isPending ? 'Saving...' : step === STEPS.length - 1 ? 'Go to Dashboard' : 'Continue'}
               {step < STEPS.length - 1 && <ArrowRight className="w-4 h-4" />}

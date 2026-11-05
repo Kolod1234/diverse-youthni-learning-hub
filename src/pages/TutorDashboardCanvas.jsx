@@ -263,7 +263,7 @@ function ModulesView({ course, lessons }) {
   return (
     <div className="max-w-5xl">
       <div className="mb-6">
-        <Button variant="contained" className="bg-blue-600 hover:bg-blue-700">
+        <Button variant="contained" className="bg-blue-600 hover:bg-blue-700 text-white">
           <Plus className="w-4 h-4 mr-2" />
           Create a new Module
         </Button>
@@ -277,7 +277,7 @@ function ModulesView({ course, lessons }) {
             Add your first module to organize course content and create a learning pathway for students
           </p>
           <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course?.id}`}>
-            <Button variant="contained" className="bg-blue-600 hover:bg-blue-700">
+            <Button variant="contained" className="bg-blue-600 hover:bg-blue-700 text-white">
               <Plus className="w-4 h-4 mr-2" />
               Add Module
             </Button>
@@ -352,7 +352,7 @@ function AssignmentsView({ course }) {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Assignments</h1>
         <Link to={createPageUrl('CreateAssignment') + `?courseId=${course?.id}`}>
-          <Button variant="contained" className="bg-blue-600 hover:bg-blue-700">
+          <Button variant="contained" className="bg-blue-600 hover:bg-blue-700 text-white">
             <Plus className="w-4 h-4 mr-2" />
             Add Assignment
           </Button>

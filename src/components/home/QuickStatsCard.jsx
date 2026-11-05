@@ -37,7 +37,7 @@ export default function QuickStatsCard({ user }) {
       {/* Total XP */}
       <motion.div
         whileHover={{ y: -4 }}
-        className="bg-white border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
+        className="bg-card border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
       >
         <div className="flex justify-center mb-3">
           <StyledIcon Icon={Zap} colorFrom="from-amber-500" colorTo="to-orange-600" size="md" />
@@ -49,7 +49,7 @@ export default function QuickStatsCard({ user }) {
       {/* Current Streak */}
       <motion.div
         whileHover={{ y: -4 }}
-        className="bg-white border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
+        className="bg-card border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
       >
         <div className="flex justify-center mb-3">
           <StyledIcon Icon={Flame} colorFrom="from-red-500" colorTo="to-orange-600" size="md" />
@@ -61,7 +61,7 @@ export default function QuickStatsCard({ user }) {
       {/* Courses Completed */}
       <motion.div
         whileHover={{ y: -4 }}
-        className="bg-white border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
+        className="bg-card border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
       >
         <div className="flex justify-center mb-3">
           <StyledIcon Icon={Award} colorFrom="from-green-500" colorTo="to-emerald-600" size="md" />
@@ -73,7 +73,7 @@ export default function QuickStatsCard({ user }) {
       {/* In Progress */}
       <motion.div
         whileHover={{ y: -4 }}
-        className="bg-white border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
+        className="bg-card border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
       >
         <div className="flex justify-center mb-3">
           <StyledIcon Icon={Trophy} colorFrom="from-blue-500" colorTo="to-indigo-600" size="md" />

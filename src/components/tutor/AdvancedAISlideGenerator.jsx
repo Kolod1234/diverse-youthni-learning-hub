@@ -456,7 +456,7 @@ Return ONLY valid JSON:
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <motion.div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col"
       >
         {/* Header */}
         <div className="px-6 py-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50 rounded-t-2xl">
@@ -853,7 +853,7 @@ Return ONLY valid JSON:
                 </div>
                 
                 {/* Slide Viewer */}
-                <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden mb-4">
+                <div className="bg-card border-2 border-gray-200 rounded-xl overflow-hidden mb-4">
                   <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">
@@ -883,7 +883,7 @@ Return ONLY valid JSON:
                     </div>
                   </div>
                   
-                  <div className="max-h-[400px] overflow-y-auto bg-white">
+                  <div className="max-h-[400px] overflow-y-auto bg-card">
                     <div className="p-6">
                       <div 
                        className="prose prose-sm max-w-none"
@@ -1000,7 +1000,7 @@ Return ONLY valid JSON:
                     </summary>
                     <div className="mt-3 space-y-3">
                       {(generatedContent?.quiz?.questions || []).slice(0, 3).map((q, idx) => (
-                        <div key={idx} className="p-3 bg-white rounded-lg border">
+                        <div key={idx} className="p-3 bg-card rounded-lg border">
                           <p className="font-medium text-sm text-gray-900 mb-2">
                             Q{idx + 1}: {q.question}
                           </p>

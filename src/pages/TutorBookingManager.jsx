@@ -414,7 +414,7 @@ export default function TutorBookingManager() {
               <Button variant="contained"
                 onClick={handleAddSlot}
                 disabled={addSlotMutation.isPending}
-                className="mt-4 bg-indigo-600 hover:bg-indigo-700"
+                className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {addSlotMutation.isPending ? 'Adding...' : 'Add Slot'}

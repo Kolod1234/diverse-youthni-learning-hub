@@ -121,14 +121,14 @@ export default function Templates() {
           <div className="flex gap-2">
             <Button variant="contained" 
               onClick={() => setShowAIGenerator(true)}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               AI Generate
             </Button>
             <Button variant="contained" 
               onClick={() => setShowCreator(true)}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Template
@@ -246,7 +246,7 @@ export default function Templates() {
                       <Button variant="contained"
                         size="sm"
                         onClick={() => handleUseTemplate(template)}
-                        className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
                       >
                         Use Template
                       </Button>

@@ -151,7 +151,7 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
 
         {/* Slide Display */}
         <div className="flex-1 flex items-center justify-center relative p-4 bg-gray-950">
-          <div className="bg-white mx-auto p-8 rounded-xl shadow-2xl w-full max-w-4xl aspect-video overflow-auto relative">
+          <div className="bg-card mx-auto p-8 rounded-xl shadow-2xl w-full max-w-4xl aspect-video overflow-auto relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlideIndex}
@@ -210,7 +210,7 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
                 'border-gray-700 hover:border-gray-500'}`
                 }>
 
-                    <div className="w-32 aspect-video bg-white p-2 rounded-md flex flex-col items-center justify-center">
+                    <div className="w-32 aspect-video bg-card p-2 rounded-md flex flex-col items-center justify-center">
                       <span className="text-xs text-gray-500 mb-1">Slide {idx + 1}</span>
                       <span className="text-xs font-medium text-gray-900 line-clamp-2 text-center px-2">
                         {slide.title}

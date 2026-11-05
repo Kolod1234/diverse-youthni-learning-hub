@@ -4,7 +4,7 @@ export default function PracticeQuestionCard({ question, index, selected, onSele
     onSelect(current.includes(optionIndex) ? current.filter(value => value !== optionIndex) : [...current, optionIndex]);
   };
 
-  return <div className="rounded-xl border border-indigo-100 bg-white p-4 space-y-3">
+  return <div className="rounded-xl border border-indigo-100 bg-card p-4 space-y-3">
     <div><p className="text-sm font-semibold text-gray-800">{index + 1}. {question.question}</p>{question.type === "multiple_choice" && <p className="mt-1 text-xs text-indigo-600">Select all answers that apply.</p>}</div>
     {question.type === "multiple_choice" ? <div className="grid gap-2">{question.options.map((option, optionIndex) => {
       const chosen = Array.isArray(selected) && selected.includes(optionIndex);

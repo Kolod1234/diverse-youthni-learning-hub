@@ -48,7 +48,7 @@ export default function AchievementUnlocker({ achievement, show, onComplete }) {
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0.5, rotate: 10 }}
             transition={{ type: 'spring', duration: 0.5 }}
-            className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl"
+            className="bg-card rounded-3xl p-8 max-w-md w-full text-center shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <motion.div

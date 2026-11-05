@@ -187,7 +187,7 @@ export default function ChallengePlayer() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Timer & Progress */}
-        <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
+        <div className="bg-card rounded-lg p-4 mb-6 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-600" />

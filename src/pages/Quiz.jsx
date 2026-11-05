@@ -428,7 +428,7 @@ export default function Quiz() {
                     Retake Quiz
                   </Button>
                   <Link to={createPageUrl('CourseDetails') + `?id=${quiz.course_id}`}>
-                    <Button variant="contained" className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                    <Button variant="contained" className="bg-indigo-600 hover:bg-indigo-700 gap-2 text-white">
                       Back to Course
                       <ArrowRight className="w-4 h-4" />
                     </Button>
@@ -589,7 +589,7 @@ export default function Quiz() {
                 <Button variant="contained"
                   onClick={handleSubmitQuiz}
                   disabled={Object.keys(answers).length !== quiz.questions.length}
-                  className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                  className="bg-emerald-600 hover:bg-emerald-700 gap-2 text-white"
                 >
                   Submit Quiz
                   <CheckCircle className="w-4 h-4" />
@@ -601,7 +601,7 @@ export default function Quiz() {
                     setCurrentQuestion(prev => prev + 1);
                   }}
                   disabled={!hasAnswered}
-                  className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+                  className="bg-indigo-600 hover:bg-indigo-700 gap-2 text-white"
                 >
                   Next
                   <ArrowRight className="w-4 h-4" />

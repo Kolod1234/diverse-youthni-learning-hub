@@ -159,7 +159,7 @@ export default function Tutors() {
                   <p className="text-red-600 text-sm mt-2 text-center">{error}</p>
                 )}
               </div>
-              <Button variant="contained" type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 h-12">
+              <Button variant="contained" type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 text-white">
                 Unlock
               </Button>
             </form>
@@ -198,7 +198,7 @@ export default function Tutors() {
           {(currentUser?.is_tutor || currentUser?.data?.is_tutor || currentUser?.role === 'admin') && (
            <div className="flex justify-center gap-3">
              <Link to={createPageUrl('TutorSetup')}>
-               <Button variant="contained" size="lg" className="bg-indigo-600 hover:bg-indigo-700">
+               <Button variant="contained" size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white">
                  Set Up Profile
                </Button>
              </Link>
@@ -377,7 +377,7 @@ export default function Tutors() {
 
                     <div className="flex gap-2 mt-auto" onClick={e => e.stopPropagation()}>
                       <Button variant="contained"
-                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 group-hover:shadow-md transition-all"
+                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 group-hover:shadow-md transition-all text-white"
                         onClick={() => setSelectedTutor({ tutor, stats })}
                       >
                         View Profile

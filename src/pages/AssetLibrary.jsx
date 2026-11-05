@@ -83,11 +83,11 @@ export default function AssetLibrary() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, description or tag..."
-              className="pl-9 bg-white"
+              className="pl-9 bg-card"
             />
           </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[170px] bg-white"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[170px] bg-card"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All types</SelectItem>
               <SelectItem value="image">Image</SelectItem>
@@ -101,7 +101,7 @@ export default function AssetLibrary() {
           </Select>
           {folders.length > 0 && (
             <Select value={folderFilter} onValueChange={setFolderFilter}>
-              <SelectTrigger className="w-[170px] bg-white"><SelectValue placeholder="All folders" /></SelectTrigger>
+              <SelectTrigger className="w-[170px] bg-card"><SelectValue placeholder="All folders" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All folders</SelectItem>
                 {folders.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
@@ -115,7 +115,7 @@ export default function AssetLibrary() {
             <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-300">
+          <div className="text-center py-20 bg-card rounded-xl border border-dashed border-slate-300">
             <FolderOpen className="w-14 h-14 text-slate-300 mx-auto mb-3" />
             <p className="text-slate-700 font-semibold text-lg">
               {assets.length === 0 ? 'Your library is empty' : 'No assets match your filters'}

@@ -65,7 +65,7 @@ export default function DynamicCourseLanding({ course, enrollment }) {
 
 function TextBlockSection({ section }) {
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border">
+    <div className="bg-card rounded-2xl p-8 shadow-sm border">
       {section.title && <h2 className="text-3xl font-bold mb-4">{section.title}</h2>}
       {section.subtitle && <p className="text-xl text-gray-600 mb-6">{section.subtitle}</p>}
       {section.content && (
@@ -90,7 +90,7 @@ function FeaturesSection({ section, course }) {
         {features.map((feature, idx) => {
           const Icon = feature.icon;
           return (
-            <div key={idx} className="bg-white rounded-xl p-6 text-center shadow-sm">
+            <div key={idx} className="bg-card rounded-xl p-6 text-center shadow-sm">
               <Icon className={`w-12 h-12 mx-auto mb-3 text-${feature.color}-600`} />
               <p className="font-semibold">{feature.text}</p>
             </div>
@@ -123,7 +123,7 @@ function TestimonialSection({ section, reviews }) {
       <h2 className="text-3xl font-bold mb-8 text-center">{section.title || 'Student Reviews'}</h2>
       <div className="grid md:grid-cols-3 gap-6">
         {topReviews.map((review, idx) => (
-          <div key={idx} className="bg-white rounded-xl p-6 shadow-sm">
+          <div key={idx} className="bg-card rounded-xl p-6 shadow-sm">
             <div className="flex gap-1 mb-3">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
@@ -152,7 +152,7 @@ function RelatedCoursesSection({ courses }) {
       <h2 className="text-3xl font-bold mb-8">Related Courses</h2>
       <div className="grid md:grid-cols-3 gap-6">
         {courses.slice(0, 3).map((course) => (
-          <div key={course.id} className="bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-lg transition-all">
+          <div key={course.id} className="bg-card rounded-xl overflow-hidden shadow-sm border hover:shadow-lg transition-all">
             <div className="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 relative">
               {course.thumbnail && (
                 <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />

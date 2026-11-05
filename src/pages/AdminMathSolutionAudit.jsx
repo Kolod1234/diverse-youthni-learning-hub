@@ -275,7 +275,7 @@ export default function AdminMathSolutionAudit() {
           </div>
         )}
 
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="mt-6 rounded-2xl border border-slate-200 bg-card p-6 shadow-sm">
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => runOrders(range(1, 84), false)}

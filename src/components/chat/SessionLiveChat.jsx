@@ -46,7 +46,7 @@ export default function SessionLiveChat({ sessionId, sessionTitle, currentUser, 
   }
 
   return (
-    <div className="border rounded-xl overflow-hidden bg-white">
+    <div className="border rounded-xl overflow-hidden bg-card">
       <div className="px-4 py-2 bg-gray-50 border-b text-sm font-semibold text-gray-700">
         Session Chat
       </div>

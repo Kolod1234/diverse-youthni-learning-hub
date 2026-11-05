@@ -98,7 +98,7 @@ export default function StudyGroupDetail() {
         </Button>
 
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-card rounded-lg shadow-sm p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h1 className="text-3xl font-bold mb-2">{group.name}</h1>
@@ -206,7 +206,7 @@ export default function StudyGroupDetail() {
               </div>
 
               {challenges.length === 0 && (
-                <div className="text-center py-16 bg-white rounded-lg">
+                <div className="text-center py-16 bg-card rounded-lg">
                   <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-600">No group challenges yet</p>
                   <Button className="mt-4" onClick={() => setShowChallengeCreator(true)}>

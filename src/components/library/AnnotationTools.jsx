@@ -153,7 +153,7 @@ export default function AnnotationTools({
         <Button
           size="sm"
           onClick={() => setShowNoteDialog(true)}
-          className="bg-white gap-2"
+          className="bg-card gap-2"
           title="Add note"
         >
           <MessageSquare className="w-4 h-4" />

@@ -84,7 +84,7 @@ export default function SessionParticipantsManager({ session, onClose, onUpdate 
               <h4 className="font-medium text-gray-900 mb-3">Available Students</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {availableStudents.map(student => (
-                  <div key={student.email} className="flex items-center justify-between p-2 bg-white rounded">
+                  <div key={student.email} className="flex items-center justify-between p-2 bg-card rounded">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                         <span className="text-sm font-medium text-purple-600">

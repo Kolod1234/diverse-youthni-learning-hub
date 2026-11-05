@@ -70,7 +70,7 @@ export default function TutorChatWidget({ tutor, currentUser }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-80 overflow-hidden"
+            className="bg-card rounded-2xl shadow-2xl border border-gray-200 w-80 overflow-hidden"
           >
             {/* Header */}
             <div className="bg-indigo-600 text-white px-4 py-3 flex items-center gap-3">

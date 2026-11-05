@@ -60,7 +60,7 @@ export default function ContinueLearningSection({ user }) {
           <motion.div
             key={enrollment.id}
             whileHover={{ y: -8 }}
-            className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all border border-gray-200 group"
+            className="bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all border border-gray-200 group"
           >
             {/* Course Thumbnail */}
             <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-indigo-400 to-purple-500">

@@ -223,7 +223,7 @@ Return ONLY valid JSON with this structure:
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col"
+          className="bg-card rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col"
         >
           {/* Header */}
           <div className="px-6 py-4 border-b bg-gradient-to-r from-indigo-50 to-purple-50 rounded-t-2xl">
@@ -290,7 +290,7 @@ Return ONLY valid JSON with this structure:
                       <span className="text-gray-700">Engagement Score</span>
                       <span className="font-semibold text-indigo-600">{analysis.engagement_score}%</span>
                     </div>
-                    <div className="w-full bg-white rounded-full h-3">
+                    <div className="w-full bg-card rounded-full h-3">
                       <div 
                         className="bg-indigo-600 h-3 rounded-full transition-all"
                         style={{ width: `${analysis.engagement_score}%` }}

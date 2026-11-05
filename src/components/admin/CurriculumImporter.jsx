@@ -190,7 +190,7 @@ export default function CurriculumImporter({ open, onOpenChange }) {
                   <p className="text-sm font-semibold text-gray-700 mb-2">Sample Lessons:</p>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {importResult.sample_lessons.map((lesson, idx) => (
-                      <div key={idx} className="text-xs bg-white rounded p-2 border">
+                      <div key={idx} className="text-xs bg-card rounded p-2 border">
                         <p className="font-medium text-gray-900">{lesson.lesson}</p>
                         <p className="text-gray-600">{lesson.unit} → {lesson.topic}</p>
                         <p className="text-green-600">{lesson.objectives_count} objectives</p>

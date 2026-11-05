@@ -49,7 +49,7 @@ export default function CellDiagramGame({ cellType = 'animal' }) {
       </div>
 
       {/* Cell Diagram */}
-      <div className="relative w-full aspect-square max-w-md mx-auto mb-6 bg-white rounded-xl border-2 border-cyan-300 shadow-lg overflow-hidden">
+      <div className="relative w-full aspect-square max-w-md mx-auto mb-6 bg-card rounded-xl border-2 border-cyan-300 shadow-lg overflow-hidden">
         {/* Cell illustration */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className={`w-4/5 h-4/5 rounded-full border-4 ${cellType === 'plant' ? 'border-green-600 bg-green-50' : 'border-pink-600 bg-pink-50'}`}>
@@ -105,7 +105,7 @@ export default function CellDiagramGame({ cellType = 'animal' }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="mb-4 p-4 bg-white rounded-lg border-2 border-green-200"
+            className="mb-4 p-4 bg-card rounded-lg border-2 border-green-200"
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-lg font-semibold text-gray-900">

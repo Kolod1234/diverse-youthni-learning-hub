@@ -422,7 +422,7 @@ export default function AdminYouthWork() {
                                });
                              }
                            }}
-                           className="bg-green-600 hover:bg-green-700"
+                           className="bg-green-600 hover:bg-green-700 text-white"
                          >
                            <CheckCircle className="w-4 h-4 mr-1" />
                            Approve
@@ -850,7 +850,7 @@ export default function AdminYouthWork() {
                       });
                     }}
                     disabled={updateQualificationMutation.isPending}
-                    className="bg-indigo-600 hover:bg-indigo-700"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     Save Changes
                   </Button>
@@ -899,7 +899,7 @@ export default function AdminYouthWork() {
                     }
                   }}
                   disabled={!messageContent.trim() || sendMessageMutation.isPending}
-                  className="bg-indigo-600 hover:bg-indigo-700"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
                   <Send className="w-4 h-4 mr-2" />
                   Send Message

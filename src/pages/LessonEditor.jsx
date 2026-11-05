@@ -353,7 +353,7 @@ export default function LessonEditor() {
                 || (!lessonId && !lessonForm.course_id && !urlCourseValid)
                 || saveMutation.isPending
               }
-              className="bg-white text-[#0b2f5c] font-bold hover:bg-indigo-50"
+              className="bg-card text-[#0b2f5c] font-bold hover:bg-indigo-50"
               aria-describedby={saveError ? 'lesson-editor-save-error' : undefined}
             >
               {saveMutation.isPending ? (
@@ -380,7 +380,7 @@ export default function LessonEditor() {
                 || (!lessonId && !lessonForm.course_id && !urlCourseValid)
                 || saveMutation.isPending
               }
-              className="bg-white text-[#0b2f5c] font-bold hover:bg-indigo-50 px-3"
+              className="bg-card text-[#0b2f5c] font-bold hover:bg-indigo-50 px-3"
               aria-label="Save lesson"
               aria-describedby={saveError ? 'lesson-editor-save-error' : undefined}
             >

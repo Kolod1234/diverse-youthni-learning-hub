@@ -68,7 +68,7 @@ export default function TagInput({ tags = [], onChange, suggestions = [] }) {
         </div>
 
         {showSuggestions && filteredSuggestions.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+          <div className="absolute z-10 w-full mt-1 bg-card border rounded-lg shadow-lg max-h-48 overflow-y-auto">
             {filteredSuggestions.map((suggestion) => (
               <button
                 key={suggestion}

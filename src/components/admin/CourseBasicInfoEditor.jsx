@@ -47,7 +47,7 @@ export default function CourseBasicInfoEditor({ course, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+      <div className="bg-card rounded-lg shadow-lg max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">Edit Course Thumbnail</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">

@@ -185,7 +185,7 @@ Format as a friendly message the tutor can send.`,
       )}
 
       {generatedText && (
-        <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+        <div className="mt-4 p-3 bg-card rounded-lg border border-purple-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-purple-600">Generated Message</span>
             <Button

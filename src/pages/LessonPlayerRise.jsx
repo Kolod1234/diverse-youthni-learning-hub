@@ -169,7 +169,7 @@ export default function LessonPlayerRise() {
         />
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto bg-white">
+        <div className="flex-1 overflow-y-auto bg-card">
           <RiseLessonContent 
             lesson={lesson}
             expandedSections={expandedSections}
@@ -178,7 +178,7 @@ export default function LessonPlayerRise() {
         </div>
 
         {/* Footer Navigation */}
-        <div className="bg-white border-t border-gray-200 px-6 py-4 flex justify-between items-center">
+        <div className="bg-card border-t border-gray-200 px-6 py-4 flex justify-between items-center">
           <button
             onClick={handlePrevLesson}
             disabled={currentLessonIndex === 0}

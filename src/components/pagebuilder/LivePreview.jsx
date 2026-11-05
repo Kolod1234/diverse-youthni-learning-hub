@@ -58,7 +58,7 @@ export default function LivePreview({ sections, deviceMode, onDeviceModeChange }
         <motion.div
           key={deviceMode}
           style={{ width: config.width }}
-          className="bg-white rounded-2xl shadow-2xl overflow-hidden"
+          className="bg-card rounded-2xl shadow-2xl overflow-hidden"
         >
           <div className="bg-gray-50 min-h-screen p-4 space-y-4">
             {sections.filter(s => s.is_active).length > 0 ? (

@@ -179,7 +179,7 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
       </div>
 
       {/* Input Section */}
-      <div className="bg-white rounded-xl p-6 mb-6">
+      <div className="bg-card rounded-xl p-6 mb-6">
         <div className="grid md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">Course Topic</label>
@@ -236,7 +236,7 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
       {/* Results Section */}
       {suggestions && (
         <motion.div
-          className="bg-white rounded-xl overflow-hidden"
+          className="bg-card rounded-xl overflow-hidden"
         >
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="w-full justify-start border-b rounded-none bg-gray-50">

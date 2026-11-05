@@ -433,7 +433,7 @@ function ModulesView({ courses, user }) {
     <div className="max-w-5xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Modules</h1>
-        <Button variant="contained" onClick={() => setShowCreateCourse(true)} className="bg-blue-600 hover:bg-blue-700">
+        <Button variant="contained" onClick={() => setShowCreateCourse(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
           <Plus className="w-4 h-4 mr-2" />
           Create Course
         </Button>
@@ -814,7 +814,7 @@ function AssignmentsView({ course }) {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Assignments</h1>
-        <Link to={createPageUrl('CreateAssignment') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Add Assignment</Button></Link>
+        <Link to={createPageUrl('CreateAssignment') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700 text-white"><Plus className="w-4 h-4 mr-2" />Add Assignment</Button></Link>
       </div>
       <div className="space-y-3">
         {assignments.map(assignment => (
@@ -1013,7 +1013,7 @@ function DiscussionsView({ course }) {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Discussions</h1>
-        <Link to={createPageUrl('CourseDiscussion') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />New Discussion</Button></Link>
+        <Link to={createPageUrl('CourseDiscussion') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700 text-white"><Plus className="w-4 h-4 mr-2" />New Discussion</Button></Link>
       </div>
       <div className="space-y-3">
         {discussions.length > 0 ? discussions.map(discussion => (
@@ -1067,7 +1067,7 @@ function QuizzesView({ course }) {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Quizzes</h1>
-        <Link to={createPageUrl('QuizGenerator') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Create Quiz</Button></Link>
+        <Link to={createPageUrl('QuizGenerator') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700 text-white"><Plus className="w-4 h-4 mr-2" />Create Quiz</Button></Link>
       </div>
       <div className="space-y-3">
         {quizzes.length > 0 ? quizzes.map(quiz => (

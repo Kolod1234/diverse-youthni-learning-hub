@@ -68,7 +68,7 @@ export default function TrendingCoursesCarousel() {
               <div key={course.id} className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0">
                 <motion.div
                   whileHover={{ y: -8 }}
-                  className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-200 h-full flex flex-col group"
+                  className="bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-200 h-full flex flex-col group"
                 >
                   {/* Image */}
                   <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-orange-400 to-red-500">
@@ -134,13 +134,13 @@ export default function TrendingCoursesCarousel() {
         {/* Navigation */}
         <button
           onClick={() => emblaApi?.scrollPrev()}
-          className="absolute -left-5 top-1/3 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 z-10"
+          className="absolute -left-5 top-1/3 w-12 h-12 bg-card rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 z-10"
         >
           <ChevronLeft className="w-6 h-6 text-gray-800" />
         </button>
         <button
           onClick={() => emblaApi?.scrollNext()}
-          className="absolute -right-5 top-1/3 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 z-10"
+          className="absolute -right-5 top-1/3 w-12 h-12 bg-card rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 z-10"
         >
           <ChevronRight className="w-6 h-6 text-gray-800" />
         </button>

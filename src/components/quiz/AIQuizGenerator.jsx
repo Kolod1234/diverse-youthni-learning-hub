@@ -448,7 +448,7 @@ Return JSON:
                 {/* Subject */}
                 <div>
                   <Label className="text-xs">Subject</Label>
-                  <select value={pastPaperSubject} onChange={e => setPastPaperSubject(e.target.value)} className="w-full h-9 px-3 rounded-md border border-amber-300 text-sm bg-white">
+                  <select value={pastPaperSubject} onChange={e => setPastPaperSubject(e.target.value)} className="w-full h-9 px-3 rounded-md border border-amber-300 text-sm bg-card">
                     <option value="">All Subjects</option>
                     {['Mathematics','English','Biology','Chemistry','Physics','History','Geography','Religious Studies','French','Spanish','ICT','Business Studies','Other'].map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -693,7 +693,7 @@ Return JSON:
                         <div className="mb-3">
                           {q.image_url ? (
                             <div>
-                              <img src={q.image_url} alt="Diagram" className="w-full rounded-lg border max-h-48 object-contain bg-white" onError={e => { e.target.style.display = 'none'; }} />
+                              <img src={q.image_url} alt="Diagram" className="w-full rounded-lg border max-h-48 object-contain bg-card" onError={e => { e.target.style.display = 'none'; }} />
                               <p className="text-xs text-gray-400 mt-1">🌐 Wikimedia Commons</p>
                               <Input placeholder="Paste a different URL + Enter to replace…" className="text-xs h-8 mt-2"
                                 onKeyDown={e => { if (e.key === 'Enter' && e.target.value) { handleReplaceImage(idx, e.target.value); e.target.value = ''; } }} />
@@ -716,7 +716,7 @@ Return JSON:
                           <div className="grid grid-cols-2 gap-2">
                             <div className="space-y-1">
                               <p className="text-xs font-semibold text-gray-600 mb-1">Terms:</p>
-                              {q.matching_pairs.map((p, pi) => <div key={pi} className="text-sm bg-white px-2 py-1 rounded border"><MathJax>{pi + 1}. {p.left}</MathJax></div>)}
+                              {q.matching_pairs.map((p, pi) => <div key={pi} className="text-sm bg-card px-2 py-1 rounded border"><MathJax>{pi + 1}. {p.left}</MathJax></div>)}
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs font-semibold text-gray-600 mb-1">Matches:</p>

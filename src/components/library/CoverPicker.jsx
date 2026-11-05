@@ -60,7 +60,7 @@ export default function CoverPicker({ fileUrl, onCoverChange, currentCover }) {
       
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Preview Area */}
-        <div className="w-32 h-44 bg-white border-2 border-dashed rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="w-32 h-44 bg-card border-2 border-dashed rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
           {currentCover ? (
             <img src={currentCover} alt="Cover preview" className="w-full h-full object-cover" />
           ) : (

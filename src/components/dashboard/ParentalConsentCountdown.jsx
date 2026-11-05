@@ -24,6 +24,6 @@ export default function ParentalConsentCountdown({ user }) {
   if (data?.status !== 'pending') return null;
   return <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-5 text-amber-950 sm:flex-row sm:items-center sm:justify-between">
     <div className="flex gap-3"><ShieldCheck className="mt-0.5 h-6 w-6 shrink-0" /><div><h2 className="font-bold">Parental consent pending</h2><p className="mt-1 text-sm">Daily reminders are being sent to your parent or guardian. Your portal will be suspended if consent is not received in time.</p></div></div>
-    <div className="flex shrink-0 items-center gap-2 rounded-xl bg-white px-4 py-3 font-mono font-bold shadow-sm"><Clock3 className="h-5 w-5" />{remaining(data.deadline_at)}</div>
+    <div className="flex shrink-0 items-center gap-2 rounded-xl bg-card px-4 py-3 font-mono font-bold shadow-sm"><Clock3 className="h-5 w-5" />{remaining(data.deadline_at)}</div>
   </div>;
 }

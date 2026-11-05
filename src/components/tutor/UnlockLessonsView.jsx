@@ -41,7 +41,7 @@ export default function UnlockLessonsView({ courses }) {
       <p className="text-gray-500 mb-6">Control which lessons students can access for free preview vs. requiring enrolment. You can only manage lessons in your assigned courses.</p>
 
       {courses.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
+        <div className="bg-card border border-gray-200 rounded-xl p-12 text-center">
           <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500">No courses assigned to you yet.</p>
         </div>
@@ -53,7 +53,7 @@ export default function UnlockLessonsView({ courses }) {
             const isExpanded = expandedCourseId === course.id;
 
             return (
-              <div key={course.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+              <div key={course.id} className="bg-card border border-gray-200 rounded-xl overflow-hidden">
                 <button
                   className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
                   onClick={() => setExpandedCourseId(isExpanded ? null : course.id)}

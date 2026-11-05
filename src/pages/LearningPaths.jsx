@@ -130,7 +130,7 @@ export default function LearningPaths() {
 
                     {/* There is no PathDetails page; continue straight into the path's current course. */}
                     <Link to={currentCourse ? createPageUrl('CourseDetails') + `?id=${currentCourse.id}` : createPageUrl('Explore')}>
-                      <Button variant="contained" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                      <Button variant="contained" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
                         Continue Path
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
@@ -211,7 +211,7 @@ export default function LearningPaths() {
                         <Button variant="contained"
                           onClick={() => enrollInPathMutation.mutate(path.id)}
                           disabled={enrollInPathMutation.isPending}
-                          className="w-full bg-indigo-600 hover:bg-indigo-700"
+                          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
                         >
                           {enrollInPathMutation.isPending ? 'Enrolling...' : 'Start Path'}
                         </Button>

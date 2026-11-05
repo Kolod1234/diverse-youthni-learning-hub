@@ -235,7 +235,7 @@ export default function CommunityEventSlides() {
               <Button variant="contained"
                 onClick={handleGenerate}
                 disabled={loading}
-                className="w-full bg-indigo-600 hover:bg-indigo-700"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
               >
                 {loading ? (
                   <>

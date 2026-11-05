@@ -24,7 +24,7 @@ export default function ConfidenceBadge({ score }) {
   return (
     <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium ${bg} ${colorClass}`}>
       {/* Mini progress bar */}
-      <div className="w-16 h-1.5 bg-white rounded-full overflow-hidden border border-current/20">
+      <div className="w-16 h-1.5 bg-card rounded-full overflow-hidden border border-current/20">
         <div
           className={`h-full rounded-full transition-all ${pct >= 85 ? "bg-green-500" : pct >= 60 ? "bg-amber-500" : "bg-red-500"}`}
           style={{ width: barWidth }}

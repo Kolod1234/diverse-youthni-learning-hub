@@ -330,7 +330,7 @@ export default function VideoSession() {
                   <Button variant="contained"
                     onClick={handleResumeSession}
                     disabled={generatingMeet}
-                    className="flex-1 h-14 text-lg bg-indigo-600 hover:bg-indigo-700"
+                    className="flex-1 h-14 text-lg bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     <PlayCircle className="w-5 h-5 mr-2" />
                     {generatingMeet ? 'Generating link…' : (session.meet_link ? 'Join Google Meet' : (isTutor ? 'Generate Meet Link' : 'Waiting for tutor…'))}
@@ -354,7 +354,7 @@ export default function VideoSession() {
                 <Button variant="contained"
                   onClick={handleStartSession}
                   disabled={(!isScheduledNow && !isTutor) || generatingMeet}
-                  className="flex-1 h-14 text-lg bg-indigo-600 hover:bg-indigo-700"
+                  className="flex-1 h-14 text-lg bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
                   <Video className="w-5 h-5 mr-2" />
                   {generatingMeet ? 'Generating link…' : (isTutor ? 'Start Google Meet' : 'Join Google Meet')}

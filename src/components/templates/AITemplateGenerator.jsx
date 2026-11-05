@@ -129,7 +129,7 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col bg-white">
+      <Card className="w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col bg-card">
         {/* Header */}
         <div className="p-6 border-b bg-gradient-to-r from-indigo-50 to-purple-50">
           <div className="flex items-center justify-between">

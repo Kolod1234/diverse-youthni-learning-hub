@@ -133,7 +133,7 @@ export default function QuizList({ quizzes, courses }) {
           if (!hasMatchingQuiz && selectedTopic !== 'all' && selectedTopic !== topic) return null;
 
           return (
-            <div key={topic} className="bg-white rounded-lg border-2 border-gray-200 overflow-hidden">
+            <div key={topic} className="bg-card rounded-lg border-2 border-gray-200 overflow-hidden">
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b">
                 <div className="flex items-center gap-3">
                   <FolderOpen className="w-5 h-5 text-indigo-600" />

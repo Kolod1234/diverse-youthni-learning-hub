@@ -156,7 +156,7 @@ export default function MessageStudentsDialog({ open, onOpenChange, courseId, co
                 {students.map((student) => (
                   <div
                     key={student.email}
-                    className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 transition-all"
+                    className="flex items-center gap-3 p-3 bg-card rounded-lg border border-gray-200 hover:border-indigo-300 transition-all"
                   >
                     <Checkbox
                       id={student.email}

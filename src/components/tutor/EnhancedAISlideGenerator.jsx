@@ -551,7 +551,7 @@ Return JSON:
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <motion.div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col"
       >
         {/* Header */}
         <div className="px-6 py-4 border-b bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 rounded-t-2xl">
@@ -943,7 +943,7 @@ Return JSON:
                     </Badge>
                   </div>
                   
-                  <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden mb-4">
+                  <div className="bg-card border-2 border-gray-200 rounded-xl overflow-hidden mb-4">
                     <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Badge variant="outline">
@@ -980,7 +980,7 @@ Return JSON:
                       </div>
                     </div>
                     
-                    <div className="max-h-[500px] overflow-y-auto bg-white p-6">
+                    <div className="max-h-[500px] overflow-y-auto bg-card p-6">
                       {editMode ? (
                         <Textarea
                           value={editedSlideContent}
@@ -1070,7 +1070,7 @@ Return JSON:
                       <summary className="cursor-pointer text-sm font-medium text-purple-700">Preview Questions</summary>
                       <div className="mt-3 space-y-2">
                         {generatedContent.quiz.questions.slice(0, 3).map((q, idx) => (
-                          <div key={idx} className="p-3 bg-white rounded border">
+                          <div key={idx} className="p-3 bg-card rounded border">
                             <p className="font-medium text-sm mb-2">Q{idx + 1}: {q.question}</p>
                             <div className="space-y-1">
                               {q.options.map((opt, optIdx) => (

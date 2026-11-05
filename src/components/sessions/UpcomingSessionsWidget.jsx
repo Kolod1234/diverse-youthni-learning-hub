@@ -42,7 +42,7 @@ export default function UpcomingSessionsWidget({ user }) {
             key={session.id}
           >
             <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}>
-              <Card className="p-4 hover:shadow-lg transition-all bg-white border-purple-200 hover:border-purple-400">
+              <Card className="p-4 hover:shadow-lg transition-all bg-card border-purple-200 hover:border-purple-400">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Video className="w-5 h-5 text-purple-600" />

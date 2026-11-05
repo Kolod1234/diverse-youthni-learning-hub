@@ -19,7 +19,7 @@ export default function KahootAnalytics() {
   if (!gameId) {
     return (
       <div className="min-h-screen bg-slate-100 p-6">
-        <div className="mx-auto max-w-5xl rounded-3xl bg-white p-8 shadow-sm">
+        <div className="mx-auto max-w-5xl rounded-3xl bg-card p-8 shadow-sm">
           <p className="text-lg font-bold text-slate-900">No game selected.</p>
         </div>
       </div>
@@ -37,7 +37,7 @@ export default function KahootAnalytics() {
   return (
     <div className="min-h-screen bg-slate-100 p-4 md:p-6">
       <div className="mx-auto max-w-6xl space-y-6">
-        <div className="flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm border border-slate-200 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 rounded-3xl bg-card p-6 shadow-sm border border-slate-200 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-primary">
               <BarChart3 className="h-4 w-4" /> Game analytics
