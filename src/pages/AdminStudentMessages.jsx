@@ -19,6 +19,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function AdminStudentMessages() {
   const [user, setUser] = useState(null);
@@ -174,7 +175,7 @@ export default function AdminStudentMessages() {
                       const isSelected = selectedStudents.includes(student.email);
                       return (
                         <motion.div key={student.email}>
-                          <Box
+                          <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                             onClick={() => toggleStudent(student.email)}
                             sx={{
                               p: 2, cursor: 'pointer', borderBottom: 1, borderColor: 'divider',

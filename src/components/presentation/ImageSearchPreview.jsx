@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2, Search, Image as ImageIcon, Check } from 'lucide-react';
 import { toast } from 'sonner';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function ImageSearchPreview({ isOpen, onClose, onSelectImage, defaultQuery = '' }) {
   const [searchQuery, setSearchQuery] = useState(defaultQuery);
@@ -92,7 +93,7 @@ export default function ImageSearchPreview({ isOpen, onClose, onSelectImage, def
           {images.length > 0 ? (
             <div className="grid grid-cols-3 gap-4">
               {images.map((image) => (
-                <div
+                <div role="button" tabIndex={0} onKeyDown={activateOnKey}
                   key={image.id}
                   onClick={() => setSelectedImage(image)}
                   className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${

@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { listUsers } from '@/api/listUsers';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function CoordinatorMessages({ coordinatorEmail, coordinatorName }) {
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -73,7 +74,7 @@ export default function CoordinatorMessages({ coordinatorEmail, coordinatorName 
         <h3 className="font-semibold text-foreground mb-4">Send Message To</h3>
         <div className="space-y-2">
           {assignedParticipants.map((participant) => (
-            <Card
+            <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
               key={participant.email}
               className={`p-3 cursor-pointer transition-all ${
                 selectedParticipant?.email === participant.email

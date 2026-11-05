@@ -13,6 +13,7 @@ import {
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { listUsers } from '@/api/listUsers';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function CoordinatorParticipants({ coordinatorEmail }) {
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -111,7 +112,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
           Assigned Participants ({assignedParticipants.length})
         </h3>
         {assignedParticipants.map((participant) => (
-          <Card 
+          <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
             key={participant.email}
             className={`p-4 cursor-pointer transition-all ${
               selectedParticipant?.email === participant.email

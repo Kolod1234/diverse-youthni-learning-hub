@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Upload, Search, X, Image, Video, Music, Loader2, Sparkles, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function MediaLibrary({ isOpen, onClose, onSelectMedia }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -170,7 +171,7 @@ export default function MediaLibrary({ isOpen, onClose, onSelectMedia }) {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pb-4">
               {filteredMedia.map((media) => (
-                <div
+                <div role="button" tabIndex={0} onKeyDown={activateOnKey}
                   key={media.id}
                   className="group relative border rounded-lg overflow-hidden hover:shadow-md transition-all cursor-pointer"
                   onClick={() => {

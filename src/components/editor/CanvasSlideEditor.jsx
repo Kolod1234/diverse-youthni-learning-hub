@@ -16,6 +16,7 @@ import {
   BarChart3, PieChart, LineChart, TrendingUp, Minus, Grid3x3,
   FileText, Lightbulb, AlertCircle, CheckCircle, Sparkles, Clipboard
 } from 'lucide-react';
+import { activateOnKey } from '@/lib/a11y';
 
 const CANVAS_WIDTH = 1920;
 const CANVAS_HEIGHT = 1080;
@@ -602,7 +603,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
 
                 {/* Image Element */}
                 {element.type === 'image' && (
-                  <div 
+                  <div role="button" tabIndex={0} onKeyDown={activateOnKey} 
                     style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -661,7 +662,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                 )}
 
                 {element.type === 'video' && !element.src && (
-                  <div
+                  <div role="button" tabIndex={0} onKeyDown={activateOnKey}
                     className="w-full h-full flex items-center justify-center bg-gray-200 cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();

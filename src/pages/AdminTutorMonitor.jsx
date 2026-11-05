@@ -18,6 +18,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function AdminTutorMonitor() {
   const queryClient = useQueryClient();
@@ -171,7 +172,7 @@ export default function AdminTutorMonitor() {
                 const courseCount = getTutorCourses(tutor.email).length;
                 const isSelected = selectedTutor?.id === tutor.id;
                 return (
-                  <Card
+                  <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
                     key={tutor.id}
                     onClick={() => { setSelectedTutor(tutor); setChatOpen(false); setReminderOpen(false); }}
                     sx={{

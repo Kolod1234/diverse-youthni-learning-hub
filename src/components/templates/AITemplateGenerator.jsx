@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { sanitizeHtml } from '@/components/security/SafeHtml';
+import { activateOnKey } from '@/lib/a11y';
 const SLIDE_TYPES = [
   { value: 'title', label: 'Title Slide', description: 'Eye-catching introduction slide' },
   { value: 'content', label: 'Content Slide', description: 'Text-based informational slide' },
@@ -196,7 +197,7 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
                 <Label className="text-base font-semibold mb-3 block">Slide Types to Include</Label>
                 <div className="grid grid-cols-2 gap-3">
                   {SLIDE_TYPES.map((type) => (
-                    <Card
+                    <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
                       key={type.value}
                       className={`p-4 cursor-pointer transition-all ${
                         selectedTypes.includes(type.value)

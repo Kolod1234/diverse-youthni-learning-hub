@@ -42,6 +42,7 @@ const Users = _w(PeopleIcon), BarChart3 = _w(BarChartIcon), MessageSquare = _w(C
 const Video = _w(VideocamIcon), FileText = _w(DescriptionIcon), Lock = _w(LockIcon);
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { activateOnKey } from '@/lib/a11y';
 
 const STEPS = [
   { id: 'guide', title: 'Tutor Guide', icon: BookOpen },
@@ -403,7 +404,7 @@ function ChecklistStep({ checklist, setChecklist }) {
                   checklist[item.id] ? 'bg-green-50 dark:bg-green-500/15 border-green-200' : 'bg-muted border-border hover:border-indigo-300'
                 }`}
               >
-                <div
+                <div role="button" tabIndex={0} onKeyDown={activateOnKey}
                   onClick={() => setChecklist(c => ({ ...c, [item.id]: !c[item.id] }))}
                   className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
                     checklist[item.id] ? 'bg-green-500 border-green-500' : 'border-border'
@@ -574,7 +575,7 @@ function VerificationStep({ user, verification, setVerification }) {
       </div>
 
       <label className="flex items-start gap-3 cursor-pointer group">
-        <div onClick={() => setVerification(v => ({ ...v, agreed_to_terms: !v.agreed_to_terms }))}
+        <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => setVerification(v => ({ ...v, agreed_to_terms: !v.agreed_to_terms }))}
           className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
             verification.agreed_to_terms ? 'bg-indigo-600 border-indigo-600' : 'border-border group-hover:border-indigo-400'
           }`}>

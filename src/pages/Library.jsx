@@ -97,6 +97,7 @@ import BulkUploadManager from '@/components/library/BulkUploadManager';
 import LibraryPermissionManager from '@/components/library/LibraryPermissionManager';
 import AILibraryAssistant from '@/components/library/AILibraryAssistant';
 import { useLibraryPermissions } from '@/components/library/useLibraryPermissions';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function Library() {
   const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem('library_unlocked') === '1');
@@ -519,7 +520,7 @@ export default function Library() {
       )}
       {/* Mobile Upload FAB */}
       {canUpload && (
-      <Box
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
       onClick={handleInitiateUpload}
       sx={{
         display: { xs: 'flex', sm: 'none' },

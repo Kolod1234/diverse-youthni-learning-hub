@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function YouthWorkWorkbook() {
   const [user, setUser] = useState(null);
@@ -154,7 +155,7 @@ export default function YouthWorkWorkbook() {
               <motion.div
                 key={qual.id}
               >
-                <Card className="p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-indigo-300"
+                <Card role="button" tabIndex={0} onKeyDown={activateOnKey} className="p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-indigo-300"
                   onClick={() => setSelectedQualification(qual.id)}
                 >
                   <div className="flex items-center justify-between">
@@ -223,7 +224,7 @@ export default function YouthWorkWorkbook() {
 
           <div className="grid gap-4">
             {selectedQual?.curriculum?.map((unit, idx) => (
-              <Card
+              <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
                 key={idx}
                 className="p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-indigo-300"
                 onClick={() => {

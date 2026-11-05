@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, RotateCcw, Sparkles, RefreshCw } from 'lucide-react';
 import MathRenderer from './MathRenderer';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function FlashCards({ cards, onRegenerate }) {
   const [currentCard, setCurrentCard] = useState(0);
@@ -54,7 +55,7 @@ export default function FlashCards({ cards, onRegenerate }) {
 
       <div className="relative h-64 sm:h-80 mb-6 perspective-1000">
         <AnimatePresence mode="wait">
-          <motion.div
+          <motion.div role="button" tabIndex={0} onKeyDown={activateOnKey}
             key={currentCard}
             initial={{ rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}

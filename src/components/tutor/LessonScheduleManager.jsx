@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Lock, CheckCircle } from 'lucide-react';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function LessonScheduleManager({ lessons, onUpdateLesson }) {
   const [selectedLesson, setSelectedLesson] = useState(null);
@@ -34,7 +35,7 @@ export default function LessonScheduleManager({ lessons, onUpdateLesson }) {
 
         <div className="space-y-4">
           {lessons.map((lesson) => (
-            <div
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey}
               key={lesson.id}
               className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                 selectedLesson?.id === lesson.id

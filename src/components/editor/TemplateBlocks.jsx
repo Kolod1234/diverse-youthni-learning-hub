@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { createBlock } from '@/components/editor/lessonBuilder/blockTypes';
 
 import { sanitizeHtml } from '@/components/security/SafeHtml';
+import { activateOnKey } from '@/lib/a11y';
 // ─────────────────────────────────────────────────────────────────────────────
 // Native-block factories — used by entries below that opt in via `nativeBlock`.
 // When present, WorkspaceShell serialises these through `blocksToHtml`, so the
@@ -737,7 +738,7 @@ export default function TemplateBlocks({ onInsert, onClose, onConvertToColumns }
                   );
                   
                   return (
-                    <Card
+                    <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
                       key={index}
                       className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 hover:border-indigo-300 group"
                       onClick={() => {

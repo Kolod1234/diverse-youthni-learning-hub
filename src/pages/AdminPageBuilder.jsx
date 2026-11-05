@@ -23,6 +23,7 @@ import LivePreview from '@/components/pagebuilder/LivePreview';
 import SectionPreview from '@/components/pagebuilder/SectionPreview';
 import UnsavedChangesModal from '@/components/pagebuilder/UnsavedChangesModal';
 import PageSettings from '@/components/pagebuilder/PageSettings';
+import { activateOnKey } from '@/lib/a11y';
 
 const SECTION_TEMPLATES = [
   {
@@ -428,7 +429,7 @@ export default function AdminPageBuilder() {
             {SECTION_TEMPLATES.map((template, idx) => {
               const Icon = template.icon;
               return (
-                <motion.div
+                <motion.div role="button" tabIndex={0} onKeyDown={activateOnKey}
                   key={template.id}
                   whileHover={{ y: -4, scale: 1.02 }}
                   onClick={() => handleTemplateSelect(template)}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function ABTestRenderer({ section, children }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -83,7 +84,7 @@ export default function ABTestRenderer({ section, children }) {
 
   // If no variants, render original
   if (!selectedVariant) {
-    return <div onClick={handleCTAClick}>{children}</div>;
+    return <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={handleCTAClick}>{children}</div>;
   }
 
   // Render the variant with modified section data
@@ -97,7 +98,7 @@ export default function ABTestRenderer({ section, children }) {
   };
 
   return (
-    <div onClick={handleCTAClick} data-ab-variant={selectedVariant.variant_name}>
+    <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={handleCTAClick} data-ab-variant={selectedVariant.variant_name}>
       {React.cloneElement(children, { section: variantSection })}
     </div>
   );

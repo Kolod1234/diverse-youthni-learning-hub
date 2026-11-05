@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Cloud, Sun, CloudRain, Wind, CloudSnow, Droplets, Gauge, AlertTriangle, TrendingUp, TrendingDown, MapPin } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function WeatherWidget() {
   const [weather, setWeather] = useState(null);
@@ -77,7 +78,7 @@ export default function WeatherWidget() {
 
   return (
     <>
-      <Card 
+      <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
         onClick={() => setShowDetails(true)}
         className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700 shadow-lg relative overflow-hidden cursor-pointer hover:scale-105 transition-transform"
       >

@@ -23,6 +23,7 @@ import {
 import { format, isToday, isYesterday } from 'date-fns';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { activateOnKey } from '@/lib/a11y';
 
 function formatMessageTime(date) {
   const d = new Date(date);
@@ -369,7 +370,7 @@ export default function MessageCenter() {
                       const role = conv.contactUser ? getParticipantLabel(conv.contactUser) : '';
                       const isSelected = selectedContactEmail === conv.contactEmail;
                       return (
-                        <motion.div
+                        <motion.div role="button" tabIndex={0} onKeyDown={activateOnKey}
                           key={conv.contactEmail}
                           onClick={() => handleSelectConv(conv)}
                           className={`p-4 cursor-pointer transition-colors ${
@@ -608,7 +609,7 @@ export default function MessageCenter() {
                   notifications.map((notif) => {
                     const Icon = notificationIcons[notif.type] || Bell;
                     return (
-                      <motion.div
+                      <motion.div role="button" tabIndex={0} onKeyDown={activateOnKey}
                         key={notif.id}
                         onClick={() => {
                           if (!notif.is_read) markNotifReadMutation.mutate(notif.id);

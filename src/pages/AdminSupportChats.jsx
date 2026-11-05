@@ -15,6 +15,7 @@ const _w = (I) => ({ size, color, style, ...r }) => <I style={style} sx={{ fontS
 const MessageCircle = _w(ChatBubbleOutlineIcon), Send = _w(SendIcon), Bot = _w(SmartToyIcon);
 const HeadphonesIcon = _w(HeadsetMicIcon), CheckCircle = _w(CheckCircleIcon), RefreshCw = _w(RefreshIcon);
 import { formatDistanceToNow } from 'date-fns';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function AdminSupportChats() {
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -199,7 +200,7 @@ export default function AdminSupportChats() {
             </Box>
           ) : (
             chats.map(chat => (
-              <Box
+              <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                 key={chat.id}
                 onClick={() => setSelectedChatId(chat.id)}
                 sx={{

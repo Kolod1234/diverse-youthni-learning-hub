@@ -32,6 +32,7 @@ import AchievementBadge from '@/components/dashboard/AchievementBadge';
 import AccountSettings from '@/components/profile/AccountSettings';
 import EnrolledCourses from '@/components/profile/EnrolledCourses';
 import ProgressStats from '@/components/profile/ProgressStats';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -127,7 +128,7 @@ export default function Profile() {
         >
           <Card sx={{ p: 4, mb: 4, boxShadow: 2 }}>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, gap: 3 }}>
-              <Box sx={{ position: 'relative', '&:hover .avatar-overlay': { opacity: 1 } }} onClick={handleAvatarClick}>
+              <Box role="button" tabIndex={0} onKeyDown={activateOnKey} sx={{ position: 'relative', '&:hover .avatar-overlay': { opacity: 1 } }} onClick={handleAvatarClick}>
                 <Avatar src={user?.avatar} sx={{ width: 96, height: 96, border: 4, borderColor: 'white', boxShadow: 3, bgcolor: '#4f46e5', fontSize: '2rem', fontWeight: 600, cursor: 'pointer' }}>
                   {user?.full_name?.charAt(0) || 'U'}
                 </Avatar>

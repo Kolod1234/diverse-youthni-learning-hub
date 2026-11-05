@@ -4,6 +4,7 @@ import BlockRenderer from './BlockRenderer';
 import { BlockExpandedContext } from './BlockWrapper';
 import { blocksToHtml } from './htmlSerializer';
 import { DOCUMENT_TYPES, wrapDocument, objectFromTarget, documentObjects } from './documentObjects';
+import { activateOnKey } from '@/lib/a11y';
 
 // Adjacent prose and objects form one continuous document. Specialised video,
 // table and assessment editors keep their native controls and data model.
@@ -62,7 +63,7 @@ function DocumentSurface({blocks,onChange}) {
   },[editing]);
   return <section ref={host} className="lesson-document-surface min-w-0" aria-label="Lesson document">
     {editing&&<div className="flex items-center justify-between py-2 text-xs text-slate-500"><span>Editing lesson · use Save Lesson to keep changes</span><button type="button" className="rounded border bg-white px-3 py-1 text-slate-700" onClick={()=>setEditing(false)}>Done editing</button></div>}
-    <div className="lesson-flow-prose" onDoubleClick={begin} onClick={e=>{if(!editing&&objectFromTarget(e.target,host.current))begin(e,true);}}
+    <div role="button" tabIndex={0} onKeyDown={activateOnKey} className="lesson-flow-prose" onDoubleClick={begin} onClick={e=>{if(!editing&&objectFromTarget(e.target,host.current))begin(e,true);}}
       onPointerUp={e=>{if(editing||e.pointerType!=='touch')return;const prev=lastTap.current;const now=Date.now();lastTap.current={at:now,x:e.clientX,y:e.clientY};if(prev&&now-prev.at<400&&Math.hypot(e.clientX-prev.x,e.clientY-prev.y)<24)begin(e);}}>
       {editing?<BlockExpandedContext.Provider value={true}><BlockRenderer block={{id:blocks[0].id,type:'legacy-html',data:{html}}} focused authoringTools objectTools onChange={data=>onChange(data.html)}/></BlockExpandedContext.Provider>:
         <div tabIndex={0} role="button" aria-label="Edit lesson text" onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setEditing(true);}}} style={{touchAction:'manipulation'}}><MathJaxContent html={html}/></div>}

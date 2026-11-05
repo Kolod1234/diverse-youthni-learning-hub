@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { Search, ExternalLink, Tag } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { activateOnKey } from '@/lib/a11y';
 
 const CATEGORIES = ['All', 'Mental Health & Wellbeing', 'Arts & Creativity', 'Programming Projects',
   'Climate Action', 'AI Building', 'Raspberry Pi Projects', 'Cultural Sensitivity', 'Community Development'];
@@ -103,7 +104,7 @@ export default function ProjectGallery() {
         ) : (
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
             {filtered.map((project, idx) => (
-              <motion.div
+              <motion.div role="button" tabIndex={0} onKeyDown={activateOnKey}
                 key={project.id}
                 whileHover={{ y: -6 }}
                 style={{ cursor: 'pointer' }}

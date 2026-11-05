@@ -52,6 +52,7 @@ import CourseSEO from '@/components/seo/CourseSEO';
 import DynamicCourseLanding from '@/components/course/DynamicCourseLanding';
 import RequestToTeachButton from '@/components/tutor/RequestToTeachButton';
 import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
+import { activateOnKey } from '@/lib/a11y';
 
 const levelColors = {
   beginner: { bgcolor: '#dcfce7', color: '#15803d' },
@@ -637,7 +638,7 @@ export default function CourseDetails() {
                             const lessonQuizCount = quizzes.filter(q => q.lesson_id === lesson.id).length;
 
                              return (
-                               <Box
+                               <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                                  key={lesson.id}
                                  onClick={() => {
                                    if (canAccess) {

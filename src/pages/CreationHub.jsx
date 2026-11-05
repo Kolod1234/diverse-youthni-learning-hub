@@ -12,6 +12,7 @@ import {
   ArrowLeft, Plus, Send, X, ImageIcon, Video, Upload, Loader2
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { activateOnKey } from '@/lib/a11y';
 
 const PROJECTS = [
   {
@@ -312,7 +313,7 @@ export default function CreationHub() {
             {filtered.map((project, idx) => {
               const Icon = project.icon;
               return (
-                <motion.div
+                <motion.div role="button" tabIndex={0} onKeyDown={activateOnKey}
                   key={project.id}
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -475,7 +476,7 @@ export default function CreationHub() {
                     <Box key={idx} sx={{ position: 'relative', width: 80, height: 80 }}>
                       <Box component="img" src={url} alt={`Gallery ${idx + 1}`}
                         sx={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 2, border: '2px solid', borderColor: 'divider' }} />
-                      <Box onClick={() => removeGalleryImage(idx)}
+                      <Box role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => removeGalleryImage(idx)}
                         sx={{ position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%', bgcolor: 'rgba(0,0,0,0.7)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '10px', fontWeight: 700, lineHeight: 1 }}>
                         ×
                       </Box>

@@ -68,6 +68,7 @@ import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/les
 import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
 
 import { sanitizeHtml } from '@/components/security/SafeHtml';
+import { activateOnKey } from '@/lib/a11y';
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -433,7 +434,7 @@ export default function LessonPlayerPowerPoint() {
 
           {/* Desktop toolbar */}
           <div className="hidden sm:flex h-16 bg-card border-b border-border items-center px-5 gap-4 overflow-x-auto">
-            <div onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Home size={20} className="text-foreground" /><span className="text-[11px] mt-1 text-muted-foreground">Exit</span></div>
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Home size={20} className="text-foreground" /><span className="text-[11px] mt-1 text-muted-foreground">Exit</span></div>
             <div className="w-[1px] h-10 bg-border" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -453,24 +454,24 @@ export default function LessonPlayerPowerPoint() {
               </DropdownMenuContent>
             </DropdownMenu>
             {lesson?.google_slides_url && !hasSlides && (user?.role === 'admin' || user?.is_tutor) && (
-              <div onClick={async () => {
+              <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={async () => {
                 if (!confirm('Convert Google Slides to custom slides? Some formatting may be lost.')) return;
                 toast.loading('Converting...');
                 const r = await base44.functions.invoke('convertGoogleSlideToCustom', { lessonId });
                 if (r.data.success) { toast.success(`Converted ${r.data.slideCount} slides!`); queryClient.invalidateQueries(['lesson', lessonId]); setTimeout(() => window.location.reload(), 1000); }
               }} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><FileText size={20} className="text-indigo-600" /><span className="text-[11px] mt-1 text-muted-foreground">Convert</span></div>
             )}
-            <div onClick={togglePresentation} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Presentation size={20} className="text-foreground" /><span className="text-[11px] mt-1 text-muted-foreground">Present</span></div>
-            <div onClick={toggleFullscreen} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]">{isFullscreen ? <Minimize size={20} className="text-foreground" /> : <Maximize size={20} className="text-foreground" />}<span className="text-[11px] mt-1 text-muted-foreground">Full</span></div>
-            <div onClick={() => setShowSearch(true)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Search size={20} className="text-foreground" /><span className="text-[11px] mt-1 text-muted-foreground">Search</span></div>
-            <div onClick={() => setShowAI(true)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Sparkles size={20} className="text-purple-600" /><span className="text-[11px] mt-1 text-muted-foreground">AI</span></div>
-            <div onClick={() => setShowNotes(true)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><StickyNote size={20} className="text-blue-600" /><span className="text-[11px] mt-1 text-muted-foreground">Notes</span></div>
-            <div onClick={() => toggleBookmark(String(currentSlideIndex + 1))} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]">
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={togglePresentation} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Presentation size={20} className="text-foreground" /><span className="text-[11px] mt-1 text-muted-foreground">Present</span></div>
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={toggleFullscreen} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]">{isFullscreen ? <Minimize size={20} className="text-foreground" /> : <Maximize size={20} className="text-foreground" />}<span className="text-[11px] mt-1 text-muted-foreground">Full</span></div>
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => setShowSearch(true)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Search size={20} className="text-foreground" /><span className="text-[11px] mt-1 text-muted-foreground">Search</span></div>
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => setShowAI(true)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Sparkles size={20} className="text-purple-600" /><span className="text-[11px] mt-1 text-muted-foreground">AI</span></div>
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => setShowNotes(true)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><StickyNote size={20} className="text-blue-600" /><span className="text-[11px] mt-1 text-muted-foreground">Notes</span></div>
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => toggleBookmark(String(currentSlideIndex + 1))} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]">
               {bookmarkedSlides.includes(String(currentSlideIndex + 1)) ? <BookmarkCheck size={20} className="text-yellow-500" /> : <Bookmark size={20} className="text-foreground" />}
               <span className="text-[11px] mt-1 text-muted-foreground">Bookmark</span>
             </div>
-            <div onClick={() => setShowBookmarks(true)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><List size={20} className="text-foreground" /><span className="text-[11px] mt-1 text-muted-foreground">Outline</span></div>
-            {!isCompleted && <div onClick={() => markCompleteMutation.mutate()} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><CheckCircle size={20} className="text-green-600" /><span className="text-[11px] mt-1 text-muted-foreground">Done</span></div>}
+            <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => setShowBookmarks(true)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><List size={20} className="text-foreground" /><span className="text-[11px] mt-1 text-muted-foreground">Outline</span></div>
+            {!isCompleted && <div role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => markCompleteMutation.mutate()} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><CheckCircle size={20} className="text-green-600" /><span className="text-[11px] mt-1 text-muted-foreground">Done</span></div>}
           </div>
         </div>
       )}
@@ -494,7 +495,7 @@ export default function LessonPlayerPowerPoint() {
         {!isPresenting && showBookmarks && (
           <aside className="hidden md:flex w-52 border-r border-border bg-card overflow-y-auto flex-col p-3 gap-3 z-40">
             {sortedLessons.map(l => (
-              <div key={l.id} onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${l.id}&course=${courseId}`)}
+              <div role="button" tabIndex={0} onKeyDown={activateOnKey} key={l.id} onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${l.id}&course=${courseId}`)}
                 className={`aspect-video border rounded p-1 cursor-pointer ${l.id === lessonId ? 'border-orange-500 bg-orange-50 border-2' : 'border-border'}`}>
                 <div className="w-full h-full bg-muted flex items-center justify-center text-[10px] text-center p-1 font-medium text-foreground">{l.title}</div>
               </div>

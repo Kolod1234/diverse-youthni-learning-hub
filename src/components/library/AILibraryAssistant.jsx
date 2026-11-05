@@ -5,6 +5,7 @@ import { Send, Sparkles, BookOpen, HelpCircle, Settings, ExternalLink } from 'lu
 import { toast } from 'sonner';
 import { createPageUrl } from '@/utils';
 import ReactMarkdown from 'react-markdown';
+import { activateOnKey } from '@/lib/a11y';
 
 export default function AILibraryAssistant({ resources = [] }) {
   const [open, setOpen] = useState(false);
@@ -110,7 +111,7 @@ export default function AILibraryAssistant({ resources = [] }) {
                       }
                     };
                     return (
-                      <Box 
+                      <Box role="button" tabIndex={0} onKeyDown={activateOnKey} 
                         key={idx} 
                         onClick={handleClick}
                         sx={{ 
@@ -266,7 +267,7 @@ export default function AILibraryAssistant({ resources = [] }) {
 
   return (
     <>
-      <Box
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
         onClick={() => setOpen(true)}
         sx={{
           position: 'fixed',

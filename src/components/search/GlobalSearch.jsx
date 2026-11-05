@@ -5,6 +5,7 @@ import { Box, Typography, InputBase, Chip, CircularProgress, Paper, Divider } fr
 import { Search, X, BookOpen, Users, FileText, Calendar, GraduationCap } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
+import { activateOnKey } from '@/lib/a11y';
 
 const SECTIONS = [
   { key: 'courses',  label: 'Courses',  icon: BookOpen,      color: '#7c3aed' },
@@ -114,7 +115,7 @@ export default function GlobalSearch({ onClose }) {
             sx={{ fontSize: '1rem' }}
           />
           {query && (
-            <Box onClick={() => setQuery('')} sx={{ cursor: 'pointer', color: 'text.disabled', ml: 1 }}>
+            <Box role="button" tabIndex={0} onKeyDown={activateOnKey} onClick={() => setQuery('')} sx={{ cursor: 'pointer', color: 'text.disabled', ml: 1 }}>
               <X size={18} />
             </Box>
           )}
