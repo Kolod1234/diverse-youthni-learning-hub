@@ -75,7 +75,7 @@ import SectionTabs, { SectionSideNav, sectionFor } from '@/components/layout/Sec
 import { buildNav, roleHome, isActive as isNavActive, NavDrawer } from '@/components/layout/MainNav';
 import ComingSoon, { COMING_SOON_PAGES, NEEDS_ITEM } from '@/components/layout/ComingSoon';
 import { PARTNER_PAGES, PARTNER_ADMIN_PAGES } from '@/components/partner/PartnerPreview';
-import { AnimatePresence, motion } from 'framer-motion';
+import { MotionConfig } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
 import { PERMISSIONS } from '@/components/permissions/permissions';
@@ -747,7 +747,11 @@ export default function Layout({ children, currentPageName }) {
     <MathJaxContext config={mathJaxConfig}>
       <ThemeProvider>
         <MUIThemeProvider>
-          <LayoutContent children={children} currentPageName={currentPageName} />
+          {/* Honour the device's "reduce motion" setting in every framer-motion animation on the site:
+              movement is skipped, opacity and colour changes stay so state changes are still visible. */}
+          <MotionConfig reducedMotion="user">
+            <LayoutContent children={children} currentPageName={currentPageName} />
+          </MotionConfig>
         </MUIThemeProvider>
       </ThemeProvider>
     </MathJaxContext>
