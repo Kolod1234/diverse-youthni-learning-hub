@@ -7,6 +7,26 @@ import {
   Box, Container, Typography, Card, CardContent, Button, Chip, Checkbox, Slider,
   FormControlLabel, Drawer, TextField, InputAdornment, MenuItem
 } from '@mui/material';
+// Subject icons: real Material icons in one style, replacing emoji that looked different on every device.
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import BiotechIcon from '@mui/icons-material/Biotech';
+import BoltIcon from '@mui/icons-material/Bolt';
+import CalculateIcon from '@mui/icons-material/Calculate';
+import CodeIcon from '@mui/icons-material/Code';
+import ComputerIcon from '@mui/icons-material/Computer';
+import DesignServicesIcon from '@mui/icons-material/DesignServices';
+import DevicesIcon from '@mui/icons-material/Devices';
+import Diversity2Icon from '@mui/icons-material/Diversity2';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+import PublicIcon from '@mui/icons-material/Public';
+import RecyclingIcon from '@mui/icons-material/Recycling';
+import ScienceIcon from '@mui/icons-material/Science';
+import SpellcheckIcon from '@mui/icons-material/Spellcheck';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import TuneIcon from '@mui/icons-material/Tune';
@@ -19,25 +39,25 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import CourseCardV2 from '@/components/courses/CourseCardV2';
 
 const categories = [
-  { id: 'mathematics', label: 'Mathematics', icon: '🔢' },
-  { id: 'further_mathematics', label: 'Further Mathematics', icon: '🧮' },
-  { id: 'english_language', label: 'English Language', icon: '📚' },
-  { id: 'english_literature', label: 'English Literature', icon: '📖' },
-  { id: 'biology', label: 'Biology', icon: '🧬' },
-  { id: 'chemistry', label: 'Chemistry', icon: '⚗️' },
-  { id: 'physics', label: 'Physics', icon: '⚛️' },
-  { id: 'science', label: 'Science', icon: '🔬' },
-  { id: 'computer_science', label: 'Computer Science', icon: '💻' },
-  { id: 'software_systems_development', label: 'Software Systems Development', icon: '⚙️' },
-  { id: 'digital_technology', label: 'Digital Technology', icon: '📱' },
-  { id: 'technology_design', label: 'Technology & Design', icon: '🎨' },
-  { id: 'history', label: 'History', icon: '📜' },
-  { id: 'geography', label: 'Geography', icon: '🌍' },
-  { id: 'economics', label: 'Economics', icon: '💰' },
-  { id: 'government_politics', label: 'Government & Politics', icon: '🏛️' },
-  { id: 'religious_studies', label: 'Religious Studies', icon: '🕯️' },
-  { id: 'life_health_sciences', label: 'Life & Health Sciences', icon: '🫀' },
-  { id: 'environmental_technology', label: 'Environmental Technology', icon: '🌱' },
+  { id: 'mathematics', label: 'Mathematics', icon: CalculateIcon },
+  { id: 'further_mathematics', label: 'Further Mathematics', icon: FunctionsIcon },
+  { id: 'english_language', label: 'English Language', icon: SpellcheckIcon },
+  { id: 'english_literature', label: 'English Literature', icon: AutoStoriesIcon },
+  { id: 'biology', label: 'Biology', icon: BiotechIcon },
+  { id: 'chemistry', label: 'Chemistry', icon: ScienceIcon },
+  { id: 'physics', label: 'Physics', icon: BoltIcon },
+  { id: 'science', label: 'Science', icon: LightbulbIcon },
+  { id: 'computer_science', label: 'Computer Science', icon: ComputerIcon },
+  { id: 'software_systems_development', label: 'Software Systems Development', icon: CodeIcon },
+  { id: 'digital_technology', label: 'Digital Technology', icon: DevicesIcon },
+  { id: 'technology_design', label: 'Technology & Design', icon: DesignServicesIcon },
+  { id: 'history', label: 'History', icon: HistoryEduIcon },
+  { id: 'geography', label: 'Geography', icon: PublicIcon },
+  { id: 'economics', label: 'Economics', icon: TrendingUpIcon },
+  { id: 'government_politics', label: 'Government & Politics', icon: AccountBalanceIcon },
+  { id: 'religious_studies', label: 'Religious Studies', icon: Diversity2Icon },
+  { id: 'life_health_sciences', label: 'Life & Health Sciences', icon: MonitorHeartIcon },
+  { id: 'environmental_technology', label: 'Environmental Technology', icon: RecyclingIcon },
 ];
 
 const levels = [
@@ -282,7 +302,7 @@ export default function Explore() {
               }
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <span style={{ fontSize: '1.125rem' }}>{category.icon}</span>
+                  <category.icon sx={{ fontSize: 20, color: 'text.secondary' }} aria-hidden="true" />
                   <span>{category.label}</span>
                 </Box>
               }
