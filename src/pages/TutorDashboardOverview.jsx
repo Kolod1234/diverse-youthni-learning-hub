@@ -167,7 +167,7 @@ export default function TutorDashboardOverview() {
               <div className="flex gap-3 flex-wrap">
                 {/* Wireframe L4: scheduling is the main action on Tutor home. */}
                 <Link to={createPageUrl('ScheduleSession')}>
-                  <Button className="bg-[#fbbf24] text-foreground hover:bg-[#f59e0b] font-semibold">
+                  <Button className="bg-[#fbbf24] text-slate-900 hover:bg-[#f59e0b] font-semibold">
                     + Schedule a session
                   </Button>
                 </Link>

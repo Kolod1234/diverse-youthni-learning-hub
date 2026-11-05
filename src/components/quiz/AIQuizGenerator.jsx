@@ -438,7 +438,7 @@ Return JSON:
             <label className="flex items-center gap-2 mb-1 opacity-70 cursor-not-allowed">
               <input type="checkbox" checked={false} disabled readOnly className="w-4 h-4 rounded" />
               <span className="font-medium text-foreground flex items-center gap-2"><BookOpen className="w-4 h-4" />Include Past Paper Questions</span>
-              <span className="ml-1 text-xs font-semibold uppercase tracking-wide bg-[#fbbf24] text-foreground rounded-full px-2 py-0.5">Coming soon</span>
+              <span className="ml-1 text-xs font-semibold uppercase tracking-wide bg-[#fbbf24] text-slate-900 rounded-full px-2 py-0.5">Coming soon</span>
             </label>
             <p className="text-xs text-muted-foreground">Mixing in real past paper questions will be available once the question bank is added.</p>
             {includePastPapers && (
