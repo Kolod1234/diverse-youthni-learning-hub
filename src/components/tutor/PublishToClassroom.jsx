@@ -214,7 +214,7 @@ export default function PublishToClassroom({ lesson, course }) {
           {/* Lesson Preview */}
           <Card className="p-4 bg-gray-50">
             <h4 className="font-semibold mb-2">Lesson to Publish</h4>
-            <div className="text-sm space-y-1 text-gray-600">
+            <div className="text-sm space-y-1 text-muted-foreground">
               <p><strong>Title:</strong> {lesson.title}</p>
               <p><strong>Description:</strong> {lesson.description || 'No description'}</p>
               <div className="flex gap-2 mt-2">

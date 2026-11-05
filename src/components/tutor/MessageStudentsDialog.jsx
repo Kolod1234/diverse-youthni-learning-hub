@@ -145,7 +145,7 @@ export default function MessageStudentsDialog({ open, onOpenChange, courseId, co
                   checked={selectAll}
                   onCheckedChange={handleSelectAll}
                 />
-                <label htmlFor="select-all" className="text-sm text-gray-600 cursor-pointer">
+                <label htmlFor="select-all" className="text-sm text-muted-foreground cursor-pointer">
                   Select All
                 </label>
               </div>
@@ -167,8 +167,8 @@ export default function MessageStudentsDialog({ open, onOpenChange, courseId, co
                       htmlFor={student.email}
                       className="flex-1 cursor-pointer"
                     >
-                      <p className="font-medium text-gray-900">{student.full_name}</p>
-                      <p className="text-xs text-gray-500">{student.email}</p>
+                      <p className="font-medium text-foreground">{student.full_name}</p>
+                      <p className="text-xs text-muted-foreground">{student.email}</p>
                     </label>
                   </div>
                 ))}

@@ -173,8 +173,8 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
           <Sparkles className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900">AI Course Assistant</h3>
-          <p className="text-sm text-gray-600">Powered by advanced AI to help you create better courses</p>
+          <h3 className="text-xl font-bold text-foreground">AI Course Assistant</h3>
+          <p className="text-sm text-muted-foreground">Powered by advanced AI to help you create better courses</p>
         </div>
       </div>
 
@@ -182,7 +182,7 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
       <div className="bg-card rounded-xl p-6 mb-6">
         <div className="grid md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Course Topic</label>
+            <label className="text-sm font-medium text-muted-foreground mb-2 block">Course Topic</label>
             <Input
               placeholder="e.g., GCSE Biology Unit 1"
               value={topic}
@@ -191,7 +191,7 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Target Audience</label>
+            <label className="text-sm font-medium text-muted-foreground mb-2 block">Target Audience</label>
             <Select value={targetAudience} onValueChange={setTargetAudience}>
               <SelectTrigger>
                 <SelectValue />
@@ -207,7 +207,7 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
         </div>
 
         <div className="mb-4">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Exam Board</label>
+          <label className="text-sm font-medium text-muted-foreground mb-2 block">Exam Board</label>
           <Select value={examBoard} onValueChange={setExamBoard}>
             <SelectTrigger className="w-full md:w-1/2">
               <SelectValue />
@@ -264,8 +264,8 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
               <TabsContent value="outline" className="p-6">
                 <div className="space-y-6">
                   <div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-2">{suggestions.outline.course_title}</h4>
-                    <p className="text-gray-600 mb-4">{suggestions.outline.course_description}</p>
+                    <h4 className="text-2xl font-bold text-foreground mb-2">{suggestions.outline.course_title}</h4>
+                    <p className="text-muted-foreground mb-4">{suggestions.outline.course_description}</p>
                     <div className="flex gap-2">
                       <Badge>{suggestions.outline.level}</Badge>
                       <Badge variant="outline">{suggestions.outline.duration_hours} hours</Badge>
@@ -275,7 +275,7 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
                   {suggestions.outline.units?.map((unit, idx) => (
                     <Card key={idx} className="p-4 border-purple-200">
                       <div className="flex items-start justify-between mb-3">
-                        <h5 className="font-bold text-gray-900">{unit.unit_name}</h5>
+                        <h5 className="font-bold text-foreground">{unit.unit_name}</h5>
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -298,8 +298,8 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
 
                       {unit.learning_objectives && (
                         <div className="mb-3">
-                          <p className="text-xs font-semibold text-gray-500 mb-1">Learning Objectives:</p>
-                          <ul className="text-sm text-gray-600 space-y-1">
+                          <p className="text-xs font-semibold text-muted-foreground mb-1">Learning Objectives:</p>
+                          <ul className="text-sm text-muted-foreground space-y-1">
                             {unit.learning_objectives.map((obj, i) => (
                               <li key={i} className="flex items-start gap-2">
                                 <span className="text-purple-600 mt-1">•</span>
@@ -314,8 +314,8 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
                         {unit.lessons?.map((lesson, lIdx) => (
                           <div key={lIdx} className="flex items-center justify-between p-2 bg-purple-50 rounded">
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-gray-900">{lesson.title}</p>
-                              <p className="text-xs text-gray-600">{lesson.description}</p>
+                              <p className="text-sm font-medium text-foreground">{lesson.title}</p>
+                              <p className="text-xs text-muted-foreground">{lesson.description}</p>
                             </div>
                             <Badge variant="outline" className="shrink-0">
                               {lesson.duration_minutes} min
@@ -348,11 +348,11 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
               <TabsContent value="resources" className="p-6">
                 <div className="space-y-6">
                   <div>
-                    <h5 className="font-semibold text-gray-900 mb-3">Recommended Diagrams</h5>
+                    <h5 className="font-semibold text-foreground mb-3">Recommended Diagrams</h5>
                     <div className="space-y-2">
                       {suggestions.resources.diagrams?.map((diagram, idx) => (
                         <div key={idx} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                          <span className="text-sm text-gray-900">{diagram}</span>
+                          <span className="text-sm text-foreground">{diagram}</span>
                           <Button
                             size="sm"
                             variant="ghost"
@@ -366,11 +366,11 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
                   </div>
 
                   <div>
-                    <h5 className="font-semibold text-gray-900 mb-3">Interactive Elements</h5>
+                    <h5 className="font-semibold text-foreground mb-3">Interactive Elements</h5>
                     <div className="space-y-2">
                       {suggestions.resources.interactive_elements?.map((element, idx) => (
                         <div key={idx} className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                          <span className="text-sm text-gray-900">{element}</span>
+                          <span className="text-sm text-foreground">{element}</span>
                           <Button
                             size="sm"
                             variant="ghost"
@@ -384,7 +384,7 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
                   </div>
 
                   <div>
-                    <h5 className="font-semibold text-gray-900 mb-3">Real-World Examples</h5>
+                    <h5 className="font-semibold text-foreground mb-3">Real-World Examples</h5>
                     <ul className="space-y-2">
                       {suggestions.resources.real_world_examples?.map((example, idx) => (
                         <li key={idx} className="text-sm text-gray-600 p-2 bg-green-50 rounded">• {example}</li>
@@ -400,10 +400,10 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Passing Score: <span className="font-semibold">{suggestions.quiz.passing_score}%</span>
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Time: <span className="font-semibold">{suggestions.quiz.recommended_time_minutes} minutes</span>
                       </p>
                     </div>
@@ -418,7 +418,7 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
                   {suggestions.quiz.questions?.map((q, idx) => (
                     <Card key={idx} className="p-4 border-purple-200">
                       <div className="flex items-start justify-between mb-2">
-                        <h6 className="font-medium text-gray-900 flex-1">Q{idx + 1}. {q.question}</h6>
+                        <h6 className="font-medium text-foreground flex-1">Q{idx + 1}. {q.question}</h6>
                         <Badge className={
                           q.difficulty === 'easy' ? 'bg-green-100 text-green-700' :
                           q.difficulty === 'hard' ? 'bg-red-100 text-red-700' :

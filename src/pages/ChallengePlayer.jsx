@@ -114,24 +114,24 @@ export default function ChallengePlayer() {
               <Trophy className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold mb-2">{challenge.title}</h1>
-            <p className="text-gray-600">{challenge.description}</p>
+            <p className="text-muted-foreground">{challenge.description}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <Clock className="w-8 h-8 text-blue-600 mx-auto mb-2" />
               <p className="font-semibold">{challenge.time_limit_minutes} minutes</p>
-              <p className="text-sm text-gray-600">Time Limit</p>
+              <p className="text-sm text-muted-foreground">Time Limit</p>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
               <Zap className="w-8 h-8 text-purple-600 mx-auto mb-2" />
               <p className="font-semibold">{challenge.quiz_questions?.length || 0} questions</p>
-              <p className="text-sm text-gray-600">Questions</p>
+              <p className="text-sm text-muted-foreground">Questions</p>
             </div>
             <div className="text-center p-4 bg-yellow-50 rounded-lg">
               <Trophy className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
               <p className="font-semibold">{challenge.points_reward} XP</p>
-              <p className="text-sm text-gray-600">Reward</p>
+              <p className="text-sm text-muted-foreground">Reward</p>
             </div>
           </div>
 
@@ -154,16 +154,16 @@ export default function ChallengePlayer() {
           </div>
 
           <h1 className="text-4xl font-bold mb-2">Challenge Complete!</h1>
-          <p className="text-gray-600 mb-8">Great job! Here's your result:</p>
+          <p className="text-muted-foreground mb-8">Great job! Here's your result:</p>
 
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <div className="p-6 bg-blue-50 rounded-lg">
               <p className="text-5xl font-bold text-blue-600 mb-2">{score}</p>
-              <p className="text-gray-600">Points Earned</p>
+              <p className="text-muted-foreground">Points Earned</p>
             </div>
             <div className="p-6 bg-purple-50 rounded-lg">
               <p className="text-5xl font-bold text-purple-600 mb-2">{percentage}%</p>
-              <p className="text-gray-600">Accuracy</p>
+              <p className="text-muted-foreground">Accuracy</p>
             </div>
           </div>
 
@@ -201,7 +201,7 @@ export default function ChallengePlayer() {
             </div>
           </div>
           <Progress value={progress} className="h-2" />
-          <p className="text-sm text-gray-600 mt-2">Question {currentQuestion + 1} of {challenge.quiz_questions.length}</p>
+          <p className="text-sm text-muted-foreground mt-2">Question {currentQuestion + 1} of {challenge.quiz_questions.length}</p>
         </div>
 
         {/* Question */}

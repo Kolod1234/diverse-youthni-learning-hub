@@ -561,8 +561,8 @@ Return JSON:
                 <Wand2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Enhanced AI Slide Generator</h2>
-                <p className="text-sm text-gray-600">Create or replace course topics with professional slides & AI images</p>
+                <h2 className="text-2xl font-bold text-foreground">Enhanced AI Slide Generator</h2>
+                <p className="text-sm text-muted-foreground">Create or replace course topics with professional slides & AI images</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
@@ -579,7 +579,7 @@ Return JSON:
                 <Card className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
                   <div className="flex items-center gap-4 mb-3">
                     <Layers className="w-5 h-5 text-blue-600" />
-                    <h3 className="font-semibold text-gray-900">Operation Mode</h3>
+                    <h3 className="font-semibold text-foreground">Operation Mode</h3>
                   </div>
                   <div className="flex gap-4">
                     <Button
@@ -916,8 +916,8 @@ Return JSON:
                       <CheckCircle className="w-6 h-6 text-green-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900">Lesson Generated Successfully!</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="text-lg font-bold text-foreground">Lesson Generated Successfully!</h3>
+                      <p className="text-sm text-muted-foreground">
                         {generatedContent.slides.length} slides
                         {generatedContent.quiz && ` + ${generatedContent.quiz.questions.length} question quiz`}
                       </p>
@@ -934,7 +934,7 @@ Return JSON:
                 {/* Slides Preview */}
                 <Card className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                    <h3 className="font-bold text-foreground flex items-center gap-2">
                       <FileText className="w-5 h-5 text-indigo-600" />
                       Slides Preview
                     </h3>
@@ -949,7 +949,7 @@ Return JSON:
                         <Badge variant="outline">
                           Slide {previewSlideIndex + 1} of {generatedContent.slides.length}
                         </Badge>
-                        <h4 className="font-semibold text-gray-900">
+                        <h4 className="font-semibold text-foreground">
                           {generatedContent.slides[previewSlideIndex]?.title}
                         </h4>
                       </div>
@@ -1057,7 +1057,7 @@ Return JSON:
                 {/* Quiz Preview */}
                 {generatedContent.quiz && (
                   <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
-                    <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
                       <Brain className="w-5 h-5 text-purple-600" />
                       Assessment Quiz
                     </h3>
@@ -1089,13 +1089,13 @@ Return JSON:
                 {/* Learning Objectives */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <Card className="p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                    <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
                       <Target className="w-4 h-4 text-blue-600" />
                       Learning Objectives
                     </h4>
                     <ul className="space-y-1">
                       {generatedContent.objectives?.learning_objectives?.slice(0, 5).map((obj, idx) => (
-                        <li key={idx} className="text-xs text-gray-700 flex items-start gap-2">
+                        <li key={idx} className="text-xs text-muted-foreground flex items-start gap-2">
                           <CheckCircle className="w-3 h-3 text-green-600 mt-0.5 shrink-0" />
                           <span>{obj}</span>
                         </li>
@@ -1104,7 +1104,7 @@ Return JSON:
                   </Card>
                   
                   <Card className="p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                    <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
                       <BookOpen className="w-4 h-4 text-purple-600" />
                       Key Concepts
                     </h4>

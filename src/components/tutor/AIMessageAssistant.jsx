@@ -84,7 +84,7 @@ Format as a friendly message the tutor can send.`,
     <Card className="p-4 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
       <div className="flex items-center gap-2 mb-3">
         <Sparkles className="w-5 h-5 text-purple-600" />
-        <h3 className="font-semibold text-gray-900">AI Message Assistant</h3>
+        <h3 className="font-semibold text-foreground">AI Message Assistant</h3>
       </div>
 
       {!showSuggestions ? (
@@ -146,7 +146,7 @@ Format as a friendly message the tutor can send.`,
         </>
       ) : (
         <>
-          <p className="text-sm text-gray-600 mb-2">What topic or question do students need help with?</p>
+          <p className="text-sm text-muted-foreground mb-2">What topic or question do students need help with?</p>
           <Textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
@@ -201,7 +201,7 @@ Format as a friendly message the tutor can send.`,
               Insert
             </Button>
           </div>
-          <p className="text-sm text-gray-700 whitespace-pre-wrap">{generatedText}</p>
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{generatedText}</p>
         </div>
       )}
     </Card>

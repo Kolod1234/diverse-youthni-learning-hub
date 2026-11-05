@@ -38,13 +38,13 @@ export default function FactCard({ fact, index = 0 }) {
 
         {/* Fact content */}
         <div className="p-6 flex flex-col h-full">
-          <p className="text-gray-900 font-medium leading-relaxed flex-1 mb-4">
+          <p className="text-foreground font-medium leading-relaxed flex-1 mb-4">
             {fact.fact}
           </p>
 
           {/* Footer */}
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {new Date(fact.created_date).toLocaleDateString('en-US', { 
                 month: 'short', 
                 day: 'numeric',

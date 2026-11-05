@@ -37,8 +37,8 @@ export default function TemplateSelector({ category, onSelect, onClose }) {
         <div className="p-6 border-b">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Choose a Template</h2>
-              <p className="text-sm text-gray-500">Start with a pre-designed template</p>
+              <h2 className="text-2xl font-bold text-foreground">Choose a Template</h2>
+              <p className="text-sm text-muted-foreground">Start with a pre-designed template</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-5 h-5" />
@@ -67,7 +67,7 @@ export default function TemplateSelector({ category, onSelect, onClose }) {
           ) : filteredTemplates.length === 0 ? (
             <div className="text-center py-12">
               <LayoutTemplate className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No templates found</p>
+              <p className="text-muted-foreground">No templates found</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -86,10 +86,10 @@ export default function TemplateSelector({ category, onSelect, onClose }) {
                         <LayoutTemplate className="w-10 h-10 text-indigo-600" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">
+                        <h3 className="font-semibold text-foreground mb-1 line-clamp-1">
                           {template.name}
                         </h3>
-                        <p className="text-sm text-gray-500 mb-2 line-clamp-2">
+                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                           {template.description || 'No description'}
                         </p>
                         

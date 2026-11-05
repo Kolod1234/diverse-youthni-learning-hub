@@ -245,7 +245,7 @@ export default function TutorOnboardingFlow({ user, onComplete, onSkip }) {
             Back
           </Button>
 
-          <Button variant="ghost" onClick={handleSkip} className="text-gray-500">
+          <Button variant="ghost" onClick={handleSkip} className="text-muted-foreground">
             Skip Tutorial
           </Button>
 
@@ -267,10 +267,10 @@ function WelcomeStep({ user }) {
       <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
         <Sparkles className="w-10 h-10 text-purple-600" />
       </div>
-      <h3 className="text-2xl font-bold text-gray-900 mb-3">
+      <h3 className="text-2xl font-bold text-foreground mb-3">
         Welcome, {user?.full_name}! 🎉
       </h3>
-      <p className="text-gray-600 max-w-lg mx-auto mb-8">
+      <p className="text-muted-foreground max-w-lg mx-auto mb-8">
         We're excited to have you as a tutor! This quick setup will help you get started with creating courses, 
         managing your schedule, and connecting with students.
       </p>
@@ -284,8 +284,8 @@ function WelcomeStep({ user }) {
         ].map((feature, idx) => (
           <Card key={idx} className="p-4 text-left border-2">
             <feature.icon className="w-8 h-8 text-purple-600 mb-3" />
-            <h4 className="font-semibold text-gray-900 mb-1">{feature.title}</h4>
-            <p className="text-sm text-gray-600">{feature.desc}</p>
+            <h4 className="font-semibold text-foreground mb-1">{feature.title}</h4>
+            <p className="text-sm text-muted-foreground">{feature.desc}</p>
           </Card>
         ))}
       </div>
@@ -297,17 +297,17 @@ function ProfileStep({ user, data, setData, onSave, isSaving }) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Tell Students About Yourself</h3>
-        <p className="text-gray-600 text-sm mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Tell Students About Yourself</h3>
+        <p className="text-muted-foreground text-sm mb-6">
           A compelling profile helps students connect with you and understand your teaching approach.
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-muted-foreground mb-2">
             Professional Bio
-            <span className="text-gray-500 ml-2">(What's your background?)</span>
+            <span className="text-muted-foreground ml-2">(What's your background?)</span>
           </label>
           <Textarea
             value={data.bio}
@@ -318,9 +318,9 @@ function ProfileStep({ user, data, setData, onSave, isSaving }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-muted-foreground mb-2">
             Areas of Expertise
-            <span className="text-gray-500 ml-2">(What do you teach?)</span>
+            <span className="text-muted-foreground ml-2">(What do you teach?)</span>
           </label>
           <Input
             value={data.expertise}
@@ -330,9 +330,9 @@ function ProfileStep({ user, data, setData, onSave, isSaving }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-muted-foreground mb-2">
             Teaching Style
-            <span className="text-gray-500 ml-2">(How do you teach?)</span>
+            <span className="text-muted-foreground ml-2">(How do you teach?)</span>
           </label>
           <Textarea
             value={data.teaching_style}
@@ -358,8 +358,8 @@ function AvailabilityStep({ user, onNext }) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Set Your Teaching Schedule</h3>
-        <p className="text-gray-600 text-sm mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Set Your Teaching Schedule</h3>
+        <p className="text-muted-foreground text-sm mb-6">
           Add time slots when you're available for live tutoring sessions. You can always update this later.
         </p>
       </div>
@@ -377,15 +377,15 @@ function CourseStep({ data, setData, onCreate, isCreating }) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Create Your First Course</h3>
-        <p className="text-gray-600 text-sm mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Create Your First Course</h3>
+        <p className="text-muted-foreground text-sm mb-6">
           Don't worry about making it perfect - you can add lessons and content later!
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Course Title *</label>
+          <label className="block text-sm font-medium text-muted-foreground mb-2">Course Title *</label>
           <Input
             value={data.title}
             onChange={(e) => setData({ ...data, title: e.target.value })}
@@ -394,7 +394,7 @@ function CourseStep({ data, setData, onCreate, isCreating }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+          <label className="block text-sm font-medium text-muted-foreground mb-2">Description *</label>
           <Textarea
             value={data.description}
             onChange={(e) => setData({ ...data, description: e.target.value })}
@@ -405,7 +405,7 @@ function CourseStep({ data, setData, onCreate, isCreating }) {
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">Category</label>
             <select
               value={data.category}
               onChange={(e) => setData({ ...data, category: e.target.value })}
@@ -422,7 +422,7 @@ function CourseStep({ data, setData, onCreate, isCreating }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Level</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">Level</label>
             <select
               value={data.level}
               onChange={(e) => setData({ ...data, level: e.target.value })}
@@ -478,8 +478,8 @@ function FeaturesStep({ onFinish }) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Powerful Tools at Your Fingertips</h3>
-        <p className="text-gray-600 text-sm mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Powerful Tools at Your Fingertips</h3>
+        <p className="text-muted-foreground text-sm mb-6">
           Here are some key features to help you deliver amazing learning experiences:
         </p>
       </div>
@@ -493,8 +493,8 @@ function FeaturesStep({ onFinish }) {
               <div className={`w-10 h-10 rounded-lg ${feature.color} flex items-center justify-center mb-3`}>
                 <feature.icon className="w-5 h-5" />
               </div>
-              <h4 className="font-semibold text-gray-900 mb-1">{feature.title}</h4>
-              <p className="text-sm text-gray-600">{feature.description}</p>
+              <h4 className="font-semibold text-foreground mb-1">{feature.title}</h4>
+              <p className="text-sm text-muted-foreground">{feature.description}</p>
             </Card>
           </motion.div>
         ))}
@@ -504,8 +504,8 @@ function FeaturesStep({ onFinish }) {
         <div className="flex items-start gap-3">
           <HelpCircle className="w-5 h-5 text-purple-600 mt-0.5" />
           <div>
-            <h4 className="font-semibold text-gray-900 mb-1">Need Help?</h4>
-            <p className="text-sm text-gray-600">
+            <h4 className="font-semibold text-foreground mb-1">Need Help?</h4>
+            <p className="text-sm text-muted-foreground">
               Visit the Tutor Dashboard to access guides, tips, and support resources anytime.
             </p>
           </div>

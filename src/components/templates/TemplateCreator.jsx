@@ -72,8 +72,8 @@ export default function TemplateCreator({ onClose, onSave, initialData = null })
         {/* Header */}
         <div className="p-6 border-b flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Create Template</h2>
-            <p className="text-sm text-gray-500">Save your content as a reusable template</p>
+            <h2 className="text-2xl font-bold text-foreground">Create Template</h2>
+            <p className="text-sm text-muted-foreground">Save your content as a reusable template</p>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="w-5 h-5" />
@@ -178,7 +178,7 @@ export default function TemplateCreator({ onClose, onSave, initialData = null })
 
         {/* Footer */}
         <div className="p-6 border-t flex items-center justify-between bg-gray-50">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {formData.category === 'lesson' && `${formData.content.slides?.length || 0} slides`}
           </p>
           <div className="flex gap-3">

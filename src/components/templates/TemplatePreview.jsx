@@ -15,15 +15,15 @@ export default function TemplatePreview({ template, onClose, onUse }) {
         <div className="p-6 border-b">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{template.name}</h2>
-              <p className="text-gray-600">{template.description}</p>
+              <h2 className="text-2xl font-bold text-foreground mb-2">{template.name}</h2>
+              <p className="text-muted-foreground">{template.description}</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-5 h-5" />
             </Button>
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-gray-500">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
               {template.created_by}
@@ -52,7 +52,7 @@ export default function TemplatePreview({ template, onClose, onUse }) {
           <div className="space-y-4">
             {template.category === 'lesson' && template.content?.slides?.length > 0 ? (
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">
+                <h3 className="font-semibold text-foreground mb-3">
                   Lesson Preview ({template.content.slides.length} slides)
                 </h3>
                 <div className="space-y-4">
@@ -60,7 +60,7 @@ export default function TemplatePreview({ template, onClose, onUse }) {
                     <Card key={i} className="p-4 border-2">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="outline">Slide {i + 1}</Badge>
-                        <h4 className="font-semibold text-gray-900">{slide.title}</h4>
+                        <h4 className="font-semibold text-foreground">{slide.title}</h4>
                       </div>
                       <div 
                         className="prose prose-sm max-w-none"
@@ -73,7 +73,7 @@ export default function TemplatePreview({ template, onClose, onUse }) {
             ) : (
               <div className="text-center py-12">
                 <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No preview available for this template</p>
+                <p className="text-muted-foreground">No preview available for this template</p>
               </div>
             )}
           </div>

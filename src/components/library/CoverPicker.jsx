@@ -70,7 +70,7 @@ export default function CoverPicker({ fileUrl, onCoverChange, currentCover }) {
 
         {/* Controls */}
         <div className="flex-1 space-y-3">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Generate a cover automatically from the first page of your PDF, or upload your own image.
           </p>
           

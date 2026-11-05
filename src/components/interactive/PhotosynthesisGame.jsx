@@ -41,8 +41,8 @@ export default function PhotosynthesisGame() {
   return (
     <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
       <div className="mb-6 text-center">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Photosynthesis Simulator</h3>
-        <p className="text-gray-600 text-sm">Add inputs to see photosynthesis in action!</p>
+        <h3 className="text-xl font-bold text-foreground mb-2">Photosynthesis Simulator</h3>
+        <p className="text-muted-foreground text-sm">Add inputs to see photosynthesis in action!</p>
         <Badge variant="outline" className="mt-2 bg-card">
           CO₂ + H₂O + Light → Glucose + O₂
         </Badge>
@@ -57,7 +57,7 @@ export default function PhotosynthesisGame() {
           >
             <Sun className="w-8 h-8" />
           </Button>
-          <p className="text-sm font-semibold text-gray-900">Light Energy</p>
+          <p className="text-sm font-semibold text-foreground">Light Energy</p>
           <Badge className="bg-yellow-600">{inputs.light}</Badge>
         </motion.div>
 
@@ -68,7 +68,7 @@ export default function PhotosynthesisGame() {
           >
             <Droplet className="w-8 h-8" />
           </Button>
-          <p className="text-sm font-semibold text-gray-900">Water (H₂O)</p>
+          <p className="text-sm font-semibold text-foreground">Water (H₂O)</p>
           <Badge className="bg-blue-600">{inputs.water}</Badge>
         </motion.div>
 
@@ -79,7 +79,7 @@ export default function PhotosynthesisGame() {
           >
             <Sparkles className="w-8 h-8" />
           </Button>
-          <p className="text-sm font-semibold text-gray-900">CO₂</p>
+          <p className="text-sm font-semibold text-foreground">CO₂</p>
           <Badge className="bg-gray-600">{inputs.co2}</Badge>
         </motion.div>
       </div>
@@ -98,25 +98,25 @@ export default function PhotosynthesisGame() {
       {/* Outputs Section */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="p-4 bg-card rounded-lg border-2 border-green-300 text-center">
-          <p className="text-sm font-semibold text-gray-700 mb-2">Glucose Produced</p>
+          <p className="text-sm font-semibold text-muted-foreground mb-2">Glucose Produced</p>
           <motion.div
             key={glucose}
             className="text-3xl font-bold text-green-600"
           >
             {glucose}
           </motion.div>
-          <p className="text-xs text-gray-500 mt-1">C₆H₁₂O₆</p>
+          <p className="text-xs text-muted-foreground mt-1">C₆H₁₂O₆</p>
         </div>
 
         <div className="p-4 bg-card rounded-lg border-2 border-cyan-300 text-center">
-          <p className="text-sm font-semibold text-gray-700 mb-2">Oxygen Released</p>
+          <p className="text-sm font-semibold text-muted-foreground mb-2">Oxygen Released</p>
           <motion.div
             key={oxygen}
             className="text-3xl font-bold text-cyan-600"
           >
             {oxygen}
           </motion.div>
-          <p className="text-xs text-gray-500 mt-1">O₂ molecules</p>
+          <p className="text-xs text-muted-foreground mt-1">O₂ molecules</p>
         </div>
       </div>
 
@@ -136,7 +136,7 @@ export default function PhotosynthesisGame() {
 
       {/* Learning Tip */}
       <div className="mt-6 p-3 bg-card rounded-lg border border-green-200">
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-muted-foreground">
           <strong>💡 Tip:</strong> Photosynthesis needs all three inputs! The limiting factor (lowest value) determines how much glucose is produced.
         </p>
       </div>

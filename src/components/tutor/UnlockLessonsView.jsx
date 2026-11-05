@@ -37,13 +37,13 @@ export default function UnlockLessonsView({ courses }) {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Unlock Lessons</h1>
-      <p className="text-gray-500 mb-6">Control which lessons students can access for free preview vs. requiring enrolment. You can only manage lessons in your assigned courses.</p>
+      <h1 className="text-3xl font-bold text-foreground mb-2">Unlock Lessons</h1>
+      <p className="text-muted-foreground mb-6">Control which lessons students can access for free preview vs. requiring enrolment. You can only manage lessons in your assigned courses.</p>
 
       {courses.length === 0 ? (
         <div className="bg-card border border-gray-200 rounded-xl p-12 text-center">
           <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No courses assigned to you yet.</p>
+          <p className="text-muted-foreground">No courses assigned to you yet.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -63,8 +63,8 @@ export default function UnlockLessonsView({ courses }) {
                       <BookOpen className="w-5 h-5 text-indigo-600" />
                     </div>
                     <div className="text-left">
-                      <h3 className="font-semibold text-gray-900">{course.title}</h3>
-                      <p className="text-sm text-gray-500 capitalize">{course.category?.replace(/_/g, ' ')} · {courseLessons.length} lessons · {unlockedCount} unlocked</p>
+                      <h3 className="font-semibold text-foreground">{course.title}</h3>
+                      <p className="text-sm text-muted-foreground capitalize">{course.category?.replace(/_/g, ' ')} · {courseLessons.length} lessons · {unlockedCount} unlocked</p>
                     </div>
                   </div>
                   <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
@@ -73,7 +73,7 @@ export default function UnlockLessonsView({ courses }) {
                 {isExpanded && (
                   <div className="border-t border-gray-200">
                     {courseLessons.length === 0 ? (
-                      <p className="text-sm text-gray-500 text-center py-8">No lessons in this course yet.</p>
+                      <p className="text-sm text-muted-foreground text-center py-8">No lessons in this course yet.</p>
                     ) : (
                       <div className="divide-y divide-gray-100">
                         {courseLessons.map((lesson, idx) => (
@@ -81,8 +81,8 @@ export default function UnlockLessonsView({ courses }) {
                             <div className="flex items-center gap-3">
                               <span className="text-xs text-gray-400 w-5">{idx + 1}</span>
                               <div>
-                                <p className="text-sm font-medium text-gray-900">{lesson.title}</p>
-                                <p className="text-xs text-gray-500">{lesson.section || 'General'} · {lesson.duration_minutes || 10} min</p>
+                                <p className="text-sm font-medium text-foreground">{lesson.title}</p>
+                                <p className="text-xs text-muted-foreground">{lesson.section || 'General'} · {lesson.duration_minutes || 10} min</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ export default function UnlockLessonsView({ courses }) {
                                   <Unlock className="w-3 h-3" /> Free Preview
                                 </span>
                               ) : (
-                                <span className="flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+                                <span className="flex items-center gap-1 text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded-full">
                                   <Lock className="w-3 h-3" /> Enrolled Only
                                 </span>
                               )}

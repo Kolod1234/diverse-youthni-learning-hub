@@ -233,8 +233,8 @@ Return ONLY valid JSON with this structure:
                   <Brain className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">AI Content Analysis</h2>
-                  <p className="text-sm text-gray-600">{lesson.title}</p>
+                  <h2 className="text-xl font-bold text-foreground">AI Content Analysis</h2>
+                  <p className="text-sm text-muted-foreground">{lesson.title}</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={onClose}>
@@ -250,10 +250,10 @@ Return ONLY valid JSON with this structure:
                 <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Brain className="w-8 h-8 text-indigo-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   Analyze Lesson Content
                 </h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Get AI-powered insights on readability, learning objectives, accuracy, and recommendations for improvement.
                 </p>
                 <Button onClick={analyzeContent} className="bg-indigo-600 hover:bg-indigo-700">
@@ -266,10 +266,10 @@ Return ONLY valid JSON with this structure:
             {analyzing && (
               <div className="text-center py-12">
                 <Loader2 className="w-12 h-12 text-indigo-600 animate-spin mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   Analyzing Content...
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   AI is examining your lesson for quality, accuracy, and engagement
                 </p>
               </div>
@@ -280,14 +280,14 @@ Return ONLY valid JSON with this structure:
                 {/* Overall Quality */}
                 <Card className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Overall Quality</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Overall Quality</h3>
                     <Badge className="bg-indigo-600 text-white text-base px-3 py-1">
                       {analysis.overall_quality}
                     </Badge>
                   </div>
                   <div className="mb-4">
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-gray-700">Engagement Score</span>
+                      <span className="text-muted-foreground">Engagement Score</span>
                       <span className="font-semibold text-indigo-600">{analysis.engagement_score}%</span>
                     </div>
                     <div className="w-full bg-card rounded-full h-3">
@@ -299,24 +299,24 @@ Return ONLY valid JSON with this structure:
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                      <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
                         Strengths
                       </h4>
                       <ul className="space-y-1">
                         {analysis.strengths?.map((strength, idx) => (
-                          <li key={idx} className="text-sm text-gray-700">• {strength}</li>
+                          <li key={idx} className="text-sm text-muted-foreground">• {strength}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                      <h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-orange-600" />
                         Areas for Improvement
                       </h4>
                       <ul className="space-y-1 mb-3">
                         {analysis.areas_for_improvement?.map((area, idx) => (
-                          <li key={idx} className="text-sm text-gray-700">• {area}</li>
+                          <li key={idx} className="text-sm text-muted-foreground">• {area}</li>
                         ))}
                       </ul>
                       {analysis.areas_for_improvement?.length > 0 && (
@@ -345,7 +345,7 @@ Return ONLY valid JSON with this structure:
 
                 {/* Readability */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-indigo-600" />
                     Readability Assessment
                   </h3>
@@ -353,12 +353,12 @@ Return ONLY valid JSON with this structure:
                     <Badge className={`${getReadabilityColor(analysis.readability?.score)} border`}>
                       {analysis.readability?.score} Level
                     </Badge>
-                    <span className="text-sm text-gray-600">{analysis.readability?.grade_level}</span>
+                    <span className="text-sm text-muted-foreground">{analysis.readability?.grade_level}</span>
                   </div>
-                  <h4 className="font-medium text-gray-900 mb-2">Suggested Improvements:</h4>
+                  <h4 className="font-medium text-foreground mb-2">Suggested Improvements:</h4>
                   <ul className="space-y-2">
                     {analysis.readability?.improvements?.map((improvement, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
+                      <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
                         <span className="text-indigo-600 mt-0.5">→</span>
                         <span>{improvement}</span>
                       </li>
@@ -368,7 +368,7 @@ Return ONLY valid JSON with this structure:
 
                 {/* Learning Objectives */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                     <Target className="w-5 h-5 text-indigo-600" />
                     Learning Objectives
                   </h3>
@@ -377,7 +377,7 @@ Return ONLY valid JSON with this structure:
                       <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                         <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm text-gray-900">{obj.objective}</p>
+                          <p className="text-sm text-foreground">{obj.objective}</p>
                           <Badge variant="outline" className="mt-1 text-xs">
                             {obj.importance} importance
                           </Badge>
@@ -389,7 +389,7 @@ Return ONLY valid JSON with this structure:
 
                 {/* Key Concepts */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                     <Lightbulb className="w-5 h-5 text-indigo-600" />
                     Key Concepts Identified
                   </h3>
@@ -404,7 +404,7 @@ Return ONLY valid JSON with this structure:
 
                 {/* Accuracy Check */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                     <AlertCircle className={`w-5 h-5 ${getAccuracyColor(analysis.accuracy_check?.status)}`} />
                     Factual Accuracy Check
                   </h3>
@@ -412,16 +412,16 @@ Return ONLY valid JSON with this structure:
                     <Badge className={analysis.accuracy_check?.status === 'verified' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}>
                       {analysis.accuracy_check?.status === 'verified' ? '✓ Verified' : '⚠ Needs Review'}
                     </Badge>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-muted-foreground">
                       Confidence: {analysis.accuracy_check?.confidence}
                     </span>
                   </div>
                   {analysis.accuracy_check?.concerns?.length > 0 && (
                     <>
-                      <h4 className="font-medium text-gray-900 mb-2">Areas to Verify:</h4>
+                      <h4 className="font-medium text-foreground mb-2">Areas to Verify:</h4>
                       <ul className="space-y-2">
                         {analysis.accuracy_check.concerns.map((concern, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
+                          <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
                             <span className="text-orange-600 mt-0.5">!</span>
                             <span>{concern}</span>
                           </li>
@@ -433,7 +433,7 @@ Return ONLY valid JSON with this structure:
 
                 {/* Supplementary Materials */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                     <LinkIcon className="w-5 h-5 text-indigo-600" />
                     Recommended Supplementary Materials
                   </h3>
@@ -448,12 +448,12 @@ Return ONLY valid JSON with this structure:
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-medium text-gray-900">{material.title}</h4>
+                              <h4 className="font-medium text-foreground">{material.title}</h4>
                               <Badge variant="outline" className="text-xs">
                                 {material.type}
                               </Badge>
                             </div>
-                            <p className="text-sm text-gray-600">{material.reason}</p>
+                            <p className="text-sm text-muted-foreground">{material.reason}</p>
                           </div>
                         </div>
                       </div>
@@ -468,7 +468,7 @@ Return ONLY valid JSON with this structure:
           {analysis && (
             <div className="px-6 py-4 border-t bg-gray-50 rounded-b-2xl">
               <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   💡 Analysis powered by AI with internet fact-checking
                 </p>
                 <Button onClick={analyzeContent} variant="outline" size="sm">

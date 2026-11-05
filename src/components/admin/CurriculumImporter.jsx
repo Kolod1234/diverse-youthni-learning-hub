@@ -175,8 +175,8 @@ export default function CurriculumImporter({ open, onOpenChange }) {
               <div className="flex items-start gap-3 mb-3">
                 <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Import Successful!</h3>
-                  <div className="space-y-1 text-sm text-gray-700">
+                  <h3 className="font-semibold text-foreground mb-2">Import Successful!</h3>
+                  <div className="space-y-1 text-sm text-muted-foreground">
                     <p><strong>Course:</strong> {importResult.course_title}</p>
                     <p><strong>Units:</strong> {importResult.stats.units}</p>
                     <p><strong>Topics:</strong> {importResult.stats.topics}</p>
@@ -187,12 +187,12 @@ export default function CurriculumImporter({ open, onOpenChange }) {
 
               {importResult.sample_lessons && importResult.sample_lessons.length > 0 && (
                 <div className="mt-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Sample Lessons:</p>
+                  <p className="text-sm font-semibold text-muted-foreground mb-2">Sample Lessons:</p>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {importResult.sample_lessons.map((lesson, idx) => (
                       <div key={idx} className="text-xs bg-card rounded p-2 border">
-                        <p className="font-medium text-gray-900">{lesson.lesson}</p>
-                        <p className="text-gray-600">{lesson.unit} → {lesson.topic}</p>
+                        <p className="font-medium text-foreground">{lesson.lesson}</p>
+                        <p className="text-muted-foreground">{lesson.unit} → {lesson.topic}</p>
                         <p className="text-green-600">{lesson.objectives_count} objectives</p>
                       </div>
                     ))}

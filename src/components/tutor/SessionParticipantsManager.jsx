@@ -66,7 +66,7 @@ export default function SessionParticipantsManager({ session, onClose, onUpdate 
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {invitedStudents.length} student{invitedStudents.length !== 1 ? 's' : ''} invited
             </p>
             <Button
@@ -81,7 +81,7 @@ export default function SessionParticipantsManager({ session, onClose, onUpdate 
 
           {showAddStudent && availableStudents.length > 0 && (
             <Card className="p-4 bg-purple-50 border-purple-200">
-              <h4 className="font-medium text-gray-900 mb-3">Available Students</h4>
+              <h4 className="font-medium text-foreground mb-3">Available Students</h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {availableStudents.map(student => (
                   <div key={student.email} className="flex items-center justify-between p-2 bg-card rounded">
@@ -92,8 +92,8 @@ export default function SessionParticipantsManager({ session, onClose, onUpdate 
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{student.full_name}</p>
-                        <p className="text-xs text-gray-500">{student.email}</p>
+                        <p className="text-sm font-medium text-foreground">{student.full_name}</p>
+                        <p className="text-xs text-muted-foreground">{student.email}</p>
                       </div>
                     </div>
                     <Button
@@ -110,7 +110,7 @@ export default function SessionParticipantsManager({ session, onClose, onUpdate 
           )}
 
           <div className="space-y-2">
-            <h4 className="font-medium text-gray-900">Invited Students</h4>
+            <h4 className="font-medium text-foreground">Invited Students</h4>
             {invitedStudents.length > 0 ? (
               <div className="space-y-2">
                 {invitedStudents.map(student => (
@@ -122,8 +122,8 @@ export default function SessionParticipantsManager({ session, onClose, onUpdate 
                         </span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{student.full_name}</p>
-                        <p className="text-sm text-gray-500">{student.email}</p>
+                        <p className="font-medium text-foreground">{student.full_name}</p>
+                        <p className="text-sm text-muted-foreground">{student.email}</p>
                       </div>
                     </div>
                     <Button
@@ -139,7 +139,7 @@ export default function SessionParticipantsManager({ session, onClose, onUpdate 
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 text-center py-8">No students invited yet</p>
+              <p className="text-sm text-muted-foreground text-center py-8">No students invited yet</p>
             )}
           </div>
         </div>

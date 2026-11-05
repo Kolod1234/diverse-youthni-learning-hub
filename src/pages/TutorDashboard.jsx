@@ -772,7 +772,7 @@ function HomeView({ courses, user }) {
                     <div className="font-medium text-foreground text-sm">{course.title}</div>
                     <div className="text-xs text-muted-foreground mt-0.5 capitalize">{course.category?.replace(/_/g, ' ')} · {courseEnrollments.length} students</div>
                   </div>
-                  <Button component="a" href={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`} variant="outline" size="sm" className="border-slate-300 bg-card text-slate-900 hover:bg-muted">Manage course</Button>
+                  <Button component="a" href={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`} variant="outline" size="sm" className="border-slate-300 bg-card text-foreground hover:bg-muted">Manage course</Button>
                 </div>
               );
             })}
@@ -958,13 +958,13 @@ function GradesView({ course, courses }) {
                   <div className="font-medium text-foreground text-sm">{sub.student_name || sub.created_by}</div>
                   <div className="text-xs text-muted-foreground">{sub.title || 'Assignment submission'}</div>
                 </div>
-                <Link to={createPageUrl('GradeAssignments') + `?assignmentId=${sub.assignment_id}&courseId=${targetCourseId}`}><Button size="sm" className="border border-slate-300 bg-card text-slate-900 hover:bg-muted">Grade submission</Button></Link>
+                <Link to={createPageUrl('GradeAssignments') + `?assignmentId=${sub.assignment_id}&courseId=${targetCourseId}`}><Button size="sm" className="border border-slate-300 bg-card text-foreground hover:bg-muted">Grade submission</Button></Link>
               </div>
             ))}
           </div>
         </div>
       )}
-      {targetCourseId && <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}><Button variant="outline" className="w-full border-slate-300 bg-card text-slate-900 hover:bg-muted">View all submissions and grades</Button></Link>}
+      {targetCourseId && <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}><Button variant="outline" className="w-full border-slate-300 bg-card text-foreground hover:bg-muted">View all submissions and grades</Button></Link>}
     </div>
   );
 }

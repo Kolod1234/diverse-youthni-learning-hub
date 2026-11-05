@@ -443,7 +443,7 @@ export default function LessonEditor() {
                 <Settings2 className="w-4 h-4 text-indigo-600" />
                 Lesson settings
               </SheetTitle>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Edits stay in this draft until you click Save Lesson.
               </p>
             </SheetHeader>
@@ -461,7 +461,7 @@ export default function LessonEditor() {
                 size="sm"
                 aria-label="Close lesson settings"
                 onClick={(e) => e.stopPropagation()}
-                className="shrink-0 h-8 px-2 text-slate-600 hover:text-slate-900 hover:bg-muted -mr-2"
+                className="shrink-0 h-8 px-2 text-muted-foreground hover:text-slate-900 hover:bg-muted -mr-2"
               >
                 Close
               </Button>

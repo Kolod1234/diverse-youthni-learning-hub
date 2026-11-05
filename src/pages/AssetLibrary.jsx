@@ -66,8 +66,8 @@ export default function AssetLibrary() {
                 <Images className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Asset Library</h1>
-                <p className="text-sm text-slate-500">Save and reuse images and design assets across slides and lessons.</p>
+                <h1 className="text-2xl font-bold text-foreground">Asset Library</h1>
+                <p className="text-sm text-muted-foreground">Save and reuse images and design assets across slides and lessons.</p>
               </div>
             </div>
           </div>
@@ -117,10 +117,10 @@ export default function AssetLibrary() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 bg-card rounded-xl border border-dashed border-slate-300">
             <FolderOpen className="w-14 h-14 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-700 font-semibold text-lg">
+            <p className="text-muted-foreground font-semibold text-lg">
               {assets.length === 0 ? 'Your library is empty' : 'No assets match your filters'}
             </p>
-            <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
               {assets.length === 0
                 ? 'Upload images or save your downloaded Canva designs so you can reuse them anywhere without re-importing.'
                 : 'Try a different search or clear the filters.'}

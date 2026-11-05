@@ -102,7 +102,7 @@ export default function StudyGroupDetail() {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h1 className="text-3xl font-bold mb-2">{group.name}</h1>
-              <p className="text-gray-600">{group.description}</p>
+              <p className="text-muted-foreground">{group.description}</p>
             </div>
             <div className="flex gap-2">
               {group.is_private && <Badge variant="outline">Private</Badge>}
@@ -111,7 +111,7 @@ export default function StudyGroupDetail() {
             </div>
           </div>
 
-          <div className="flex items-center gap-6 text-sm text-gray-600">
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <Users className="w-4 h-4" />
               {members.length} / {group.max_members} members
@@ -208,7 +208,7 @@ export default function StudyGroupDetail() {
               {challenges.length === 0 && (
                 <div className="text-center py-16 bg-card rounded-lg">
                   <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600">No group challenges yet</p>
+                  <p className="text-muted-foreground">No group challenges yet</p>
                   <Button className="mt-4" onClick={() => setShowChallengeCreator(true)}>
                     Create First Challenge
                   </Button>

@@ -44,8 +44,8 @@ export default function CellDiagramGame({ cellType = 'animal' }) {
   return (
     <Card className="p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-cyan-200">
       <div className="mb-4">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Label the {cellType === 'plant' ? 'Plant' : 'Animal'} Cell</h3>
-        <p className="text-gray-600">Click on the correct locations to identify cell parts</p>
+        <h3 className="text-xl font-bold text-foreground mb-2">Label the {cellType === 'plant' ? 'Plant' : 'Animal'} Cell</h3>
+        <p className="text-muted-foreground">Click on the correct locations to identify cell parts</p>
       </div>
 
       {/* Cell Diagram */}
@@ -108,7 +108,7 @@ export default function CellDiagramGame({ cellType = 'animal' }) {
             className="mb-4 p-4 bg-card rounded-lg border-2 border-green-200"
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-lg font-semibold text-gray-900">
+              <span className="text-lg font-semibold text-foreground">
                 Score: {score} / {relevantParts.length}
               </span>
               {score === relevantParts.length ? (
@@ -127,8 +127,8 @@ export default function CellDiagramGame({ cellType = 'animal' }) {
                     <XCircle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
                   )}
                   <div>
-                    <span className="font-medium text-gray-900">{part.name}:</span>
-                    <span className="text-gray-600 ml-1">{part.description}</span>
+                    <span className="font-medium text-foreground">{part.name}:</span>
+                    <span className="text-muted-foreground ml-1">{part.description}</span>
                   </div>
                 </div>
               ))}

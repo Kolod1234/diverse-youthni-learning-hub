@@ -85,7 +85,7 @@ export default function TrendingCoursesCarousel() {
                     </div>
 
                     {/* Enrollment count */}
-                    <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-900">
+                    <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-foreground">
                       {course.enrollmentCount.toLocaleString()} students
                     </div>
                   </div>
@@ -96,7 +96,7 @@ export default function TrendingCoursesCarousel() {
                       {course.title}
                     </h3>
 
-                    <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-1">
+                    <p className="text-muted-foreground text-sm line-clamp-2 mb-4 flex-1">
                       {course.description}
                     </p>
 
@@ -115,7 +115,7 @@ export default function TrendingCoursesCarousel() {
                             />
                           ))}
                         </div>
-                        <span className="font-semibold text-gray-900">{course.rating.toFixed(1)}</span>
+                        <span className="font-semibold text-foreground">{course.rating.toFixed(1)}</span>
                       </div>
                     )}
 
@@ -136,13 +136,13 @@ export default function TrendingCoursesCarousel() {
           onClick={() => emblaApi?.scrollPrev()}
           className="absolute -left-5 top-1/3 w-12 h-12 bg-card rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 z-10"
         >
-          <ChevronLeft className="w-6 h-6 text-gray-800" />
+          <ChevronLeft className="w-6 h-6 text-foreground" />
         </button>
         <button
           onClick={() => emblaApi?.scrollNext()}
           className="absolute -right-5 top-1/3 w-12 h-12 bg-card rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 z-10"
         >
-          <ChevronRight className="w-6 h-6 text-gray-800" />
+          <ChevronRight className="w-6 h-6 text-foreground" />
         </button>
       </div>
     </section>

@@ -211,8 +211,8 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
                 }>
 
                     <div className="w-32 aspect-video bg-card p-2 rounded-md flex flex-col items-center justify-center">
-                      <span className="text-xs text-gray-500 mb-1">Slide {idx + 1}</span>
-                      <span className="text-xs font-medium text-gray-900 line-clamp-2 text-center px-2">
+                      <span className="text-xs text-muted-foreground mb-1">Slide {idx + 1}</span>
+                      <span className="text-xs font-medium text-foreground line-clamp-2 text-center px-2">
                         {slide.title}
                       </span>
                     </div>
@@ -254,7 +254,7 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
                     }
                     </div>
                     <p className="text-sm text-gray-300">{q.question}</p>
-                    <span className="text-xs text-gray-500 mt-1">Slide {q.slide_index + 1}</span>
+                    <span className="text-xs text-muted-foreground mt-1">Slide {q.slide_index + 1}</span>
                     
                     {q.is_answered && q.answer &&
                   <div className="mt-2 p-2 bg-gray-900 rounded border border-gray-700">

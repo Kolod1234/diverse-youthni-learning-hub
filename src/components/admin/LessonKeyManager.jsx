@@ -105,8 +105,8 @@ export default function LessonKeyManager() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Lesson Unlock Keys</h2>
-          <p className="text-gray-600">Generate and manage unlock keys for lessons</p>
+          <h2 className="text-2xl font-bold text-foreground">Lesson Unlock Keys</h2>
+          <p className="text-muted-foreground">Generate and manage unlock keys for lessons</p>
         </div>
         <Button onClick={() => setShowGenerator(true)} className="bg-gradient-to-r from-orange-600 to-red-600">
           <Plus className="w-4 h-4 mr-2" />
@@ -143,11 +143,11 @@ export default function LessonKeyManager() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Key Code</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Lesson</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Uses</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Key Code</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Lesson</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Uses</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -164,24 +164,24 @@ export default function LessonKeyManager() {
                     </td>
                     <td className="px-4 py-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{lesson?.title || 'Unknown'}</p>
-                        <p className="text-xs text-gray-500">{course?.title || 'Unknown Course'}</p>
+                        <p className="text-sm font-medium text-foreground">{lesson?.title || 'Unknown'}</p>
+                        <p className="text-xs text-muted-foreground">{course?.title || 'Unknown Course'}</p>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       {key.is_active ? (
                         <Badge className="bg-green-100 text-green-700">Active</Badge>
                       ) : (
-                        <Badge className="bg-gray-100 text-gray-700">Suspended</Badge>
+                        <Badge className="bg-gray-100 text-muted-foreground">Suspended</Badge>
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <div>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-foreground">
                           {key.used_by_emails?.length || 0}
                         </span>
-                        {key.max_uses && <span className="text-gray-500">/{key.max_uses}</span>}
-                        <span className="text-gray-500"> {key.used_by_emails?.length === 1 ? 'use' : 'uses'}</span>
+                        {key.max_uses && <span className="text-muted-foreground">/{key.max_uses}</span>}
+                        <span className="text-muted-foreground"> {key.used_by_emails?.length === 1 ? 'use' : 'uses'}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -273,7 +273,7 @@ export default function LessonKeyManager() {
                 value={formData.key_count}
                 onChange={(e) => setFormData({ ...formData, key_count: parseInt(e.target.value) || 1 })}
               />
-              <p className="text-xs text-gray-500 mt-1">Keys can be used by multiple students</p>
+              <p className="text-xs text-muted-foreground mt-1">Keys can be used by multiple students</p>
             </div>
 
             <div className="flex gap-3">

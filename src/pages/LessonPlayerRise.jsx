@@ -126,7 +126,7 @@ export default function LessonPlayerRise() {
       <div className="flex items-center justify-center h-screen bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading lesson...</p>
+          <p className="text-muted-foreground">Loading lesson...</p>
         </div>
       </div>
     );
@@ -135,7 +135,7 @@ export default function LessonPlayerRise() {
   if (!lesson || !course) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
-        <p className="text-gray-600">Lesson not found</p>
+        <p className="text-muted-foreground">Lesson not found</p>
       </div>
     );
   }
@@ -182,11 +182,11 @@ export default function LessonPlayerRise() {
           <button
             onClick={handlePrevLesson}
             disabled={currentLessonIndex === 0}
-            className="px-6 py-2 text-gray-700 hover:bg-gray-100 disabled:opacity-50 rounded-lg transition"
+            className="px-6 py-2 text-muted-foreground hover:bg-gray-100 disabled:opacity-50 rounded-lg transition"
           >
             ← Previous
           </button>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             Lesson {currentLessonIndex + 1} of {courseLessons.length}
           </span>
           <button

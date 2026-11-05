@@ -94,7 +94,7 @@ export default function ContinueLearningSection({ user }) {
                     className="h-full bg-gradient-to-r from-indigo-600 to-purple-600"
                   />
                 </div>
-                <p className="text-xs text-gray-600 mt-2">
+                <p className="text-xs text-muted-foreground mt-2">
                   {enrollment.progress_percent || 0}% completed
                 </p>
               </div>

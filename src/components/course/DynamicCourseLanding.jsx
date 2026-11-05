@@ -67,7 +67,7 @@ function TextBlockSection({ section }) {
   return (
     <div className="bg-card rounded-2xl p-8 shadow-sm border">
       {section.title && <h2 className="text-3xl font-bold mb-4">{section.title}</h2>}
-      {section.subtitle && <p className="text-xl text-gray-600 mb-6">{section.subtitle}</p>}
+      {section.subtitle && <p className="text-xl text-muted-foreground mb-6">{section.subtitle}</p>}
       {section.content && (
         <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }} />
       )}
@@ -129,14 +129,14 @@ function TestimonialSection({ section, reviews }) {
                 <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
               ))}
             </div>
-            <p className="text-gray-700 mb-4">"{review.comment}"</p>
+            <p className="text-muted-foreground mb-4">"{review.comment}"</p>
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
                 {review.user_name?.charAt(0)}
               </div>
               <div>
                 <p className="font-semibold text-sm">{review.user_name}</p>
-                <p className="text-xs text-gray-500">Verified Student</p>
+                <p className="text-xs text-muted-foreground">Verified Student</p>
               </div>
             </div>
           </div>
@@ -160,7 +160,7 @@ function RelatedCoursesSection({ courses }) {
             </div>
             <div className="p-4">
               <h3 className="font-bold mb-2">{course.title}</h3>
-              <p className="text-sm text-gray-600 line-clamp-2">{course.description}</p>
+              <p className="text-sm text-muted-foreground line-clamp-2">{course.description}</p>
             </div>
           </div>
         ))}

@@ -108,8 +108,8 @@ export default function KahootHost() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1f1147] via-[#35146b] to-[#5a189a] flex items-center justify-center p-6">
         <div className="w-full max-w-xl rounded-[32px] bg-card p-8 text-center shadow-2xl">
-          <h1 className="text-3xl font-black text-gray-900">Kahoot Host Access</h1>
-          <p className="mt-3 text-base text-gray-600">
+          <h1 className="text-3xl font-black text-foreground">Kahoot Host Access</h1>
+          <p className="mt-3 text-base text-muted-foreground">
             Only tutors and coordinators can create and manage Kahoot questions.
           </p>
         </div>

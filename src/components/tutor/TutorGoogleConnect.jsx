@@ -72,17 +72,17 @@ export default function TutorGoogleConnect() {
 
   return (
     <div className="bg-card rounded-2xl border border-gray-200 shadow-sm p-5">
-      <h3 className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
+      <h3 className="font-semibold text-foreground mb-1 flex items-center gap-2">
         <Link2 className="w-4 h-4 text-blue-500" />
         Google Calendar
       </h3>
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-xs text-muted-foreground mb-3">
         Connect your Google account so live sessions are hosted on <strong>your</strong> calendar
         with <strong>your</strong> email as host (just like Zoom).
       </p>
 
       {status === 'checking' && (
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" /> Checking…
         </div>
       )}

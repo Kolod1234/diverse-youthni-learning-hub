@@ -25,6 +25,6 @@ export default function GeneratedDiagram({ solution }) {
     finally { setLoading(false); }
   };
 
-  if (url) return <figure className="rounded-xl border border-sky-200 bg-card p-3"><img src={url} onError={() => { setUrl(""); setError("The generated image could not be loaded."); }} alt={`AI-generated ${solution.subject} explanatory diagram`} className="w-full rounded-lg object-contain" /><figcaption className="mt-2 text-xs text-gray-600">AI-generated schematic. Check labels and stated values against the worked answer.</figcaption></figure>;
+  if (url) return <figure className="rounded-xl border border-sky-200 bg-card p-3"><img src={url} onError={() => { setUrl(""); setError("The generated image could not be loaded."); }} alt={`AI-generated ${solution.subject} explanatory diagram`} className="w-full rounded-lg object-contain" /><figcaption className="mt-2 text-xs text-muted-foreground">AI-generated schematic. Check labels and stated values against the worked answer.</figcaption></figure>;
   return <div><button onClick={generate} disabled={loading} className="w-full rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{loading ? "Drawing diagram…" : "Generate labelled diagram"}</button>{error && <p className="mt-2 text-xs text-red-600">{error}</p>}</div>;
 }

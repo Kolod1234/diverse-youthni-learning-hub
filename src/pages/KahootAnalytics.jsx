@@ -20,7 +20,7 @@ export default function KahootAnalytics() {
     return (
       <div className="min-h-screen bg-slate-100 p-6">
         <div className="mx-auto max-w-5xl rounded-3xl bg-card p-8 shadow-sm">
-          <p className="text-lg font-bold text-slate-900">No game selected.</p>
+          <p className="text-lg font-bold text-foreground">No game selected.</p>
         </div>
       </div>
     );
@@ -42,8 +42,8 @@ export default function KahootAnalytics() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-primary">
               <BarChart3 className="h-4 w-4" /> Game analytics
             </div>
-            <h1 className="text-3xl font-black text-slate-900">{game.title}</h1>
-            <p className="mt-1 text-sm font-medium text-slate-500">Tutor insights for participation, speed, and learning gaps.</p>
+            <h1 className="text-3xl font-black text-foreground">{game.title}</h1>
+            <p className="mt-1 text-sm font-medium text-muted-foreground">Tutor insights for participation, speed, and learning gaps.</p>
           </div>
           <button
             onClick={() => navigate('/kahoot-host')}

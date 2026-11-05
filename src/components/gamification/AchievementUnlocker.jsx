@@ -61,7 +61,7 @@ export default function AchievementUnlocker({ achievement, show, onComplete }) {
             </motion.div>
 
             <motion.h2
-              className="text-3xl font-bold text-gray-900 mb-2"
+              className="text-3xl font-bold text-foreground mb-2"
             >
               Achievement Unlocked!
             </motion.h2>
@@ -73,7 +73,7 @@ export default function AchievementUnlocker({ achievement, show, onComplete }) {
             </motion.h3>
 
             <motion.p
-              className="text-gray-600 mb-6"
+              className="text-muted-foreground mb-6"
             >
               {config.description}
             </motion.p>

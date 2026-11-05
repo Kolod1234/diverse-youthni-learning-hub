@@ -69,8 +69,8 @@ export default function QuizList({ quizzes, courses }) {
       <Card className="p-12 text-center">
         <div className="max-w-md mx-auto">
           <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Quizzes Yet</h3>
-          <p className="text-gray-500 mb-6">Create your first quiz using the Manual Builder or AI Generator</p>
+          <h3 className="text-xl font-semibold text-foreground mb-2">No Quizzes Yet</h3>
+          <p className="text-muted-foreground mb-6">Create your first quiz using the Manual Builder or AI Generator</p>
         </div>
       </Card>
     );
@@ -137,7 +137,7 @@ export default function QuizList({ quizzes, courses }) {
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b">
                 <div className="flex items-center gap-3">
                   <FolderOpen className="w-5 h-5 text-indigo-600" />
-                  <h3 className="text-lg font-bold text-gray-900">{topic}</h3>
+                  <h3 className="text-lg font-bold text-foreground">{topic}</h3>
                   <Badge variant="secondary">{topicQuizzes.length} quiz{topicQuizzes.length !== 1 ? 'zes' : ''}</Badge>
                 </div>
               </div>
@@ -149,7 +149,7 @@ export default function QuizList({ quizzes, courses }) {
 
                   return (
                     <div key={subtopic}>
-                      <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
                         <div className="w-2 h-2 bg-indigo-400 rounded-full" />
                         {subtopic}
                       </h4>
@@ -173,7 +173,7 @@ export default function QuizList({ quizzes, courses }) {
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-2">
-                                    <h3 className="font-semibold text-gray-900">{quiz.title}</h3>
+                                    <h3 className="font-semibold text-foreground">{quiz.title}</h3>
                                     {quiz.is_published ? (
                                       <Badge className="bg-green-100 text-green-700" size="sm">
                                         <CheckCircle className="w-3 h-3 mr-1" />
@@ -187,7 +187,7 @@ export default function QuizList({ quizzes, courses }) {
                                     )}
                                   </div>
                                   {quiz.description && (
-                                    <p className="text-sm text-gray-600 mb-2">{quiz.description}</p>
+                                    <p className="text-sm text-muted-foreground mb-2">{quiz.description}</p>
                                   )}
                                   
                                   <div className="flex gap-1 flex-wrap">

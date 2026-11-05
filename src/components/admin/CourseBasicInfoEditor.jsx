@@ -58,7 +58,7 @@ export default function CourseBasicInfoEditor({ course, onClose }) {
         <div className="space-y-4">
           {/* Thumbnail Preview */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Current Thumbnail
             </label>
             <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
@@ -78,7 +78,7 @@ export default function CourseBasicInfoEditor({ course, onClose }) {
 
           {/* Upload New Thumbnail */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
               Upload New Thumbnail
             </label>
             <div className="relative">
@@ -109,7 +109,7 @@ export default function CourseBasicInfoEditor({ course, onClose }) {
           <div className="flex gap-3 pt-4 border-t">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex-1 px-4 py-2 text-muted-foreground border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Cancel
             </button>

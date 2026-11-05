@@ -27,7 +27,7 @@ export default function UpcomingSessionsWidget({ user }) {
   return (
     <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="font-semibold text-foreground flex items-center gap-2">
           <Video className="w-5 h-5 text-purple-600" />
           Upcoming Live Sessions
         </h3>
@@ -48,18 +48,18 @@ export default function UpcomingSessionsWidget({ user }) {
                     <Video className="w-5 h-5 text-purple-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-gray-900 truncate">{session.title}</h4>
-                    <p className="text-sm text-gray-600 line-clamp-1 mt-1">{session.description}</p>
+                    <h4 className="font-semibold text-foreground truncate">{session.title}</h4>
+                    <p className="text-sm text-muted-foreground line-clamp-1 mt-1">{session.description}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      <div className="flex items-center gap-1 text-xs text-gray-600">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Calendar className="w-3 h-3" />
                         {new Date(session.scheduled_date).toLocaleDateString()}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-gray-600">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="w-3 h-3" />
                         {session.scheduled_time}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-gray-600">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <User className="w-3 h-3" />
                         {session.tutor_name || 'Tutor'}
                       </div>

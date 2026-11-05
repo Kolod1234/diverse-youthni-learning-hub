@@ -466,8 +466,8 @@ Return ONLY valid JSON:
                 <Wand2 className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Advanced AI Slide Generator</h2>
-                <p className="text-sm text-gray-600">Curriculum-aligned content with assessments</p>
+                <h2 className="text-xl font-bold text-foreground">Advanced AI Slide Generator</h2>
+                <p className="text-sm text-muted-foreground">Curriculum-aligned content with assessments</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
@@ -481,11 +481,11 @@ Return ONLY valid JSON:
               {!generatedContent ? (
                 <div className="space-y-6 max-w-3xl mx-auto">
               <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-blue-600" />
                   What This AI Can Do
                 </h3>
-                <ul className="space-y-2 text-sm text-gray-700">
+                <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                     <span>Generate curriculum-aligned slides with real-time research</span>
@@ -548,7 +548,7 @@ Return ONLY valid JSON:
                       className="mt-2"
                     />
                   )}
-                  <p className="text-xs text-gray-500 mt-1">Organize lesson into a course section or learning path</p>
+                  <p className="text-xs text-muted-foreground mt-1">Organize lesson into a course section or learning path</p>
                 </div>
 
                 <div>
@@ -754,8 +754,8 @@ Return ONLY valid JSON:
                     <CheckCircle className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Comprehensive Lesson Generated!</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="text-lg font-bold text-foreground">Comprehensive Lesson Generated!</h3>
+                    <p className="text-sm text-muted-foreground">
                       {generatedContent?.slides?.length || 0} slides
                       {generatedContent?.quiz?.questions && ` + ${generatedContent.quiz.questions.length} question quiz`}
                     </p>
@@ -787,16 +787,16 @@ Return ONLY valid JSON:
               {/* Lesson Outline */}
               {generatedContent?.lesson_outline && (
                 <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
-                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-blue-600" />
                     Lesson Outline
                   </h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-700 mb-2">Learning Objectives:</h4>
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">Learning Objectives:</h4>
                       <ul className="space-y-1">
                         {generatedContent.lesson_outline.learning_objectives?.map((obj, idx) => (
-                          <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                          <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
                             <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                             <span>{obj}</span>
                           </li>
@@ -804,7 +804,7 @@ Return ONLY valid JSON:
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-700 mb-2">Key Concepts:</h4>
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">Key Concepts:</h4>
                       <div className="flex flex-wrap gap-2">
                         {generatedContent.lesson_outline.key_concepts?.map((concept, idx) => (
                           <Badge key={idx} variant="secondary" className="text-xs">
@@ -826,13 +826,13 @@ Return ONLY valid JSON:
 
               {/* Learning Objectives */}
               <Card className="p-6">
-                <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
                   <Target className="w-5 h-5 text-indigo-600" />
                   Learning Objectives
                 </h3>
                 <ul className="space-y-2">
                   {(generatedContent?.objectives?.learning_objectives || []).map((obj, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
+                    <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                       <span>{obj}</span>
                     </li>
@@ -843,7 +843,7 @@ Return ONLY valid JSON:
               {/* Slides Preview with Slider */}
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                  <h3 className="font-bold text-foreground flex items-center gap-2">
                     <FileText className="w-5 h-5 text-indigo-600" />
                     Generated Slides Preview
                   </h3>
@@ -859,7 +859,7 @@ Return ONLY valid JSON:
                       <Badge variant="outline">
                         Slide {previewSlideIndex + 1} of {generatedContent?.slides?.length || 0}
                       </Badge>
-                      <h4 className="font-semibold text-gray-900">
+                      <h4 className="font-semibold text-foreground">
                         {generatedContent?.slides?.[previewSlideIndex]?.title || 'Untitled'}
                       </h4>
                     </div>
@@ -955,10 +955,10 @@ Return ONLY valid JSON:
                             : 'border-gray-200 hover:border-gray-300 bg-white'
                         }`}
                       >
-                        <div className="text-xs font-medium text-gray-900 truncate mb-1">
+                        <div className="text-xs font-medium text-foreground truncate mb-1">
                           {idx + 1}. {slide.title}
                         </div>
-                        <div className="w-full h-12 bg-gray-100 rounded text-[8px] text-gray-500 overflow-hidden p-1">
+                        <div className="w-full h-12 bg-gray-100 rounded text-[8px] text-muted-foreground overflow-hidden p-1">
                           {slide.content.replace(/<[^>]*>/g, ' ').substring(0, 50)}...
                         </div>
                       </button>
@@ -970,7 +970,7 @@ Return ONLY valid JSON:
               {/* Quiz Preview */}
               {generatedContent.quiz && (
                 <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
-                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
                     <Brain className="w-5 h-5 text-purple-600" />
                     Assessment Quiz
                   </h3>
@@ -988,7 +988,7 @@ Return ONLY valid JSON:
                       </Badge>
                     </div>
                     {generatedContent?.quiz?.assessment_criteria && (
-                      <p className="text-sm text-gray-700">
+                      <p className="text-sm text-muted-foreground">
                         <strong>Assessment Criteria:</strong> {generatedContent.quiz.assessment_criteria}
                       </p>
                     )}
@@ -1001,7 +1001,7 @@ Return ONLY valid JSON:
                     <div className="mt-3 space-y-3">
                       {(generatedContent?.quiz?.questions || []).slice(0, 3).map((q, idx) => (
                         <div key={idx} className="p-3 bg-card rounded-lg border">
-                          <p className="font-medium text-sm text-gray-900 mb-2">
+                          <p className="font-medium text-sm text-foreground mb-2">
                             Q{idx + 1}: {q.question}
                           </p>
                           <div className="space-y-1">
@@ -1028,19 +1028,19 @@ Return ONLY valid JSON:
               {/* Additional Info */}
               <div className="grid md:grid-cols-2 gap-4">
                 <Card className="p-4">
-                  <h4 className="font-semibold text-gray-900 mb-2 text-sm">Common Misconceptions</h4>
+                  <h4 className="font-semibold text-foreground mb-2 text-sm">Common Misconceptions</h4>
                   <ul className="space-y-1">
                     {(generatedContent?.objectives?.common_misconceptions || []).map((misc, idx) => (
-                      <li key={idx} className="text-xs text-gray-600">• {misc}</li>
+                      <li key={idx} className="text-xs text-muted-foreground">• {misc}</li>
                     ))}
                   </ul>
                 </Card>
 
                 <Card className="p-4">
-                  <h4 className="font-semibold text-gray-900 mb-2 text-sm">Extension Activities</h4>
+                  <h4 className="font-semibold text-foreground mb-2 text-sm">Extension Activities</h4>
                   <ul className="space-y-1">
                     {(generatedContent?.objectives?.extension_activities || []).map((act, idx) => (
-                      <li key={idx} className="text-xs text-gray-600">• {act}</li>
+                      <li key={idx} className="text-xs text-muted-foreground">• {act}</li>
                     ))}
                   </ul>
                 </Card>

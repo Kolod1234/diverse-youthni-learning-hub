@@ -176,7 +176,7 @@ export default function AnnotationTools({
       {/* Highlight Color Picker */}
       {annotationMode === 'highlight' && (
         <Box sx={{ display: 'flex', gap: 1, p: 2, bgcolor: '#f3f4f6', borderRadius: 1 }}>
-          <span className="text-sm font-medium text-gray-600">Color:</span>
+          <span className="text-sm font-medium text-muted-foreground">Color:</span>
           {colors.map(color => (
             <button
               key={color.code}
@@ -194,7 +194,7 @@ export default function AnnotationTools({
       {/* Drawing Color Picker */}
       {annotationMode === 'draw' && (
         <Box sx={{ display: 'flex', gap: 1, p: 2, bgcolor: '#f3f4f6', borderRadius: 1 }}>
-          <span className="text-sm font-medium text-gray-600">Color:</span>
+          <span className="text-sm font-medium text-muted-foreground">Color:</span>
           {colors.map(color => (
             <button
               key={color.code}
@@ -230,7 +230,7 @@ export default function AnnotationTools({
       {/* Annotations List */}
       {pageAnnotations.length > 0 && (
         <Box sx={{ p: 2, bgcolor: '#f9fafb', borderRadius: 1 }}>
-          <h3 className="text-sm font-semibold text-gray-900 mb-2">Annotations on this page</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-2">Annotations on this page</h3>
           <div className="space-y-2">
             {pageAnnotations.map(annotation => (
               <Box
@@ -255,16 +255,16 @@ export default function AnnotationTools({
                         sx={{ mb: 1, backgroundColor: annotation.color, opacity: 0.7 }}
                       />
                       {annotation.highlighted_text && (
-                        <p className="text-sm text-gray-600 italic">"{annotation.highlighted_text}"</p>
+                        <p className="text-sm text-muted-foreground italic">"{annotation.highlighted_text}"</p>
                       )}
                     </div>
                   )}
                   {annotation.annotation_type === 'note' && (
                     <div>
                       <Chip label="Note" size="small" sx={{ mb: 1 }} />
-                      <p className="text-sm text-gray-700">{annotation.content}</p>
+                      <p className="text-sm text-muted-foreground">{annotation.content}</p>
                       {annotation.highlighted_text && (
-                        <p className="text-xs text-gray-500 italic mt-1">"{annotation.highlighted_text}"</p>
+                        <p className="text-xs text-muted-foreground italic mt-1">"{annotation.highlighted_text}"</p>
                       )}
                     </div>
                   )}
@@ -302,7 +302,7 @@ export default function AnnotationTools({
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
           {selectedText && (
             <Box>
-              <label className="text-xs font-semibold text-gray-600">Selected Text</label>
+              <label className="text-xs font-semibold text-muted-foreground">Selected Text</label>
               <p className="text-sm text-gray-700 italic p-2 bg-gray-50 rounded mt-1">"{selectedText}"</p>
             </Box>
           )}

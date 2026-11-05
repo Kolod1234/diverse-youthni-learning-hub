@@ -134,13 +134,13 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
         <div className="p-6 border-b bg-gradient-to-r from-indigo-50 to-purple-50">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 AI Template Generator
               </h2>
-              <p className="text-sm text-gray-600 mt-1">Generate professional slide templates with AI</p>
+              <p className="text-sm text-muted-foreground mt-1">Generate professional slide templates with AI</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-5 h-5" />
@@ -186,7 +186,7 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
                   onChange={(e) => setSlideCount(parseInt(e.target.value))}
                   className="w-full mt-2"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>3</span>
                   <span>15</span>
                 </div>
@@ -208,8 +208,8 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900">{type.label}</h4>
-                          <p className="text-xs text-gray-600 mt-1">{type.description}</p>
+                          <h4 className="font-semibold text-foreground">{type.label}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{type.description}</p>
                         </div>
                         {selectedTypes.includes(type.value) && (
                           <Check className="w-5 h-5 text-indigo-600 flex-shrink-0 ml-2" />
@@ -243,8 +243,8 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">Generated Slides</h3>
-                  <p className="text-sm text-gray-600">{generatedSlides.length} slides created</p>
+                  <h3 className="text-xl font-bold text-foreground">Generated Slides</h3>
+                  <p className="text-sm text-muted-foreground">{generatedSlides.length} slides created</p>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setGeneratedSlides(null)}>
@@ -265,7 +265,7 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
                     <Card className="overflow-hidden">
                       <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
                         <div>
-                          <h4 className="font-semibold text-gray-900">Slide {idx + 1}: {slide.title}</h4>
+                          <h4 className="font-semibold text-foreground">Slide {idx + 1}: {slide.title}</h4>
                           <Badge variant="outline" className="mt-1">
                             {SLIDE_TYPES.find(t => t.value === slide.type)?.label || slide.type}
                           </Badge>

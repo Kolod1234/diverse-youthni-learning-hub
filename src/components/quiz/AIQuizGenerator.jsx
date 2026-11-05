@@ -376,7 +376,7 @@ Return JSON:
           </div>
           <div>
             <h2 className="text-xl font-semibold">AI Quiz Generator</h2>
-            <p className="text-sm text-gray-500">Generate quizzes from any topic</p>
+            <p className="text-sm text-muted-foreground">Generate quizzes from any topic</p>
           </div>
         </div>
 
@@ -392,7 +392,7 @@ Return JSON:
               <option value="">Select Course</option>
               {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
             </select>
-            <p className="text-xs text-gray-500 mt-1">Quiz will be visible to students enrolled in this course</p>
+            <p className="text-xs text-muted-foreground mt-1">Quiz will be visible to students enrolled in this course</p>
           </div>
 
           <div>
@@ -422,7 +422,7 @@ Return JSON:
               </select>
               <label className="flex items-center gap-2 cursor-pointer mt-2">
                 <input type="checkbox" checked={mixedDifficulty} onChange={e => setMixedDifficulty(e.target.checked)} className="w-4 h-4 text-indigo-600 rounded" />
-                <span className="text-sm text-gray-600">Mixed difficulty levels</span>
+                <span className="text-sm text-muted-foreground">Mixed difficulty levels</span>
               </label>
             </div>
           </div>
@@ -438,7 +438,7 @@ Return JSON:
             <label className="flex items-center gap-2 mb-1 opacity-70 cursor-not-allowed">
               <input type="checkbox" checked={false} disabled readOnly className="w-4 h-4 rounded" />
               <span className="font-medium text-foreground flex items-center gap-2"><BookOpen className="w-4 h-4" />Include Past Paper Questions</span>
-              <span className="ml-1 text-xs font-semibold uppercase tracking-wide bg-[#fbbf24] text-slate-900 rounded-full px-2 py-0.5">Coming soon</span>
+              <span className="ml-1 text-xs font-semibold uppercase tracking-wide bg-[#fbbf24] text-foreground rounded-full px-2 py-0.5">Coming soon</span>
             </label>
             <p className="text-xs text-muted-foreground">Mixing in real past paper questions will be available once the question bank is added.</p>
             {includePastPapers && (
@@ -631,14 +631,14 @@ Return JSON:
         {!generatedQuiz ? (
           <div className="text-center py-20 bg-gray-50 rounded-lg border-2 border-dashed">
             <Brain className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 mb-2">No quiz generated yet</p>
+            <p className="text-muted-foreground mb-2">No quiz generated yet</p>
             <p className="text-sm text-gray-400">Fill in the details and click Generate</p>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
-              <h3 className="font-bold text-lg text-gray-900 mb-1">{generatedQuiz.title}</h3>
-              <p className="text-sm text-gray-600 mb-3">{generatedQuiz.description}</p>
+              <h3 className="font-bold text-lg text-foreground mb-1">{generatedQuiz.title}</h3>
+              <p className="text-sm text-muted-foreground mb-3">{generatedQuiz.description}</p>
               <div className="flex gap-2 flex-wrap">
                 <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">{generatedQuiz.questions.length} questions</span>
                 <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-medium">{generatedQuiz.questions.reduce((s, q) => s + (q.marks || 1), 0)} marks</span>
@@ -659,7 +659,7 @@ Return JSON:
                     <span className="font-bold text-indigo-600 shrink-0">{idx + 1}.</span>
                     <div className="flex-1">
                       <div className="flex items-start gap-2 mb-2 flex-wrap">
-                        <MathJax className="font-medium text-gray-900 flex-1">{q.question}</MathJax>
+                        <MathJax className="font-medium text-foreground flex-1">{q.question}</MathJax>
                         {q.source_label && (
                           <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${q.source === 'past_paper' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-purple-100 text-purple-700'}`}>
                             {q.source_label}
@@ -701,7 +701,7 @@ Return JSON:
                           ) : (
                             <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                               <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                              <p className="text-xs text-gray-500 mb-2">No diagram found automatically</p>
+                              <p className="text-xs text-muted-foreground mb-2">No diagram found automatically</p>
                               <Input placeholder="Paste an image URL + Enter…" className="text-xs h-8"
                                 onKeyDown={e => { if (e.key === 'Enter' && e.target.value) { handleReplaceImage(idx, e.target.value); e.target.value = ''; } }} />
                             </div>
@@ -715,11 +715,11 @@ Return JSON:
                           <p className="text-xs font-semibold text-amber-800 mb-2">Match the pairs:</p>
                           <div className="grid grid-cols-2 gap-2">
                             <div className="space-y-1">
-                              <p className="text-xs font-semibold text-gray-600 mb-1">Terms:</p>
+                              <p className="text-xs font-semibold text-muted-foreground mb-1">Terms:</p>
                               {q.matching_pairs.map((p, pi) => <div key={pi} className="text-sm bg-card px-2 py-1 rounded border"><MathJax>{pi + 1}. {p.left}</MathJax></div>)}
                             </div>
                             <div className="space-y-1">
-                              <p className="text-xs font-semibold text-gray-600 mb-1">Matches:</p>
+                              <p className="text-xs font-semibold text-muted-foreground mb-1">Matches:</p>
                               {q.matching_pairs.map((p, pi) => <div key={pi} className="text-sm bg-green-50 px-2 py-1 rounded border border-green-200"><MathJax>{String.fromCharCode(65 + pi)}. {p.right}</MathJax></div>)}
                             </div>
                           </div>

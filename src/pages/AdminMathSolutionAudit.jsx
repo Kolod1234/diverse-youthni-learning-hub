@@ -27,8 +27,8 @@ function ResultRow({ result }) {
       <div className="flex items-start gap-3">
         {ok ? <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-700" /> : <AlertTriangle className="mt-0.5 h-5 w-5 text-amber-700" />}
         <div className="min-w-0 flex-1">
-          <div className="font-semibold text-slate-900">{result.order}. {result.title}</div>
-          <div className="mt-1 text-sm text-slate-700">
+          <div className="font-semibold text-foreground">{result.order}. {result.title}</div>
+          <div className="mt-1 text-sm text-muted-foreground">
             {result.mode === 'scan'
               ? `${result.issues ?? 0} solution units flagged`
               : `${result.saved_units ?? 0}/${result.target_units ?? result.solution_units ?? 0} flagged solution units fixed`} ·
@@ -247,7 +247,7 @@ export default function AdminMathSolutionAudit() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-8 text-slate-900">
+    <main className="min-h-screen bg-slate-100 px-4 py-8 text-foreground">
       <div className="mx-auto max-w-6xl">
         <div className="rounded-2xl bg-slate-950 p-7 text-white shadow-xl">
           <div className="flex items-start gap-4">
@@ -304,7 +304,7 @@ export default function AdminMathSolutionAudit() {
             <button
               onClick={() => runOrders(range(1, 84), true)}
               disabled={running}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-muted-foreground disabled:opacity-50"
             >
               <ScanSearch className="h-4 w-4" />
               Structural scan only
@@ -323,7 +323,7 @@ export default function AdminMathSolutionAudit() {
             {TOPICS.map((topic) => (
               <div key={topic.name} className="rounded-xl border border-slate-200 p-4">
                 <div className="font-semibold">{topic.name}</div>
-                <div className="mt-1 text-xs text-slate-500">
+                <div className="mt-1 text-xs text-muted-foreground">
                   Lessons {topic.from}–{topic.to}{topic.skip?.length ? ' · certified lessons excluded from rerun' : ''}
                 </div>
                 <div className="mt-3 flex gap-2">
@@ -337,7 +337,7 @@ export default function AdminMathSolutionAudit() {
                   <button
                     onClick={() => runOrders(range(topic.from, topic.to), true)}
                     disabled={running}
-                    className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-50"
+                    className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-muted-foreground disabled:opacity-50"
                   >
                     Scan topic
                   </button>
@@ -349,7 +349,7 @@ export default function AdminMathSolutionAudit() {
 
         <section className="mt-6 space-y-3">
           {results.length > 0 && (
-            <div className="mb-2 text-sm font-semibold text-slate-700">
+            <div className="mb-2 text-sm font-semibold text-muted-foreground">
               {results.length} lesson report{results.length === 1 ? '' : 's'}
             </div>
           )}

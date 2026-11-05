@@ -289,8 +289,8 @@ export default function GradeAssignments() {
           <p className="text-muted-foreground">{heading}</p>
         </div>
 
-        <Card className="p-6 bg-card text-slate-900">
-          <h2 className="text-xl font-semibold mb-6 text-slate-900">Student Submissions</h2>
+        <Card className="p-6 bg-card text-foreground">
+          <h2 className="text-xl font-semibold mb-6 text-foreground">Student Submissions</h2>
 
           <div className="space-y-4">
             {displayedSubmissions.map((submission) => {
