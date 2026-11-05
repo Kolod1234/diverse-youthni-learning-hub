@@ -272,7 +272,7 @@ export default function TutorDashboardOverview() {
                   <p className="font-medium text-muted-foreground">No courses assigned</p>
                   <p className="text-sm mt-1 text-muted-foreground max-w-md mx-auto">
                     Contact an admin to be assigned to a course, or open a course on{' '}
-                    <Link to={createPageUrl('Explore')} className="text-blue-600 hover:underline">Explore</Link>
+                    <Link to={createPageUrl('Explore')} className="text-indigo-600 dark:text-indigo-300 hover:underline">Explore</Link>
                     {' '}and use <strong>Request to Teach</strong>.
                   </p>
                 </div>
@@ -309,7 +309,7 @@ export default function TutorDashboardOverview() {
                           </div>
                         </div>
                         <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
-                          <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                          <Button variant="ghost" size="sm" className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-500/10">
                             Manage <ChevronRight className="w-4 h-4 ml-0.5" />
                           </Button>
                         </Link>
@@ -319,7 +319,7 @@ export default function TutorDashboardOverview() {
                   {myCourses.length > 6 && (
                     <div className="px-6 py-3 text-center">
                       <Link to={createPageUrl('TutorDashboard')}>
-                        <Button variant="ghost" size="sm" className="text-blue-600">
+                        <Button variant="ghost" size="sm" className="text-indigo-600 dark:text-indigo-300">
                           View all {myCourses.length} courses <ArrowRight className="w-3.5 h-3.5 ml-1" />
                         </Button>
                       </Link>
@@ -352,7 +352,7 @@ export default function TutorDashboardOverview() {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="bg-blue-50 dark:bg-blue-500/15 rounded-xl p-4 text-center">
                       <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{totalStudents}</p>
-                      <p className="text-xs text-blue-600 mt-1">Total Students</p>
+                      <p className="text-xs text-indigo-600 dark:text-indigo-300 mt-1">Total Students</p>
                     </div>
                     <div className="bg-green-50 dark:bg-green-500/15 rounded-xl p-4 text-center">
                       <p className="text-2xl font-bold text-green-700 dark:text-green-300">{completedCount}</p>
@@ -462,19 +462,19 @@ export default function TutorDashboardOverview() {
                 </div>
                 <div>
                   <p className="font-semibold">Teaching Impact</p>
-                  <p className="text-indigo-200 text-xs">Your performance at a glance</p>
+                  <p className="text-indigo-100 text-xs">Your performance at a glance</p>
                 </div>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-indigo-200 text-sm">Avg Completion</span>
+                  <span className="text-indigo-100 text-sm">Avg Completion</span>
                   <span className="font-bold text-xl">{avgCompletion}%</span>
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-2">
                   <div className="bg-card h-2 rounded-full transition-all" style={{ width: `${avgCompletion}%` }} />
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-indigo-200">Completed</span>
+                  <span className="text-indigo-100">Completed</span>
                   <span className="font-semibold">{completedCount} / {myEnrollments.length}</span>
                 </div>
               </div>
@@ -534,7 +534,7 @@ export default function TutorDashboardOverview() {
                     <Link key={item.label} to={item.href}>
                       <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted transition-colors cursor-pointer group">
                         <Icon className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
-                        <span className="text-sm text-foreground group-hover:text-blue-600 transition-colors">{item.label}</span>
+                        <span className="text-sm text-foreground group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{item.label}</span>
                         <ChevronRight className="w-3.5 h-3.5 text-gray-300 ml-auto group-hover:text-blue-400 transition-colors" />
                       </div>
                     </Link>

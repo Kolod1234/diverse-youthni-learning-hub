@@ -24,6 +24,8 @@ export default function MUIThemeProvider({ children }) {
         contrastText: '#1a1a1a',
       },
       success: { main: '#16a34a', contrastText: '#ffffff' },
+      // Error red: a lighter red in dark mode so warnings like "Danger Zone" stay readable (4.5:1).
+      error: isDark ? { main: '#f87171', contrastText: '#0b0b14' } : { main: '#dc2626', contrastText: '#ffffff' },
       background: {
         default: isDark ? '#0d0d12' : '#f6f7fb',
         paper: isDark ? '#17171e' : '#ffffff',

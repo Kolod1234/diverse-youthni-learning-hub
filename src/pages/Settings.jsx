@@ -179,7 +179,7 @@ export default function Settings() {
             <Tab value="account"       icon={<Lock size={16} />}          iconPosition="start" label="Account" />
             <Tab value="notifications" icon={<Bell size={16} />}          iconPosition="start" label="Notifications" />
             <Tab value="preferences"   icon={<SettingsIcon size={16} />}  iconPosition="start" label="Preferences" />
-            <Tab value="danger"        icon={<AlertTriangle size={16} />} iconPosition="start" label="Danger Zone" sx={{ color: '#dc2626' }} />
+            <Tab value="danger"        icon={<AlertTriangle size={16} />} iconPosition="start" label="Danger Zone" sx={{ color: 'error.main' }} />
           </Tabs>
 
           {/* ── Profile Tab ── */}
@@ -374,7 +374,7 @@ export default function Settings() {
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 3 }}>
                   <AlertTriangle size={24} color="#dc2626" />
                   <Box>
-                    <Typography variant="h6" fontWeight={600} sx={{ color: '#dc2626' }}>Danger Zone</Typography>
+                    <Typography variant="h6" fontWeight={600} sx={{ color: 'error.main' }}>Danger Zone</Typography>
                     <Typography variant="body2" color="text.secondary">Irreversible actions that will permanently affect your account</Typography>
                   </Box>
                 </Box>
@@ -395,7 +395,7 @@ export default function Settings() {
                   <Button
                     onClick={() => setShowDeleteDialog(true)}
                     variant="contained"
-                    sx={{ bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' }, minHeight: 44 }}
+                    sx={{ bgcolor: 'error.main', '&:hover': { bgcolor: '#b91c1c' }, minHeight: 44 }}
                     startIcon={<Trash2 size={16} />}
                   >
                     Delete Account
@@ -404,7 +404,7 @@ export default function Settings() {
               </Card>
 
               <Dialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} maxWidth="sm" fullWidth>
-                <DialogTitle sx={{ bgcolor: '#fef2f2', color: '#dc2626', fontWeight: 700 }}>
+                <DialogTitle sx={{ bgcolor: '#fef2f2', color: 'error.main', fontWeight: 700 }}>
                   Delete Account — Final Confirmation
                 </DialogTitle>
                 <DialogContent sx={{ mt: 2 }}>
@@ -435,7 +435,7 @@ export default function Settings() {
                     onClick={handleDeleteAccount}
                     disabled={deleteConfirmEmail !== user?.email}
                     variant="contained"
-                    sx={{ bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' }, minHeight: 44 }}
+                    sx={{ bgcolor: 'error.main', '&:hover': { bgcolor: '#b91c1c' }, minHeight: 44 }}
                   >
                     Delete My Account
                   </Button>
