@@ -1,5 +1,5 @@
 import './App.css'
-import { lazy, Suspense } from 'react'
+import { Component, lazy, Suspense } from 'react'
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -39,8 +39,42 @@ const PageFallback = () => (
   </div>
 );
 
+// Pages load on demand. After a new version is published, a tab that is already open still has the
+// OLD page file names, so opening a page it hasn't visited yet fails ("Failed to fetch dynamically
+// imported module") and the screen would go blank. Reload once to pick up the new version; the
+// sessionStorage guard stops a reload loop if the failure is something else (e.g. offline).
+const RELOAD_KEY = 'page-chunk-reloaded-at';
+const isChunkError = (e) => /dynamically imported module|Importing a module script failed|error loading dynamically imported module|Loading chunk/i.test(String(e?.message || e));
+const reloadOnce = () => {
+  const last = Number(sessionStorage.getItem(RELOAD_KEY) || 0);
+  if (Date.now() - last < 30000) return false;
+  sessionStorage.setItem(RELOAD_KEY, String(Date.now()));
+  window.location.reload();
+  return true;
+};
+if (typeof window !== 'undefined') {
+  window.addEventListener('vite:preloadError', (event) => { if (reloadOnce()) event.preventDefault(); });
+}
+
+class PageLoadBoundary extends Component {
+  constructor(props) { super(props); this.state = { failed: false }; }
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch(error) { if (isChunkError(error)) reloadOnce(); }
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 p-6 text-center" role="alert">
+        <p className="text-lg font-bold text-foreground">This page didn't load</p>
+        <p className="text-muted-foreground">The Learning Hub may have just been updated. Reloading usually fixes it.</p>
+        <button type="button" onClick={() => window.location.reload()}
+          className="h-11 rounded-[10px] bg-primary px-5 font-bold text-primary-foreground">Reload page</button>
+      </div>
+    );
+  }
+}
+
 const LayoutWrapper = ({ children, currentPageName }) => {
-  const page = <Suspense fallback={<PageFallback />}>{children}</Suspense>;
+  const page = <PageLoadBoundary key={currentPageName}><Suspense fallback={<PageFallback />}>{children}</Suspense></PageLoadBoundary>;
   return Layout ? <Layout currentPageName={currentPageName}>{page}</Layout> : page;
 };
 
