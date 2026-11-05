@@ -208,10 +208,10 @@ export default function AcademyBuilder() {
                                 <IconButton onClick={() => setExpandedModule(expandedModule === index ? null : index)}>
                                   {expandedModule === index ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                 </IconButton>
-                                <IconButton aria-label="Drag to reorder" onClick={() => handleEditModule(index)}>
+                                <IconButton aria-label="Edit" onClick={() => handleEditModule(index)}>
                                   <GripVertical className="w-4 h-4" />
                                 </IconButton>
-                                <IconButton aria-label="Close" onClick={() => handleDeleteModule(index)}>
+                                <IconButton aria-label="Delete" onClick={() => handleDeleteModule(index)}>
                                   <X className="w-4 h-4" />
                                 </IconButton>
                               </Box>

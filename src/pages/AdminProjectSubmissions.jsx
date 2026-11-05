@@ -266,7 +266,7 @@ export default function AdminProjectSubmissions() {
                                     <Typography variant="caption" fontWeight={600} color="text.secondary">By {project.submitter_name}</Typography>
                                     <Box sx={{ display: 'flex', gap: 0.5, mt: 1.5, justifyContent: 'flex-end' }}>
                                       <Tooltip title="Preview">
-                                        <IconButton aria-label="Show" size="small" onClick={() => setPreviewProject(project)}><Eye size={14} /></IconButton>
+                                        <IconButton aria-label="Preview" size="small" onClick={() => setPreviewProject(project)}><Eye size={14} /></IconButton>
                                       </Tooltip>
                                       <Tooltip title="Edit">
                                         <IconButton aria-label="Edit" size="small" onClick={() => openEdit(project)}><Edit size={14} /></IconButton>
@@ -352,7 +352,7 @@ export default function AdminProjectSubmissions() {
                       <TableCell>
                         <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
                           <Tooltip title="Preview">
-                            <IconButton aria-label="Show" size="small" onClick={() => setPreviewProject(project)}><Eye size={16} /></IconButton>
+                            <IconButton aria-label="Preview" size="small" onClick={() => setPreviewProject(project)}><Eye size={16} /></IconButton>
                           </Tooltip>
                           <Tooltip title="Edit">
                             <IconButton aria-label="Edit" size="small" onClick={() => openEdit(project)}><Edit size={16} /></IconButton>
@@ -394,7 +394,7 @@ export default function AdminProjectSubmissions() {
         <Box sx={{ height: 5, background: 'linear-gradient(to right, #0b2f5c, #7c3aed)' }} />
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography fontWeight={800} fontSize="1.2rem">✏️ Edit Submission</Typography>
-          <IconButton aria-label="Close" onClick={() => setEditProject(null)}><X size={20} /></IconButton>
+          <IconButton aria-label="Edit" onClick={() => setEditProject(null)}><X size={20} /></IconButton>
         </DialogTitle>
         <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
@@ -445,7 +445,7 @@ export default function AdminProjectSubmissions() {
                 <Typography fontWeight={800} fontSize="1.2rem">{previewProject.title}</Typography>
                 <Typography variant="caption" color="text.secondary">By {previewProject.submitter_name}</Typography>
               </Box>
-              <IconButton aria-label="Close" onClick={() => setPreviewProject(null)}><X size={18} /></IconButton>
+              <IconButton aria-label="Preview" onClick={() => setPreviewProject(null)}><X size={18} /></IconButton>
             </DialogTitle>
             <DialogContent dividers>
               <Typography color="text.secondary" sx={{ lineHeight: 1.8, mb: 2 }}>
