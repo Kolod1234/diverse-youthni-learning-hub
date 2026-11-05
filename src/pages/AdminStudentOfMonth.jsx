@@ -92,7 +92,7 @@ export default function AdminStudentOfMonth() {
             <Typography variant="h4" fontWeight={700}>Student of the Month</Typography>
             <Typography color="text.secondary" sx={{ mt: 0.5 }}>Recognize outstanding students</Typography>
           </Box>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#ca8a04', '&:hover': { bgcolor: '#a16207' } }}>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }}>
             Add Student
           </Button>
         </Stack>
@@ -155,7 +155,7 @@ export default function AdminStudentOfMonth() {
           </DialogContent>
           <DialogActions>
             <Button variant="outlined" onClick={() => { setShowDialog(false); resetForm(); }}>Cancel</Button>
-            <Button variant="contained" onClick={handleSubmit} sx={{ bgcolor: '#ca8a04', '&:hover': { bgcolor: '#a16207' } }}>
+            <Button variant="contained" onClick={handleSubmit}>
               {editingStudent ? 'Update' : 'Add'}
             </Button>
           </DialogActions>

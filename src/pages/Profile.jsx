@@ -255,7 +255,7 @@ export default function Profile() {
                           disabled={updateProfileMutation.isPending}
                           variant="contained"
                           startIcon={<Save size={16} />}
-                          sx={{ bgcolor: '#6366f1', '&:hover': { bgcolor: '#4f46e5' } }}
+                         
                         >
                           Save Changes
                         </Button>

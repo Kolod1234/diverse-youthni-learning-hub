@@ -105,7 +105,7 @@ export default function AdminLibrary() {
             <Typography variant="h4" fontWeight={700}>Library Management</Typography>
             <Typography color="text.secondary" sx={{ mt: 0.5 }}>Manage educational resources</Typography>
           </Box>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }}>
             Add Resource
           </Button>
         </Stack>
@@ -177,7 +177,7 @@ export default function AdminLibrary() {
           </DialogContent>
           <DialogActions>
             <Button variant="outlined" onClick={() => { setShowDialog(false); resetForm(); }}>Cancel</Button>
-            <Button variant="contained" onClick={handleSubmit} disabled={uploadingFile} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}>
+            <Button variant="contained" onClick={handleSubmit} disabled={uploadingFile}>
               {editingResource ? 'Update' : 'Add'}
             </Button>
           </DialogActions>

@@ -37,7 +37,7 @@ export default function CreationHubSection() {
               <Button
                 variant="contained"
                 endIcon={<ChevronRight size={18} />}
-                sx={{ bgcolor: '#ff9b25', color: '#102338', fontWeight: 900, px: 3.5, py: 1.5, borderRadius: 3, '&:hover': { bgcolor: '#ffad46' } }}
+                sx={{ color: '#102338', fontWeight: 900, px: 3.5, py: 1.5, borderRadius: 3, }}
               >
                 Enter the laboratory
               </Button>

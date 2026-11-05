@@ -131,7 +131,7 @@ export default function AdminEvents() {
             <Typography color="text.secondary">Create and manage events with RSVP tracking</Typography>
           </Box>
         </Box>
-        <Button variant="contained" startIcon={<Plus size={18} />} onClick={openCreate} sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}>
+        <Button variant="contained" startIcon={<Plus size={18} />} onClick={openCreate}>
           New Event
         </Button>
       </Box>
@@ -311,7 +311,7 @@ export default function AdminEvents() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave} disabled={createMutation.isPending || updateMutation.isPending} sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}>
+          <Button variant="contained" onClick={handleSave} disabled={createMutation.isPending || updateMutation.isPending}>
             {editingEvent ? 'Save Changes' : 'Create Event'}
           </Button>
         </DialogActions>

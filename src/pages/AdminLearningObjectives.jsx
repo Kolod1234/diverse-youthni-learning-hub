@@ -200,7 +200,7 @@ export default function AdminLearningObjectives() {
               if (filtered.length === 0) { toast.error('Please add at least one objective'); return; }
               saveManualMutation.mutate({ lessonId: editingLesson.id, objectives: filtered });
             }}
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+           
           >
             {saveManualMutation.isPending ? 'Saving...' : 'Save Objectives'}
           </Button>

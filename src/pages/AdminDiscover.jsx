@@ -84,7 +84,7 @@ export default function AdminDiscover() {
             <Typography variant="h4" fontWeight={700}>Discover Content</Typography>
             <Typography color="text.secondary" sx={{ mt: 0.5 }}>Manage tech news, gossips, and announcements</Typography>
           </Box>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#7e22ce' } }}>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }}>
             Add Content
           </Button>
         </Stack>
@@ -147,7 +147,7 @@ export default function AdminDiscover() {
           </DialogContent>
           <DialogActions>
             <Button variant="outlined" onClick={() => { setShowDialog(false); resetForm(); }}>Cancel</Button>
-            <Button variant="contained" onClick={handleSubmit} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#7e22ce' } }}>
+            <Button variant="contained" onClick={handleSubmit}>
               {editingContent ? 'Update' : 'Add'}
             </Button>
           </DialogActions>

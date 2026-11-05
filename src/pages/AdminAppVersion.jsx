@@ -144,7 +144,7 @@ export default function AdminAppVersion() {
           <Typography color="text.secondary">Manage APK downloads & in-app update prompts</Typography>
         </Box>
         <Button variant="contained" startIcon={<Plus size={18} />} onClick={() => setDialogOpen(true)}
-          sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}>
+         >
           New Version
         </Button>
       </Box>
@@ -269,7 +269,7 @@ export default function AdminAppVersion() {
                         startIcon={<Star size={14} />}
                         onClick={() => setActiveMutation.mutate(v)}
                         disabled={setActiveMutation.isPending}
-                        sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' }, whiteSpace: 'nowrap' }}
+                        sx={{ whiteSpace: 'nowrap' }}
                       >
                         Set Active
                       </Button>
@@ -411,7 +411,7 @@ export default function AdminAppVersion() {
             variant="contained"
             onClick={() => createMutation.mutate(form)}
             disabled={!form.version_name || !form.version_code || !form.apk_url || createMutation.isPending}
-            sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}
+           
           >
             Save Version
           </Button>

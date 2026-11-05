@@ -91,7 +91,7 @@ export default function TutorSetup() {
                 inputProps={{ style: { textAlign: 'center', fontSize: '1.125rem', height: 32 } }}
                 sx={{ mb: 2 }}
               />
-              <Button type="submit" variant="contained" fullWidth size="large" sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, height: 48 }}>
+              <Button type="submit" variant="contained" fullWidth size="large" sx={{ height: 48 }}>
                 Unlock
               </Button>
             </Box>
@@ -165,7 +165,7 @@ export default function TutorSetup() {
                 </Box>
               </Box>
 
-              <Button type="submit" variant="contained" fullWidth size="large" startIcon={<SaveIcon />} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, height: 48 }}>
+              <Button type="submit" variant="contained" fullWidth size="large" startIcon={<SaveIcon />} sx={{ height: 48 }}>
                 Save Profile
               </Button>
             </Stack>

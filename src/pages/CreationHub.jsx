@@ -267,7 +267,7 @@ export default function CreationHub() {
               size="large"
               startIcon={<Plus size={18} />}
               onClick={() => setShowForm(true)}
-              sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 800, px: 4, py: 1.5, borderRadius: 50, '&:hover': { bgcolor: '#fcd34d' } }}
+              sx={{ color: '#0b2f5c', fontWeight: 800, px: 4, py: 1.5, borderRadius: 50, }}
             >
               Submit Your Project
             </Button>
@@ -369,7 +369,7 @@ export default function CreationHub() {
               size="large"
               startIcon={<Send size={18} />}
               onClick={() => setShowForm(true)}
-              sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 800, px: 4, py: 1.5, borderRadius: 50, '&:hover': { bgcolor: '#fcd34d' } }}
+              sx={{ color: '#0b2f5c', fontWeight: 800, px: 4, py: 1.5, borderRadius: 50, }}
             >
               Submit Your Project
             </Button>

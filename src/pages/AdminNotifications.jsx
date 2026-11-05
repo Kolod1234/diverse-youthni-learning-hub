@@ -218,7 +218,7 @@ export default function AdminNotifications() {
                 startIcon={<Send size={18} />}
                 onClick={handleSend}
                 disabled={!form.title || !form.message || (form.target === 'specific' && !form.specific_email) || sendMutation.isPending}
-                sx={{ bgcolor: '#0b2f5c', '&:hover': { bgcolor: '#12396b' } }}
+               
               >
                 Send Notification
               </Button>

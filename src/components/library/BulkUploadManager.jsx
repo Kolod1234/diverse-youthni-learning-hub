@@ -236,7 +236,7 @@ export default function BulkUploadManager({ open, onOpenChange, onSuccess }) {
             onClick={handleBulkUpload}
             disabled={uploading}
             variant="contained"
-            sx={{ bgcolor: '#4f46e5' }}
+           
             startIcon={uploading ? <Loader size={16} className="animate-spin" /> : <Upload size={16} />}
           >
             {uploading ? 'Uploading...' : 'Upload All Books'}

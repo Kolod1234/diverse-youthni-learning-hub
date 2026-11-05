@@ -139,7 +139,7 @@ export default function HomeLeadership() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Programs</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>Join and track your leadership programs</Typography>
               <Link to={createPageUrl('Programs')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#6d28d9' } }}>
+                <Button variant="contained">
                   View Programs
                 </Button>
               </Link>
@@ -152,7 +152,7 @@ export default function HomeLeadership() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Activities</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>View upcoming events and activities</Typography>
               <Link to={createPageUrl('Programs')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#7e22ce' } }}>
+                <Button variant="contained">
                   View Activities
                 </Button>
               </Link>
@@ -165,7 +165,7 @@ export default function HomeLeadership() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>My Logbooks</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>Track your weekly progress</Typography>
               <Link to={createPageUrl('Programs')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#c026d3', '&:hover': { bgcolor: '#a21caf' } }}>
+                <Button variant="contained">
                   View Logbooks
                 </Button>
               </Link>

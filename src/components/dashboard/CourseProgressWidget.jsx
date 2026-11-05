@@ -73,7 +73,7 @@ export default function CourseProgressWidget({ enrollments, courses }) {
             fullWidth
             variant="contained"
             startIcon={<PlayArrowIcon />}
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+           
           >
             Continue Learning
           </Button>
@@ -83,7 +83,7 @@ export default function CourseProgressWidget({ enrollments, courses }) {
             to={createPageUrl('CourseDetails') + `?id=${course.id}`}
             fullWidth
             variant="contained"
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+           
           >
             View Course
           </Button>

@@ -180,7 +180,7 @@ export default function HomeLearning() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Live Sessions</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>Join interactive classes</Typography>
               <Link to={createPageUrl('Sessions')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#6d28d9' } }}>
+                <Button variant="contained">
                   View Sessions
                 </Button>
               </Link>
@@ -193,7 +193,7 @@ export default function HomeLearning() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Library</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>Access study materials</Typography>
               <Link to={createPageUrl('Library')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#059669', '&:hover': { bgcolor: '#047857' } }}>
+                <Button variant="contained">
                   Browse Library
                 </Button>
               </Link>

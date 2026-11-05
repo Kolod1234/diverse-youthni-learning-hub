@@ -143,7 +143,7 @@ export default function AdminUsers() {
               onClick={() => setShowInvite(!showInvite)}
               variant="contained"
               startIcon={<PersonAddIcon />}
-              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#c2410c' } }}
+             
             >
               Invite User
             </Button>
@@ -170,7 +170,7 @@ export default function AdminUsers() {
                   onClick={handleInvite}
                   disabled={inviteMutation.isPending}
                   variant="contained"
-                  sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#c2410c' } }}
+                 
                 >
                   {inviteMutation.isPending ? <CircularProgress size={20} sx={{ color: 'white' }} /> : 'Invite'}
                 </Button>
@@ -378,7 +378,7 @@ export default function AdminUsers() {
             disabled={sendEmailMutation.isPending}
             variant="contained"
             startIcon={sendEmailMutation.isPending ? <CircularProgress size={16} sx={{ color: 'white' }} /> : <SendIcon />}
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#c2410c' } }}
+           
           >
             {sendEmailMutation.isPending ? 'Sending...' : 'Send Email'}
           </Button>
@@ -438,7 +438,7 @@ export default function AdminUsers() {
             onClick={handleBulkEmail}
             variant="contained"
             startIcon={<SendIcon />}
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#c2410c' } }}
+           
           >
             Send to All
           </Button>

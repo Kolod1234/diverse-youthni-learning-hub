@@ -207,7 +207,7 @@ export default function AdminRSSFeed() {
                 </MenuItem>
               ))}
             </Menu>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()} sx={{ bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
               Create Custom Announcement
             </Button>
           </Stack>
@@ -314,7 +314,7 @@ export default function AdminRSSFeed() {
             </DialogContent>
             <DialogActions>
               <Button type="button" variant="outlined" onClick={handleCloseDialog}>Cancel</Button>
-              <Button type="submit" variant="contained" disabled={createMutation.isPending || updateMutation.isPending} sx={{ bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}>
+              <Button type="submit" variant="contained" disabled={createMutation.isPending || updateMutation.isPending}>
                 {editingFeed ? 'Update' : 'Create'}
               </Button>
             </DialogActions>

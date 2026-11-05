@@ -177,7 +177,7 @@ export default function AdminTeachingRequests() {
                         size="small"
                         startIcon={<CheckCircleIcon sx={{ fontSize: 16 }} />}
                         onClick={() => { setDecisionDialog({ request: req, action: 'approve' }); setAdminResponse(''); }}
-                        sx={{ bgcolor: '#16a34a', '&:hover': { bgcolor: '#15803d' } }}
+                       
                       >
                         Approve & Assign
                       </Button>

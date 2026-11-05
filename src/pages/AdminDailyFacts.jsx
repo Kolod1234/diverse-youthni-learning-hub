@@ -100,13 +100,13 @@ export default function AdminDailyFacts() {
               <Typography color="text.secondary" sx={{ mt: 0.5 }}>Manage engaging facts across multiple categories</Typography>
             </Box>
             <Stack direction="row" spacing={1.5} flexWrap="wrap">
-              <Button variant="contained" startIcon={<RefreshIcon />} onClick={() => queryClient.invalidateQueries(['daily-facts'])} sx={{ bgcolor: '#4b5563', '&:hover': { bgcolor: '#374151' } }}>
+              <Button variant="contained" startIcon={<RefreshIcon />} onClick={() => queryClient.invalidateQueries(['daily-facts'])}>
                 Refresh
               </Button>
-              <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}>
+              <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }}>
                 Add Fact
               </Button>
-              <Button variant="contained" startIcon={<AutoAwesomeIcon />} onClick={generateFactWithAI} disabled={generatingFact} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#7e22ce' } }}>
+              <Button variant="contained" startIcon={<AutoAwesomeIcon />} onClick={generateFactWithAI} disabled={generatingFact}>
                 {generatingFact ? 'Fetching...' : 'Fetch from Sources'}
               </Button>
             </Stack>
@@ -178,7 +178,7 @@ export default function AdminDailyFacts() {
           </DialogContent>
           <DialogActions>
             <Button variant="outlined" onClick={() => { setShowDialog(false); resetForm(); }}>Cancel</Button>
-            <Button variant="contained" onClick={handleSubmit} sx={{ bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}>
+            <Button variant="contained" onClick={handleSubmit}>
               {editingFact ? 'Update' : 'Add'}
             </Button>
           </DialogActions>

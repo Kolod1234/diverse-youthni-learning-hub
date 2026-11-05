@@ -137,7 +137,7 @@ export default function HomeYouthWork() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Workbooks</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>Complete your assignments</Typography>
               <Link to={createPageUrl('YouthWork')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#059669', '&:hover': { bgcolor: '#047857' } }}>
+                <Button variant="contained">
                   View Workbooks
                 </Button>
               </Link>
@@ -150,7 +150,7 @@ export default function HomeYouthWork() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Attendance</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>Track your attendance</Typography>
               <Link to={createPageUrl('YouthWork')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#16a34a', '&:hover': { bgcolor: '#15803d' } }}>
+                <Button variant="contained">
                   View Attendance
                 </Button>
               </Link>
@@ -163,7 +163,7 @@ export default function HomeYouthWork() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Certificates</Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>View your achievements</Typography>
               <Link to={createPageUrl('YouthWork')} style={{ textDecoration: 'none' }}>
-                <Button variant="contained" sx={{ bgcolor: '#ca8a04', '&:hover': { bgcolor: '#a16207' } }}>
+                <Button variant="contained">
                   View Certificates
                 </Button>
               </Link>

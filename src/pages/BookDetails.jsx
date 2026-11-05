@@ -193,7 +193,7 @@ export default function BookDetails() {
                   variant="contained"
                   onClick={handleDownload}
                   startIcon={<Download />}
-                  sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+                 
                 >
                   Download Book
                 </Button>

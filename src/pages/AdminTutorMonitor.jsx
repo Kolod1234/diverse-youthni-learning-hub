@@ -223,7 +223,7 @@ export default function AdminTutorMonitor() {
                     </Stack>
                     <Stack direction="row" spacing={1}>
                       <Button size="small" variant="outlined" startIcon={<ChatIcon sx={{ fontSize: 16 }} />} onClick={() => openChat(selectedTutor)}>Chat</Button>
-                      <Button size="small" variant="contained" startIcon={<NotificationsIcon sx={{ fontSize: 16 }} />} onClick={() => openReminder(selectedTutor)} sx={{ bgcolor: '#f59e0b', '&:hover': { bgcolor: '#d97706' } }}>
+                      <Button size="small" variant="contained" startIcon={<NotificationsIcon sx={{ fontSize: 16 }} />} onClick={() => openReminder(selectedTutor)}>
                         Send Reminder
                       </Button>
                     </Stack>
@@ -251,7 +251,7 @@ export default function AdminTutorMonitor() {
                         startIcon={sendChatMutation.isPending ? <CircularProgress size={14} sx={{ color: 'white' }} /> : <SendIcon sx={{ fontSize: 14 }} />}
                         disabled={!chatMessage.trim() || sendChatMutation.isPending}
                         onClick={() => sendChatMutation.mutate({ tutorEmail: selectedTutor.email, tutorName: selectedTutor.full_name, message: chatMessage })}
-                        sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+                       
                       >
                         Send
                       </Button>
@@ -283,7 +283,7 @@ export default function AdminTutorMonitor() {
                         startIcon={sendReminderMutation.isPending ? <CircularProgress size={14} sx={{ color: 'white' }} /> : <NotificationsIcon sx={{ fontSize: 14 }} />}
                         disabled={!reminderMessage.trim() || sendReminderMutation.isPending}
                         onClick={() => sendReminderMutation.mutate({ tutorEmail: selectedTutor.email, subject: reminderSubject, body: reminderMessage })}
-                        sx={{ bgcolor: '#f59e0b', '&:hover': { bgcolor: '#d97706' } }}
+                       
                       >
                         Send Email Reminder
                       </Button>

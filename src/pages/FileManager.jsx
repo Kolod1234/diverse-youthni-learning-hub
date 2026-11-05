@@ -153,7 +153,7 @@ export default function FileManager() {
             onClick={handleInitiateUpload}
             disabled={uploading}
             variant="contained"
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, gap: 1 }}
+            sx={{ gap: 1 }}
           >
             <Plus className="w-4 h-4" />
             <span>Upload File</span>
@@ -249,7 +249,7 @@ export default function FileManager() {
             <Button 
               onClick={handleInitiateUpload}
               variant="contained"
-              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+             
             >
               Upload Your First File
             </Button>
@@ -318,7 +318,7 @@ export default function FileManager() {
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
             variant="contained"
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+           
           >
             {uploading ? 'Uploading...' : 'Select File'}
           </Button>

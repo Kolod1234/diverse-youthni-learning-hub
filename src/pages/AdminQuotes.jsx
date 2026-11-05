@@ -64,7 +64,7 @@ export default function AdminQuotes() {
             <Typography variant="h4" fontWeight={700}>Inspirational Quotes</Typography>
             <Typography color="text.secondary" sx={{ mt: 0.5 }}>Manage motivational quotes</Typography>
           </Box>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#d97706', '&:hover': { bgcolor: '#b45309' } }}>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }}>
             Add Quote
           </Button>
         </Stack>
@@ -121,7 +121,7 @@ export default function AdminQuotes() {
           </DialogContent>
           <DialogActions>
             <Button variant="outlined" onClick={() => { setShowDialog(false); resetForm(); }}>Cancel</Button>
-            <Button variant="contained" onClick={handleSubmit} sx={{ bgcolor: '#d97706', '&:hover': { bgcolor: '#b45309' } }}>
+            <Button variant="contained" onClick={handleSubmit}>
               {editingQuote ? 'Update' : 'Add'}
             </Button>
           </DialogActions>

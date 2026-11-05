@@ -128,7 +128,7 @@ export default function Programs() {
                     onClick={() => setShowSignUpDialog(true)}
                     variant="contained"
                     startIcon={<Plus size={16} />}
-                    sx={{ bgcolor: '#22c55e', '&:hover': { bgcolor: '#16a34a' } }}
+                   
                   >
                     Sign Up for Programme
                   </Button>
@@ -138,7 +138,7 @@ export default function Programs() {
                     onClick={() => setShowProgramForm(true)}
                     variant="contained"
                     startIcon={<Plus size={16} />}
-                    sx={{ bgcolor: '#FF8C00', '&:hover': { bgcolor: '#CC7000' } }}
+                   
                   >
                     New Programme
                   </Button>
@@ -207,7 +207,7 @@ export default function Programs() {
                 onClick={() => setShowProgramForm(true)}
                 variant="contained"
                 startIcon={<Plus size={16} />}
-                sx={{ bgcolor: '#FF8C00', '&:hover': { bgcolor: '#CC7000' } }}
+               
               >
                 Create Programme
               </Button>
@@ -235,7 +235,7 @@ export default function Programs() {
             onClick={handleSignUp} 
             disabled={enrollMutation.isPending}
             variant="contained"
-            sx={{ bgcolor: '#22c55e', '&:hover': { bgcolor: '#16a34a' } }}
+           
           >
             {enrollMutation.isPending ? 'Enrolling...' : 'Confirm Sign Up'}
           </Button>

@@ -74,7 +74,7 @@ function LibraryPasswordGate({ onUnlock }) {
               type="submit"
               variant="contained"
               size="large"
-              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, minHeight: 48 }}
+              sx={{ minHeight: 48 }}
             >
               Access Library
             </Button>
@@ -600,7 +600,7 @@ export default function Library() {
               disabled={uploadingFile || analyzing || !canUpload}
               variant="contained"
               size="small"
-              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, gap: 1, minHeight: 44 }}
+              sx={{ gap: 1, minHeight: 44 }}
             >
               <Plus className="w-4 h-4" />
               Upload
@@ -1151,7 +1151,7 @@ export default function Library() {
          <Button
            variant="contained"
            onClick={() => setShowPermissionManager(true)}
-           sx={{ bgcolor: '#4f46e5', borderRadius: '50%', width: 56, height: 56, minWidth: 0, p: 0 }}
+           sx={{ borderRadius: '50%', width: 56, height: 56, minWidth: 0, p: 0 }}
            title="Manage library permissions"
          >
            <Edit className="w-6 h-6" />
@@ -1315,7 +1315,7 @@ export default function Library() {
             variant="contained"
             onClick={handleSubmit} 
             disabled={uploadingCover}
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, minHeight: 44 }}
+            sx={{ minHeight: 44 }}
           >
             Save Book
           </Button>

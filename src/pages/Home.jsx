@@ -262,7 +262,7 @@ function AfterschoolHero() {
               variant="contained"
               size="large"
               endIcon={<ArrowRight size={20} />}
-              sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 900, fontSize: '1.1rem', px: 6, py: 2, borderRadius: 50, boxShadow: '0 8px 30px rgba(251,191,36,0.5)', '&:hover': { bgcolor: '#fcd34d', transform: 'scale(1.05)', boxShadow: '0 12px 40px rgba(251,191,36,0.6)' } }}
+              sx={{ color: '#0b2f5c', fontWeight: 900, fontSize: '1.1rem', px: 6, py: 2, borderRadius: 50, boxShadow: '0 8px 30px rgba(251,191,36,0.5)', '&:hover': { bgcolor: '#fcd34d', transform: 'scale(1.05)', boxShadow: '0 12px 40px rgba(251,191,36,0.6)' } }}
             >
               {buttonText}
             </Button>
@@ -388,7 +388,7 @@ function HeroCarouselWithWriteup({ images }) {
                 variant="contained"
                 size="large"
                 endIcon={<ArrowRight size={20} />}
-                sx={{ bgcolor: '#fbbf24', color: '#0b2f5c', fontWeight: 900, fontSize: '1.1rem', px: 6, py: 2, borderRadius: 50, boxShadow: '0 8px 30px rgba(251,191,36,0.6)', '&:hover': { bgcolor: '#fcd34d' } }}
+                sx={{ color: '#0b2f5c', fontWeight: 900, fontSize: '1.1rem', px: 6, py: 2, borderRadius: 50, boxShadow: '0 8px 30px rgba(251,191,36,0.6)', }}
               >
                 {get('hero_button', 'BROWSE COURSES')}
               </Button>

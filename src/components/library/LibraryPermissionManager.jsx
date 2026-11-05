@@ -137,7 +137,7 @@ export default function LibraryPermissionManager({ open, onOpenChange }) {
                 variant="contained"
                 onClick={handleAssignRole}
                 disabled={!userEmail || createMutation.isPending}
-                sx={{ bgcolor: '#4f46e5' }}
+               
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Assign

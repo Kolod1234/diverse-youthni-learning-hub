@@ -91,7 +91,7 @@ export default function YouthWork() {
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
             <Link to={createPageUrl('YouthWorkWorkbook')} style={{ textDecoration: 'none' }}>
-              <Button variant="contained" sx={{ bgcolor: '#4f46e5', px: 4, py: 1.5, fontSize: '1rem', borderRadius: 2, boxShadow: 3 }} startIcon={<BookOpen />}>
+              <Button variant="contained" sx={{ px: 4, py: 1.5, fontSize: '1rem', borderRadius: 2, boxShadow: 3 }} startIcon={<BookOpen />}>
                 Start Your Interactive Workbook
               </Button>
             </Link>
