@@ -9,10 +9,7 @@
  * 
  * Example file structure:
  * 
- *   import { lazy } from 'react';
-// Redesign (performance): each page is its own file that loads only when opened, so a first visit
-// no longer downloads every page and library on the site (was one ~8 MB file). Home stays eager.
-import HomePage from './pages/HomePage';
+ *   import HomePage from './pages/HomePage';
  *   import Dashboard from './pages/Dashboard';
  *   import Settings from './pages/Settings';
  *   
@@ -50,6 +47,9 @@ import HomePage from './pages/HomePage';
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import { lazy } from 'react';
+// Redesign (performance): each page is its own file that loads only when opened, so a first visit
+// no longer downloads every page and library on the site (was one ~8 MB file). Home stays eager.
 const AcademyBuilder = lazy(() => import('./pages/AcademyBuilder'));
 const AcademyExplore = lazy(() => import('./pages/AcademyExplore'));
 const AcademyManager = lazy(() => import('./pages/AcademyManager'));
