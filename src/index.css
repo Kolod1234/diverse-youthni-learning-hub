@@ -573,3 +573,14 @@ button:focus-visible {
    CSS beats SVG presentation attributes, so this works without touching each chart. */
 .dark .recharts-wrapper [fill="#0b2f5c"] { fill: #93a5c8; }
 .dark .recharts-wrapper [stroke="#0b2f5c"] { stroke: #93a5c8; }
+
+/* Quick wins (Emil Kowalski motion review): one shared easing, press feedback, reduced motion. */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* Reduced motion: stop decorative looping movement and smooth scrolling.
+   Spinners stay (they show work is happening), and colour/opacity changes stay. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  .animate-bounce, .animate-ping, .animate-pulse { animation: none !important; }
+}
