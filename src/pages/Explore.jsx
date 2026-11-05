@@ -26,7 +26,6 @@ import PublicIcon from '@mui/icons-material/Public';
 import RecyclingIcon from '@mui/icons-material/Recycling';
 import ScienceIcon from '@mui/icons-material/Science';
 import SpellcheckIcon from '@mui/icons-material/Spellcheck';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import TuneIcon from '@mui/icons-material/Tune';
