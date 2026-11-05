@@ -60,6 +60,14 @@ export default function MUIThemeProvider({ children }) {
         defaultProps: { marginThreshold: 12 },
         styleOverrides: { paper: { maxWidth: 'calc(100vw - 24px)' } },
       },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            transition: 'background-color 150ms ease, color 150ms ease, transform 160ms var(--ease-out)',
+            '&:active:not(.Mui-disabled)': { transform: 'scale(0.94)' },
+          },
+        },
+      },
       MuiButton: {
         styleOverrides: {
           root: {
@@ -68,8 +76,14 @@ export default function MUIThemeProvider({ children }) {
             minHeight: 44,
             fontSize: '1rem',
             boxShadow: 'none',
+            // Press feedback: a slight press-down confirms the click (only transform and colours
+            // animate, never 'all').
+            transition: 'background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 160ms var(--ease-out)',
             '&:hover': {
               boxShadow: 'none',
+            },
+            '&:active:not(.Mui-disabled)': {
+              transform: 'scale(0.97)',
             },
           },
           sizeSmall: {
