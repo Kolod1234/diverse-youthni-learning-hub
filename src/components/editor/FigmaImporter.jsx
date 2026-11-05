@@ -117,7 +117,7 @@ export default function FigmaImporter({ onImport, onClose }) {
 
           {/* Tips */}
           <div className="bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200 rounded-lg p-4">
-            <h4 className="font-semibold text-pink-900 mb-2">💡 Pro Tips</h4>
+            <h4 className="font-semibold text-pink-900 mb-2">Pro Tips</h4>
             <ul className="text-sm text-pink-800 space-y-1">
               <li>• Works with shared Figma files (requires access token)</li>
               <li>• Each top-level frame becomes a slide</li>

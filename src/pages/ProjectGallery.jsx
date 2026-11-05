@@ -44,7 +44,7 @@ export default function ProjectGallery() {
         <Container maxWidth="xl" sx={{ position: 'relative', textAlign: 'center' }}>
           <motion.div>
             <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3.5rem' }, fontWeight: 900, color: 'white', mb: 2 }}>
-              🎯 Project Showcase
+              Project Showcase
             </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.1rem', mb: 4, maxWidth: 600, mx: 'auto' }}>
               Real projects built by real learners — browse, get inspired, and explore what's possible.

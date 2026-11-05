@@ -180,7 +180,7 @@ export default function CanvaImporter({ onImport, onClose }) {
 
           {/* Tips */}
           <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
-            <h4 className="font-semibold text-purple-900 mb-2">💡 Pro Tips</h4>
+            <h4 className="font-semibold text-purple-900 mb-2">Pro Tips</h4>
             <ul className="text-sm text-purple-800 space-y-1">
               <li>• URL import automatically downloads all pages</li>
               <li>• Works with presentations and single designs</li>

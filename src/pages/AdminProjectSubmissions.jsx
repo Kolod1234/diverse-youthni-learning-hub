@@ -143,7 +143,7 @@ export default function AdminProjectSubmissions() {
       <Box sx={{ background: 'linear-gradient(135deg, #0b2f5c 0%, #1a0d60 100%)', py: 5 }}>
         <Container maxWidth="xl">
           <Typography variant="h4" fontWeight={900} sx={{ color: 'white', mb: 0.5 }}>
-            🗂️ Project Submissions
+            Project Submissions
           </Typography>
           <Typography sx={{ color: 'rgba(255,255,255,0.7)' }}>
             Review, edit and publish learner project submissions to the gallery.

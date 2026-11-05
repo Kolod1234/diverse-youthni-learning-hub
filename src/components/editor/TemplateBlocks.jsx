@@ -278,7 +278,7 @@ const TEMPLATE_BLOCKS = {
         name: 'Problem-Solution',
         icon: Zap,
         color: 'indigo',
-        html: '<div style="background: white; border-radius: 12px; padding: 0; margin: 20px 0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"><div style="background: #EF4444; color: white; padding: 16px;"><h4 style="font-size: 16px; font-weight: 700; margin: 0;">❌ Problem</h4></div><div style="padding: 20px;"><p style="color: #1F2937; font-size: 15px; line-height: 1.7; margin: 0 0 20px 0;">Describe the problem or challenge.</p></div><div style="background: #10B981; color: white; padding: 16px;"><h4 style="font-size: 16px; font-weight: 700; margin: 0;">✓ Solution</h4></div><div style="padding: 20px;"><p style="color: #1F2937; font-size: 15px; line-height: 1.7; margin: 0;">Explain the solution or resolution.</p></div></div>'
+        html: '<div style="background: white; border-radius: 12px; padding: 0; margin: 20px 0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"><div style="background: #EF4444; color: white; padding: 16px;"><h4 style="font-size: 16px; font-weight: 700; margin: 0;">Problem</h4></div><div style="padding: 20px;"><p style="color: #1F2937; font-size: 15px; line-height: 1.7; margin: 0 0 20px 0;">Describe the problem or challenge.</p></div><div style="background: #10B981; color: white; padding: 16px;"><h4 style="font-size: 16px; font-weight: 700; margin: 0;">Solution</h4></div><div style="padding: 20px;"><p style="color: #1F2937; font-size: 15px; line-height: 1.7; margin: 0;">Explain the solution or resolution.</p></div></div>'
       },
       {
         name: 'Before/After',

@@ -110,7 +110,7 @@ export default function ProjectDetail() {
             {/* Why Showcase */}
             {project.why_showcase && (
               <Card sx={{ borderRadius: 4, p: 4, border: 1, borderColor: 'divider', bgcolor: 'rgba(124,58,237,0.04)' }}>
-                <Typography variant="h6" fontWeight={800} sx={{ mb: 1.5 }}>✨ Why It Was Featured</Typography>
+                <Typography variant="h6" fontWeight={800} sx={{ mb: 1.5 }}>Why It Was Featured</Typography>
                 <Typography color="text.secondary" sx={{ lineHeight: 1.8 }}>{project.why_showcase}</Typography>
               </Card>
             )}

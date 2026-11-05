@@ -228,7 +228,7 @@ export default function AdminLibraryDashboard() {
           {/* Top Books */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>📊 Most Downloaded/Viewed Books</Typography>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Most Downloaded/Viewed Books</Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={topBooks}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -246,7 +246,7 @@ export default function AdminLibraryDashboard() {
           {/* Trend Chart */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>📈 Download & View Trends</Typography>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Download & View Trends</Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={trendData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -264,7 +264,7 @@ export default function AdminLibraryDashboard() {
           {/* Active Users */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>👥 Most Active Users</Typography>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Most Active Users</Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={activeUsers} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" />
@@ -280,7 +280,7 @@ export default function AdminLibraryDashboard() {
           {/* Category Distribution */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>📚 Books by Category</Typography>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Books by Category</Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -306,7 +306,7 @@ export default function AdminLibraryDashboard() {
           {/* Top Keywords */}
           <Grid size={12}>
             <Card sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>🔍 Most Discussed Keywords</Typography>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Most Discussed Keywords</Typography>
               {topKeywords.length > 0 ? (
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={topKeywords}>
@@ -328,7 +328,7 @@ export default function AdminLibraryDashboard() {
           {/* Tag Distribution */}
           <Grid size={12}>
             <Card sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>🏷️ Top Tags</Typography>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Top Tags</Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={tagDistribution}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -344,7 +344,7 @@ export default function AdminLibraryDashboard() {
           {/* Summary Stats */}
           <Grid size={12}>
             <Card sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>📋 Summary Statistics</Typography>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Summary Statistics</Typography>
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <Box sx={{ textAlign: 'center' }}>
