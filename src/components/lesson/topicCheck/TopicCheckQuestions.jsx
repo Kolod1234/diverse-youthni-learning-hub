@@ -9,7 +9,7 @@ export default function TopicCheckQuestions({ questions, busy, onSubmit }) {
   const selected = answers[index];
   const last = index === questions.length - 1;
   return <section className="space-y-5" aria-label="Topic check questions">
-    <p className="text-sm text-muted-foreground">Question {index + 1} of {questions.length} · Pass mark: 70%</p>
+    <p className="text-sm text-muted-foreground">Question {index + 1} of {questions.length}</p>
     <TopicCheckText content={question.question} className="text-lg font-semibold text-foreground" />
     <div className="space-y-3" role="group" aria-label="Answer choices">
       {question.options.map((option, choice) => <button key={choice} type="button" aria-label={'Option ' + (choice + 1)} aria-pressed={selected === choice} disabled={busy} onClick={() => setAnswers(a => ({ ...a, [index]: choice }))} className={'flex w-full min-w-0 items-start gap-3 rounded-lg border p-4 text-left disabled:opacity-50 ' + (selected === choice ? 'border-primary bg-primary/10' : 'border-border bg-card hover:bg-muted')}><span className="shrink-0 font-bold">{String.fromCharCode(65 + choice)}.</span><TopicCheckText content={option} className="min-w-0 flex-1" /></button>)}

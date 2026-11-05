@@ -17,7 +17,8 @@ export function attemptPercentage(attempt) {
 export function topicSummary(attempts) {
   const percentages = attempts.map(attemptPercentage).filter(value => value !== null);
   const best = Math.max(0, ...percentages);
-  return { passed: best >= 70, ever_passed: best >= 70,
+  const completed = percentages.length > 0;
+  return { passed: completed, ever_passed: completed,
     best_percentage: roundPoints(best), points: roundPoints(best),
     attempts: percentages.length };
 }
@@ -65,7 +66,7 @@ export function lessonsForPathway(lessons, course, enrollment) {
     ? lessons.filter(lesson => !lesson.ccea_units?.length || lesson.ccea_units.some(unit => units.includes(unit)))
     : lessons;
 }
-export async function syncCourseCompletion(base44, user, lesson) {
+export async function syncCourseCompletion(base44, user, lesson, completedLessonId = null) {
   if (!isStudent(user)) return;
   const db = base44.asServiceRole.entities;
   const [enrollments, lessons, course, attempts] = await Promise.all([
@@ -74,7 +75,8 @@ export async function syncCourseCompletion(base44, user, lesson) {
     db.Course.get(lesson.course_id),
     allRows(db.TopicCheckAttempt, { user_id: user.id, course_id: lesson.course_id, status: 'submitted' })
   ]);
-  const passed = new Set(bestTopicScores(attempts).filter(score => score.points >= 70).map(score => score.lesson_id));
+  const passed = new Set(bestTopicScores(attempts).map(score => score.lesson_id));
+  if (completedLessonId) passed.add(completedLessonId);
   for (const enrollment of enrollments.filter(row => row.created_by_id === user.id || row.created_by === user.email)) {
     const relevant = lessonsForPathway(lessons, course, enrollment);
     // Preserve existing completion records during rollout; access still requires a saved topic-check pass.

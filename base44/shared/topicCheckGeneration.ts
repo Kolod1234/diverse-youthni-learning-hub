@@ -11,8 +11,8 @@ function validateMarkup(html) {
   visit(parseDocument(html));
 }
 export async function prepareTopicCheck(base44, user, lesson) {
-  const access = await topicAccess(base44, user, lesson);
-  if (!access.allowed) throw new Error('Pass the preceding topic check before starting this one.');
+  const access = topicAccess(user);
+  if (!access.allowed) throw new Error('Topic checks are not available right now.');
   if (!lesson.slides?.some(s => text(s.content).length > 60)) throw new Error('This lesson needs written teaching content before a topic check can be prepared.');
   const fingerprint = await lessonFingerprint(lesson);
   const stored = await base44.asServiceRole.entities.TopicCheckSet.filter({ lesson_id: lesson.id, fingerprint }, '-created_date', 1);

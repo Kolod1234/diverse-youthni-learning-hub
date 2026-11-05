@@ -6,8 +6,8 @@ import { allRows, topicSummary, bestTopicScores, qualificationTotals, publicIden
 import { gradeTopicCheck, lessonFingerprint } from '../base44/shared/topicCheckCore.ts';
 
 const attempt = (score, extra = {}) => ({ user_id: 'student', course_id: 'gcse', lesson_id: 'one', status: 'submitted', score, total: 20, ...extra });
-test('70% boundary, best score only, lower and duplicate retakes', () => {
- assert.equal(topicSummary([attempt(13)]).passed, false);
+test('topic completion is not score-gated, best score only, lower and duplicate retakes', () => {
+ assert.equal(topicSummary([attempt(13)]).passed, true);
  assert.equal(topicSummary([attempt(14)]).passed, true);
  const history = [attempt(14), attempt(14), attempt(10), attempt(17)];
  assert.deepEqual(topicSummary(history), { passed: true, ever_passed: true, best_percentage: 85, points: 85, attempts: 4 });
@@ -86,7 +86,7 @@ test('server workflow saves passes, progress and best-score rankings with isolat
  assert.equal(duplicate.data.points, 70);
  const lower = await check({ action: 'start', setId: 'set' });
  const lowerResult = await check({ action: 'submit', attemptId: lower.data.attempt_id, answers: answers(5) });
- assert.equal(lowerResult.data.passed, false);
+ assert.equal(lowerResult.data.passed, true);
  assert.equal(lowerResult.data.ever_passed, true);
  assert.equal(lowerResult.data.points, 70);
  const improve = await check({ action: 'start', setId: 'set' });
@@ -104,7 +104,7 @@ test('server workflow saves passes, progress and best-score rankings with isolat
  assert.equal(/private@example|Private Real Name|Other Real Name|other@example/.test(publicJSON), false);
  assert.equal((await call(scoreboard, { type: 'points', qualification: 'alevel' })).data.entries[0].points, 90);
  current = tables.User[1];
- assert.equal((await check({ action: 'access' })).data.allowed, false);
+ assert.equal((await check({ action: 'access' })).data.allowed, true);
  assert.equal((await check({ action: 'submit', attemptId: start.data.attempt_id, answers: answers(20) })).status, 403);
  current = null;
  assert.equal((await check({ action: 'status' })).status, 401);

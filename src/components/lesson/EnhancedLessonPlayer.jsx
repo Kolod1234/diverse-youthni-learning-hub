@@ -1206,8 +1206,6 @@ export default function EnhancedLessonPlayer({
         event.preventDefault();
         if (currentContentSlide < contentSlides.length - 1) {
           setCurrentContentSlide(index => index + 1);
-        } else if (contentSlides.length > 0 && !topicQuizPassed) {
-          setShowTopicQuiz(true);
         } else {
           onNext?.();
         }
@@ -1235,15 +1233,14 @@ export default function EnhancedLessonPlayer({
   const markCompleteMutation = useMutation({
     mutationFn: async () => {
       const { data } = await base44.functions.invoke('topicCheck', { action: 'complete', lessonId: lesson.id });
-      if (!data.passed) throw new Error('Pass the topic check with at least 70% before completing this lesson.');
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollment'] });
       queryClient.invalidateQueries({ queryKey: ['enrollments'] });
-      toast.success('Topic pass and course progress saved.');
+      toast.success('Lesson marked as complete and course progress saved.');
     },
-    onError: error => { toast.error(error.message); setShowTopicQuiz(true); }
+    onError: error => { toast.error(error.message); }
   });
 
   if (!lesson) return null;
@@ -1272,7 +1269,6 @@ export default function EnhancedLessonPlayer({
     lesson?.subject
   ].filter(Boolean).join(' '));
   const isBookmarked = bookmarks.includes(currentPageKey);
-  const canOpenTopicQuiz = isLastPage && hasPages && !topicQuizPassed;
 
   const closeTools = () => {
     setShowAI(false);
@@ -1299,15 +1295,12 @@ export default function EnhancedLessonPlayer({
   const goToNext = () => {
     if (hasPages && currentContentSlide < contentSlides.length - 1) {
       setCurrentContentSlide(index => index + 1);
-    } else if (hasPages && !topicQuizPassed) {
-      setShowTopicQuiz(true);
     } else {
       onNext?.();
     }
   };
 
-  const handleTopicQuizContinue = (result) => {
-    if (!result?.passed && !result?.ever_passed && !topicQuizPassed) return;
+  const handleTopicQuizContinue = () => {
     setTopicQuizCompleted(true);
     setShowTopicQuiz(false);
     if (nextLesson) onNext?.();
@@ -1816,10 +1809,10 @@ export default function EnhancedLessonPlayer({
             </div>
           </div>
 
-          {topicQuizPassed && hasPages && isLastPage && (
-            <button type="button" onClick={() => setShowTopicQuiz(true)} title="Optional retake: your pass and best score are kept"
+          {hasPages && isLastPage && (
+            <button type="button" onClick={() => setShowTopicQuiz(true)} title={topicQuizPassed ? 'Optional retake: your best score is kept' : 'Optional topic check to earn points'}
               className="h-11 shrink-0 rounded-lg border border-slate-300 px-2 text-xs font-semibold sm:px-3 sm:text-sm">
-              Retake
+              {topicQuizPassed ? 'Retake' : 'Topic check'}
             </button>
           )}
           {hasPages && (
@@ -1833,7 +1826,7 @@ export default function EnhancedLessonPlayer({
             </select>
           )}
 
-          {(!isCompleted && isLastPage && !topicQuizPassed) && (
+          {(!isCompleted && isLastPage) && (
             <button
               type="button"
               onClick={() => markCompleteMutation.mutate()}
@@ -1847,12 +1840,12 @@ export default function EnhancedLessonPlayer({
           <button
             type="button"
             onClick={goToNext}
-            disabled={isLastPage && !nextLesson && !canOpenTopicQuiz}
-            aria-label={canOpenTopicQuiz ? 'Open topic quiz' : isLastPage ? 'Go to next topic' : 'Go to next page'}
-            title={canOpenTopicQuiz ? 'Topic quiz' : isLastPage ? 'Next topic' : 'Next page'}
+            disabled={isLastPage && !nextLesson}
+            aria-label={isLastPage ? 'Go to next topic' : 'Go to next page'}
+            title={isLastPage ? 'Next topic' : 'Next page'}
             className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-bold text-white shadow-sm hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5"
           >
-            <span className="hidden sm:inline">{canOpenTopicQuiz ? 'Topic quiz' : isLastPage ? 'Next topic' : 'Next page'}</span><ChevronRight className="h-5 w-5" />
+            <span className="hidden sm:inline">{isLastPage ? 'Next topic' : 'Next page'}</span><ChevronRight className="h-5 w-5" />
           </button>
         </footer>
       </section>

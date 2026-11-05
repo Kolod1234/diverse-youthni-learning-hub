@@ -436,8 +436,7 @@ export default function LessonPlayerClassic() {
     const unlockedLessons = enrollment.unlocked_lessons || [];
     const unlockData = unlockedLessons.find(ul => ul.lesson_id === lessonId);
     
-    // Unlock keys retired: lesson access is open and progression is gated by
-    // the 70% study check instead.
+    // Unlock keys retired: lesson access and progression are open.
     if (!unlockData) {
       setIsLessonLocked(false);
       return;

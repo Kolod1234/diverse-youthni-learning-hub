@@ -85,7 +85,7 @@ export default function PointsBreakdownPanel({ userId, email }) {
 
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
         One point per best percentage point per topic; retakes add only improvements.
-        Reading is tracked separately and previous 70% passes stay valid.
+        Reading is tracked separately with no minimum pass score required to progress.
         {data?.scope === 'assigned' ? ' Totals cover the courses you are assigned to.' : ''}
       </Typography>
 
