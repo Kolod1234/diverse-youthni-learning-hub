@@ -38,9 +38,6 @@ export default function AchievementBadge({ achievement, index = 0 }) {
 
   return (
     <motion.div
-
-
-
       whileHover={{ scale: 1.05, y: -5 }}
     >
       <Card sx={{ p: 2, textAlign: 'center', border: 0, boxShadow: 1, '&:hover': { boxShadow: 4 }, transition: 'box-shadow 0.3s', bgcolor: 'background.paper', borderRadius: 3 }}>

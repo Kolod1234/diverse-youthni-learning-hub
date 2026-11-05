@@ -143,8 +143,6 @@ export default function Achievements() {
             return (
               <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={milestone.name}>
                 <motion.div
-
-
                 >
                   <Card>
                     <CardContent>
@@ -241,8 +239,6 @@ function SuccessStoriesCarousel() {
 
   return (
     <motion.div
-
-
     >
       <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', mb: 4 }}>
         Success stories and resources
@@ -396,8 +392,6 @@ function AchievementCard({ achievement, index }) {
 
   return (
     <motion.div
-
-
     >
       <Card
         sx={{

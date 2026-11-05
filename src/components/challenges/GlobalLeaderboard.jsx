@@ -64,9 +64,6 @@ export default function GlobalLeaderboard({ period = 'all' }) {
         {leaderboard.map((user, index) => (
           <motion.div
             key={user.email}
-
-
-
             className={`flex items-center gap-4 p-4 rounded-lg ${
               user.rank <= 3 ? getRankBg(user.rank) : 'bg-white border'
             } ${user.rank <= 3 ? 'text-white' : ''}`}

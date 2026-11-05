@@ -34,9 +34,6 @@ export default function GroupLeaderboard({ groupId }) {
         {leaderboard.map((member, index) => (
           <motion.div
             key={member.id}
-
-
-
             className={`flex items-center gap-3 p-3 rounded-lg ${
               member.rank <= 3 ? 'bg-gradient-to-r from-blue-50 to-purple-50' : 'bg-gray-50'
             }`}

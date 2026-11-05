@@ -224,8 +224,6 @@ export default function PersonalDashboard() {
             return (
               <Grid size={{ xs: 12, md: 4 }} key={stat.label}>
                 <motion.div
-
-
                 >
                   <Card sx={{ boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s' }}>
                     <CardContent>

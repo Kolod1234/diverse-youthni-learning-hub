@@ -57,9 +57,6 @@ export default function CourseCard({ course, index = 0, user = null }) {
 
   return (
     <motion.div
-
-
-
       style={{ height: '100%' }}
     >
       <Card

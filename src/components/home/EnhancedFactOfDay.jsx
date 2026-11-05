@@ -50,8 +50,6 @@ export default function EnhancedFactOfDay() {
   if (isLoading || !selectedFact) {
     return (
       <motion.div
-
-
         className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl animate-pulse"
       />
     );
@@ -62,8 +60,6 @@ export default function EnhancedFactOfDay() {
 
   return (
     <motion.div
-
-
     >
       <div className={`bg-gradient-to-br ${config.gradient} rounded-3xl overflow-hidden border border-white/30 backdrop-blur-xl bg-white/10 hover:shadow-2xl transition-shadow duration-300 w-full`}>
         {/* Animated background elements */}
@@ -114,9 +110,6 @@ export default function EnhancedFactOfDay() {
            {/* Fact Content */}
            <motion.div
              key={selectedFact.id}
-
-
-
              className="mb-8"
            >
              <p className="text-3xl md:text-4xl font-bold text-white leading-relaxed">
@@ -127,9 +120,6 @@ export default function EnhancedFactOfDay() {
           {/* Footer with source */}
           {selectedFact.source_url && (
             <motion.div
-
-
-
               className="flex items-center justify-between pt-6 border-t border-gray-300/20"
             >
               <p className="text-xs text-gray-600">Fact from trusted sources</p>
@@ -142,9 +132,6 @@ export default function EnhancedFactOfDay() {
 
         {/* Progress indicator dots */}
         <motion.div
-
-
-
           className="h-1 bg-gradient-to-r"
           style={{
             background: `linear-gradient(to right, ${config.color}, transparent)`
@@ -155,9 +142,6 @@ export default function EnhancedFactOfDay() {
       {/* Quick facts carousel hint */}
       {facts.length > 1 && (
         <motion.p
-
-
-
           className="text-center text-xs text-gray-500 mt-4"
         >
           Click refresh to see {facts.length} more facts

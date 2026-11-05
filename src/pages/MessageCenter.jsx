@@ -371,8 +371,6 @@ export default function MessageCenter() {
                       return (
                         <motion.div
                           key={conv.contactEmail}
-
-
                           onClick={() => handleSelectConv(conv)}
                           className={`p-4 cursor-pointer transition-colors ${
                             isSelected ? 'bg-indigo-50 dark:bg-indigo-500/15 border-l-4 border-indigo-600' : 'hover:bg-muted'
@@ -475,8 +473,6 @@ export default function MessageCenter() {
                         return (
                           <motion.div
                             key={msg.id}
-
-
                             className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                           >
                             {!isOwn && (
@@ -614,8 +610,6 @@ export default function MessageCenter() {
                     return (
                       <motion.div
                         key={notif.id}
-
-
                         onClick={() => {
                           if (!notif.is_read) markNotifReadMutation.mutate(notif.id);
                           if (notif.link) window.location.href = notif.link;

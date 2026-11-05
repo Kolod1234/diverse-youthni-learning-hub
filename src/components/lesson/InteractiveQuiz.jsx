@@ -51,8 +51,6 @@ export default function InteractiveQuiz({ questions, onComplete, onRegenerate })
     return (
       <Card className="p-6 sm:p-8 bg-gradient-to-br from-green-50 to-blue-50">
         <motion.div
-
-
           className="text-center"
         >
           <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-4" />
@@ -135,8 +133,6 @@ export default function InteractiveQuiz({ questions, onComplete, onRegenerate })
 
       {showResult && (
         <motion.div
-
-
           className="space-y-4"
         >
           {question.explanation && (

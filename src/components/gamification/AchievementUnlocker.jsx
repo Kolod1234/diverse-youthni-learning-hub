@@ -61,36 +61,24 @@ export default function AchievementUnlocker({ achievement, show, onComplete }) {
             </motion.div>
 
             <motion.h2
-
-
-
               className="text-3xl font-bold text-gray-900 mb-2"
             >
               Achievement Unlocked!
             </motion.h2>
 
             <motion.h3
-
-
-
               className="text-xl font-semibold text-indigo-600 mb-2"
             >
               {config.title}
             </motion.h3>
 
             <motion.p
-
-
-
               className="text-gray-600 mb-6"
             >
               {config.description}
             </motion.p>
 
             <motion.button
-
-
-
               onClick={onComplete}
               className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
             >

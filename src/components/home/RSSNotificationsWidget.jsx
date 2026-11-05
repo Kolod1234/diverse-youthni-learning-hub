@@ -54,9 +54,6 @@ export default function RSSNotificationsWidget() {
         {feeds.slice(0, 3).map((item, idx) => (
           <motion.a
             key={item.id}
-
-
-
             href={item.link}
             target="_blank"
             rel="noopener noreferrer"

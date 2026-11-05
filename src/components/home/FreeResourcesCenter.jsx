@@ -64,9 +64,6 @@ export default function FreeResourcesCenter() {
     <section className="py-20 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-
-
-
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-2 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm font-bold mb-4 border border-amber-500/30">
@@ -106,10 +103,6 @@ export default function FreeResourcesCenter() {
             return (
               <motion.div
                 key={resource.id}
-
-
-
-
                 whileHover={{ y: -8 }}
                 className="relative bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border border-border group overflow-hidden"
               >
@@ -176,9 +169,6 @@ export default function FreeResourcesCenter() {
 
         {/* View All CTA */}
         <motion.div
-
-
-
           className="text-center"
         >
           <Button 

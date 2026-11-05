@@ -40,8 +40,6 @@ export default function UpcomingSessionsWidget({ user }) {
         {upcomingSessions.map((session, idx) => (
           <motion.div
             key={session.id}
-
-
           >
             <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}>
               <Card className="p-4 hover:shadow-lg transition-all bg-white border-purple-200 hover:border-purple-400">

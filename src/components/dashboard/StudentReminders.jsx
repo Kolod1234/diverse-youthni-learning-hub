@@ -51,8 +51,6 @@ export default function StudentReminders({ user }) {
   if (personalizedReminders.length === 0) {
     return (
       <motion.div
-
-
       >
         <Card sx={{ p: 4, borderRadius: 4, boxShadow: 3, border: 1, borderColor: 'divider', textAlign: 'center' }}>
           <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
@@ -67,8 +65,6 @@ export default function StudentReminders({ user }) {
 
   return (
     <motion.div
-
-
     >
       <Card sx={{ p: 4, borderRadius: 4, boxShadow: 3, border: 1, borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
@@ -82,9 +78,6 @@ export default function StudentReminders({ user }) {
           {personalizedReminders.slice(0, 5).map((reminder, index) => (
             <motion.div
               key={reminder.id}
-
-
-
             >
               <Box
                 sx={{

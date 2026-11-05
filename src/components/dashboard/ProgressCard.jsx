@@ -24,8 +24,6 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
 
   return (
     <motion.div
-
-
     >
       <Card sx={{ overflow: 'hidden', border: 0, boxShadow: 1, '&:hover': { boxShadow: 4 }, transition: 'box-shadow 0.3s', bgcolor: 'background.paper', borderRadius: 3 }}>
         <Stack direction={{ xs: 'column', sm: 'row' }}>

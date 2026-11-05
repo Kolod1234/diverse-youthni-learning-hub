@@ -360,7 +360,6 @@ export default function KnowledgeBase() {
                 {filteredDocs.map((doc) => (
                   <motion.div
                     key={doc.id}
-
                   >
                     <Card className="hover:shadow-lg transition-shadow h-full">
                       <CardContent className="p-6">
@@ -424,8 +423,6 @@ export default function KnowledgeBase() {
             onClick={() => setSelectedDoc(null)}
           >
             <motion.div
-
-
               className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >

@@ -191,9 +191,6 @@ function Lobby({ onStart, onStart3D }) {
                 <motion.article
                   key={item.title}
                   className={`vl-practical-card ${item.status !== 'ready' ? 'is-planned' : ''}`}
-
-
-
                   style={{ '--accent': item.accent }}
                 >
                   <div className="vl-practical-card__visual">

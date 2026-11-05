@@ -153,8 +153,6 @@ export default function CourseIntegrityValidator() {
                 ].map((stat, i) => (
                   <motion.div
                     key={i}
-
-
                   >
                     <Card sx={{
                       p: 3,
@@ -187,8 +185,6 @@ export default function CourseIntegrityValidator() {
                     {validation.issues_found.map((item, idx) => (
                       <motion.div
                         key={idx}
-
-
                       >
                         <Card
                           sx={{

@@ -41,9 +41,6 @@ export default function SubjectMasteryRoadmaps() {
     <section className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-
-
-
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-400 text-sm font-bold mb-4 border border-blue-500/30">
@@ -76,8 +73,6 @@ export default function SubjectMasteryRoadmaps() {
 
         {selectedSubject && subjectCourses[selectedSubject].length > 0 && (
           <motion.div
-
-
             className="bg-gradient-to-br from-blue-50 dark:from-blue-950/20 to-purple-50 dark:to-purple-950/20 rounded-2xl p-8 border border-border"
           >
             <h3 className="text-2xl font-bold text-foreground mb-8 flex items-center gap-3">
@@ -91,9 +86,6 @@ export default function SubjectMasteryRoadmaps() {
               {subjectCourses[selectedSubject].map((course, idx) => (
                 <motion.div
                   key={course.id}
-
-
-
                   className="flex items-start gap-4"
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg">

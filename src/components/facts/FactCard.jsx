@@ -16,9 +16,6 @@ export default function FactCard({ fact, index = 0 }) {
 
   return (
     <motion.div
-
-
-
       whileHover={{ y: -4, shadow: 'lg' }}
       className="h-full"
     >

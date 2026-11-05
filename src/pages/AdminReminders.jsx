@@ -182,8 +182,6 @@ export default function AdminReminders() {
             {filtered.map((reminder, index) => (
               <motion.div
                 key={reminder.id}
-
-
               >
                 <Card sx={{ opacity: tab === 'inactive' ? 0.6 : 1, '&:hover': { boxShadow: 4 }, transition: 'box-shadow 0.2s' }}>
                   <CardContent>

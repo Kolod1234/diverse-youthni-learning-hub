@@ -25,10 +25,6 @@ export default function FAQSection({ section }) {
           {faqs.map((faq, idx) => (
             <motion.div
               key={idx}
-
-
-
-
               className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"
             >
               <button

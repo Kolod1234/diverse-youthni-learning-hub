@@ -133,8 +133,6 @@ export default function Tutors() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <motion.div
-
-
           className="w-full max-w-md"
         >
           <div className="bg-card rounded-2xl shadow-xl p-8 border border-border">
@@ -188,8 +186,6 @@ export default function Tutors() {
 
         {/* Header */}
         <motion.div
-
-
           className="text-center mb-12"
         >
           <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -233,9 +229,6 @@ export default function Tutors() {
 
         {/* Search */}
         <motion.div
-
-
-
           className="max-w-2xl mx-auto mb-12"
         >
           <div className="relative">
@@ -260,8 +253,6 @@ export default function Tutors() {
             return (
               <motion.div
                 key={stat.label}
-
-
               >
                 <Card className="p-6 text-center">
                   <Icon className="w-8 h-8 text-indigo-600 mx-auto mb-2" />
@@ -300,8 +291,6 @@ export default function Tutors() {
               return (
                 <motion.div
                   key={tutor.id}
-
-
                 >
                   <Card className="p-6 hover:shadow-xl transition-all duration-300 group h-full flex flex-col cursor-pointer" onClick={() => setSelectedTutor({ tutor, stats })}>
                     <div className="flex items-start gap-4 mb-4">

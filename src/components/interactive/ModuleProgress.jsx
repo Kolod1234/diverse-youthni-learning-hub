@@ -25,9 +25,6 @@ export default function ModuleProgress({ sections, completedLessons = [], isEnro
           return (
             <motion.div
               key={sectionName}
-
-
-
               className={`${!isUnlocked && 'opacity-50'}`}
             >
               <div className="flex items-start gap-3 mb-2">

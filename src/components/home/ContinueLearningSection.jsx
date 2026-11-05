@@ -44,9 +44,6 @@ export default function ContinueLearningSection({ user }) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 rounded-2xl">
       <motion.div
-
-
-
         className="mb-8"
       >
         <div className="flex items-center gap-3 mb-4">
@@ -62,10 +59,6 @@ export default function ContinueLearningSection({ user }) {
         {activeEnrollments.map((enrollment, idx) => (
           <motion.div
             key={enrollment.id}
-
-
-
-
             whileHover={{ y: -8 }}
             className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all border border-gray-200 group"
           >

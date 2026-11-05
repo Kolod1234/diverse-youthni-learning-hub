@@ -78,8 +78,6 @@ export default function YouthWork() {
       <Container maxWidth="lg">
         {/* Header */}
         <motion.div
-
-
           style={{ textAlign: 'center', marginBottom: 48 }}
         >
           <Box sx={{ width: 80, height: 80, bgcolor: '#16a34a', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 4, boxShadow: 3 }}>
@@ -178,9 +176,6 @@ export default function YouthWork() {
           {filteredQualifications.map((qual, index) => (
             <motion.div
               key={qual.id}
-
-
-
               style={{ marginBottom: 24 }}
             >
               <Card sx={{ overflow: 'hidden', '&:hover': { boxShadow: 6 }, transition: 'box-shadow 0.3s' }}>

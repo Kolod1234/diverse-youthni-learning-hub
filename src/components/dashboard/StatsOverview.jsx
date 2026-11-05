@@ -54,8 +54,6 @@ export default function StatsOverview({ enrollments, courses, achievements }) {
         return (
           <motion.div
             key={stat.label}
-
-
           >
             <Card sx={{ p: 2.5, border: 0, boxShadow: 1, '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.2s', bgcolor: 'background.paper', borderRadius: 3 }}>
               <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>

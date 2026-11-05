@@ -17,9 +17,6 @@ export default function StudentSuccessStories() {
     <section className="py-20 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-950/30 dark:to-blue-950/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-
-
-
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-sm font-bold mb-4 border border-emerald-500/30">
@@ -38,10 +35,6 @@ export default function StudentSuccessStories() {
           {successStories.map((story, idx) => (
             <motion.div
               key={story.id}
-
-
-
-
               whileHover={{ y: -8 }}
               className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all border border-border"
             >

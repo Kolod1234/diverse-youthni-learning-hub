@@ -236,8 +236,6 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
       {/* Results Section */}
       {suggestions && (
         <motion.div
-
-
           className="bg-white rounded-xl overflow-hidden"
         >
           <Tabs value={activeTab} onValueChange={setActiveTab}>

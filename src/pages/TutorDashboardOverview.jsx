@@ -193,9 +193,6 @@ export default function TutorDashboardOverview() {
                 return (
                   <motion.div
                     key={stat.label}
-
-
-
                     className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5"
                   >
                     <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-600 text-white mb-3`}>
@@ -220,8 +217,6 @@ export default function TutorDashboardOverview() {
             {/* Today's Sessions Alert */}
             {todaySessions.length > 0 && (
               <motion.div
-
-
                 className="bg-indigo-600 rounded-2xl p-5 text-white flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
@@ -292,9 +287,6 @@ export default function TutorDashboardOverview() {
                     return (
                       <motion.div
                         key={course.id}
-
-
-
                         className="flex items-center gap-4 px-6 py-4 hover:bg-muted transition-colors"
                       >
                         <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center flex-shrink-0 overflow-hidden">

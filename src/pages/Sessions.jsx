@@ -89,8 +89,6 @@ export default function Sessions() {
 
     return (
       <motion.div
-
-
         className="group"
       >
         <Card className="p-6 hover:shadow-xl transition-all duration-300 border-l-4 border-l-indigo-500">

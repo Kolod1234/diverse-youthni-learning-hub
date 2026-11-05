@@ -31,8 +31,6 @@ export default function HomeGuest() {
       <Box sx={{ position: 'relative', bgcolor: '#0b2f5c', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">
           <motion.div
-
-
           >
             <Box sx={{ textAlign: 'center', color: 'white' }}>
               <Chip

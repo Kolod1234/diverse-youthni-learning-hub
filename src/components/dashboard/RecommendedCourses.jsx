@@ -55,8 +55,6 @@ export default function RecommendedCourses({ userEnrollments }) {
         {recommendedCourses.map((course, index) => (
           <motion.div
             key={course.id}
-
-
           >
             <Card
               component={Link}

@@ -37,18 +37,11 @@ export default function AboutUsSection() {
     <section className="py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-
-
-
-
           className="bg-card rounded-[14px] overflow-hidden border border-border"
         >
           <div className="grid md:grid-cols-2 gap-0">
             {/* Image Section */}
             <motion.div
-
-
-
               className="relative h-96 md:h-auto"
             >
               <img
@@ -61,9 +54,6 @@ export default function AboutUsSection() {
 
             {/* Content Section */}
             <motion.div
-
-
-
               className="p-8 md:p-12 flex flex-col justify-center"
             >
               <div className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold mb-4 w-fit">
@@ -89,10 +79,6 @@ export default function AboutUsSection() {
                   return (
                     <motion.div
                       key={stat.label}
-
-
-
-
                       className="bg-muted/50 rounded-xl p-4 text-center"
                     >
                       <Icon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-2" />

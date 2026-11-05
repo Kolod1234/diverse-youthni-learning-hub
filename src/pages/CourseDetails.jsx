@@ -346,7 +346,6 @@ export default function CourseDetails() {
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 4, alignItems: 'start' }}>
             <Box>
               <motion.div
-
               >
                 <Chip 
                   label={course.level} 
@@ -389,8 +388,6 @@ export default function CourseDetails() {
             {/* Enrollment Card */}
             <Box>
               <motion.div
-
-
               >
                 <Card sx={{ overflow: 'hidden', border: 0, boxShadow: 6 }}>
                   <CardMedia

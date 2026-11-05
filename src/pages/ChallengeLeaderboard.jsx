@@ -73,9 +73,6 @@ export default function ChallengeLeaderboard() {
             {[participants[1], participants[0], participants[2]].map((p, i) => (
               <motion.div
                 key={p?.id}
-
-
-
                 className={`text-center ${i === 1 ? 'order-first' : ''}`}
               >
                 <div className={`bg-[#0b2f5c] text-white rounded-lg p-6 mb-2`}>
@@ -103,9 +100,6 @@ export default function ChallengeLeaderboard() {
             {participants.map((participant, index) => (
               <motion.div
                 key={participant.id}
-
-
-
                 className={`flex items-center gap-4 p-4 rounded-lg ${
                   participant.rank <= 3 ? 'bg-gradient-to-r ' + getRankColor(participant.rank) + ' text-white' : 'bg-muted'
                 }`}

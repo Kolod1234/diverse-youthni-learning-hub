@@ -607,8 +607,6 @@ function ProgramsSection() {
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
-
-
       >
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>
@@ -624,10 +622,6 @@ function ProgramsSection() {
         {programs.map((program, idx) => (
           <motion.div
             key={program.id}
-
-
-
-
             whileHover={{ y: -8 }}
           >
             <Card sx={{ borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider' }}>
@@ -670,8 +664,6 @@ function FeaturesSection() {
     <Box component="section" sx={{ py: 10, background: 'linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.05))' }}>
       <Container maxWidth="xl">
         <motion.div 
-
-
         >
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Chip
@@ -699,10 +691,6 @@ function FeaturesSection() {
           {features.map((feature, idx) => (
             <motion.div
               key={feature.id}
-
-
-
-
               whileHover={{ y: -8, scale: 1.02 }}
             >
               <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: 4, p: 4, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)', '&:hover': { boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)', transform: 'translateY(-4px)' }, transition: 'all 0.3s', border: '1px solid rgba(255, 255, 255, 0.1)', position: 'relative', overflow: 'hidden', '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)', zIndex: 1 } }}>
@@ -760,8 +748,6 @@ function SuccessStoriesCarousel() {
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
-
-
       >
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>{section.title || 'Success stories and resources'}</Typography>
@@ -911,8 +897,6 @@ function SolutionsSection() {
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
-
-
       >
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>
@@ -928,10 +912,6 @@ function SolutionsSection() {
         {cards.map((card, idx) => (
           <motion.div
             key={idx}
-
-
-
-
             whileHover={{ y: -8 }}
           >
             <Card sx={{ borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider' }}>
@@ -977,9 +957,6 @@ function LeadershipCTASection() {
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
-
-
-
       >
         <Box sx={{ position: 'relative', overflow: 'hidden', borderRadius: 6, background: 'linear-gradient(to bottom right, #7c3aed, #9333ea, #c026d3)', p: 6, boxShadow: '0 25px 50px -12px rgba(168, 85, 247, 0.5)' }}>
           <Box sx={{ position: 'absolute', top: 0, right: 0, width: 256, height: 256, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '50%', filter: 'blur(96px)' }} />
@@ -1068,9 +1045,6 @@ function FinalCTASection() {
       
       <Container maxWidth="xl" sx={{ position: 'relative', textAlign: 'center' }}>
         <motion.div
-
-
-
         >
           {section.badge_text && (
             <Chip
@@ -1182,8 +1156,6 @@ function EcosystemSection() {
     <Box component="section" sx={{ position: 'relative', py: 10, bgcolor: '#003B5C', overflow: 'hidden' }}>
       <Container maxWidth="xl">
         <motion.div
-
-
         >
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Typography variant="h3" sx={{ fontSize: { xs: '2.5rem', md: '3rem' }, fontWeight: 700, color: 'white', mb: 3 }}>
@@ -1223,9 +1195,6 @@ function EcosystemSection() {
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 6, mt: 10 }}>
           {/* Product 1 - Red */}
           <motion.div
-
-
-
           >
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{ position: 'relative', mb: 4 }}>
@@ -1256,9 +1225,6 @@ function EcosystemSection() {
 
           {/* Product 2 - Green */}
           <motion.div
-
-
-
           >
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{ position: 'relative', mb: 4 }}>
@@ -1289,9 +1255,6 @@ function EcosystemSection() {
 
           {/* Product 3 - Blue */}
           <motion.div
-
-
-
           >
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{ position: 'relative', mb: 4 }}>
@@ -1353,10 +1316,6 @@ function PartnersSection() {
               {logos.map((logo, idx) => (
                 <Box key={logo.id} sx={{ flex: '0 0 calc(50% - 16px)', minWidth: 0 }}>
                   <motion.div
-
-
-
-
                     whileHover={{ y: -8, scale: 1.03 }}
                   >
                     <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: 3, p: 3, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)', '&:hover': { boxShadow: '0 8px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)', transform: 'translateY(-4px)' }, transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, position: 'relative', overflow: 'hidden', '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)' } }}>

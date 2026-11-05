@@ -12,9 +12,6 @@ export default function CommunityCarousel({ images }) {
 
   return (
     <motion.div
-
-
-
     >
       <Box sx={{ position: 'relative', borderRadius: 6, overflow: 'hidden', boxShadow: 6 }}>
         <Box sx={{ overflow: 'hidden' }} ref={emblaRef}>

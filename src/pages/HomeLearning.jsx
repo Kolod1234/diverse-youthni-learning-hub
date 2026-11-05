@@ -68,8 +68,6 @@ export default function HomeLearning() {
       <Box sx={{ position: 'relative', bgcolor: '#4f46e5', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">
           <motion.div
-
-
           >
             <Box sx={{ textAlign: 'center', color: 'white' }}>
               <Chip

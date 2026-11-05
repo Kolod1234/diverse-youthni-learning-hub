@@ -178,8 +178,6 @@ export default function CourseAnalytics() {
             return (
               <motion.div
                 key={stat.label}
-
-
               >
                 <Card className="p-5">
                   <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-3`}>

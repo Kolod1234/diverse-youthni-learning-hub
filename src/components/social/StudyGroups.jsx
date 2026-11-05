@@ -176,8 +176,6 @@ export default function StudyGroups({ courseId }) {
         {studyGroups.map((group, index) => (
           <motion.div
             key={group.id}
-
-
           >
             <Card className="p-6 h-full flex flex-col">
               <div className="flex items-start justify-between mb-4">

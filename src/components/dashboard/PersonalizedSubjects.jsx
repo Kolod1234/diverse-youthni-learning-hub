@@ -67,8 +67,6 @@ export default function PersonalizedSubjects({ user }) {
   if (subjectData.length === 0) {
     return (
       <motion.div
-
-
       >
         <Card sx={{ p: 4, borderRadius: 4, boxShadow: 3, border: 1, borderColor: 'divider', textAlign: 'center' }}>
           <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
@@ -93,8 +91,6 @@ export default function PersonalizedSubjects({ user }) {
 
   return (
     <motion.div
-
-
     >
       <Card sx={{ p: 4, borderRadius: 4, boxShadow: 3, border: 1, borderColor: 'divider' }}>
         <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Your Subjects</Typography>
@@ -103,10 +99,6 @@ export default function PersonalizedSubjects({ user }) {
           {subjectData.map((subject, idx) => (
             <motion.div
               key={subject.subject}
-
-
-
-
               whileHover={{ y: -4, scale: 1.02 }}
             >
               <Link to={createPageUrl('Explore') + `?category=${subject.subject}`} style={{ textDecoration: 'none' }}>

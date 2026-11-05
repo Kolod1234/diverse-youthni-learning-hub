@@ -191,9 +191,6 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
             {performanceData.weakAreas.map((area, index) => (
               <motion.div
                 key={area.quizId}
-
-
-
                 className="p-4 bg-orange-50 dark:bg-orange-500/15 border border-orange-200 rounded-lg"
               >
                 <div className="flex items-start justify-between gap-4">
@@ -254,9 +251,6 @@ export default function QuizPerformanceAnalysis({ quizAttempts, enrollments, cou
             {performanceData.strongAreas.slice(0, 4).map((area, index) => (
               <motion.div
                 key={area.quizId}
-
-
-
                 className="p-4 bg-green-50 dark:bg-green-500/15 border border-green-200 rounded-lg"
               >
                 <div className="flex items-center gap-2 mb-2">

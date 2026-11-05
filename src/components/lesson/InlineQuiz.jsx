@@ -21,7 +21,6 @@ export default function InlineQuiz({ quiz, onComplete }) {
 
   return (
     <motion.div
-
     >
       <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-indigo-200">
         <div className="flex items-center gap-3 mb-4">

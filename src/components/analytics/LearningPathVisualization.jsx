@@ -76,9 +76,6 @@ export default function LearningPathVisualization({ enrollments, courses, userPr
               return (
                 <motion.div
                   key={enrollment.id}
-
-
-
                   className="relative pl-16"
                 >
                   {/* Timeline Dot */}

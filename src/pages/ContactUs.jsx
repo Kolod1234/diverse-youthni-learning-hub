@@ -77,8 +77,6 @@ ${formData.message}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header */}
         <motion.div
-
-
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Get in Touch</h1>
@@ -90,9 +88,6 @@ ${formData.message}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Contact Form */}
           <motion.div
-
-
-
             className="lg:col-span-2"
           >
             <Card className="p-8 shadow-lg border-0">
@@ -183,9 +178,6 @@ ${formData.message}
 
           {/* Contact Information */}
           <motion.div
-
-
-
             className="space-y-6"
           >
             <Card className="p-6 bg-[#0b2f5c] text-white border-0 shadow-lg">

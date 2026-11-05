@@ -97,8 +97,6 @@ export default function LessonPlayer() {
     return (
       <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #0f172a, #581c87, #312e81)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div
-
-
         >
           <Box sx={{ textAlign: 'center' }}>
             <Box sx={{ width: 64, height: 64, borderRadius: '50%', border: '4px solid', borderColor: 'transparent', borderTopColor: '#f97316', borderRightColor: '#a855f7', borderBottomColor: '#6366f1', mx: 'auto', mb: 2 }} className="animate-spin" />
@@ -135,8 +133,6 @@ export default function LessonPlayer() {
 
       <Box sx={{ maxWidth: 1280, width: '100%', position: 'relative', zIndex: 10 }}>
         <motion.div
-
-
         >
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <motion.div
@@ -170,9 +166,6 @@ export default function LessonPlayer() {
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
           {/* PowerPoint Style */}
           <motion.div
-
-
-
             whileHover={{ y: -8, transition: { duration: 0.3 } }}
           >
             <Box sx={{ bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(24px)', borderRadius: 6, boxShadow: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)', '&:hover': { borderColor: 'rgba(251, 146, 60, 0.5)' }, transition: 'all 0.3s', position: 'relative' }}>
@@ -213,8 +206,6 @@ export default function LessonPlayer() {
                   ].map((item, idx) => (
                     <motion.li
                       key={idx}
-
-
                     >
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: '#e5e7eb' }}>
                         <Box sx={{ width: 32, height: 32, background: 'linear-gradient(to bottom right, rgba(249, 115, 22, 0.2), rgba(220, 38, 38, 0.2))', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -252,9 +243,6 @@ export default function LessonPlayer() {
 
           {/* Classic Style */}
           <motion.div
-
-
-
             whileHover={{ y: -8, transition: { duration: 0.3 } }}
           >
             <Box sx={{ bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(24px)', borderRadius: 6, boxShadow: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)', '&:hover': { borderColor: 'rgba(168, 85, 247, 0.5)' }, transition: 'all 0.3s', position: 'relative' }}>
@@ -295,8 +283,6 @@ export default function LessonPlayer() {
                   ].map((item, idx) => (
                     <motion.li
                       key={idx}
-
-
                     >
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: '#e5e7eb' }}>
                         <Box sx={{ width: 32, height: 32, background: 'linear-gradient(to bottom right, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2))', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -334,9 +320,6 @@ export default function LessonPlayer() {
 
             {/* Modern Style - NEW */}
             <motion.div
-
-
-
             whileHover={{ y: -8, transition: { duration: 0.3 } }}
             >
             <Box sx={{ bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(24px)', borderRadius: 6, boxShadow: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)', '&:hover': { borderColor: 'rgba(34, 197, 94, 0.5)' }, transition: 'all 0.3s', position: 'relative' }}>
@@ -377,8 +360,6 @@ export default function LessonPlayer() {
                   ].map((item, idx) => (
                     <motion.li
                       key={idx}
-
-
                     >
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: '#e5e7eb' }}>
                         <Box sx={{ width: 32, height: 32, background: 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.2), rgba(59, 130, 246, 0.2))', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -416,8 +397,6 @@ export default function LessonPlayer() {
             </Box>
 
           <motion.div
-
-
           >
           <Box sx={{ textAlign: 'center', mt: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
             <Sparkles size={16} color="#9ca3af" />

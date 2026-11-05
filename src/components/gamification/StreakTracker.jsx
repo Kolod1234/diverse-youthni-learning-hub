@@ -37,7 +37,6 @@ export default function StreakTracker({ streakDays = 0, lastActivityDate }) {
       <Box sx={{ textAlign: 'center', mb: 2 }}>
         <motion.div
           key={streakDays}
-
         >
           <Stack direction="row" spacing={1} alignItems="baseline" justifyContent="center">
             <Typography sx={{ fontSize: '3rem', fontWeight: 700, color: flameColor, lineHeight: 1 }}>

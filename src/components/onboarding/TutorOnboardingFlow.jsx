@@ -154,8 +154,6 @@ export default function TutorOnboardingFlow({ user, onComplete, onSkip }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <motion.div
-
-
         className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden"
       >
         {/* Header */}
@@ -490,8 +488,6 @@ function FeaturesStep({ onFinish }) {
         {features.map((feature, idx) => (
           <motion.div
             key={idx}
-
-
           >
             <Card className="p-4 border-2 hover:border-purple-300 transition-all">
               <div className={`w-10 h-10 rounded-lg ${feature.color} flex items-center justify-center mb-3`}>

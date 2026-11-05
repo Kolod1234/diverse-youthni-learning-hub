@@ -119,8 +119,6 @@ export default function StudentAssignments({ enrollments, user }) {
         return (
           <motion.div
             key={assignment.id}
-
-
           >
             <Card sx={{ overflow: 'hidden', border: 1, borderColor }}>
               <Box

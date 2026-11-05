@@ -169,8 +169,6 @@ Provide feedback in JSON format:
               </>
             ) : (
               <motion.div
-
-
                 className="space-y-4"
               >
                 <div className="p-4 bg-white rounded-lg">

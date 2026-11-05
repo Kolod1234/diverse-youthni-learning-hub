@@ -32,9 +32,6 @@ export default function QuickStatsCard({ user }) {
 
   return (
     <motion.div
-
-
-
       className="grid grid-cols-2 sm:grid-cols-4 gap-4"
     >
       {/* Total XP */}

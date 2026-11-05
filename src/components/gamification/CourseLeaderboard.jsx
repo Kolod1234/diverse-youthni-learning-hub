@@ -66,8 +66,6 @@ export default function CourseLeaderboard({ courseId }) {
               {leaderboardData.map((entry, index) => (
                 <motion.div
                   key={entry.id}
-
-
                 >
                   <div className={`p-4 rounded-lg border bg-gradient-to-r ${getRankColor(index + 1)} transition-all hover:shadow-md`}>
                     <div className="flex items-center gap-3">
@@ -107,8 +105,6 @@ export default function CourseLeaderboard({ courseId }) {
               {[...leaderboardData].sort((a, b) => b.points - a.points).map((entry, index) => (
                 <motion.div
                   key={entry.id}
-
-
                 >
                   <div className={`p-4 rounded-lg border bg-gradient-to-r ${getRankColor(index + 1)} transition-all hover:shadow-md`}>
                     <div className="flex items-center gap-3">
@@ -143,8 +139,6 @@ export default function CourseLeaderboard({ courseId }) {
               {[...leaderboardData].sort((a, b) => b.streak - a.streak).map((entry, index) => (
                 <motion.div
                   key={entry.id}
-
-
                 >
                   <div className={`p-4 rounded-lg border bg-gradient-to-r ${getRankColor(index + 1)} transition-all hover:shadow-md`}>
                     <div className="flex items-center gap-3">

@@ -51,8 +51,6 @@ export default function DynamicCourseLanding({ course, enrollment }) {
       {customSections.map((section) => (
         <motion.div
           key={section.id}
-
-
         >
           {renderSection(section)}
         </motion.div>

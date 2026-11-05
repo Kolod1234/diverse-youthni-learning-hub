@@ -105,9 +105,6 @@ export default function ProjectGallery() {
             {filtered.map((project, idx) => (
               <motion.div
                 key={project.id}
-
-
-
                 whileHover={{ y: -6 }}
                 style={{ cursor: 'pointer' }}
                 onClick={() => navigate(`/project/${project.id}`)}

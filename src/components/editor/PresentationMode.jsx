@@ -675,8 +675,6 @@ export default function PresentationMode({ slides, onClose, isPersisted = true }
       {showSessionModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]" onClick={() => setShowSessionModal(false)}>
           <motion.div
-
-
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
           >

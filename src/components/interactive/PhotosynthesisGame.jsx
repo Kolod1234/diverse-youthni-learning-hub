@@ -101,8 +101,6 @@ export default function PhotosynthesisGame() {
           <p className="text-sm font-semibold text-gray-700 mb-2">Glucose Produced</p>
           <motion.div
             key={glucose}
-
-
             className="text-3xl font-bold text-green-600"
           >
             {glucose}
@@ -114,8 +112,6 @@ export default function PhotosynthesisGame() {
           <p className="text-sm font-semibold text-gray-700 mb-2">Oxygen Released</p>
           <motion.div
             key={oxygen}
-
-
             className="text-3xl font-bold text-cyan-600"
           >
             {oxygen}

@@ -78,9 +78,6 @@ export default function LearningStatisticsSection() {
     <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-
-
-
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-2 rounded-full bg-slate-300/20 text-slate-700 dark:text-slate-300 text-sm font-bold mb-4 border border-slate-400/30">
@@ -101,10 +98,6 @@ export default function LearningStatisticsSection() {
             return (
               <motion.div
                 key={idx}
-
-
-
-
                 whileHover={{ y: -8, scale: 1.05 }}
                 className={`relative ${stat.bgColor} rounded-2xl p-8 border border-border overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-300 text-center`}
               >
@@ -130,10 +123,6 @@ export default function LearningStatisticsSection() {
 
         {/* Bottom CTA */}
         <motion.div
-
-
-
-
           className="text-center mt-16"
         >
           <p className="text-lg text-muted-foreground mb-6">

@@ -153,8 +153,6 @@ export default function LessonFeedbackForm({ lesson, courseId, onClose }) {
 
           {submitFeedback.isSuccess && (
             <motion.div
-
-
               className="p-4 bg-green-50 rounded-lg border border-green-200 flex items-center gap-2"
             >
               <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
@@ -164,8 +162,6 @@ export default function LessonFeedbackForm({ lesson, courseId, onClose }) {
 
           {submitFeedback.isError && (
             <motion.div
-
-
               className="p-4 bg-red-50 rounded-lg border border-red-200 flex items-center gap-2"
             >
               <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />

@@ -57,9 +57,6 @@ export default function FocusMode({ enabled, onToggle, children }) {
           
           <div className="flex-1 max-w-4xl mx-auto px-6 py-12 w-full">
             <motion.div
-
-
-
               className="text-white"
             >
               {children}

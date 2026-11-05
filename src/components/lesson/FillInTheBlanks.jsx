@@ -159,8 +159,6 @@ export default function FillInTheBlanks({ exercises, onComplete }) {
               answer.trim().toLowerCase() !== currentExercise.blanks[idx].toLowerCase()
             ) && (
               <motion.div
-
-
                 className="p-4 bg-blue-50 border border-blue-200 rounded-lg"
               >
                 <p className="text-sm font-medium mb-2">Correct answers:</p>

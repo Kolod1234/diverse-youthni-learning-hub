@@ -24,10 +24,6 @@ export default function TeamMembersSection({ section }) {
           {team_members.map((member, idx) => (
             <motion.div
               key={idx}
-
-
-
-
               whileHover={{ y: -8 }}
               className="bg-gradient-to-br from-gray-50 to-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
             >

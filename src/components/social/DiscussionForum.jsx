@@ -166,8 +166,6 @@ export default function DiscussionForum({ courseId, lessonId = null }) {
             return (
               <motion.div
                 key={post.id}
-
-
               >
                 <Card className="p-6">
                   <div className="flex gap-4">

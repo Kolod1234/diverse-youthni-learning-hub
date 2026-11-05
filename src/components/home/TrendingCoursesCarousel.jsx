@@ -50,9 +50,6 @@ export default function TrendingCoursesCarousel() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <motion.div
-
-
-
         className="mb-8"
       >
         <div className="flex items-center gap-3 mb-4">
@@ -70,10 +67,6 @@ export default function TrendingCoursesCarousel() {
             {trendingCourses.map((course, idx) => (
               <div key={course.id} className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0">
                 <motion.div
-
-
-
-
                   whileHover={{ y: -8 }}
                   className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-200 h-full flex flex-col group"
                 >
