@@ -153,7 +153,7 @@ export default function AdminEvents() {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                     <Box sx={{ flex: 1 }}>
                       <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-                        <Chip label={event.category} size="small" sx={{ textTransform: 'capitalize', fontSize: '0.7rem' }} />
+                        <Chip label={event.category} size="small" sx={{ textTransform: 'capitalize', fontSize: '0.75rem' }} />
                         {!event.is_published && <Chip label="Draft" size="small" variant="outlined" color="warning" />}
                       </Box>
                       <Typography variant="subtitle1" fontWeight={700}>{event.title}</Typography>

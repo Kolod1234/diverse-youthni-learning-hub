@@ -76,7 +76,7 @@ export default function RecommendedCourses({ userEnrollments }) {
                     {course.description}
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-                    <Chip label={course.category} size="small" variant="outlined" sx={{ textTransform: 'capitalize', fontSize: '0.7rem', height: 20 }} />
+                    <Chip label={course.category} size="small" variant="outlined" sx={{ textTransform: 'capitalize', fontSize: '0.75rem', height: 20 }} />
                     {course.duration_hours && (
                       <Stack direction="row" spacing={0.5} alignItems="center" sx={{ color: 'text.secondary' }}>
                         <AccessTimeIcon sx={{ fontSize: 12 }} />

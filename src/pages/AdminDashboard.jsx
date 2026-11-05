@@ -663,7 +663,7 @@ function CoursesManagement({ courses, users }) {
                       label={`${(course.assigned_tutors || []).length}/2 tutors`}
                       size="small"
                       color={(course.assigned_tutors || []).length >= 2 ? 'warning' : 'default'}
-                      sx={{ fontSize: '0.65rem' }}
+                      sx={{ fontSize: '0.75rem' }}
                     />
                   </Box>
                 </Box>
@@ -1673,7 +1673,7 @@ function TutorRequestsManagement() {
                   label={allRequests.filter(r => r.status === 'pending').length}
                   size="small"
                   color="error"
-                  sx={{ ml: 0.5, height: 18, fontSize: '0.65rem' }}
+                  sx={{ ml: 0.5, height: 18, fontSize: '0.75rem' }}
                 />
               )}
             </Button>

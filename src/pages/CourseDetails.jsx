@@ -667,7 +667,7 @@ export default function CourseDetails() {
                                        <Typography variant="body2" fontWeight={500}>{lesson.title}</Typography>
                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                                          {lesson.is_preview && !isEnrolled && (
-                                           <Chip label="Preview" size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
+                                           <Chip label="Preview" size="small" variant="outlined" sx={{ height: 20, fontSize: '0.75rem' }} />
                                          )}
                                          {lessonQuizCount > 0 && (
                                            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
@@ -810,7 +810,7 @@ export default function CourseDetails() {
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                                 <Typography fontWeight={500}>{review.user_name}</Typography>
                                 {review.is_verified_purchase && (
-                                  <Chip label="Verified" size="small" sx={{ bgcolor: '#d1fae5', color: '#059669', height: 20, fontSize: '0.65rem' }} />
+                                  <Chip label="Verified" size="small" sx={{ bgcolor: '#d1fae5', color: '#059669', height: 20, fontSize: '0.75rem' }} />
                                 )}
                               </Box>
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>

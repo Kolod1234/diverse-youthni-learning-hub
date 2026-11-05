@@ -137,14 +137,14 @@ export default function StudentAssignments({ enrollments, user }) {
                   <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
                     <Typography fontWeight={600} noWrap>{assignment.title}</Typography>
                     {submission ? (
-                      <Chip label="Submitted" size="small" sx={{ bgcolor: '#d1fae5', color: '#059669', height: 20, fontSize: '0.65rem' }} />
+                      <Chip label="Submitted" size="small" sx={{ bgcolor: '#d1fae5', color: '#059669', height: 20, fontSize: '0.75rem' }} />
                     ) : overdue ? (
-                      <Chip label="Overdue" size="small" sx={{ bgcolor: '#fee2e2', color: '#dc2626', height: 20, fontSize: '0.65rem' }} />
+                      <Chip label="Overdue" size="small" sx={{ bgcolor: '#fee2e2', color: '#dc2626', height: 20, fontSize: '0.75rem' }} />
                     ) : (
-                      <Chip label="Pending" size="small" sx={{ bgcolor: '#dbeafe', color: '#2563eb', height: 20, fontSize: '0.65rem' }} />
+                      <Chip label="Pending" size="small" sx={{ bgcolor: '#dbeafe', color: '#2563eb', height: 20, fontSize: '0.75rem' }} />
                     )}
                     {submission?.is_graded && (
-                      <Chip label={`Graded: ${submission.grade}/${assignment.total_points}`} size="small" sx={{ bgcolor: '#f3e8ff', color: '#7c3aed', height: 20, fontSize: '0.65rem' }} />
+                      <Chip label={`Graded: ${submission.grade}/${assignment.total_points}`} size="small" sx={{ bgcolor: '#f3e8ff', color: '#7c3aed', height: 20, fontSize: '0.75rem' }} />
                     )}
                   </Stack>
                   <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 0.5, color: 'text.secondary' }}>

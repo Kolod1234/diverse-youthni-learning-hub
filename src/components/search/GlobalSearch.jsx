@@ -142,7 +142,7 @@ export default function GlobalSearch({ onClose }) {
                   <Typography variant="caption" fontWeight={700} sx={{ color, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                     {label}
                   </Typography>
-                  <Chip label={items.length} size="small" sx={{ height: 16, fontSize: '0.65rem', ml: 'auto' }} />
+                  <Chip label={items.length} size="small" sx={{ height: 16, fontSize: '0.75rem', ml: 'auto' }} />
                 </Box>
                 {items.map((item, i) => (
                   <Link key={item.id || i} to={getHref(key, item)} onClick={onClose} style={{ textDecoration: 'none', color: 'inherit' }}>

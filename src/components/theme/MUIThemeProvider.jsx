@@ -23,7 +23,9 @@ export default function MUIThemeProvider({ children }) {
         dark: '#d97706',
         contrastText: '#1a1a1a',
       },
-      success: { main: '#16a34a', contrastText: '#ffffff' },
+      // Light mode uses deeper green/amber so status text and outlined chips pass 4.5:1 on white.
+      success: isDark ? { main: '#4ade80', contrastText: '#0b0b14' } : { main: '#15803d', contrastText: '#ffffff' },
+      warning: isDark ? { main: '#fbbf24', contrastText: '#0b0b14' } : { main: '#b45309', contrastText: '#ffffff' },
       // Error red: a lighter red in dark mode so warnings like "Danger Zone" stay readable (4.5:1).
       error: isDark ? { main: '#f87171', contrastText: '#0b0b14' } : { main: '#dc2626', contrastText: '#ffffff' },
       background: {

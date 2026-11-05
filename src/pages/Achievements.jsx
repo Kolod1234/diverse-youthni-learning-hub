@@ -273,7 +273,7 @@ function SuccessStoriesCarousel() {
                         <Chip
                           label={story.tag}
                           size="small"
-                          sx={{ bgcolor: story.tagColor, color: 'white', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.7rem' }}
+                          sx={{ bgcolor: story.tagColor, color: 'white', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem' }}
                         />
                       </Box>
                       

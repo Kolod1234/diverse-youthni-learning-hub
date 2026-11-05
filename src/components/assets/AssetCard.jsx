@@ -54,11 +54,11 @@ export default function AssetCard({ asset, onInsert, onDelete, onCopyUrl, select
         </div>
 
         <div className="flex items-center gap-1 flex-wrap">
-          <Badge variant="outline" className={`text-[10px] ${TYPE_COLORS[asset.asset_type] || TYPE_COLORS.other}`}>
+          <Badge variant="outline" className={`text-xs ${TYPE_COLORS[asset.asset_type] || TYPE_COLORS.other}`}>
             {asset.asset_type?.replace('_', ' ') || 'image'}
           </Badge>
           {asset.usage_count > 0 && (
-            <Badge variant="outline" className="text-[10px]">used {asset.usage_count}x</Badge>
+            <Badge variant="outline" className="text-xs">used {asset.usage_count}x</Badge>
           )}
         </div>
       </div>

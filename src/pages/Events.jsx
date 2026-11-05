@@ -168,9 +168,9 @@ export default function Events() {
                       )}
                       <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
-                          <Chip label={event.category} size="small" sx={{ bgcolor: CATEGORY_COLORS[event.category] + '15', color: CATEGORY_COLORS[event.category], fontWeight: 600, textTransform: 'capitalize', fontSize: '0.7rem' }} />
-                          {isPastEvent && <Chip label="Past" size="small" variant="outlined" sx={{ fontSize: '0.7rem' }} />}
-                          {myRsvp && <Chip label={myRsvp.status === 'going' ? '✓ Going' : myRsvp.status === 'maybe' ? '? Maybe' : '✗ Not Going'} size="small" color={myRsvp.status === 'going' ? 'success' : myRsvp.status === 'maybe' ? 'warning' : 'default'} sx={{ fontSize: '0.7rem' }} />}
+                          <Chip label={event.category} size="small" sx={{ bgcolor: CATEGORY_COLORS[event.category] + '15', color: CATEGORY_COLORS[event.category], fontWeight: 600, textTransform: 'capitalize', fontSize: '0.75rem' }} />
+                          {isPastEvent && <Chip label="Past" size="small" variant="outlined" sx={{ fontSize: '0.75rem' }} />}
+                          {myRsvp && <Chip label={myRsvp.status === 'going' ? '✓ Going' : myRsvp.status === 'maybe' ? '? Maybe' : '✗ Not Going'} size="small" color={myRsvp.status === 'going' ? 'success' : myRsvp.status === 'maybe' ? 'warning' : 'default'} sx={{ fontSize: '0.75rem' }} />}
                         </Box>
 
                         <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5, lineHeight: 1.3 }}>{event.title}</Typography>
@@ -206,7 +206,7 @@ export default function Events() {
                                 variant={myRsvp?.status === status ? 'contained' : 'outlined'}
                                 onClick={(e) => { e.stopPropagation(); rsvpMutation.mutate({ event_id: event.id, status }); }}
                                 sx={{
-                                  flex: 1, fontSize: '0.7rem', py: 0.5,
+                                  flex: 1, fontSize: '0.75rem', py: 0.5,
                                   ...(myRsvp?.status === status && status === 'going' ? { bgcolor: '#16a34a', '&:hover': { bgcolor: '#15803d' } } : {}),
                                   ...(myRsvp?.status === status && status === 'maybe' ? { bgcolor: '#d97706', '&:hover': { bgcolor: '#b45309' } } : {}),
                                   ...(myRsvp?.status === status && status === 'not_going' ? { bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' } } : {}),

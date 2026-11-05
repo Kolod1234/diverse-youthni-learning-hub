@@ -180,7 +180,7 @@ ${formData.message}
           <motion.div
             className="space-y-6"
           >
-            <Card className="p-6 bg-[#0b2f5c] text-white border-0 shadow-lg">
+            <Card className="p-6 border-0 shadow-lg" sx={{ bgcolor: '#0b2f5c', color: '#fff' }}>
               <h3 className="text-xl font-bold mb-6">Contact Information</h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">

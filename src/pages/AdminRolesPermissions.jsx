@@ -146,14 +146,14 @@ export default function AdminRolesPermissions() {
                         key={perm}
                         label={perm.replace(/_/g, ' ')}
                         size="small"
-                        sx={{ fontSize: '0.7rem' }}
+                        sx={{ fontSize: '0.75rem' }}
                       />
                     ))}
                     {permissions.length > 3 && (
                       <Chip
                         label={`+${permissions.length - 3} more`}
                         size="small"
-                        sx={{ fontSize: '0.7rem' }}
+                        sx={{ fontSize: '0.75rem' }}
                       />
                     )}
                   </Box>

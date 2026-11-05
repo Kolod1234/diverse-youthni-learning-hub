@@ -95,12 +95,12 @@ export default function StudentQuizzes({ enrollments, user }) {
                         icon={<CheckCircleIcon sx={{ fontSize: 12 }} />}
                         label="Passed"
                         size="small"
-                        sx={{ bgcolor: '#d1fae5', color: '#059669', height: 20, fontSize: '0.65rem' }}
+                        sx={{ bgcolor: '#d1fae5', color: '#059669', height: 20, fontSize: '0.75rem' }}
                       />
                     ) : attempted ? (
-                      <Chip label="Attempted" size="small" sx={{ bgcolor: '#fef3c7', color: '#d97706', height: 20, fontSize: '0.65rem' }} />
+                      <Chip label="Attempted" size="small" sx={{ bgcolor: '#fef3c7', color: '#d97706', height: 20, fontSize: '0.75rem' }} />
                     ) : (
-                      <Chip label="Not Started" size="small" sx={{ bgcolor: '#e0e7ff', color: '#4f46e5', height: 20, fontSize: '0.65rem' }} />
+                      <Chip label="Not Started" size="small" sx={{ bgcolor: '#e0e7ff', color: '#4f46e5', height: 20, fontSize: '0.75rem' }} />
                     )}
                   </Stack>
                   <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" useFlexGap sx={{ mt: 0.5, color: 'text.secondary' }}>

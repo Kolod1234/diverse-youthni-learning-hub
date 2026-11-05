@@ -102,13 +102,13 @@ export default function CourseCard({ course, index = 0, user = null }) {
                 <Chip
                   label="⭐ Featured"
                   size="small"
-                  sx={{ bgcolor: '#4f46e5', color: 'white', fontWeight: 700, fontSize: '0.7rem', boxShadow: 2, border: 0 }}
+                  sx={{ bgcolor: '#4f46e5', color: 'white', fontWeight: 700, fontSize: '0.75rem', boxShadow: 2, border: 0 }}
                 />
               )}
               <Chip
                 label={course.category}
                 size="small"
-                sx={{ ...categoryStyle, textTransform: 'capitalize', fontWeight: 600, fontSize: '0.7rem', boxShadow: 1, border: 0 }}
+                sx={{ ...categoryStyle, textTransform: 'capitalize', fontWeight: 600, fontSize: '0.75rem', boxShadow: 1, border: 0 }}
               />
             </Box>
 
@@ -120,9 +120,9 @@ export default function CourseCard({ course, index = 0, user = null }) {
                 sx={{ ...levelStyle, textTransform: 'capitalize', fontWeight: 600, boxShadow: 1, border: 0 }}
               />
               {!course.price || course.price === 0 ? (
-                <Chip label="Free" size="small" sx={{ bgcolor: '#22c55e', color: 'white', fontWeight: 700, fontSize: '0.7rem', boxShadow: 2, border: 0 }} />
+                <Chip label="Free" size="small" sx={{ bgcolor: '#22c55e', color: 'white', fontWeight: 700, fontSize: '0.75rem', boxShadow: 2, border: 0 }} />
               ) : (
-                <Chip label={`£${course.price}`} size="small" sx={{ bgcolor: '#4f46e5', color: 'white', fontWeight: 700, fontSize: '0.7rem', boxShadow: 2, border: 0 }} />
+                <Chip label={`£${course.price}`} size="small" sx={{ bgcolor: '#4f46e5', color: 'white', fontWeight: 700, fontSize: '0.75rem', boxShadow: 2, border: 0 }} />
               )}
             </Box>
           </Box>

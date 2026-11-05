@@ -119,7 +119,7 @@ export default function RealTimeChatPanel({ sessionId, user }) {
                     <Button
                       size="small"
                       onClick={() => setReplyingTo(msg)}
-                      sx={{ minWidth: 'auto', p: 0.5, fontSize: '0.7rem' }}
+                      sx={{ minWidth: 'auto', p: 0.5, fontSize: '0.75rem' }}
                     >
                       <Reply className="w-3 h-3 mr-0.5" />
                       Reply
@@ -127,7 +127,7 @@ export default function RealTimeChatPanel({ sessionId, user }) {
                     <Button
                       size="small"
                       onClick={() => pinMessageMutation.mutate(msg.id)}
-                      sx={{ minWidth: 'auto', p: 0.5, fontSize: '0.7rem' }}
+                      sx={{ minWidth: 'auto', p: 0.5, fontSize: '0.75rem' }}
                     >
                       <Pin className="w-3 h-3 mr-0.5" />
                       {msg.is_pinned ? 'Unpin' : 'Pin'}

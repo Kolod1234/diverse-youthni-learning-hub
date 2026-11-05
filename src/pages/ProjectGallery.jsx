@@ -124,7 +124,7 @@ export default function ProjectGallery() {
                   )}
                   <CardContent sx={{ flexGrow: 1, p: 3 }}>
                     {project.category && (
-                      <Chip label={project.category} size="small" icon={<Tag size={12} />} sx={{ mb: 1.5, fontSize: '0.7rem', fontWeight: 600 }} />
+                      <Chip label={project.category} size="small" icon={<Tag size={12} />} sx={{ mb: 1.5, fontSize: '0.75rem', fontWeight: 600 }} />
                     )}
                     <Typography variant="h6" fontWeight={800} sx={{ mb: 1, lineHeight: 1.3 }}>{project.title}</Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>

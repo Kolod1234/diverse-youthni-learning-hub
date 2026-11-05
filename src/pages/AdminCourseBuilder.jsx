@@ -121,7 +121,7 @@ export default function AdminCourseBuilder() {
                                 <DragIndicatorIcon sx={{ fontSize: 20, color: 'text.disabled' }} />
                               </Box>
                               <Box sx={{ flex: 1 }}>
-                                <Chip label={section.section_type} size="small" sx={{ bgcolor: '#e0e7ff', color: '#4338ca', fontSize: '0.65rem', mb: 0.5 }} />
+                                <Chip label={section.section_type} size="small" sx={{ bgcolor: '#e0e7ff', color: '#4338ca', fontSize: '0.75rem', mb: 0.5 }} />
                                 <Typography fontWeight={600}>{section.title || 'Untitled'}</Typography>
                               </Box>
                               <Stack direction="row" spacing={1}>

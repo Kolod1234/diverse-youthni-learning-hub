@@ -244,7 +244,7 @@ export default function AdminNotifications() {
                         {form.message || 'Your notification message will appear here.'}
                       </Typography>
                       <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
-                        <Chip label={form.type} size="small" sx={{ fontSize: '0.65rem', height: 18 }} />
+                        <Chip label={form.type} size="small" sx={{ fontSize: '0.75rem', height: 18 }} />
                         <Typography variant="caption" color="text.secondary">Just now</Typography>
                       </Box>
                     </Box>

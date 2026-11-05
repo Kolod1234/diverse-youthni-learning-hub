@@ -190,8 +190,8 @@ export default function AdminTutorMonitor() {
                         <Typography variant="body2" fontWeight={500} noWrap>{tutor.full_name}</Typography>
                         <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>{tutor.email}</Typography>
                         <Stack direction="row" spacing={0.5} sx={{ mt: 0.5 }}>
-                          <Chip label={`${courseCount} courses`} size="small" variant="outlined" sx={{ height: 18, fontSize: '0.65rem' }} />
-                          {ungraded > 0 && <Chip label={`${ungraded} ungraded`} size="small" sx={{ bgcolor: '#fee2e2', color: '#b91c1c', height: 18, fontSize: '0.65rem' }} />}
+                          <Chip label={`${courseCount} courses`} size="small" variant="outlined" sx={{ height: 18, fontSize: '0.75rem' }} />
+                          {ungraded > 0 && <Chip label={`${ungraded} ungraded`} size="small" sx={{ bgcolor: '#fee2e2', color: '#b91c1c', height: 18, fontSize: '0.75rem' }} />}
                         </Stack>
                       </Box>
                       <ChevronRightIcon sx={{ fontSize: 16, color: 'text.disabled' }} />

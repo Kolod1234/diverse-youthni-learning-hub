@@ -173,7 +173,7 @@ export default function AdminProjectSubmissions() {
                 label={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {t.label}
-                    <Chip label={tabCounts[t.key]} size="small" sx={{ height: 20, fontSize: '0.7rem' }} />
+                    <Chip label={tabCounts[t.key]} size="small" sx={{ height: 20, fontSize: '0.75rem' }} />
                   </Box>
                 }
               />
@@ -214,7 +214,7 @@ export default function AdminProjectSubmissions() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, px: 1 }}>
                       <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: col.text }} />
                       <Typography fontWeight={800} sx={{ fontSize: '0.95rem', color: col.text }}>{col.label}</Typography>
-                      <Chip label={colProjects.length} size="small" sx={{ bgcolor: col.bg, color: col.text, fontWeight: 700, height: 20, fontSize: '0.7rem', ml: 'auto' }} />
+                      <Chip label={colProjects.length} size="small" sx={{ bgcolor: col.bg, color: col.text, fontWeight: 700, height: 20, fontSize: '0.75rem', ml: 'auto' }} />
                     </Box>
                     <Droppable droppableId={col.key}>
                       {(provided, snapshot) => (
@@ -257,7 +257,7 @@ export default function AdminProjectSubmissions() {
                                         sx={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 2, mb: 1.5 }} />
                                     )}
                                     {project.category && (
-                                      <Chip label={project.category} size="small" sx={{ mb: 1, fontSize: '0.65rem' }} />
+                                      <Chip label={project.category} size="small" sx={{ mb: 1, fontSize: '0.75rem' }} />
                                     )}
                                     <Typography fontWeight={700} sx={{ fontSize: '0.88rem', mb: 0.5 }}>{project.title}</Typography>
                                     <Typography variant="caption" color="text.secondary" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5, mb: 1.5 }}>

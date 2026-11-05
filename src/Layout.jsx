@@ -600,7 +600,7 @@ function LayoutContent({ children, currentPageName }) {
                 style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
               >
                 <Icon sx={{ fontSize: 24, color: on ? '#4f46e5' : 'text.secondary' }} />
-                <Typography variant="caption" sx={{ color: on ? 'primary.main' : 'text.secondary', fontWeight: on ? 600 : 400, fontSize: '0.7rem' }}>
+                <Typography variant="caption" sx={{ color: on ? 'primary.main' : 'text.secondary', fontWeight: on ? 600 : 400, fontSize: '0.75rem' }}>
                   {item.label}
                 </Typography>
               </Link>
@@ -609,7 +609,7 @@ function LayoutContent({ children, currentPageName }) {
           <Box component="button" type="button" onClick={() => setMobileMenuOpen(true)}
             sx={{ border: 0, bgcolor: 'transparent', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', p: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center', color: 'text.secondary' }}>
             <Menu size={24} />
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>Menu</Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>Menu</Typography>
           </Box>
         </Box>
       </Box>
