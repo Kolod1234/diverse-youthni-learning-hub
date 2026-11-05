@@ -916,7 +916,7 @@ export default function Library() {
                     <BookOpen className="w-5 h-5" />
                     Read Online
                   </Button>
-                  <Button 
+                  <Button variant="contained" 
                     onClick={() => handleDownload(selectedBook)}
                     className="w-full bg-white/10 hover:bg-white/20 gap-2 text-white border border-white/20 min-h-[44px]"
                   >
@@ -1073,7 +1073,7 @@ export default function Library() {
               <div className="flex-1 flex flex-col" id="pdf-viewer-container">
                 {canEditBookUI(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
                   <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 border-b flex items-center justify-center gap-3">
-                    <Button 
+                    <Button variant="contained" 
                       size="sm"
                       onClick={async (e) => {
                         e.preventDefault();

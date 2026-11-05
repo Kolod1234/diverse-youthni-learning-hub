@@ -411,7 +411,7 @@ export default function AdminYouthWork() {
                          Download
                        </Button>
                        {!progress.is_approved && (
-                         <Button
+                         <Button variant="contained"
                            size="sm"
                            onClick={() => {
                              const feedback = prompt('Enter feedback:');
@@ -842,7 +842,7 @@ export default function AdminYouthWork() {
                   >
                     Cancel
                   </Button>
-                  <Button
+                  <Button variant="contained"
                     onClick={() => {
                       updateQualificationMutation.mutate({
                         qualId: editingQualification.id,
@@ -889,7 +889,7 @@ export default function AdminYouthWork() {
                 >
                   Cancel
                 </Button>
-                <Button
+                <Button variant="contained"
                   onClick={() => {
                     if (messageContent.trim() && selectedParticipant) {
                       sendMessageMutation.mutate({

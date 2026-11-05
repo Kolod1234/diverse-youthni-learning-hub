@@ -189,7 +189,7 @@ export default function TutorBookingManager() {
             <div className="flex gap-2">
               {isPending && (
                 <>
-                  <Button
+                  <Button variant="contained"
                     onClick={() => handleConfirm(booking)}
                     disabled={updateBookingMutation.isPending}
                     size="sm"
@@ -213,7 +213,7 @@ export default function TutorBookingManager() {
                   <Button onClick={() => handleConfirm(booking)} size="sm" variant="outline" className="text-blue-600 border-blue-300">
                     Update Notes
                   </Button>
-                  <Button onClick={() => handleComplete(booking)} size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button variant="contained" onClick={() => handleComplete(booking)} size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
                     <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Complete
                   </Button>
                   <Button onClick={() => handleReject(booking)} size="sm" variant="outline" className="text-red-600 border-red-300">
@@ -411,7 +411,7 @@ export default function TutorBookingManager() {
                   </div>
                 )}
               </div>
-              <Button
+              <Button variant="contained"
                 onClick={handleAddSlot}
                 disabled={addSlotMutation.isPending}
                 className="mt-4 bg-indigo-600 hover:bg-indigo-700"

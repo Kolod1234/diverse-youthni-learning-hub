@@ -190,7 +190,7 @@ export default function CourseDiscussion() {
               onChange={(e) => setNewDiscussion({ ...newDiscussion, content: e.target.value })}
               rows={4}
             />
-            <Button 
+            <Button variant="contained" 
               onClick={handleCreateDiscussion}
               disabled={!newDiscussion.title || !newDiscussion.content || createDiscussionMutation.isPending}
               className="bg-indigo-600 hover:bg-indigo-700 text-white"
@@ -320,7 +320,7 @@ function DiscussionCard({ discussion, index, courseId, onReply, replyContent, on
                       }
                     }}
                   />
-                  <Button 
+                  <Button variant="contained" 
                     size="sm"
                     onClick={() => onReply(discussion.id)}
                     disabled={!replyContent.trim()}

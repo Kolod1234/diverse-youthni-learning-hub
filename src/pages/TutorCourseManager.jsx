@@ -283,7 +283,7 @@ export default function TutorCourseManager() {
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">Access Denied</h2>
           <p className="text-muted-foreground mb-6">You have not been assigned to <strong>{course?.title}</strong>. Please contact an admin to be added as a tutor for this course.</p>
-          <Button
+          <Button variant="contained"
             onClick={() => navigate(createPageUrl('TutorDashboard'))}
             className="bg-indigo-600 hover:bg-indigo-700"
           >
@@ -314,14 +314,14 @@ export default function TutorCourseManager() {
             <p className="text-sm text-muted-foreground mt-1">Organize your course into sections and lessons. Drag to reorder.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
-            <Button 
+            <Button variant="contained" 
               onClick={() => setShowAIGenerator(true)} 
               className="bg-indigo-600 hover:bg-indigo-700"
             >
               <Brain className="w-4 h-4 mr-2" />
               AI Generator
             </Button>
-            <Button
+            <Button variant="contained"
               onClick={() => navigate(`${createPageUrl('LessonEditor')}?courseId=${courseId}`)}
               className="bg-indigo-600"
             >
@@ -397,7 +397,7 @@ export default function TutorCourseManager() {
               onChange={(e) => setImportUrl(e.target.value)}
               className="flex-1"
             />
-            <Button
+            <Button variant="contained"
               onClick={handleImportFromSlides}
               disabled={!importUrl || importingSlides}
               className="bg-blue-600 hover:bg-blue-700"
@@ -433,7 +433,7 @@ export default function TutorCourseManager() {
                 isSaving={createLessonMutation.isPending}
               />
               <div className="flex gap-3 mt-4">
-                <Button 
+                <Button variant="contained" 
                   onClick={handleCreate} 
                   disabled={createLessonMutation.isPending || !lessonForm.title}
                   className="bg-indigo-600"
@@ -507,7 +507,7 @@ export default function TutorCourseManager() {
                                         isSaving={updateLessonMutation.isPending}
                                       />
                                       <div className="flex gap-3 mt-4">
-                                        <Button 
+                                        <Button variant="contained" 
                                           onClick={() => {
                                             updateLessonMutation.mutate({ id: lesson.id, data: lessonForm });
                                           }} 
@@ -1032,7 +1032,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
               <option value="document">Document Upload (PPT, PDF, Word)</option>
             </select>
             {formData.slides?.length > 0 && formData.content_type === 'richtext' && (
-              <Button
+              <Button variant="contained"
                 onClick={onSave}
                 disabled={isSaving}
                 size="sm"

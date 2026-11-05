@@ -335,7 +335,7 @@ export default function GradeAssignments() {
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button onClick={() => handleGrade(submission)} size="sm" className="bg-indigo-600" disabled={gradeMutation.isPending}>
+                        <Button variant="contained" onClick={() => handleGrade(submission)} size="sm" className="bg-indigo-600" disabled={gradeMutation.isPending}>
                           <Save className="w-4 h-4 mr-2" />
                           {gradeMutation.isPending ? 'Saving…' : 'Submit Grade'}
                         </Button>

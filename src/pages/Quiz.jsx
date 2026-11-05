@@ -428,7 +428,7 @@ export default function Quiz() {
                     Retake Quiz
                   </Button>
                   <Link to={createPageUrl('CourseDetails') + `?id=${quiz.course_id}`}>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                    <Button variant="contained" className="bg-indigo-600 hover:bg-indigo-700 gap-2">
                       Back to Course
                       <ArrowRight className="w-4 h-4" />
                     </Button>
@@ -586,7 +586,7 @@ export default function Quiz() {
               </Button>
 
               {isLastQuestion ? (
-                <Button
+                <Button variant="contained"
                   onClick={handleSubmitQuiz}
                   disabled={Object.keys(answers).length !== quiz.questions.length}
                   className="bg-emerald-600 hover:bg-emerald-700 gap-2"
@@ -595,7 +595,7 @@ export default function Quiz() {
                   <CheckCircle className="w-4 h-4" />
                 </Button>
               ) : (
-                <Button
+                <Button variant="contained"
                   onClick={() => {
                     setShowFeedback(false);
                     setCurrentQuestion(prev => prev + 1);

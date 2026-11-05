@@ -433,7 +433,7 @@ function ModulesView({ courses, user }) {
     <div className="max-w-5xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Modules</h1>
-        <Button onClick={() => setShowCreateCourse(true)} className="bg-blue-600 hover:bg-blue-700">
+        <Button variant="contained" onClick={() => setShowCreateCourse(true)} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="w-4 h-4 mr-2" />
           Create Course
         </Button>
@@ -782,7 +782,7 @@ function HomeView({ courses, user }) {
         <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Upcoming Sessions</h2>
-            <Link to={createPageUrl('ScheduleSession')}><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white"><Plus className="w-3 h-3 mr-1" /> Schedule</Button></Link>
+            <Link to={createPageUrl('ScheduleSession')}><Button variant="contained" size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white"><Plus className="w-3 h-3 mr-1" /> Schedule</Button></Link>
           </div>
           <div className="space-y-3">
             {upcomingSessions.map(session => (
@@ -792,7 +792,7 @@ function HomeView({ courses, user }) {
                   <div className="font-medium text-foreground text-sm truncate">{session.title}</div>
                   <div className="text-xs text-muted-foreground">{new Date(session.scheduled_date).toLocaleDateString('en-GB')} at {session.scheduled_time}</div>
                 </div>
-                <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}><Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs">Start session</Button></Link>
+                <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}><Button variant="contained" size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs">Start session</Button></Link>
               </div>
             ))}
             {upcomingSessions.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No upcoming sessions.<br /><Link to={createPageUrl('ScheduleSession')} className="text-indigo-600 hover:underline">Schedule one now</Link></p>}
@@ -814,7 +814,7 @@ function AssignmentsView({ course }) {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Assignments</h1>
-        <Link to={createPageUrl('CreateAssignment') + `?courseId=${course?.id}`}><Button className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Add Assignment</Button></Link>
+        <Link to={createPageUrl('CreateAssignment') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Add Assignment</Button></Link>
       </div>
       <div className="space-y-3">
         {assignments.map(assignment => (
@@ -1013,7 +1013,7 @@ function DiscussionsView({ course }) {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Discussions</h1>
-        <Link to={createPageUrl('CourseDiscussion') + `?courseId=${course?.id}`}><Button className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />New Discussion</Button></Link>
+        <Link to={createPageUrl('CourseDiscussion') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />New Discussion</Button></Link>
       </div>
       <div className="space-y-3">
         {discussions.length > 0 ? discussions.map(discussion => (
@@ -1067,7 +1067,7 @@ function QuizzesView({ course }) {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-foreground">Quizzes</h1>
-        <Link to={createPageUrl('QuizGenerator') + `?courseId=${course?.id}`}><Button className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Create Quiz</Button></Link>
+        <Link to={createPageUrl('QuizGenerator') + `?courseId=${course?.id}`}><Button variant="contained" className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Create Quiz</Button></Link>
       </div>
       <div className="space-y-3">
         {quizzes.length > 0 ? quizzes.map(quiz => (
@@ -1104,13 +1104,13 @@ function VideoView({ course, courses, user }) {
         <h1 className="text-3xl font-bold text-foreground">Calendar & Sessions</h1>
         <div className="flex gap-2">
           <Link to={createPageUrl('TutorBookingManager')}><Button variant="outline">Bookings {pendingBookings.length > 0 && <span className="ml-1 bg-amber-500 text-white text-xs rounded-full px-1.5">{pendingBookings.length}</span>}</Button></Link>
-          <Link to={createPageUrl('ScheduleSession')}><Button className="bg-indigo-600 hover:bg-indigo-700 text-white"><Plus className="w-4 h-4 mr-2" />Schedule</Button></Link>
+          <Link to={createPageUrl('ScheduleSession')}><Button variant="contained" className="bg-indigo-600 hover:bg-indigo-700 text-white"><Plus className="w-4 h-4 mr-2" />Schedule</Button></Link>
         </div>
       </div>
-      {pendingBookings.length > 0 && <div className="bg-amber-50 dark:bg-amber-500/15 border border-amber-200 rounded-xl p-4 mb-4 flex items-center justify-between"><p className="font-semibold text-amber-900 dark:text-amber-300">{pendingBookings.length} booking{pendingBookings.length > 1 ? 's' : ''} pending</p><Link to={createPageUrl('TutorBookingManager')}><Button size="sm" className="bg-amber-600 text-white">Review</Button></Link></div>}
+      {pendingBookings.length > 0 && <div className="bg-amber-50 dark:bg-amber-500/15 border border-amber-200 rounded-xl p-4 mb-4 flex items-center justify-between"><p className="font-semibold text-amber-900 dark:text-amber-300">{pendingBookings.length} booking{pendingBookings.length > 1 ? 's' : ''} pending</p><Link to={createPageUrl('TutorBookingManager')}><Button variant="contained" size="sm" className="bg-amber-600 text-white">Review</Button></Link></div>}
       <h2 className="text-lg font-semibold mb-3">Upcoming ({upcoming.length})</h2>
       <div className="space-y-3 mb-6">
-        {upcoming.map(s => { const c = (courses || []).find(co => co.id === s.course_id); return <div key={s.id} className="bg-card border border-border rounded-xl p-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/15 rounded-lg flex items-center justify-center"><Video className="w-5 h-5 text-indigo-600" /></div><div><h3 className="font-semibold text-foreground text-sm">{s.title}</h3><p className="text-xs text-muted-foreground">{new Date(s.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} at {s.scheduled_time}{c && ` · ${c.title}`}</p></div></div><Link to={createPageUrl('VideoSession') + `?id=${s.id}`}><Button className="bg-indigo-600 hover:bg-indigo-700 text-white" size="sm">Start</Button></Link></div>; })}
+        {upcoming.map(s => { const c = (courses || []).find(co => co.id === s.course_id); return <div key={s.id} className="bg-card border border-border rounded-xl p-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/15 rounded-lg flex items-center justify-center"><Video className="w-5 h-5 text-indigo-600" /></div><div><h3 className="font-semibold text-foreground text-sm">{s.title}</h3><p className="text-xs text-muted-foreground">{new Date(s.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} at {s.scheduled_time}{c && ` · ${c.title}`}</p></div></div><Link to={createPageUrl('VideoSession') + `?id=${s.id}`}><Button variant="contained" className="bg-indigo-600 hover:bg-indigo-700 text-white" size="sm">Start</Button></Link></div>; })}
         {upcoming.length === 0 && <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground"><Video className="w-10 h-10 text-gray-300 mx-auto mb-2" /><p>No upcoming sessions. <Link to={createPageUrl('ScheduleSession')} className="text-indigo-600 hover:underline">Schedule one</Link>.</p></div>}
       </div>
       {past.length > 0 && <><h2 className="text-lg font-semibold mb-3">Past Sessions</h2><div className="space-y-2">{past.slice(0, 5).map(s => <div key={s.id} className="bg-muted border border-border rounded-xl p-4 flex items-center justify-between"><div><h3 className="font-medium text-foreground text-sm">{s.title}</h3><p className="text-xs text-muted-foreground">{new Date(s.scheduled_date).toLocaleDateString('en-GB')} · <span className="capitalize">{s.status}</span></p></div><Link to={createPageUrl('SessionRecordings') + `?sessionId=${s.id}`}><Button variant="outline" size="sm">Recording</Button></Link></div>)}</div></>}

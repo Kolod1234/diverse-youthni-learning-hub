@@ -473,7 +473,7 @@ export default function ScheduleSession() {
                   Cancel
                 </Button>
               </Link>
-              <Button
+              <Button variant="contained"
                 type="submit"
                 disabled={createSessionMutation.isPending}
                 className="bg-indigo-600 hover:bg-indigo-700"

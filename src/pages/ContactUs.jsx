@@ -159,7 +159,7 @@ ${formData.message}
                     />
                   </div>
 
-                  <Button 
+                  <Button variant="contained" 
                     type="submit" 
                     className="w-full bg-[#FF8C00] hover:bg-[#CC7000] h-12 text-lg"
                     disabled={sending}

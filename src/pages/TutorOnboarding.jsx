@@ -207,7 +207,7 @@ export default function TutorOnboarding() {
               </Button>
             )}
 
-            <Button
+            <Button variant="contained"
               onClick={handleNext}
               disabled={!canProceed() || saveUserMutation.isPending}
               className="bg-indigo-600 gap-2 min-w-[120px]"

@@ -327,7 +327,7 @@ export default function VideoSession() {
                 </div>
               ) : session.status === 'live' ? (
                 <>
-                  <Button
+                  <Button variant="contained"
                     onClick={handleResumeSession}
                     disabled={generatingMeet}
                     className="flex-1 h-14 text-lg bg-indigo-600 hover:bg-indigo-700"
@@ -351,7 +351,7 @@ export default function VideoSession() {
                   )}
                 </>
               ) : (
-                <Button
+                <Button variant="contained"
                   onClick={handleStartSession}
                   disabled={(!isScheduledNow && !isTutor) || generatingMeet}
                   className="flex-1 h-14 text-lg bg-indigo-600 hover:bg-indigo-700"

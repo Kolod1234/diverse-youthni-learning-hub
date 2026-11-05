@@ -119,14 +119,14 @@ export default function Templates() {
             <p className="text-muted-foreground mt-2">Save and reuse your best content layouts</p>
           </div>
           <div className="flex gap-2">
-            <Button 
+            <Button variant="contained" 
               onClick={() => setShowAIGenerator(true)}
               className="bg-indigo-600 hover:bg-indigo-700"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               AI Generate
             </Button>
-            <Button 
+            <Button variant="contained" 
               onClick={() => setShowCreator(true)}
               className="bg-indigo-600 hover:bg-indigo-700"
             >
@@ -243,7 +243,7 @@ export default function Templates() {
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      <Button
+                      <Button variant="contained"
                         size="sm"
                         onClick={() => handleUseTemplate(template)}
                         className="flex-1 bg-indigo-600 hover:bg-indigo-700"

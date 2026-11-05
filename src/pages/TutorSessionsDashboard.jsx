@@ -206,7 +206,7 @@ export default function TutorSessionsDashboard() {
 
         <div className="flex gap-2 mt-4">
           <Link to={createPageUrl('VideoSession') + `?id=${session.id}`} className="flex-1">
-            <Button className="w-full bg-indigo-600">
+            <Button variant="contained" className="w-full bg-indigo-600">
               <Video className="w-4 h-4 mr-2" />
               {session.status === 'scheduled' ? 'Join Session' : 'View Details'}
             </Button>
@@ -252,7 +252,7 @@ export default function TutorSessionsDashboard() {
             <h1 className="text-3xl font-bold text-foreground">Live Sessions</h1>
             <p className="text-muted-foreground mt-1">Manage your video sessions and track attendance</p>
           </div>
-          <Button
+          <Button variant="contained"
             onClick={() => setShowScheduler(true)}
             className="bg-indigo-600 hover:bg-indigo-700"
           >
@@ -335,7 +335,7 @@ export default function TutorSessionsDashboard() {
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">No Upcoming Sessions</h3>
                 <p className="text-muted-foreground mb-6">Schedule your first live session to get started</p>
-                <Button onClick={() => setShowScheduler(true)} className="bg-indigo-600 hover:bg-indigo-700">
+                <Button variant="contained" onClick={() => setShowScheduler(true)} className="bg-indigo-600 hover:bg-indigo-700">
                   <Plus className="w-4 h-4 mr-2" />
                   Schedule Session
                 </Button>

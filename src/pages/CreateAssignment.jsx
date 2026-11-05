@@ -162,7 +162,7 @@ export default function CreateAssignment() {
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button
+                <Button variant="contained"
                   onClick={handleSubmit}
                   disabled={createMutation.isPending}
                   className="bg-indigo-600 hover:bg-indigo-700"

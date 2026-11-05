@@ -232,7 +232,7 @@ export default function CommunityEventSlides() {
                 ))}
               </div>
 
-              <Button
+              <Button variant="contained"
                 onClick={handleGenerate}
                 disabled={loading}
                 className="w-full bg-indigo-600 hover:bg-indigo-700"

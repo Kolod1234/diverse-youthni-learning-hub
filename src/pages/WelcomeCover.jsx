@@ -176,7 +176,7 @@ export default function WelcomeCover() {
                       )}
                     </ul>
                     
-                    <Button
+                    <Button variant="contained"
                       onClick={() => handleSelectInterest(pathway.id)}
                       className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0`}>
 
