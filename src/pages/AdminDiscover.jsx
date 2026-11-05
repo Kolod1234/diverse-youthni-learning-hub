@@ -109,8 +109,8 @@ export default function AdminDiscover() {
                   </Stack>
                 </Box>
                 <Stack direction="row" spacing={1}>
-                  <IconButton size="small" onClick={() => handleEdit(item)}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
-                  <IconButton size="small" onClick={() => { if (confirm('Delete this content?')) deleteMutation.mutate(item.id); }}>
+                  <IconButton aria-label="Edit" size="small" onClick={() => handleEdit(item)}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
+                  <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete this content?')) deleteMutation.mutate(item.id); }}>
                     <DeleteIcon sx={{ fontSize: 18, color: '#dc2626' }} />
                   </IconButton>
                 </Stack>

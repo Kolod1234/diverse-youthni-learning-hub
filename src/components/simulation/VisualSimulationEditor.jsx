@@ -211,10 +211,10 @@ export default function VisualSimulationEditor({ simulation, onSave }) {
                   }}
                   secondaryAction={
                     <Box>
-                      <IconButton onClick={() => editNode(node)} size="small">
+                      <IconButton aria-label="Edit" onClick={() => editNode(node)} size="small">
                         <Edit className="w-4 h-4" />
                       </IconButton>
-                      <IconButton
+                      <IconButton aria-label="Delete"
                         onClick={() => deleteNode(node.id)}
                         size="small"
                         disabled={node.id === simData.scenario_data?.start_node_id}
@@ -335,7 +335,7 @@ export default function VisualSimulationEditor({ simulation, onSave }) {
                 <Card key={idx} sx={{ p: 2, mb: 2, bgcolor: 'grey.50' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="caption" fontWeight="bold">Choice {idx + 1}</Typography>
-                    <IconButton size="small" onClick={() => deleteChoice(idx)}>
+                    <IconButton aria-label="Delete" size="small" onClick={() => deleteChoice(idx)}>
                       <Trash2 className="w-3 h-3" />
                     </IconButton>
                   </Box>

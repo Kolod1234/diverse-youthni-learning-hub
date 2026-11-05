@@ -123,8 +123,8 @@ export default function AdminStudentOfMonth() {
                   <Typography variant="body2">{student.achievement}</Typography>
                 </Box>
                 <Stack direction="row" spacing={1}>
-                  <IconButton size="small" onClick={() => handleEdit(student)}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
-                  <IconButton size="small" onClick={() => { if (confirm('Remove this student?')) deleteMutation.mutate(student.id); }}>
+                  <IconButton aria-label="Edit" size="small" onClick={() => handleEdit(student)}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
+                  <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Remove this student?')) deleteMutation.mutate(student.id); }}>
                     <DeleteIcon sx={{ fontSize: 18, color: '#dc2626' }} />
                   </IconButton>
                 </Stack>

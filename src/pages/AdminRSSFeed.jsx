@@ -240,10 +240,10 @@ export default function AdminRSSFeed() {
                       </Typography>
                     </Box>
                     <Stack direction="row" spacing={1}>
-                      <IconButton size="small" onClick={() => handleOpenDialog(item)} sx={{ border: 1, borderColor: 'divider' }}>
+                      <IconButton aria-label="Edit" size="small" onClick={() => handleOpenDialog(item)} sx={{ border: 1, borderColor: 'divider' }}>
                         <EditIcon sx={{ fontSize: 16 }} />
                       </IconButton>
-                      <IconButton size="small" onClick={() => { if (confirm('Delete this feed item?')) deleteMutation.mutate(item.id); }} sx={{ bgcolor: '#dc2626', color: 'white', '&:hover': { bgcolor: '#b91c1c' } }}>
+                      <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete this feed item?')) deleteMutation.mutate(item.id); }} sx={{ bgcolor: '#dc2626', color: 'white', '&:hover': { bgcolor: '#b91c1c' } }}>
                         <DeleteIcon sx={{ fontSize: 16 }} />
                       </IconButton>
                     </Stack>

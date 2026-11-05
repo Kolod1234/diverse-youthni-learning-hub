@@ -711,7 +711,7 @@ export default function LessonPlayerClassic() {
         <AppBar position="sticky" sx={{ bgcolor: 'background.paper', color: 'text.primary', boxShadow: 1, zIndex: 40 }}>
           <Toolbar disableGutters sx={{ px: { xs: 1.5, md: 3 }, justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <IconButton
+              <IconButton aria-label="Open menu"
                 sx={{ display: { xs: 'flex', lg: 'none' } }}
                 onClick={() => setShowSidebar(!showSidebar)}
               >
@@ -733,13 +733,13 @@ export default function LessonPlayerClassic() {
                 </Box>
               )}
               
-              <IconButton onClick={() => setShowAI(true)} title="AI Assistant (A)" sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <IconButton aria-label="AI Assistant (A)" onClick={() => setShowAI(true)} title="AI Assistant (A)" sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <Sparkles className="w-5 h-5 text-purple-500" />
               </IconButton>
 
               <AccessibilityControls />
               
-              <IconButton
+              <IconButton aria-label="Focus mode (F)"
                 onClick={() => setFocusModeEnabled(!focusModeEnabled)}
                 sx={{ display: { xs: 'none', md: 'flex' } }}
                 title="Focus mode (F)"
@@ -751,7 +751,7 @@ export default function LessonPlayerClassic() {
               
               <Sheet>
                 <SheetTrigger asChild>
-                  <IconButton>
+                  <IconButton aria-label="Settings">
                     <Settings className="w-5 h-5" />
                   </IconButton>
                 </SheetTrigger>

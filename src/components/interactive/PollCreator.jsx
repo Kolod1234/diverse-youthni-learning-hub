@@ -67,7 +67,7 @@ export default function PollCreator({ sessionId, onCreated }) {
             fullWidth
           />
           {options.length > 2 && (
-            <IconButton
+            <IconButton aria-label="Close"
               size="small"
               onClick={() => setOptions(options.filter((_, i) => i !== idx))}
             >

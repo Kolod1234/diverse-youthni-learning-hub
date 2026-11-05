@@ -23,7 +23,7 @@ export default function PaginationBar({ page, totalItems, pageSize = 20, onPageC
         Showing {from}–{to} of {totalItems}
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <IconButton size="small" onClick={() => onPageChange(page - 1)} disabled={page === 0}>
+        <IconButton aria-label="Previous" size="small" onClick={() => onPageChange(page - 1)} disabled={page === 0}>
           <ChevronLeft size={18} />
         </IconButton>
         {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
@@ -60,7 +60,7 @@ export default function PaginationBar({ page, totalItems, pageSize = 20, onPageC
             </Button>
           );
         })}
-        <IconButton size="small" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages - 1}>
+        <IconButton aria-label="Next" size="small" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages - 1}>
           <ChevronRight size={18} />
         </IconButton>
       </Box>

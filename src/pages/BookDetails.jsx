@@ -131,7 +131,7 @@ export default function BookDetails() {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-          <IconButton onClick={() => navigate(createPageUrl('Library'))}>
+          <IconButton aria-label="Back" onClick={() => navigate(createPageUrl('Library'))}>
             <ArrowLeft />
           </IconButton>
           <Typography variant="h4" fontWeight={700}>Book Details</Typography>

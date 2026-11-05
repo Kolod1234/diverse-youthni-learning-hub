@@ -175,7 +175,7 @@ export default function AdminLearningObjectives() {
                     setManualObjectives(updated);
                   }}
                 />
-                <IconButton onClick={() => setManualObjectives(manualObjectives.filter((_, i) => i !== idx))}>
+                <IconButton aria-label="Close" onClick={() => setManualObjectives(manualObjectives.filter((_, i) => i !== idx))}>
                   <CloseIcon sx={{ fontSize: 16 }} />
                 </IconButton>
               </Stack>

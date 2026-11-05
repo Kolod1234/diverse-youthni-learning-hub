@@ -87,8 +87,8 @@ export default function AdminQuotes() {
                   </Stack>
                 </Box>
                 <Stack direction="row" spacing={1}>
-                  <IconButton size="small" onClick={() => handleEdit(quote)}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
-                  <IconButton size="small" onClick={() => { if (confirm('Delete this quote?')) deleteMutation.mutate(quote.id); }}>
+                  <IconButton aria-label="Edit" size="small" onClick={() => handleEdit(quote)}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
+                  <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete this quote?')) deleteMutation.mutate(quote.id); }}>
                     <DeleteIcon sx={{ fontSize: 18, color: '#dc2626' }} />
                   </IconButton>
                 </Stack>

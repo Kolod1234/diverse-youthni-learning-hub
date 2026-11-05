@@ -373,10 +373,10 @@ function PartnersManagement() {
                   <IconButton size="small" variant="outlined" onClick={() => toggleActiveMutation.mutate({ id: logo.id, is_active: !logo.is_active })}>
                     {logo.is_active ? <Eye style={{ width: 16, height: 16 }} /> : <EyeOff style={{ width: 16, height: 16 }} />}
                   </IconButton>
-                  <IconButton size="small" variant="outlined" onClick={() => { setEditingLogo(logo); setFormData(logo); }}>
+                  <IconButton aria-label="Edit" size="small" variant="outlined" onClick={() => { setEditingLogo(logo); setFormData(logo); }}>
                     <Edit style={{ width: 16, height: 16 }} />
                   </IconButton>
-                  <IconButton size="small" variant="outlined" onClick={() => { if (confirm('Delete this logo?')) deleteMutation.mutate(logo.id); }}>
+                  <IconButton aria-label="Delete" size="small" variant="outlined" onClick={() => { if (confirm('Delete this logo?')) deleteMutation.mutate(logo.id); }}>
                     <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
                   </IconButton>
                 </Box>
@@ -490,7 +490,7 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button size="small" variant="outlined" onClick={() => handleTutorToggle(user)} disabled={user.role === 'admin'} startIcon={<UserCog style={{ width: 16, height: 16 }} />}>{user.is_tutor ? 'Remove Tutor' : 'Make Tutor'}</Button>
                 <Button size="small" variant="outlined" onClick={() => handleBanToggle(user)} disabled={user.role === 'admin'}>{user.is_suspended ? 'Unban' : 'Ban'}</Button>
-                <IconButton size="small" onClick={() => handleDeleteUser(user.id)} disabled={user.role === 'admin'}>
+                <IconButton aria-label="Delete" size="small" onClick={() => handleDeleteUser(user.id)} disabled={user.role === 'admin'}>
                   <Trash2 style={{ width: 18, height: 18, color: 'red' }} />
                 </IconButton>
               </Box>
@@ -671,7 +671,7 @@ function CoursesManagement({ courses, users }) {
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button size="small" variant="outlined" onClick={() => { setSelectedCourse(course); setSelectedTutorEmail(''); }} startIcon={<UserCog style={{ width: 16, height: 16 }} />}>Manage Tutors</Button>
                 <Button size="small" variant="outlined" onClick={() => { setEditingInstructor(course); setCustomInstructorName(course.instructor || ''); }} startIcon={<Edit style={{ width: 16, height: 16 }} />}>Edit Name</Button>
-                <IconButton size="small" onClick={() => { if (confirm('Delete this course?')) deleteCourseMutation.mutate(course.id); }}>
+                <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete this course?')) deleteCourseMutation.mutate(course.id); }}>
                   <Trash2 style={{ width: 18, height: 18, color: 'red' }} />
                 </IconButton>
               </Box>
@@ -765,7 +765,7 @@ function MessagesMonitor({ messages, users }) {
               <Typography variant="body2" sx={{ fontWeight: 600 }}>Replying to: {replyTo.sender_name}</Typography>
               <Typography variant="caption" color="textSecondary">{replyTo.content}</Typography>
             </Box>
-            <IconButton size="small" onClick={() => setReplyTo(null)}>
+            <IconButton aria-label="Delete" size="small" onClick={() => setReplyTo(null)}>
               <Trash2 style={{ width: 16, height: 16 }} />
             </IconButton>
           </Box>
@@ -874,7 +874,7 @@ function CarouselManager({ carouselType = 'main', title = 'Carousel Images' }) {
           <Grid size={{ xs: 6, md: 4 }} key={img.id}>
             <Box sx={{ position: 'relative', borderRadius: 1, overflow: 'hidden', height: 200, bgcolor: 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'center', group: '&:hover' }}>
               <Box component="img" src={img.image_url} alt="Carousel" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <IconButton onClick={() => removeImage(img.id)} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'background.paper' } }}>
+              <IconButton aria-label="Delete" onClick={() => removeImage(img.id)} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'background.paper' } }}>
                 <Trash2 style={{ width: 18, height: 18, color: 'red' }} />
               </IconButton>
             </Box>
@@ -1115,10 +1115,10 @@ function LessonsManagement({ lessons, courses }) {
                   <Link to={`${createPageUrl('LessonEditor')}?id=${lesson.id}`} style={{ textDecoration: 'none' }}>
                     <Button size="small" variant="contained" startIcon={<Edit style={{ width: 14, height: 14 }} />} sx={{ fontSize: '0.75rem', py: 0.5 }}>Open Editor</Button>
                   </Link>
-                  <IconButton size="small" onClick={() => { setEditingLesson(lesson); setFormData(lesson); }}>
+                  <IconButton aria-label="Edit" size="small" onClick={() => { setEditingLesson(lesson); setFormData(lesson); }}>
                     <Edit style={{ width: 16, height: 16 }} />
                   </IconButton>
-                  <IconButton size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(lesson.id); }}>
+                  <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(lesson.id); }}>
                     <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
                   </IconButton>
                 </Box>
@@ -1176,7 +1176,7 @@ function QuizzesManagement({ quizzes, courses }) {
                   <Button size="small" variant="outlined" onClick={() => publishMutation.mutate({ id: quiz.id, published: !quiz.is_published })}>
                     {quiz.is_published ? 'Unpublish' : 'Publish'}
                   </Button>
-                  <IconButton size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(quiz.id); }}>
+                  <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(quiz.id); }}>
                     <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
                   </IconButton>
                 </Box>
@@ -1214,7 +1214,7 @@ function SessionsManagement({ sessions, courses }) {
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>{session.title}</Typography>
                   <Typography variant="caption" color="textSecondary">{course?.title} • {new Date(session.scheduled_date).toLocaleDateString()}</Typography>
                 </Box>
-                <IconButton size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(session.id); }}>
+                <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(session.id); }}>
                   <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
                 </IconButton>
               </Box>
@@ -1363,10 +1363,10 @@ function TemplatesManagement({ templates }) {
                 {template.description && <Typography variant="caption" color="textSecondary">{template.description}</Typography>}
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton size="small" onClick={() => { setEditingTemplate(template); setFormData(template); }}>
+                <IconButton aria-label="Edit" size="small" onClick={() => { setEditingTemplate(template); setFormData(template); }}>
                   <Edit style={{ width: 16, height: 16 }} />
                 </IconButton>
-                <IconButton size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(template.id); }}>
+                <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(template.id); }}>
                   <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
                 </IconButton>
               </Box>

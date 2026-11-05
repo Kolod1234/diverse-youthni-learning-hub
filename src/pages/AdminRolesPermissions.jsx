@@ -193,7 +193,7 @@ export default function AdminRolesPermissions() {
                     mb: 1
                   }}
                   secondaryAction={
-                    <IconButton onClick={() => handleEditUser(user)}>
+                    <IconButton aria-label="Edit" onClick={() => handleEditUser(user)}>
                       <Edit className="w-4 h-4" />
                     </IconButton>
                   }

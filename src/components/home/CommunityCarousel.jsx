@@ -37,7 +37,7 @@ export default function CommunityCarousel({ images }) {
           </Box>
         </Box>
 
-        <IconButton
+        <IconButton aria-label="Previous"
           onClick={() => emblaApi?.scrollPrev()}
           sx={{
             position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
@@ -48,7 +48,7 @@ export default function CommunityCarousel({ images }) {
         >
           <ChevronLeft size={22} color="#1f2937" />
         </IconButton>
-        <IconButton
+        <IconButton aria-label="Next"
           onClick={() => emblaApi?.scrollNext()}
           sx={{
             position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',

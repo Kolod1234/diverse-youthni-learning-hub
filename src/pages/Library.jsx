@@ -966,7 +966,7 @@ export default function Library() {
               {/* Book Details & Collaboration */}
               <Box sx={{ width: { xs: '100%', md: '66.666%' }, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
-                  <IconButton
+                  <IconButton aria-label="Close"
                     onClick={() => setSelectedBook(null)}
                     sx={{ position: 'absolute', top: 16, right: 16 }}
                   >

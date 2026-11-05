@@ -229,7 +229,7 @@ Return JSON format:
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                       <Typography variant="subtitle2">Section {index + 1}</Typography>
-                      <IconButton size="small" onClick={() => handleDeleteSection(index)}>
+                      <IconButton aria-label="Delete" size="small" onClick={() => handleDeleteSection(index)}>
                         <Trash2 className="w-4 h-4" />
                       </IconButton>
                     </Box>

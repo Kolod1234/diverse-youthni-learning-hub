@@ -271,7 +271,7 @@ export default function TutorProfileModal({ tutor, stats, open, onClose }) {
                       <div className="flex items-center gap-3 mb-2">
                         <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
                           {review.user_avatar ? (
-                            <img src={review.user_avatar} className="w-8 h-8 rounded-full object-cover" />
+                            <img alt={review?.title || review?.name || review?.full_name || ''} src={review.user_avatar} className="w-8 h-8 rounded-full object-cover" />
                           ) : (
                             <User className="w-4 h-4 text-indigo-600" />
                           )}

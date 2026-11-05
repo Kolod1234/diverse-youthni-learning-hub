@@ -417,7 +417,7 @@ function LayoutContent({ children, currentPageName }) {
                 />
               </Link>
             ) : (
-              <IconButton onClick={() => window.history.back()} sx={{ mr: 'auto', display: { xs: 'flex', md: 'flex' } }}>
+              <IconButton aria-label="Back" onClick={() => window.history.back()} sx={{ mr: 'auto', display: { xs: 'flex', md: 'flex' } }}>
                 <ArrowLeft size={24} />
               </IconButton>
             )}
@@ -445,7 +445,7 @@ function LayoutContent({ children, currentPageName }) {
             {/* Right Side */}
             <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
               {/* Global Search Button */}
-              <IconButton
+              <IconButton aria-label="Search (Ctrl+K)"
                 onClick={() => setSearchOpen(true)}
                 title="Search (Ctrl+K)"
                 sx={{ color: 'text.secondary', display: { xs: 'none', md: 'flex' } }}

@@ -258,23 +258,23 @@ export default function FullscreenPresenter({
             <span className="text-white/60 font-mono">Elapsed {formatElapsed(elapsed)}</span>
           </div>
           <div className="flex items-center gap-1">
-            <IconButton onClick={() => setShowOverview(true)} title="Slide overview (G)">
+            <IconButton aria-label="Slide overview (G)" onClick={() => setShowOverview(true)} title="Slide overview (G)">
               <Grid3x3 className="w-4 h-4" />
             </IconButton>
-            <IconButton
+            <IconButton aria-label="Presenter notes (N)"
               onClick={() => setShowNotes(v => !v)}
               title="Presenter notes (N)"
               active={showNotes}
             >
               <StickyNote className="w-4 h-4" />
             </IconButton>
-            <IconButton onClick={() => setShowHelp(v => !v)} title="Keyboard shortcuts (?)" active={showHelp}>
+            <IconButton aria-label="Keyboard shortcuts (?)" onClick={() => setShowHelp(v => !v)} title="Keyboard shortcuts (?)" active={showHelp}>
               <Keyboard className="w-4 h-4" />
             </IconButton>
-            <IconButton onClick={toggleBrowserFullscreen} title="Fullscreen (F)">
+            <IconButton aria-label="Fullscreen (F)" onClick={toggleBrowserFullscreen} title="Fullscreen (F)">
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
             </IconButton>
-            <IconButton onClick={onClose} title="Exit (Esc)">
+            <IconButton aria-label="Exit (Esc)" onClick={onClose} title="Exit (Esc)">
               <X className="w-4 h-4" />
             </IconButton>
           </div>

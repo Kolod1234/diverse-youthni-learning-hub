@@ -313,10 +313,10 @@ function HeroCarouselWithWriteup({ images }) {
       <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,51,102,0.72) 0%, rgba(13,46,110,0.60) 40%, rgba(0,34,68,0.75) 100%)', zIndex: 1 }} />
 
       {/* Carousel nav arrows */}
-      <IconButton onClick={() => emblaApi?.scrollPrev()} sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', width: 48, height: 48, bgcolor: 'rgba(255,255,255,0.85)', zIndex: 10, '&:hover': { bgcolor: 'white', transform: 'translateY(-50%) scale(1.1)' }, transition: 'all 0.3s' }}>
+      <IconButton aria-label="Previous" onClick={() => emblaApi?.scrollPrev()} sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', width: 48, height: 48, bgcolor: 'rgba(255,255,255,0.85)', zIndex: 10, '&:hover': { bgcolor: 'white', transform: 'translateY(-50%) scale(1.1)' }, transition: 'all 0.3s' }}>
         <ChevronLeft size={26} color="#1f2937" />
       </IconButton>
-      <IconButton onClick={() => emblaApi?.scrollNext()} sx={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', width: 48, height: 48, bgcolor: 'rgba(255,255,255,0.85)', zIndex: 10, '&:hover': { bgcolor: 'white', transform: 'translateY(-50%) scale(1.1)' }, transition: 'all 0.3s' }}>
+      <IconButton aria-label="Next" onClick={() => emblaApi?.scrollNext()} sx={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', width: 48, height: 48, bgcolor: 'rgba(255,255,255,0.85)', zIndex: 10, '&:hover': { bgcolor: 'white', transform: 'translateY(-50%) scale(1.1)' }, transition: 'all 0.3s' }}>
         <ChevronRight size={26} color="#1f2937" />
       </IconButton>
 
@@ -536,7 +536,7 @@ function HeroCarousel({ items }) {
         </Box>
       </Box>
 
-      <IconButton
+      <IconButton aria-label="Previous"
         onClick={() => emblaApi?.scrollPrev()}
         sx={{
           position: 'absolute',
@@ -555,7 +555,7 @@ function HeroCarousel({ items }) {
       >
         <ChevronLeft size={28} color="#1f2937" />
       </IconButton>
-      <IconButton
+      <IconButton aria-label="Next"
         onClick={() => emblaApi?.scrollNext()}
         sx={{
           position: 'absolute',
@@ -818,7 +818,7 @@ function SuccessStoriesCarousel() {
             </Box>
             </Box>
         
-        <IconButton
+        <IconButton aria-label="Previous"
           onClick={() => emblaApi?.scrollPrev()}
           sx={{
             position: 'absolute',
@@ -837,7 +837,7 @@ function SuccessStoriesCarousel() {
           <ChevronLeft size={24} color="#1f2937" />
         </IconButton>
         
-        <IconButton
+        <IconButton aria-label="Next"
           onClick={() => emblaApi?.scrollNext()}
           sx={{
             position: 'absolute',
@@ -1343,7 +1343,7 @@ function PartnersSection() {
             </Box>
           </Box>
           
-          <IconButton
+          <IconButton aria-label="Previous"
             onClick={() => partnersEmblaApi?.scrollPrev()}
             sx={{
               position: 'absolute',
@@ -1362,7 +1362,7 @@ function PartnersSection() {
           >
             <ChevronLeft size={24} />
           </IconButton>
-          <IconButton
+          <IconButton aria-label="Next"
             onClick={() => partnersEmblaApi?.scrollNext()}
             sx={{
               position: 'absolute',

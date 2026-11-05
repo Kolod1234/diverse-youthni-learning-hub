@@ -178,10 +178,10 @@ export default function LMSIntegrationConfig() {
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton size="small" onClick={() => handleEdit(integration)}>
+                  <IconButton aria-label="Settings" size="small" onClick={() => handleEdit(integration)}>
                     <Settings className="w-4 h-4" />
                   </IconButton>
-                  <IconButton
+                  <IconButton aria-label="Delete"
                     size="small"
                     color="error"
                     onClick={() => {

@@ -155,7 +155,7 @@ export default function AdminStudentMessages() {
                   {selectedStudents.length > 0 && (
                     <Stack direction="row" spacing={0.5} alignItems="center">
                       <Typography variant="caption" color="text.secondary">{selectedStudents.length} selected</Typography>
-                      <IconButton size="small" onClick={() => setSelectedStudents([])}><CloseIcon sx={{ fontSize: 16 }} /></IconButton>
+                      <IconButton aria-label="Close" size="small" onClick={() => setSelectedStudents([])}><CloseIcon sx={{ fontSize: 16 }} /></IconButton>
                     </Stack>
                   )}
                 </Stack>
@@ -317,7 +317,7 @@ export default function AdminStudentMessages() {
                                 </Typography>
                               </Box>
                             </Stack>
-                            <IconButton size="small"><VisibilityIcon sx={{ fontSize: 16 }} /></IconButton>
+                            <IconButton aria-label="Show" size="small"><VisibilityIcon sx={{ fontSize: 16 }} /></IconButton>
                           </Stack>
                         </Card>
                       </motion.div>

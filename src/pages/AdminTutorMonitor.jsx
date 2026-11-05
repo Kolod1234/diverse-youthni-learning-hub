@@ -236,7 +236,7 @@ export default function AdminTutorMonitor() {
                         <ChatIcon sx={{ fontSize: 16, color: '#4f46e5' }} />
                         <Typography variant="body2" fontWeight={600}>Send Message to {selectedTutor.full_name}</Typography>
                       </Stack>
-                      <IconButton size="small" onClick={() => setChatOpen(false)}><CloseIcon sx={{ fontSize: 16 }} /></IconButton>
+                      <IconButton aria-label="Close" size="small" onClick={() => setChatOpen(false)}><CloseIcon sx={{ fontSize: 16 }} /></IconButton>
                     </Stack>
                     <TextField
                       multiline rows={3} fullWidth placeholder="Type your message..."
@@ -265,7 +265,7 @@ export default function AdminTutorMonitor() {
                         <NotificationsIcon sx={{ fontSize: 16, color: '#d97706' }} />
                         <Typography variant="body2" fontWeight={600}>Assessment Reminder for {selectedTutor.full_name}</Typography>
                       </Stack>
-                      <IconButton size="small" onClick={() => setReminderOpen(false)}><CloseIcon sx={{ fontSize: 16 }} /></IconButton>
+                      <IconButton aria-label="Close" size="small" onClick={() => setReminderOpen(false)}><CloseIcon sx={{ fontSize: 16 }} /></IconButton>
                     </Stack>
                     <TextField
                       placeholder="Email subject" fullWidth value={reminderSubject}

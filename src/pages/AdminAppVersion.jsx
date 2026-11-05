@@ -282,7 +282,7 @@ export default function AdminAppVersion() {
                     >
                       Notify Users
                     </Button>
-                    <IconButton size="small" color="error" onClick={() => deleteMutation.mutate(v.id)}>
+                    <IconButton aria-label="Delete" size="small" color="error" onClick={() => deleteMutation.mutate(v.id)}>
                       <Trash2 size={18} />
                     </IconButton>
                   </Box>

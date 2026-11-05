@@ -137,10 +137,10 @@ export default function AdminDailyFacts() {
                 <Box key={fact.id} sx={{ position: 'relative', '&:hover .fact-actions': { opacity: 1 } }}>
                   <FactCard fact={fact} index={index} />
                   <Stack direction="row" spacing={1} className="fact-actions" sx={{ position: 'absolute', top: 16, right: 16, opacity: 0, transition: 'opacity 0.2s' }}>
-                    <IconButton size="small" onClick={() => handleEdit(fact)} sx={{ bgcolor: 'background.paper', boxShadow: 2, '&:hover': { bgcolor: 'background.paper' } }}>
+                    <IconButton aria-label="Edit" size="small" onClick={() => handleEdit(fact)} sx={{ bgcolor: 'background.paper', boxShadow: 2, '&:hover': { bgcolor: 'background.paper' } }}>
                       <EditIcon sx={{ fontSize: 16 }} />
                     </IconButton>
-                    <IconButton size="small" onClick={() => { if (confirm('Delete this fact?')) deleteMutation.mutate(fact.id); }} sx={{ bgcolor: 'background.paper', boxShadow: 2, '&:hover': { bgcolor: 'background.paper' } }}>
+                    <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete this fact?')) deleteMutation.mutate(fact.id); }} sx={{ bgcolor: 'background.paper', boxShadow: 2, '&:hover': { bgcolor: 'background.paper' } }}>
                       <DeleteIcon sx={{ fontSize: 16, color: '#dc2626' }} />
                     </IconButton>
                   </Stack>

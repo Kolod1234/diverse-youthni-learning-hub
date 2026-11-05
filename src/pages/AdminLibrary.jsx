@@ -123,10 +123,10 @@ export default function AdminLibrary() {
                 </Typography>
                 <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mb: 2 }}>{resource.category}</Typography>
                 <Stack direction="row" spacing={1}>
-                  <IconButton size="small" onClick={() => handleEdit(resource)} sx={{ border: 1, borderColor: 'divider' }}>
+                  <IconButton aria-label="Edit" size="small" onClick={() => handleEdit(resource)} sx={{ border: 1, borderColor: 'divider' }}>
                     <EditIcon sx={{ fontSize: 16 }} />
                   </IconButton>
-                  <IconButton size="small" onClick={() => { if (confirm('Delete this resource?')) deleteMutation.mutate(resource.id); }} sx={{ border: 1, borderColor: 'divider' }}>
+                  <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete this resource?')) deleteMutation.mutate(resource.id); }} sx={{ border: 1, borderColor: 'divider' }}>
                     <DeleteIcon sx={{ fontSize: 16, color: '#dc2626' }} />
                   </IconButton>
                 </Stack>

@@ -85,7 +85,7 @@ export default function AppUpdateBanner() {
             Download Update
           </Button>
           {!isForce && (
-            <IconButton size="small" onClick={handleDismiss} sx={{ color: 'rgba(255,255,255,0.8)', ml: -1 }}>
+            <IconButton aria-label="Close" size="small" onClick={handleDismiss} sx={{ color: 'rgba(255,255,255,0.8)', ml: -1 }}>
               <X size={18} />
             </IconButton>
           )}

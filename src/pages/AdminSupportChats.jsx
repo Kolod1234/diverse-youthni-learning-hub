@@ -318,7 +318,7 @@ export default function AdminSupportChats() {
                   multiline
                   maxRows={3}
                 />
-                <IconButton
+                <IconButton aria-label="Send"
                   onClick={handleSend}
                   disabled={!reply.trim() || sending || selectedChat?.status === 'closed'}
                   sx={{ bgcolor: '#0b2f5c', color: 'white', '&:hover': { bgcolor: '#12396b' }, '&:disabled': { bgcolor: '#e2e8f0' }, borderRadius: 2, flexShrink: 0 }}

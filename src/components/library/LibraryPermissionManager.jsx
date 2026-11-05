@@ -202,7 +202,7 @@ export default function LibraryPermissionManager({ open, onOpenChange }) {
                           {ur.assigned_date ? new Date(ur.assigned_date).toLocaleDateString() : 'N/A'}
                         </TableCell>
                         <TableCell align="right">
-                          <IconButton
+                          <IconButton aria-label="Delete"
                             size="small"
                             onClick={() => deleteMutation.mutate(ur.id)}
                           >

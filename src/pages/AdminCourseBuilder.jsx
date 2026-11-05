@@ -131,10 +131,10 @@ export default function AdminCourseBuilder() {
                                 >
                                   {section.is_active ? <VisibilityIcon sx={{ fontSize: 16 }} /> : <VisibilityOffIcon sx={{ fontSize: 16 }} />}
                                 </IconButton>
-                                <IconButton size="small" onClick={() => setEditingSection(section)}>
+                                <IconButton aria-label="Edit" size="small" onClick={() => setEditingSection(section)}>
                                   <EditIcon sx={{ fontSize: 16 }} />
                                 </IconButton>
-                                <IconButton size="small" onClick={() => deleteMutation.mutate(section.id)}>
+                                <IconButton aria-label="Delete" size="small" onClick={() => deleteMutation.mutate(section.id)}>
                                   <DeleteIcon sx={{ fontSize: 16, color: '#ef4444' }} />
                                 </IconButton>
                               </Stack>

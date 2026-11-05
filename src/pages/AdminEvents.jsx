@@ -172,14 +172,14 @@ export default function AdminEvents() {
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <IconButton size="small" onClick={() => openEdit(event)} title="Edit"><Edit size={16} /></IconButton>
-                    <IconButton size="small" onClick={() => togglePublishMutation.mutate({ id: event.id, is_published: !event.is_published })} title={event.is_published ? 'Unpublish' : 'Publish'}>
+                    <IconButton aria-label="Edit" size="small" onClick={() => openEdit(event)} title="Edit"><Edit size={16} /></IconButton>
+                    <IconButton aria-label={event.is_published ? 'Unpublish' : 'Publish'} size="small" onClick={() => togglePublishMutation.mutate({ id: event.id, is_published: !event.is_published })} title={event.is_published ? 'Unpublish' : 'Publish'}>
                       {event.is_published ? <EyeOff size={16} /> : <Eye size={16} />}
                     </IconButton>
-                    <IconButton size="small" onClick={() => { setSelectedEventId(event.id); setTab(1); }} title="View RSVPs">
+                    <IconButton aria-label="View RSVPs" size="small" onClick={() => { setSelectedEventId(event.id); setTab(1); }} title="View RSVPs">
                       <Users size={16} color="#2563eb" />
                     </IconButton>
-                    <IconButton size="small" onClick={() => { if (confirm('Delete this event?')) deleteMutation.mutate(event.id); }} title="Delete">
+                    <IconButton aria-label="Delete" size="small" onClick={() => { if (confirm('Delete this event?')) deleteMutation.mutate(event.id); }} title="Delete">
                       <Trash2 size={16} color="#dc2626" />
                     </IconButton>
                   </Box>

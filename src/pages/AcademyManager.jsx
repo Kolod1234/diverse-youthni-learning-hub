@@ -167,10 +167,10 @@ export default function AcademyManager() {
                 subheader={academy.category}
                 action={
                   <Box>
-                    <IconButton onClick={() => handleEdit(academy)}>
+                    <IconButton aria-label="Edit" onClick={() => handleEdit(academy)}>
                       <Edit className="w-4 h-4" />
                     </IconButton>
-                    <IconButton onClick={() => deleteMutation.mutate(academy.id)}>
+                    <IconButton aria-label="Delete" onClick={() => deleteMutation.mutate(academy.id)}>
                       <Trash2 className="w-4 h-4" />
                     </IconButton>
                   </Box>
