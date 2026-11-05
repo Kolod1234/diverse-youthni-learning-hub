@@ -40,8 +40,8 @@ function ScoreDisplay({ score, total, quizType, timeUsed, onRetry, onNewQuiz }) 
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
+
+
       className="flex flex-col items-center justify-center h-full py-8 px-6 text-center"
     >
       <div className="text-6xl mb-3">

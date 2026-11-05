@@ -37,18 +37,18 @@ export default function AboutUsSection() {
     <section className="py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5 }}
+
+
+
+
           className="bg-card rounded-[14px] overflow-hidden border border-border"
         >
           <div className="grid md:grid-cols-2 gap-0">
             {/* Image Section */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+
+
+
               className="relative h-96 md:h-auto"
             >
               <img
@@ -61,9 +61,9 @@ export default function AboutUsSection() {
 
             {/* Content Section */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+
+
+
               className="p-8 md:p-12 flex flex-col justify-center"
             >
               <div className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold mb-4 w-fit">
@@ -89,10 +89,10 @@ export default function AboutUsSection() {
                   return (
                     <motion.div
                       key={stat.label}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.1 }}
+
+
+
+
                       className="bg-muted/50 rounded-xl p-4 text-center"
                     >
                       <Icon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-2" />

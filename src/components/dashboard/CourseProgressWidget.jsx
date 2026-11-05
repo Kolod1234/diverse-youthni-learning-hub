@@ -29,9 +29,8 @@ export default function CourseProgressWidget({ enrollments, courses }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
+
+
     >
       <Card sx={{ p: 3, border: 0, boxShadow: 1, background: 'linear-gradient(135deg, #eef2ff, #f5f3ff)', borderRadius: 3 }}>
         <Stack direction="row" alignItems="flex-start" spacing={1.5} sx={{ mb: 2 }}>

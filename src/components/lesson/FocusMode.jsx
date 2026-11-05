@@ -57,9 +57,9 @@ export default function FocusMode({ enabled, onToggle, children }) {
           
           <div className="flex-1 max-w-4xl mx-auto px-6 py-12 w-full">
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+
+
+
               className="text-white"
             >
               {children}

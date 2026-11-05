@@ -130,7 +130,7 @@ Grade this answer. Respond ONLY with valid JSON:
       )}
 
       {feedback && !loadingFeedback && (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+        <motion.div className="space-y-3">
           <div className={`flex items-start gap-2 p-3 rounded-lg border ${feedback.correct ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
             <CheckCircle className={`w-5 h-5 mt-0.5 flex-shrink-0 ${feedback.correct ? 'text-green-600' : 'text-orange-500'}`} />
             <div>

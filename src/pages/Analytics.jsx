@@ -90,8 +90,7 @@ export default function Analytics() {
               </Button>
             </Link>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+
             >
               <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
                 Learning Analytics 📊
@@ -110,9 +109,8 @@ export default function Analytics() {
         {/* Quick Stats */}
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', lg: 'repeat(5, 1fr)' }, gap: 2, mb: 4 }}>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+
+
           >
             <Card sx={{ p: 2, bgcolor: 'action.hover', border: 1, borderColor: '#60a5fa' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -128,9 +126,8 @@ export default function Analytics() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+
+
           >
             <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-green-200">
               <div className="flex items-center gap-3">
@@ -146,9 +143,8 @@ export default function Analytics() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+
+
           >
             <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
               <div className="flex items-center gap-3">
@@ -164,9 +160,8 @@ export default function Analytics() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+
+
           >
             <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-orange-200">
               <div className="flex items-center gap-3">
@@ -182,9 +177,8 @@ export default function Analytics() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+
+
           >
             <Card className="p-4 bg-indigo-50 dark:bg-indigo-500/15 border-pink-200">
               <div className="flex items-center gap-3">

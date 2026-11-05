@@ -253,7 +253,7 @@ export default function CreationHub() {
               Back to Home
             </Button>
           </Link>
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <motion.div>
 
             <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, color: 'white', mb: 2, letterSpacing: '-0.02em' }}>
               Creation Hub 🚀

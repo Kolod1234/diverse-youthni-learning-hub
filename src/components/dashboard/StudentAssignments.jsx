@@ -119,9 +119,8 @@ export default function StudentAssignments({ enrollments, user }) {
         return (
           <motion.div
             key={assignment.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
+
+
           >
             <Card sx={{ overflow: 'hidden', border: 1, borderColor }}>
               <Box

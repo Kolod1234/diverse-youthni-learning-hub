@@ -59,9 +59,9 @@ export default function BadgeUnlock({ badges, onClose }) {
                 {badges.map((badge, index) => (
                   <motion.div
                     key={badge}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.2 }}
+
+
+
                     className="bg-white/10 backdrop-blur-sm rounded-lg p-4 flex items-center gap-3"
                   >
                     <span className="text-4xl">{getBadgeIcon(badge)}</span>

@@ -71,8 +71,7 @@ export default function LearningPaths() {
         {/* Header */}
         <div className="text-center mb-12">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+
           >
             <Badge className="mb-4 bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
               <Target className="w-3 h-3 mr-1" />
@@ -155,8 +154,7 @@ export default function LearningPaths() {
               return (
                 <motion.div
                   key={path.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+
                 >
                   <Card className="overflow-hidden hover:shadow-xl transition-shadow">
                     <div className="aspect-video bg-indigo-600 relative">

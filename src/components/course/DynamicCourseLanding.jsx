@@ -51,9 +51,8 @@ export default function DynamicCourseLanding({ course, enrollment }) {
       {customSections.map((section) => (
         <motion.div
           key={section.id}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+
+
         >
           {renderSection(section)}
         </motion.div>

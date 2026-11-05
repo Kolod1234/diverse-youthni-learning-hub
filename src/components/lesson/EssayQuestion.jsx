@@ -169,8 +169,8 @@ Provide feedback in JSON format:
               </>
             ) : (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+
+
                 className="space-y-4"
               >
                 <div className="p-4 bg-white rounded-lg">

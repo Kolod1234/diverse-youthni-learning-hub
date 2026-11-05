@@ -104,8 +104,8 @@ export default function CodingExercise({ exercise, onComplete }) {
 
       {output && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+
+
           className={`rounded-lg p-4 ${
             isCorrect === true 
               ? 'bg-emerald-50 border border-emerald-200' 

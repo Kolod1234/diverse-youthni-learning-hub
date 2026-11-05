@@ -59,7 +59,7 @@ export default function ProjectDetail() {
           >
             Back to Gallery
           </Button>
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <motion.div>
             {project.category && (
               <Chip label={project.category} icon={<Tag size={12} />} sx={{ mb: 2, bgcolor: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 600, border: '1px solid rgba(255,255,255,0.3)' }} />
             )}

@@ -17,9 +17,9 @@ export default function CategoryQuickAccess() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+
+
+
         className="text-center mb-8"
       >
         <h2 className="text-2xl font-bold text-foreground mb-2">Explore by Subject</h2>
@@ -32,10 +32,10 @@ export default function CategoryQuickAccess() {
           return (
             <motion.div
               key={category.name}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.05 }}
+
+
+
+
               whileHover={{ scale: 1.08, y: -4 }}
             >
               <Link to={createPageUrl('Explore') + `?category=${category.query}`}>

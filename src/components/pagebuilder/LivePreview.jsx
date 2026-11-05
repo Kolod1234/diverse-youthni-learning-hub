@@ -16,8 +16,8 @@ export default function LivePreview({ sections, deviceMode, onDeviceModeChange }
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+
+
       className={`flex flex-col bg-gray-900 rounded-xl overflow-hidden shadow-2xl ${
         isFullscreen ? 'fixed inset-0 z-50' : 'h-full'
       }`}
@@ -59,9 +59,9 @@ export default function LivePreview({ sections, deviceMode, onDeviceModeChange }
       <div className="flex-1 overflow-auto p-4 flex items-start justify-center bg-gray-950">
         <motion.div
           key={deviceMode}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
+
+
+
           style={{ width: config.width }}
           className="bg-white rounded-2xl shadow-2xl overflow-hidden"
         >
@@ -70,9 +70,9 @@ export default function LivePreview({ sections, deviceMode, onDeviceModeChange }
               sections.filter(s => s.is_active).map((section, i) => (
                 <motion.div
                   key={section.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
+
+
+
                   className="bg-white rounded-lg p-4 border border-gray-200 min-h-[100px] flex items-center justify-center text-gray-500"
                 >
                   <div className="text-center">

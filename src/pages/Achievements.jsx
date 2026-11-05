@@ -99,7 +99,7 @@ export default function Achievements() {
       <Box sx={{ position: 'relative', mb: 4, bgcolor: '#0b2f5c', py: { xs: 5, md: 7 } }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Container maxWidth="lg" sx={{ width: '100%' }}>
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+            <motion.div>
               <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white', mb: 1 }}>Your Achievements</Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.125rem' }}>Track your learning milestones and unlock badges</Typography>
             </motion.div>
@@ -109,7 +109,7 @@ export default function Achievements() {
 
       <Container maxWidth="lg" sx={{ pb: 4 }}>
         {/* Overall Progress */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <motion.div>
           <Card sx={{ bgcolor: 'action.hover', borderColor: '#fed7aa', border: 1, mb: 4 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -143,9 +143,8 @@ export default function Achievements() {
             return (
               <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={milestone.name}>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + idx * 0.1 }}
+
+
                 >
                   <Card>
                     <CardContent>
@@ -242,9 +241,8 @@ function SuccessStoriesCarousel() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 }}
+
+
     >
       <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', mb: 4 }}>
         Success stories and resources
@@ -398,9 +396,8 @@ function AchievementCard({ achievement, index }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+
+
     >
       <Card
         sx={{

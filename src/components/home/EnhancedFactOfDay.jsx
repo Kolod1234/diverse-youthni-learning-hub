@@ -50,8 +50,8 @@ export default function EnhancedFactOfDay() {
   if (isLoading || !selectedFact) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+
+
         className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl animate-pulse"
       />
     );
@@ -62,9 +62,8 @@ export default function EnhancedFactOfDay() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+
+
     >
       <div className={`bg-gradient-to-br ${config.gradient} rounded-3xl overflow-hidden border border-white/30 backdrop-blur-xl bg-white/10 hover:shadow-2xl transition-shadow duration-300 w-full`}>
         {/* Animated background elements */}
@@ -115,9 +114,9 @@ export default function EnhancedFactOfDay() {
            {/* Fact Content */}
            <motion.div
              key={selectedFact.id}
-             initial={{ opacity: 0, y: 10 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ duration: 0.5 }}
+
+
+
              className="mb-8"
            >
              <p className="text-3xl md:text-4xl font-bold text-white leading-relaxed">
@@ -128,9 +127,9 @@ export default function EnhancedFactOfDay() {
           {/* Footer with source */}
           {selectedFact.source_url && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
+
+
+
               className="flex items-center justify-between pt-6 border-t border-gray-300/20"
             >
               <p className="text-xs text-gray-600">Fact from trusted sources</p>
@@ -143,9 +142,9 @@ export default function EnhancedFactOfDay() {
 
         {/* Progress indicator dots */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+
+
+
           className="h-1 bg-gradient-to-r"
           style={{
             background: `linear-gradient(to right, ${config.color}, transparent)`
@@ -156,9 +155,9 @@ export default function EnhancedFactOfDay() {
       {/* Quick facts carousel hint */}
       {facts.length > 1 && (
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+
+
+
           className="text-center text-xs text-gray-500 mt-4"
         >
           Click refresh to see {facts.length} more facts

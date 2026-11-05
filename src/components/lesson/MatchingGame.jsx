@@ -127,8 +127,8 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
 
       {isComplete ? (
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+
+
           className="text-center py-8"
         >
           <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />

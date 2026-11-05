@@ -223,7 +223,7 @@ export default function EmbeddedQuiz({ quiz, user, onClose }) {
           </Button>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-2xl">
+          <motion.div className="w-full max-w-2xl">
             <Card className="overflow-hidden border-0 shadow-2xl">
               <div className={`p-8 text-center ${passed ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-gradient-to-br from-orange-500 to-red-600'} text-white`}>
                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}>
@@ -335,7 +335,7 @@ export default function EmbeddedQuiz({ quiz, user, onClose }) {
       )}
 
       <div className="flex-1 flex items-center justify-center">
-        <motion.div key={currentQuestion} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full max-w-2xl">
+        <motion.div key={currentQuestion} className="w-full max-w-2xl">
           <Card className="p-6 md:p-8 shadow-2xl">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
@@ -382,7 +382,7 @@ export default function EmbeddedQuiz({ quiz, user, onClose }) {
                       const showResult = showFeedback && isSelected;
                       
                       return (
-                        <motion.div key={idx} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }}
+                        <motion.div key={idx}
                           className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
                             showResult && isCorrect ? 'border-emerald-500 bg-emerald-50' :
                             showResult && !isCorrect ? 'border-red-500 bg-red-50' :
@@ -400,7 +400,7 @@ export default function EmbeddedQuiz({ quiz, user, onClose }) {
               )}
 
               {showFeedback && question.explanation && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <motion.div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm font-medium text-blue-900 mb-1">💡 Explanation:</p>
                   <p className="text-sm text-blue-800">{question.explanation}</p>
                 </motion.div>

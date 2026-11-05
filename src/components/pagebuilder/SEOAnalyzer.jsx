@@ -118,8 +118,8 @@ export default function SEOAnalyzer({ title, description, keywords, content }) {
     <div className="space-y-6 py-4">
       {/* Score Card */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+
+
         className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 rounded-lg p-6 border border-blue-200 dark:border-slate-700"
       >
         <div className="flex items-center justify-between mb-4">
@@ -141,9 +141,9 @@ export default function SEOAnalyzer({ title, description, keywords, content }) {
         {checks.map((check, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
+
+
+
             className={`flex items-start gap-3 p-3 rounded-lg border ${
               check.status === 'pass'
                 ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'

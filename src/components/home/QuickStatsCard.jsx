@@ -32,9 +32,9 @@ export default function QuickStatsCard({ user }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+
+
+
       className="grid grid-cols-2 sm:grid-cols-4 gap-4"
     >
       {/* Total XP */}

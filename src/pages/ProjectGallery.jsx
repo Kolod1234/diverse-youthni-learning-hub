@@ -42,7 +42,7 @@ export default function ProjectGallery() {
       }}>
         <Box sx={{ position: 'absolute', inset: 0, opacity: 0.15, backgroundImage: 'radial-gradient(circle at 20% 50%, #ec4899 0%, transparent 50%), radial-gradient(circle at 80% 50%, #3b82f6 0%, transparent 50%)' }} />
         <Container maxWidth="xl" sx={{ position: 'relative', textAlign: 'center' }}>
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <motion.div>
             <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3.5rem' }, fontWeight: 900, color: 'white', mb: 2 }}>
               🎯 Project Showcase
             </Typography>
@@ -105,9 +105,9 @@ export default function ProjectGallery() {
             {filtered.map((project, idx) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
+
+
+
                 whileHover={{ y: -6 }}
                 style={{ cursor: 'pointer' }}
                 onClick={() => navigate(`/project/${project.id}`)}

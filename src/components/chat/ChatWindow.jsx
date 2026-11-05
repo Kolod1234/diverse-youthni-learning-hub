@@ -92,8 +92,8 @@ export default function ChatWindow({ roomId, currentUser, height = 400 }) {
                 return (
                   <motion.div
                     key={msg.id}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
+
+
                     className={`flex items-end gap-2 ${isOwn ? 'justify-end' : 'justify-start'}`}
                   >
                     {!isOwn && (

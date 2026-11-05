@@ -12,10 +12,9 @@ export default function CommunityCarousel({ images }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.6 }}
-      viewport={{ once: true }}
+
+
+
     >
       <Box sx={{ position: 'relative', borderRadius: 6, overflow: 'hidden', boxShadow: 6 }}>
         <Box sx={{ overflow: 'hidden' }} ref={emblaRef}>

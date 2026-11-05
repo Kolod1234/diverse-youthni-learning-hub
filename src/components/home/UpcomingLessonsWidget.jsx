@@ -79,9 +79,8 @@ export default function UpcomingLessonsWidget() {
         {upcomingLessons.map((lesson, idx) => (
           <motion.div
             key={lesson.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
+
+
           >
             <Link
               to={`${createPageUrl('LessonPlayer')}?course=${lesson.course_id}&lesson=${lesson.id}`}

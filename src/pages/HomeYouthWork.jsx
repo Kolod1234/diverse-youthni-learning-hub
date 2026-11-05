@@ -55,9 +55,8 @@ export default function HomeYouthWork() {
       <Box sx={{ position: 'relative', bgcolor: 'success.main', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+
+
           >
             <Box sx={{ textAlign: 'center', color: 'white' }}>
               <Chip

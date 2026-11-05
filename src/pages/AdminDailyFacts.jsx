@@ -93,7 +93,7 @@ export default function AdminDailyFacts() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
       <Container maxWidth="xl">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div>
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 5, flexWrap: 'wrap', gap: 2 }}>
             <Box>
               <Typography variant="h3" fontWeight={700}>Daily Facts Library</Typography>
@@ -113,7 +113,7 @@ export default function AdminDailyFacts() {
           </Stack>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <motion.div>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(5, 1fr)' }, gap: 2, mb: 4 }}>
             {[
               { label: 'Total Facts', value: stats.total, color: 'text.primary', border: 'divider' },
@@ -130,7 +130,7 @@ export default function AdminDailyFacts() {
           </Box>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+        <motion.div>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
             {facts.length > 0 ? (
               facts.map((fact, index) => (

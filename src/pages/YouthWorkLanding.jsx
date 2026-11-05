@@ -152,9 +152,8 @@ export default function YouthWorkLanding() {
 
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}>
+
+>
 
             <Box sx={{ textAlign: 'center', mb: 6 }}>
               <Box sx={{ display: 'inline-block', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(10px)', px: 3, py: 1, borderRadius: '50px', mb: 3 }}>
@@ -189,9 +188,8 @@ export default function YouthWorkLanding() {
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}>
+
+>
 
           <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
             Why Choose Youth Work Qualifications?
@@ -203,9 +201,8 @@ export default function YouthWorkLanding() {
               return (
                 <motion.div
                   key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}>
+
+>
 
                   <Card sx={{ p: 3, height: '100%', transition: 'transform 0.3s', '&:hover': { transform: 'translateY(-8px)' } }}>
                     <Box
@@ -239,9 +236,8 @@ export default function YouthWorkLanding() {
       <Box sx={{ bgcolor: 'background.paper', py: 8, borderTop: 1, borderColor: 'divider' }}>
         <Container maxWidth="lg">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}>
+
+>
 
             <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
               Available Qualifications
@@ -251,9 +247,8 @@ export default function YouthWorkLanding() {
               {qualifications.map((qual, index) => (
                 <motion.div
                   key={qual.level}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * index }}>
+
+>
 
                   <Card sx={{ 
                     p: 4, 
@@ -326,9 +321,8 @@ export default function YouthWorkLanding() {
       {/* How It Works */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}>
+
+>
 
           <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
             How It Works
@@ -338,9 +332,8 @@ export default function YouthWorkLanding() {
             {steps.map((step, index) => (
               <motion.div
                 key={step.number}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}>
+
+>
 
                 <Card sx={{ p: 4, textAlign: 'center', height: '100%' }}>
                   <Box
@@ -377,9 +370,8 @@ export default function YouthWorkLanding() {
       <Box sx={{ bgcolor: 'background.paper', py: 8, borderTop: 1, borderColor: 'divider' }}>
         <Container maxWidth="lg">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}>
+
+>
 
             <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
               What Learners Say
@@ -390,9 +382,8 @@ export default function YouthWorkLanding() {
                 {testimonials.slice(0, 3).map((testimonial, index) => (
                 <motion.div
                   key={testimonial.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}>
+
+>
 
                   <Card sx={{ p: 4 }}>
                     <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
@@ -435,9 +426,8 @@ export default function YouthWorkLanding() {
 
         <Container maxWidth="lg">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}>
+
+>
 
             <Heart size={48} className="mx-auto mb-4" />
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>

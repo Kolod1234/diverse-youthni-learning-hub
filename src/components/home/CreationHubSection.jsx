@@ -15,7 +15,7 @@ export default function CreationHubSection() {
     <Box component="section" sx={{ py: { xs: 8, md: 12 }, bgcolor: '#071a2d', color: 'white', overflow: 'hidden' }}>
       <Container maxWidth="xl">
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '0.95fr 1.05fr' }, gap: { xs: 6, lg: 10 }, alignItems: 'center' }}>
-          <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+          <motion.div>
             <Chip
               label="🧪 Interactive science"
               sx={{ mb: 3, bgcolor: 'rgba(37,198,218,.13)', color: '#6ee7e0', border: '1px solid rgba(110,231,224,.28)', fontWeight: 800 }}
@@ -48,7 +48,7 @@ export default function CreationHubSection() {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <motion.div key={feature.title} initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: index * .08 }}>
+                <motion.div key={feature.title}>
                   <Box sx={{ display: 'flex', gap: 2.2, alignItems: 'flex-start', p: { xs: 2.4, md: 3 }, borderRadius: 4, bgcolor: 'rgba(255,255,255,.055)', border: '1px solid rgba(255,255,255,.11)' }}>
                     <Box sx={{ width: 50, height: 50, borderRadius: 3, bgcolor: index === 1 ? 'rgba(255,155,37,.16)' : 'rgba(37,198,218,.15)', color: index === 1 ? '#ffad46' : '#60ded6', display: 'grid', placeItems: 'center', flex: '0 0 auto' }}>
                       <Icon size={24} />

@@ -31,8 +31,8 @@ export default function SplitViewLayout({ mainContent, sideContent, defaultSplit
         {isSplit && (
           <motion.div
             layout
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
+
+
             className="lg:w-1/3 sticky top-20 self-start"
           >
             <div className="bg-white rounded-xl border border-gray-200 p-6 max-h-[calc(100vh-120px)] overflow-y-auto">

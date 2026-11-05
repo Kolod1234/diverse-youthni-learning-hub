@@ -123,8 +123,8 @@ export default function WelcomeCover() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+
+
           className="text-center mb-16">
 
           <img
@@ -147,9 +147,8 @@ export default function WelcomeCover() {
             return (
               <motion.div
                 key={pathway.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}>
+
+>
 
                 <Card className="bg-white/10 backdrop-blur-lg border-white/20 hover:bg-white/15 transition-all duration-300 h-full overflow-hidden flex flex-col">
                   {pathway.image &&
@@ -194,9 +193,9 @@ export default function WelcomeCover() {
 
         {/* Guest Option */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+
+
+
           className="text-center">
 
           <Card className="bg-white/5 backdrop-blur-lg border-white/10 inline-block">
@@ -219,9 +218,9 @@ export default function WelcomeCover() {
 
         {/* Skip to Full Homepage */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+
+
+
           className="text-center mt-8">
 
           <button

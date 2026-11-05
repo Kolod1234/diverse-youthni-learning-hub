@@ -198,7 +198,7 @@ export default function PersonalDashboard() {
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="xl">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div>
           <Box sx={{ mb: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
               <Avatar sx={{ bgcolor: config.color, width: 56, height: 56 }}>
@@ -224,9 +224,8 @@ export default function PersonalDashboard() {
             return (
               <Grid size={{ xs: 12, md: 4 }} key={stat.label}>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+
+
                 >
                   <Card sx={{ boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s' }}>
                     <CardContent>
@@ -262,7 +261,7 @@ export default function PersonalDashboard() {
         </Grid>
 
         {/* Quick Actions */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <motion.div>
           <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Quick Actions</Typography>
           <Grid container spacing={3} sx={{ mb: 4 }}>
             {quickActions.map((action, index) => {
@@ -308,7 +307,7 @@ export default function PersonalDashboard() {
 
         {/* My Programs Section */}
         {interestType === 'leadership' && programs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <motion.div>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>My Programs</Typography>
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {programs.map((program) => {
@@ -356,7 +355,7 @@ export default function PersonalDashboard() {
 
         {/* Recent Logbooks */}
         {interestType === 'leadership' && logbooks.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+          <motion.div>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Recent Logbooks</Typography>
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {logbooks.slice(0, 3).map((logbook) => (
@@ -393,7 +392,7 @@ export default function PersonalDashboard() {
 
         {/* Pathway-Specific Content */}
         {interestType === 'leadership' && activities.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+          <motion.div>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Upcoming Activities</Typography>
             <Grid container spacing={3}>
               {activities.slice(0, 3).map((activity) => (
@@ -426,7 +425,7 @@ export default function PersonalDashboard() {
         )}
 
         {interestType === 'learning' && enrollments.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <motion.div>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Continue Learning</Typography>
             <Grid container spacing={3}>
               {courses.slice(0, 3).map((course) => {

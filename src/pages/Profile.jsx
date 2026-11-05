@@ -124,8 +124,7 @@ export default function Profile() {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Profile Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+
         >
           <Card sx={{ p: 4, mb: 4, boxShadow: 2 }}>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, gap: 3 }}>
@@ -368,9 +367,8 @@ export default function Profile() {
                   {certificates.map((cert, index) => (
                     <motion.div
                       key={cert.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
+
+
                     >
                       <Card className="p-6 border-2 border-amber-200 bg-amber-50 dark:bg-amber-500/10">
                         <div className="flex items-start justify-between mb-4">

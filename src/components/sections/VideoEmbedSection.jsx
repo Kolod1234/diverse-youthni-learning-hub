@@ -32,7 +32,7 @@ export default function VideoEmbedSection({ section }) {
       />
       <section className="py-20 bg-gradient-to-b from-gray-900 to-gray-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+        <motion.div>
           {video_title && (
             <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">{video_title}</h2>
           )}

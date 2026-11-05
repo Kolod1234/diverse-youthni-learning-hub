@@ -55,9 +55,8 @@ export default function RecommendedCourses({ userEnrollments }) {
         {recommendedCourses.map((course, index) => (
           <motion.div
             key={course.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
+
+
           >
             <Card
               component={Link}

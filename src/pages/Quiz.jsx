@@ -323,8 +323,7 @@ export default function Quiz() {
       <div className="min-h-screen bg-background p-4 sm:p-8">
         <div className="max-w-4xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+
           >
             <Card className="overflow-hidden border-0 shadow-lg">
               {/* Results Header */}
@@ -538,9 +537,9 @@ export default function Quiz() {
                       return (
                         <motion.div
                           key={idx}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.1 }}
+
+
+
                           className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
                             showResult && isCorrect
                               ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/15'
@@ -570,8 +569,8 @@ export default function Quiz() {
 
               {showFeedback && question.explanation && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+
+
                   className="mt-4 p-4 bg-blue-50 dark:bg-blue-500/15 border border-blue-200 rounded-lg"
                 >
                   <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-1">💡 Explanation:</p>

@@ -63,9 +63,9 @@ export default function InstructorShowcase() {
     <section className="py-20 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+
+
+
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-2 rounded-full bg-purple-500/10 text-purple-700 dark:text-purple-400 text-sm font-bold mb-4 border border-purple-500/30">
@@ -84,10 +84,10 @@ export default function InstructorShowcase() {
           {instructorStats.map((instructor, idx) => (
             <motion.div
               key={instructor.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
+
+
+
+
               whileHover={{ y: -8 }}
               className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-border"
             >

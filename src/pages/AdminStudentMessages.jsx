@@ -173,7 +173,7 @@ export default function AdminStudentMessages() {
                     {filteredStudents.map((student) => {
                       const isSelected = selectedStudents.includes(student.email);
                       return (
-                        <motion.div key={student.email} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <motion.div key={student.email}>
                           <Box
                             onClick={() => toggleStudent(student.email)}
                             sx={{
@@ -298,7 +298,7 @@ export default function AdminStudentMessages() {
                 <Box sx={{ height: 600, overflowY: 'auto' }}>
                   <Stack spacing={1.5}>
                     {sentMessages.map((msg) => (
-                      <motion.div key={msg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                      <motion.div key={msg.id}>
                         <Card sx={{ p: 2, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }} onClick={() => setSelectedMessage(msg)}>
                           <Stack direction="row" justifyContent="space-between" spacing={2}>
                             <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ flex: 1, minWidth: 0 }}>

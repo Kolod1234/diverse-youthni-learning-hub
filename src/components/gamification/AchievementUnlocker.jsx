@@ -61,36 +61,36 @@ export default function AchievementUnlocker({ achievement, show, onComplete }) {
             </motion.div>
 
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+
+
+
               className="text-3xl font-bold text-gray-900 mb-2"
             >
               Achievement Unlocked!
             </motion.h2>
 
             <motion.h3
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+
+
+
               className="text-xl font-semibold text-indigo-600 mb-2"
             >
               {config.title}
             </motion.h3>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+
+
+
               className="text-gray-600 mb-6"
             >
               {config.description}
             </motion.p>
 
             <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
+
+
+
               onClick={onComplete}
               className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
             >

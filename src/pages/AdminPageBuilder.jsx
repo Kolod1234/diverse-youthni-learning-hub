@@ -352,8 +352,8 @@ export default function AdminPageBuilder() {
               </div>
             ) : sections.length === 0 ? (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+
+
                 className="text-center py-12 bg-indigo-50 dark:bg-indigo-500/15 rounded-lg border-2 border-dashed border-border"
               >
                 <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
@@ -432,9 +432,9 @@ export default function AdminPageBuilder() {
               return (
                 <motion.div
                   key={template.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
+
+
+
                   whileHover={{ y: -4, scale: 1.02 }}
                   onClick={() => handleTemplateSelect(template)}
                   className="cursor-pointer"

@@ -152,7 +152,7 @@ export default function TutorDashboardOverview() {
       {/* Hero Header */}
       <div className="bg-[#0b2f5c] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <p className="text-blue-300 text-sm font-medium mb-1">Tutor Home</p>
@@ -193,9 +193,9 @@ export default function TutorDashboardOverview() {
                 return (
                   <motion.div
                     key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.07 }}
+
+
+
                     className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5"
                   >
                     <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-600 text-white mb-3`}>
@@ -220,8 +220,8 @@ export default function TutorDashboardOverview() {
             {/* Today's Sessions Alert */}
             {todaySessions.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
+
+
                 className="bg-indigo-600 rounded-2xl p-5 text-white flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
@@ -292,9 +292,9 @@ export default function TutorDashboardOverview() {
                     return (
                       <motion.div
                         key={course.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05 }}
+
+
+
                         className="flex items-center gap-4 px-6 py-4 hover:bg-muted transition-colors"
                       >
                         <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center flex-shrink-0 overflow-hidden">

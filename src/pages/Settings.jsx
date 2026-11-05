@@ -165,7 +165,7 @@ export default function Settings() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Container maxWidth="lg" sx={{ py: 4 }}>
 
-        <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+        <motion.div>
           <Button variant="text" onClick={() => navigate(-1)} startIcon={<ArrowLeft size={16} />} sx={{ mb: 2 }}>
             Back
           </Button>
@@ -184,7 +184,7 @@ export default function Settings() {
 
           {/* ── Profile Tab ── */}
           {tabValue === 'profile' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div>
               <Card sx={{ p: 3 }}>
                 <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Profile Information</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>Update your profile details and avatar</Typography>
@@ -239,7 +239,7 @@ export default function Settings() {
 
           {/* ── Account Tab ── */}
           {tabValue === 'account' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div>
               <Card sx={{ p: 3 }}>
                 <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Change Password</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>Update your password to keep your account secure</Typography>
@@ -269,7 +269,7 @@ export default function Settings() {
 
           {/* ── Notifications Tab ── */}
           {tabValue === 'notifications' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div>
               <Card sx={{ p: 3 }}>
                 <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Notification Preferences</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>Choose which emails and in-app notifications you receive</Typography>
@@ -295,7 +295,7 @@ export default function Settings() {
 
           {/* ── Preferences Tab ── */}
           {tabValue === 'preferences' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div>
               <Card sx={{ p: 3 }}>
                 <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Lesson Player Preference</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>Choose your preferred lesson viewing experience</Typography>
@@ -369,7 +369,7 @@ export default function Settings() {
 
           {/* ── Danger Zone Tab ── */}
           {tabValue === 'danger' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div>
               <Card sx={{ p: 3, border: '2px solid #dc2626', bgcolor: '#fef2f2' }}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 3 }}>
                   <AlertTriangle size={24} color="#dc2626" />

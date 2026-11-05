@@ -107,8 +107,7 @@ Provide feedback in the following JSON format:
       {!feedback && !generating && (
         <Card className="p-12 text-center bg-indigo-50 dark:bg-indigo-500/15 border-indigo-200">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+
           >
             <div className="w-20 h-20 bg-indigo-100 dark:bg-indigo-500/15 rounded-full flex items-center justify-center mx-auto mb-6">
               <Brain className="w-10 h-10 text-indigo-600" />
@@ -147,8 +146,8 @@ Provide feedback in the following JSON format:
       <AnimatePresence>
         {feedback && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+
+
             className="space-y-6"
           >
             {/* Overall Assessment */}
@@ -173,9 +172,9 @@ Provide feedback in the following JSON format:
                   {feedback.strengths?.map((strength, idx) => (
                     <motion.li
                       key={idx}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.1 }}
+
+
+
                       className="flex items-start gap-2 text-sm text-foreground"
                     >
                       <span className="text-green-600 mt-0.5">✓</span>
@@ -194,9 +193,9 @@ Provide feedback in the following JSON format:
                   {feedback.areas_for_improvement?.map((area, idx) => (
                     <motion.li
                       key={idx}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.1 }}
+
+
+
                       className="flex items-start gap-2 text-sm text-foreground"
                     >
                       <span className="text-orange-600 mt-0.5">→</span>
@@ -218,9 +217,9 @@ Provide feedback in the following JSON format:
                 {feedback.personalized_recommendations?.map((rec, idx) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
+
+
+
                     className="p-4 bg-muted rounded-lg border border-border"
                   >
                     <div className="flex items-start justify-between gap-3 mb-2">
@@ -246,9 +245,9 @@ Provide feedback in the following JSON format:
                 {feedback.next_steps?.map((step, idx) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.1 }}
+
+
+
                     className="flex items-start gap-3"
                   >
                     <div className="w-6 h-6 bg-blue-100 dark:bg-blue-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">

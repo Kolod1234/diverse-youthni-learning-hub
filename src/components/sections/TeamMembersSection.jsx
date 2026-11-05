@@ -14,7 +14,7 @@ export default function TeamMembersSection({ section }) {
       <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {title && (
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+          <motion.div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h2>
             {description && <p className="text-lg text-gray-600">{description}</p>}
           </motion.div>
@@ -24,10 +24,10 @@ export default function TeamMembersSection({ section }) {
           {team_members.map((member, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
+
+
+
+
               whileHover={{ y: -8 }}
               className="bg-gradient-to-br from-gray-50 to-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
             >

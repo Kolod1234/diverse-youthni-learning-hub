@@ -13,7 +13,7 @@ export default function ImageGallerySection({ section }) {
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {title && (
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+          <motion.div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h2>
             {description && <p className="text-lg text-gray-600">{description}</p>}
           </motion.div>
@@ -47,7 +47,7 @@ export default function ImageGallerySection({ section }) {
         ) : (
           <div className={`grid ${gallery_layout === 'masonry' ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-4'} gap-6`}>
             {gallery_images.map((img, idx) => (
-              <motion.div key={idx} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} whileHover={{ y: -8 }} className="relative group rounded-xl overflow-hidden shadow-lg">
+              <motion.div key={idx} whileHover={{ y: -8 }} className="relative group rounded-xl overflow-hidden shadow-lg">
                 <img src={img.url} alt={img.alt || img.caption} className="w-full h-full object-cover aspect-square group-hover:scale-110 transition duration-500" />
                 {img.caption && (
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-4">

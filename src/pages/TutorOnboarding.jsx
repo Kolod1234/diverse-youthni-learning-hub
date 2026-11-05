@@ -146,7 +146,7 @@ export default function TutorOnboarding() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
+      <motion.div className="w-full max-w-2xl">
         {/* Header */}
         <div className="bg-indigo-600 rounded-t-2xl p-6 text-white">
           <div className="flex items-center gap-3 mb-4">

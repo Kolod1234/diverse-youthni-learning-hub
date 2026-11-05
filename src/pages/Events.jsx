@@ -97,7 +97,7 @@ export default function Events() {
       {/* Hero */}
       <Box sx={{ bgcolor: '#0b2f5c', py: 8 }}>
         <Container maxWidth="xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
               <Calendar size={36} color="white" />
               <Typography variant="h3" fontWeight={800} color="white">Events</Typography>
@@ -149,9 +149,9 @@ export default function Events() {
               return (
                 <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={event.id}>
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+
+
+
                     whileHover={{ y: -4 }}
                   >
                     <Card

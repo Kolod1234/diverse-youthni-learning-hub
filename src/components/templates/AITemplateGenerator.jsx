@@ -260,9 +260,8 @@ Make each slide visually distinct and engaging. Use semantic HTML and Tailwind u
                 {generatedSlides.map((slide, idx) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
+
+
                   >
                     <Card className="overflow-hidden">
                       <div className="p-4 bg-gray-50 border-b flex items-center justify-between">

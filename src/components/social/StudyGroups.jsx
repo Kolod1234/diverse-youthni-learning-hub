@@ -176,9 +176,8 @@ export default function StudyGroups({ courseId }) {
         {studyGroups.map((group, index) => (
           <motion.div
             key={group.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
+
+
           >
             <Card className="p-6 h-full flex flex-col">
               <div className="flex items-start justify-between mb-4">

@@ -110,9 +110,8 @@ export default function LeadershipLanding() {
 
               <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}>
+
+>
 
                   <Box sx={{ textAlign: 'center', mb: 6 }}>
                     <Box sx={{ display: 'inline-block', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(10px)', px: 3, py: 1, borderRadius: '50px', mb: 3 }}>
@@ -141,9 +140,8 @@ export default function LeadershipLanding() {
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}>
+
+>
 
           <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
             What You'll Experience
@@ -155,9 +153,8 @@ export default function LeadershipLanding() {
               return (
                 <motion.div
                   key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}>
+
+>
 
                   <Card sx={{ p: 3, height: '100%', transition: 'transform 0.3s', '&:hover': { transform: 'translateY(-8px)' } }}>
                     <Box
@@ -189,9 +186,8 @@ export default function LeadershipLanding() {
 
         {/* Benefits Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}>
+
+>
 
           <Box
             sx={{
@@ -208,9 +204,8 @@ export default function LeadershipLanding() {
               {benefits.map((benefit, index) =>
               <motion.div
                 key={benefit}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 * index }}>
+
+>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <CheckCircle size={24} color="#10b981" />
@@ -224,9 +219,8 @@ export default function LeadershipLanding() {
 
         {/* CTA Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}>
+
+>
 
           <Box
             sx={{

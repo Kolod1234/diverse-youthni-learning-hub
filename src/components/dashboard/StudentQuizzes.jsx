@@ -74,9 +74,8 @@ export default function StudentQuizzes({ enrollments, user }) {
         return (
           <motion.div
             key={quiz.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
+
+
           >
             <Card sx={{ p: 2, border: 1, borderColor, '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.2s' }}>
               <Stack direction="row" spacing={2} alignItems="center">

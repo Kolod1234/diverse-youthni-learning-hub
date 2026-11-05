@@ -191,9 +191,9 @@ function Lobby({ onStart, onStart3D }) {
                 <motion.article
                   key={item.title}
                   className={`vl-practical-card ${item.status !== 'ready' ? 'is-planned' : ''}`}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.06 }}
+
+
+
                   style={{ '--accent': item.accent }}
                 >
                   <div className="vl-practical-card__visual">

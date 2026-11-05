@@ -66,7 +66,7 @@ export default function CourseIntegrityValidator() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 6 }}>
       <Box sx={{ maxWidth: 1400, mx: 'auto', px: { xs: 2, md: 4 } }}>
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div>
           <Box sx={{ mb: 6 }}>
             <Typography variant="h3" fontWeight={700} sx={{ mb: 2 }}>
               Course Integrity Validator
@@ -84,7 +84,7 @@ export default function CourseIntegrityValidator() {
         )}
 
         {/* Validation Controls */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div>
           <Card sx={{ p: 3, mb: 6, border: 1, borderColor: 'divider' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
               <Button
@@ -142,7 +142,7 @@ export default function CourseIntegrityValidator() {
 
         {validation && (
           <AnimatePresence>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <motion.div>
               {/* Summary Stats */}
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 3, mb: 6 }}>
                 {[
@@ -153,9 +153,8 @@ export default function CourseIntegrityValidator() {
                 ].map((stat, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.1 }}
+
+
                   >
                     <Card sx={{
                       p: 3,
@@ -178,7 +177,7 @@ export default function CourseIntegrityValidator() {
 
               {/* Issues List */}
               {validation.issues_found.length > 0 && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                <motion.div>
                   <Typography variant="h5" fontWeight={700} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <AlertCircle size={24} color="#ef4444" />
                     Courses with Issues ({validation.issues_found.length})
@@ -188,9 +187,8 @@ export default function CourseIntegrityValidator() {
                     {validation.issues_found.map((item, idx) => (
                       <motion.div
                         key={idx}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.05 }}
+
+
                       >
                         <Card
                           sx={{
@@ -235,7 +233,7 @@ export default function CourseIntegrityValidator() {
               )}
 
               {validation.issues_found.length === 0 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <motion.div>
                   <Card sx={{ p: 6, textAlign: 'center', bgcolor: '#f0fdf4', border: 2, borderColor: 'success.main' }}>
                     <CheckCircle size={48} color="#16a34a" style={{ margin: '0 auto 16px' }} />
                     <Typography variant="h5" fontWeight={700} sx={{ color: '#16a34a', mb: 1 }}>

@@ -73,9 +73,8 @@ export default function SessionRecordings() {
           return (
             <Grid size={{ xs: 12, md: 6, lg: 4 }} key={recording.id}>
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
+
+
               >
                 <Card sx={{ overflow: 'hidden', '&:hover': { boxShadow: 6 }, transition: 'all 0.3s' }}>
                   <Box sx={{ position: 'relative', paddingTop: '56.25%', bgcolor: 'grey.900' }}>

@@ -135,9 +135,8 @@ export default function LessonQA({ lessonId, courseId, user, currentSlideIndex }
           questions.map((q, idx) => (
             <motion.div
               key={q.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
+
+
             >
               <Card className={`p-4 ${q.is_answered ? 'bg-emerald-50 border-emerald-200' : 'bg-white'}`}>
                 <div className="flex items-start gap-3">

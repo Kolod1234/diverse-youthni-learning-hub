@@ -136,8 +136,8 @@ export default function YouthWorkWorkbook() {
       <div className="min-h-screen bg-background">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+
+
             className="text-center mb-12"
           >
             <div className="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
@@ -155,9 +155,8 @@ export default function YouthWorkWorkbook() {
             {qualifications.map((qual, idx) => (
               <motion.div
                 key={qual.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
+
+
               >
                 <Card className="p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-indigo-300"
                   onClick={() => setSelectedQualification(qual.id)}

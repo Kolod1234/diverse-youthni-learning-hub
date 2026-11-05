@@ -89,8 +89,8 @@ export default function Sessions() {
 
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+
+
         className="group"
       >
         <Card className="p-6 hover:shadow-xl transition-all duration-300 border-l-4 border-l-indigo-500">

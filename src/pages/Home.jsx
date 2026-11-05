@@ -217,7 +217,7 @@ function AfterschoolHero() {
 
       <Container maxWidth="md" sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
         {/* Badge */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <motion.div>
           <Chip
             icon={<Sparkles size={16} color="#0b2f5c" />}
             label={badge}
@@ -226,7 +226,7 @@ function AfterschoolHero() {
         </motion.div>
 
         {/* Title */}
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
+        <motion.div>
           <Box sx={{ bgcolor: 'white', display: 'inline-block', px: { xs: 4, md: 6 }, py: { xs: 2.5, md: 4 }, borderRadius: 5, boxShadow: 8, mb: 4 }}>
             <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, background: 'linear-gradient(to right, #0b2f5c, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
               {title}
@@ -235,12 +235,12 @@ function AfterschoolHero() {
         </motion.div>
 
         {/* Subtitle */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+        <motion.div>
           <Typography variant="h5" sx={{ color: 'white', fontWeight: 700, mb: 3 }}>{subtitle}</Typography>
         </motion.div>
 
         {/* FREE ACCESS box */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+        <motion.div>
           <Box sx={{ background: 'linear-gradient(to right, #fbbf24, #f59e0b)', borderRadius: 3, display: 'inline-block', px: { xs: 5, md: 7 }, py: 2.5, mb: 4, boxShadow: '0 8px 30px rgba(251,191,36,0.4)' }}>
             <Typography variant="h4" sx={{ color: '#0b2f5c', fontWeight: 900, letterSpacing: 1 }}>{freeAccess}</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
@@ -251,12 +251,12 @@ function AfterschoolHero() {
         </motion.div>
 
         {/* Description */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.4 }}>
+        <motion.div>
           <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600, fontSize: '1.125rem', mb: 5 }}>{description}</Typography>
         </motion.div>
 
         {/* CTA Button */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
+        <motion.div>
           <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
             <Button
               variant="contained"
@@ -330,7 +330,7 @@ function HeroCarouselWithWriteup({ images }) {
       {/* Write-up overlay - always visible, animated on hover */}
       <Container maxWidth="md" sx={{ position: 'relative', zIndex: 2, textAlign: 'center', py: { xs: 8, md: 12 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {/* Badge */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <motion.div>
           <motion.div whileHover={{ scale: 1.1, rotate: -2 }} transition={{ type: 'spring', stiffness: 300 }}>
             <Chip
               icon={<Sparkles size={16} color="#0b2f5c" />}
@@ -341,7 +341,7 @@ function HeroCarouselWithWriteup({ images }) {
         </motion.div>
 
         {/* Title box */}
-        <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
+        <motion.div>
           <motion.div whileHover={{ scale: 1.04, rotate: 1 }} transition={{ type: 'spring', stiffness: 200 }}>
             <Box sx={{ bgcolor: 'white', display: 'inline-block', px: { xs: 4, md: 6 }, py: { xs: 2.5, md: 4 }, borderRadius: 5, boxShadow: 8, mb: 4, cursor: 'default' }}>
               <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, background: 'linear-gradient(to right, #0b2f5c, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
@@ -352,7 +352,7 @@ function HeroCarouselWithWriteup({ images }) {
         </motion.div>
 
         {/* Subtitle */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+        <motion.div>
           <motion.div whileHover={{ scale: 1.06 }} transition={{ type: 'spring', stiffness: 300 }}>
             <Typography variant="h5" sx={{ color: 'white', fontWeight: 700, mb: 3, textShadow: '2px 2px 8px rgba(0,0,0,0.7)', cursor: 'default' }}>
               {get('hero_online_quizzes', 'Online Quizzes')}
@@ -361,7 +361,7 @@ function HeroCarouselWithWriteup({ images }) {
         </motion.div>
 
         {/* FREE ACCESS box */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+        <motion.div>
           <motion.div whileHover={{ scale: 1.07, y: -4 }} transition={{ type: 'spring', stiffness: 250 }}>
             <Box sx={{ background: 'linear-gradient(to right, #fbbf24, #f59e0b)', borderRadius: 3, display: 'inline-block', px: { xs: 5, md: 7 }, py: 2.5, mb: 4, boxShadow: '0 8px 30px rgba(251,191,36,0.5)', cursor: 'default' }}>
               <Typography variant="h4" sx={{ color: '#0b2f5c', fontWeight: 900, letterSpacing: 1 }}>{get('hero_free_access', 'FREE ACCESS')}</Typography>
@@ -374,14 +374,14 @@ function HeroCarouselWithWriteup({ images }) {
         </motion.div>
 
         {/* Description */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.4 }}>
+        <motion.div>
           <Typography sx={{ color: 'rgba(255,255,255,0.92)', fontWeight: 600, fontSize: '1.125rem', mb: 5, textShadow: '1px 1px 4px rgba(0,0,0,0.6)', cursor: 'default' }}>
             {get('hero_description', 'Access them at the comfort of your home')}
           </Typography>
         </motion.div>
 
         {/* CTA Button */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
+        <motion.div>
           <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
             <motion.div whileHover={{ scale: 1.08, y: -3 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 300 }}>
               <Button
@@ -607,9 +607,8 @@ function ProgramsSection() {
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+
+
       >
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>
@@ -625,10 +624,10 @@ function ProgramsSection() {
         {programs.map((program, idx) => (
           <motion.div
             key={program.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: idx * 0.1 }}
+
+
+
+
             whileHover={{ y: -8 }}
           >
             <Card sx={{ borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider' }}>
@@ -671,9 +670,8 @@ function FeaturesSection() {
     <Box component="section" sx={{ py: 10, background: 'linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.05))' }}>
       <Container maxWidth="xl">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+
+
         >
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Chip
@@ -701,10 +699,10 @@ function FeaturesSection() {
           {features.map((feature, idx) => (
             <motion.div
               key={feature.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
+
+
+
+
               whileHover={{ y: -8, scale: 1.02 }}
             >
               <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: 4, p: 4, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)', '&:hover': { boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)', transform: 'translateY(-4px)' }, transition: 'all 0.3s', border: '1px solid rgba(255, 255, 255, 0.1)', position: 'relative', overflow: 'hidden', '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)', zIndex: 1 } }}>
@@ -762,9 +760,8 @@ function SuccessStoriesCarousel() {
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+
+
       >
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>{section.title || 'Success stories and resources'}</Typography>
@@ -914,9 +911,8 @@ function SolutionsSection() {
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+
+
       >
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>
@@ -932,10 +928,10 @@ function SolutionsSection() {
         {cards.map((card, idx) => (
           <motion.div
             key={idx}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: idx * 0.1 }}
+
+
+
+
             whileHover={{ y: -8 }}
           >
             <Card sx={{ borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider' }}>
@@ -981,10 +977,9 @@ function LeadershipCTASection() {
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
+
+
+
       >
         <Box sx={{ position: 'relative', overflow: 'hidden', borderRadius: 6, background: 'linear-gradient(to bottom right, #7c3aed, #9333ea, #c026d3)', p: 6, boxShadow: '0 25px 50px -12px rgba(168, 85, 247, 0.5)' }}>
           <Box sx={{ position: 'absolute', top: 0, right: 0, width: 256, height: 256, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '50%', filter: 'blur(96px)' }} />
@@ -1073,10 +1068,9 @@ function FinalCTASection() {
       
       <Container maxWidth="xl" sx={{ position: 'relative', textAlign: 'center' }}>
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+
+
+
         >
           {section.badge_text && (
             <Chip
@@ -1188,9 +1182,8 @@ function EcosystemSection() {
     <Box component="section" sx={{ position: 'relative', py: 10, bgcolor: '#003B5C', overflow: 'hidden' }}>
       <Container maxWidth="xl">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+
+
         >
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Typography variant="h3" sx={{ fontSize: { xs: '2.5rem', md: '3rem' }, fontWeight: 700, color: 'white', mb: 3 }}>
@@ -1230,10 +1223,9 @@ function EcosystemSection() {
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 6, mt: 10 }}>
           {/* Product 1 - Red */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+
+
+
           >
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{ position: 'relative', mb: 4 }}>
@@ -1264,10 +1256,9 @@ function EcosystemSection() {
 
           {/* Product 2 - Green */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+
+
+
           >
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{ position: 'relative', mb: 4 }}>
@@ -1298,10 +1289,9 @@ function EcosystemSection() {
 
           {/* Product 3 - Blue */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
+
+
+
           >
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{ position: 'relative', mb: 4 }}>
@@ -1363,10 +1353,10 @@ function PartnersSection() {
               {logos.map((logo, idx) => (
                 <Box key={logo.id} sx={{ flex: '0 0 calc(50% - 16px)', minWidth: 0 }}>
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1, duration: 0.5 }}
+
+
+
+
                     whileHover={{ y: -8, scale: 1.03 }}
                   >
                     <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: 3, p: 3, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)', '&:hover': { boxShadow: '0 8px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)', transform: 'translateY(-4px)' }, transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, position: 'relative', overflow: 'hidden', '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)' } }}>

@@ -41,8 +41,7 @@ export default function CodePlayground({ initialCode = '', language = 'javascrip
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+
     >
       <Card className="p-6 bg-gradient-to-br from-slate-50 to-gray-100 border-2 border-gray-300">
         <div className="flex items-center justify-between mb-4">

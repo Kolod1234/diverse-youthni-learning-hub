@@ -169,7 +169,7 @@ export default function AdminAttendance() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
       <Container maxWidth="lg">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>Attendance Management</Typography>

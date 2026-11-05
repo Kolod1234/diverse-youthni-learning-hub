@@ -101,7 +101,7 @@ export default function TrueFalseQuiz({ questions = [], onComplete }) {
       </div>
 
       {showResult && (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+        <motion.div className="space-y-3">
           <div className={`flex items-center gap-2 font-semibold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
             {isCorrect ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
             {isCorrect ? 'Correct!' : `Incorrect — the statement is ${q.isTrue ? 'True' : 'False'}`}

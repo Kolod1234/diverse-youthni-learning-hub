@@ -178,9 +178,8 @@ export default function CourseAnalytics() {
             return (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
+
+
               >
                 <Card className="p-5">
                   <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-3`}>
