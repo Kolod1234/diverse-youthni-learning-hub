@@ -584,3 +584,17 @@ button:focus-visible {
   html { scroll-behavior: auto !important; }
   .animate-bounce, .animate-ping, .animate-pulse { animation: none !important; }
 }
+
+/* Keyboard focus (Impeccable audit): about 150 places remove the outline with outline-none, which
+   left keyboard users unable to see where they are. :focus-visible only matches keyboard focus, so
+   mouse clicks look unchanged. !important is needed to beat those per-element outline-none classes.
+   Text fields keep their own focus ring (MUI/shadcn inputs), so they are left out. */
+:is(a, button, summary, [role="button"], [role="tab"], [role="menuitem"], [role="option"], [role="link"],
+    [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid hsl(var(--ring)) !important;
+  outline-offset: 2px !important;
+}
+/* On the navy header and navy banners the indigo ring is hard to see: use white there. */
+.MuiAppBar-root :focus-visible, [class*="bg-[#0b2f5c]"] :focus-visible {
+  outline-color: #ffffff !important;
+}
