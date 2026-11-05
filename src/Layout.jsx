@@ -543,15 +543,9 @@ function LayoutContent({ children, currentPageName }) {
             }} />
           </Box>
         )}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2, ease: 'easeInOut' }}
-            style={{ width: '100%' }}
-          >
+        {/* No page-change animation: people change pages many times a visit, and the old
+            fade-out-then-slide-in (mode="wait") added about 400ms before every new page appeared. */}
+        <Box sx={{ width: '100%' }}>
             <SectionTabs section={pageSection} current={currentPageName} />
             {user?.role === 'admin' && (ADMIN_NAV_PAGES.has(currentPageName) || PARTNER_ADMIN_PAGES.includes(currentPageName)) ? (
               <Box sx={{ display: 'flex', alignItems: 'flex-start', maxWidth: 1440, mx: 'auto' }}>
@@ -565,8 +559,7 @@ function LayoutContent({ children, currentPageName }) {
                 <Box sx={{ flex: 1, minWidth: 0 }}>{pageBody}</Box>
               </Box>
             ) : pageBody}
-          </motion.div>
-        </AnimatePresence>
+        </Box>
       </Box>
 
       {/* Mobile Bottom Navigation */}
