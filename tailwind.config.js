@@ -7,6 +7,11 @@ module.exports = {
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
+  		// One font: Tailwind's font-sans (and the page root) use Roboto, the same face the MUI theme
+  		// loads, instead of each device's system font.
+  		fontFamily: {
+  			sans: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
