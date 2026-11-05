@@ -259,7 +259,7 @@ export default function Settings() {
                   <Button onClick={handlePasswordChange} variant="contained" startIcon={<Lock size={16} />} sx={{ alignSelf: 'flex-start' }}>
                     Update Password
                   </Button>
-                  <Box sx={{ border: 1, borderColor: '#fbbf24', borderRadius: 2, p: 2 }}>
+                  <Box sx={{ bgcolor: '#fef3c7', border: 1, borderColor: '#fbbf24', borderRadius: 2, p: 2 }}>
                     <Typography variant="body2" color="#92400e">Password change feature requires additional backend setup</Typography>
                   </Box>
                 </Box>
