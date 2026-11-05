@@ -205,7 +205,7 @@ export default function AcademyBuilder() {
                           <ListItem
                             secondaryAction={
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <IconButton onClick={() => setExpandedModule(expandedModule === index ? null : index)}>
+                                <IconButton aria-label={expandedModule === index ? 'Collapse module' : 'Expand module'} aria-expanded={expandedModule === index} onClick={() => setExpandedModule(expandedModule === index ? null : index)}>
                                   {expandedModule === index ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                 </IconButton>
                                 <IconButton aria-label="Edit" onClick={() => handleEditModule(index)}>

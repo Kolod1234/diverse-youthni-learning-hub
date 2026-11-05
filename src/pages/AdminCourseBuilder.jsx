@@ -125,7 +125,7 @@ export default function AdminCourseBuilder() {
                                 <Typography fontWeight={600}>{section.title || 'Untitled'}</Typography>
                               </Box>
                               <Stack direction="row" spacing={1}>
-                                <IconButton
+                                <IconButton aria-label={section.is_active ? 'Hide section' : 'Show section'}
                                   size="small"
                                   onClick={() => toggleActiveMutation.mutate({ id: section.id, is_active: !section.is_active })}
                                 >

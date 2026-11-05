@@ -160,7 +160,7 @@ export default function StudentAssignments({ enrollments, user }) {
                   </Stack>
                 </Box>
 
-                <IconButton size="small" sx={{ flexShrink: 0 }}>
+                <IconButton aria-label={isExpanded ? 'Collapse' : 'Expand'} aria-expanded={isExpanded} size="small" sx={{ flexShrink: 0 }}>
                   {isExpanded ? <ExpandLessIcon sx={{ fontSize: 16 }} /> : <ExpandMoreIcon sx={{ fontSize: 16 }} />}
                 </IconButton>
               </Box>

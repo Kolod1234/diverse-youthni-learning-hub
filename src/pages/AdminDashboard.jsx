@@ -370,7 +370,7 @@ function PartnersManagement() {
                   <Chip label={logo.is_active ? 'Visible' : 'Hidden'} size="small" color={logo.is_active ? 'success' : 'default'} />
                 </Box>
                 <Box sx={{ display: 'flex', gap: 0.5 }}>
-                  <IconButton size="small" variant="outlined" onClick={() => toggleActiveMutation.mutate({ id: logo.id, is_active: !logo.is_active })}>
+                  <IconButton aria-label={logo.is_active ? 'Hide logo' : 'Show logo'} size="small" variant="outlined" onClick={() => toggleActiveMutation.mutate({ id: logo.id, is_active: !logo.is_active })}>
                     {logo.is_active ? <Eye style={{ width: 16, height: 16 }} /> : <EyeOff style={{ width: 16, height: 16 }} />}
                   </IconButton>
                   <IconButton aria-label="Edit" size="small" variant="outlined" onClick={() => { setEditingLogo(logo); setFormData(logo); }}>

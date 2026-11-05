@@ -181,7 +181,7 @@ export default function AdminProjectSubmissions() {
           </Tabs>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Tooltip title="Kanban Board">
-              <IconButton
+              <IconButton aria-label="Board view" aria-pressed={viewMode === 'kanban'}
                 onClick={() => setViewMode('kanban')}
                 sx={{ bgcolor: viewMode === 'kanban' ? 'primary.main' : 'transparent', color: viewMode === 'kanban' ? 'white' : 'inherit' }}
               >
@@ -189,7 +189,7 @@ export default function AdminProjectSubmissions() {
               </IconButton>
             </Tooltip>
             <Tooltip title="Table View">
-              <IconButton
+              <IconButton aria-label="Table view" aria-pressed={viewMode === 'table'}
                 onClick={() => setViewMode('table')}
                 sx={{ bgcolor: viewMode === 'table' ? 'primary.main' : 'transparent', color: viewMode === 'table' ? 'white' : 'inherit' }}
               >
@@ -359,21 +359,21 @@ export default function AdminProjectSubmissions() {
                           </Tooltip>
                           {project.status !== 'approved' && (
                             <Tooltip title="Approve">
-                              <IconButton size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'approved')} sx={{ color: '#065f46', bgcolor: '#d1fae5', '&:hover': { bgcolor: '#a7f3d0' } }}>
+                              <IconButton aria-label="Approve" size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'approved')} sx={{ color: '#065f46', bgcolor: '#d1fae5', '&:hover': { bgcolor: '#a7f3d0' } }}>
                                 {togglingId === project.id ? <CircularProgress size={14} /> : <CheckCircle size={16} />}
                               </IconButton>
                             </Tooltip>
                           )}
                           {project.status !== 'pending' && (
                             <Tooltip title="Set Pending">
-                              <IconButton size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'pending')} sx={{ color: '#92400e', bgcolor: '#fef3c7', '&:hover': { bgcolor: '#fde68a' } }}>
+                              <IconButton aria-label="Mark as pending" size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'pending')} sx={{ color: '#92400e', bgcolor: '#fef3c7', '&:hover': { bgcolor: '#fde68a' } }}>
                                 <Clock size={16} />
                               </IconButton>
                             </Tooltip>
                           )}
                           {project.status !== 'rejected' && (
                             <Tooltip title="Reject">
-                              <IconButton size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'rejected')} sx={{ color: '#991b1b', bgcolor: '#fee2e2', '&:hover': { bgcolor: '#fecaca' } }}>
+                              <IconButton aria-label="Reject" size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'rejected')} sx={{ color: '#991b1b', bgcolor: '#fee2e2', '&:hover': { bgcolor: '#fecaca' } }}>
                                 <XCircle size={16} />
                               </IconButton>
                             </Tooltip>

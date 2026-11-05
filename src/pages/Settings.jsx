@@ -194,7 +194,7 @@ export default function Settings() {
                       <Avatar src={avatarUrl} sx={{ width: 96, height: 96, fontSize: '2rem' }}>
                         {fullName?.charAt(0)?.toUpperCase() || '?'}
                       </Avatar>
-                      <IconButton
+                      <IconButton aria-label="Change profile photo"
                         component="label"
                         size="small"
                         sx={{ position: 'absolute', bottom: 0, right: 0, bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' } }}

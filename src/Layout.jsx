@@ -464,7 +464,7 @@ function LayoutContent({ children, currentPageName }) {
                 </Box>
 
               {/* User Menu */}
-              <IconButton onClick={(e) => setUserMenuAnchor(e.currentTarget)} sx={{ p: 0 }}>
+              <IconButton aria-label="Account menu" onClick={(e) => setUserMenuAnchor(e.currentTarget)} sx={{ p: 0 }}>
                 <Avatar src={user?.avatar} sx={{ width: 40, height: 40, bgcolor: 'primary.main' + '20', color: 'primary.main' }}>
                   {user?.full_name?.charAt(0) || 'U'}
                 </Avatar>
