@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Box, Button, Chip, Container, Typography } from '@mui/material';
+import { Box, Button, Chip, Container, IconButton, Typography } from '@mui/material';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { base44 } from '@/api/base44Client';
@@ -15,8 +17,18 @@ const PHOTOS_WITH_WORDS = ['98873a707_'];
 
 export default function RedesignHero({ images: allImages = [], user }) {
   const images = allImages.filter(img => !PHOTOS_WITH_WORDS.some(id => img.image_url?.includes(id)));
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
+  // Motion review: the photos advance on their own only for people who haven't asked for reduced
+  // motion, stop for good once someone interacts, pause under the mouse, and can always be paused.
+  const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true },
+    [Autoplay({ delay: 6000, playOnInit: !reduceMotion, stopOnInteraction: true, stopOnMouseEnter: true })]);
   const [current, setCurrent] = useState(0);
+  const [playing, setPlaying] = useState(!reduceMotion);
+  const togglePlay = () => {
+    const autoplay = emblaApi?.plugins()?.autoplay;
+    if (!autoplay) return;
+    if (autoplay.isPlaying()) autoplay.stop(); else autoplay.play();
+  };
 
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content-hero'],
@@ -27,8 +39,10 @@ export default function RedesignHero({ images: allImages = [], user }) {
   useEffect(() => {
     if (!emblaApi) return;
     const onSelect = () => setCurrent(emblaApi.selectedScrollSnap());
-    emblaApi.on('select', onSelect);
-    return () => emblaApi.off('select', onSelect);
+    const onPlay = () => setPlaying(true);
+    const onStop = () => setPlaying(false);
+    emblaApi.on('select', onSelect).on('autoplay:play', onPlay).on('autoplay:stop', onStop);
+    return () => { emblaApi.off('select', onSelect).off('autoplay:play', onPlay).off('autoplay:stop', onStop); };
   }, [emblaApi]);
 
   return (
@@ -80,11 +94,19 @@ export default function RedesignHero({ images: allImages = [], user }) {
               </Box>
             </Box>
             {images.length > 1 && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1.5 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5, mt: 1 }}>
+                <IconButton onClick={togglePlay} aria-label={playing ? 'Pause photos' : 'Play photos'} size="small"
+                  sx={{ color: '#fff', mr: 0.5, '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}>
+                  {playing ? <PauseIcon fontSize="small" /> : <PlayArrowIcon fontSize="small" />}
+                </IconButton>
                 {images.map((_, idx) => (
-                  <Box key={idx} component="button" aria-label={`Show photo ${idx + 1}`} onClick={() => emblaApi?.scrollTo(idx)}
-                    sx={{ width: current === idx ? 28 : 10, height: 10, p: 0, border: 0, borderRadius: 5, cursor: 'pointer',
-                      bgcolor: current === idx ? '#fbbf24' : 'rgba(255,255,255,0.5)', transition: 'width 0.2s' }} />
+                  // The button is a 24px tap target; the visible dot sits inside it.
+                  <Box key={idx} component="button" aria-label={`Show photo ${idx + 1}`} aria-current={current === idx ? 'true' : undefined}
+                    onClick={() => emblaApi?.scrollTo(idx)}
+                    sx={{ minWidth: 24, height: 24, px: '7px', border: 0, bgcolor: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Box component="span" sx={{ display: 'block', width: current === idx ? 28 : 10, height: 10, borderRadius: 5,
+                      bgcolor: current === idx ? '#fbbf24' : 'rgba(255,255,255,0.5)', transition: 'width 200ms var(--ease-out), background-color 200ms ease' }} />
+                  </Box>
                 ))}
               </Box>
             )}
