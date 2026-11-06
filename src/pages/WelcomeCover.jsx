@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { getPathways, savePathways, PENDING_KEY } from '@/components/pathways/pathways';
 import { Button, Card } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import PeopleIcon from '@mui/icons-material/People';
@@ -17,6 +19,7 @@ export default function WelcomeCover() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const forceShow = location.state?.forceShow;
 
   useEffect(() => {
@@ -32,7 +35,7 @@ export default function WelcomeCover() {
         }
 
         // If user already has an interest, redirect them (unless forced to show)
-        if (userData?.interest_type && userData.interest_type !== 'guest' && !forceShow) {
+        if (getPathways(userData).length && !forceShow) {
           navigate(createPageUrl('Home'));
         }
       } catch (error) {
@@ -46,29 +49,23 @@ export default function WelcomeCover() {
 
   const handleSelectInterest = async (interestType) => {
     if (user) {
-      // Logged-in user: save to database first
-      await base44.auth.updateMe({ interest_type: interestType });
-      
-      // When changing pathway (forceShow), go directly to the pathway home page.
-      // On first-time selection, go to the landing/info page for orientation.
-      if (interestType === 'leadership') {
-        navigate(createPageUrl(forceShow ? 'HomeLeadership' : 'LeadershipLanding'));
-      } else if (interestType === 'youth_work') {
-        navigate(createPageUrl(forceShow ? 'HomeYouthWork' : 'YouthWorkLanding'));
-      } else if (interestType === 'learning') {
-        navigate(createPageUrl('HomeLearning'));
-      } else {
-        navigate(createPageUrl('Home'));
-      }
+      if (interestType === 'guest') { navigate(createPageUrl('Home') + '?view=public'); return; }
+      // Logged-in user: save their own choice, refresh it everywhere, then go to their hub.
+      await savePathways([interestType]);
+      await queryClient.invalidateQueries({ queryKey: ['auth-me'] });
+      // First time on Youth Work or Leadership: the About page explains the pathway first.
+      if (!forceShow && interestType === 'leadership') navigate(createPageUrl('LeadershipLanding'));
+      else if (!forceShow && interestType === 'youth_work') navigate(createPageUrl('YouthWorkLanding'));
+      else navigate(createPageUrl('Home'));
     } else {
       // Guest: save to localStorage or redirect to login
       if (interestType === 'guest') {
         localStorage.setItem('interest_type', 'guest');
         navigate(createPageUrl('Home'));
       } else {
-        // Redirect to login with pending interest
-        localStorage.setItem('pending_interest', interestType);
-        base44.auth.redirectToLogin(window.location.origin + createPageUrl('WelcomeCover'));
+        // Sign in first; the hub on Home saves this choice when they come back.
+        try { localStorage.setItem(PENDING_KEY, interestType); } catch { /* choose again after signing in */ }
+        base44.auth.redirectToLogin(window.location.origin + createPageUrl('Home'));
       }
     }
   };
@@ -228,7 +225,7 @@ export default function WelcomeCover() {
 
         {/* Footer */}
         <p className="text-center text-gray-400 mt-6 text-sm">
-          You can change your pathway anytime from your settings
+          You can change your pathway at any time from your account menu
         </p>
       </div>
     </div>);
