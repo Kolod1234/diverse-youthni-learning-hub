@@ -176,6 +176,9 @@ export default function Home() {
     return 0;
   }).filter(c => selectedCategory === 'all' || c.category === selectedCategory);
 
+  // Wait for the sign-in check, so signed-in people never see the public page flash first.
+  if (userLoading) return <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }} />;
+
   // Stage 1: signed-in people get their hub; visitors get the public homepage with the three pathways.
   if (user && !showPublic) {
     return (
