@@ -27,6 +27,10 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import FlagIcon from '@mui/icons-material/Flag';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { getPathways } from '@/components/pathways/pathways';
 import { createPageUrl } from '@/utils';
 import { SECTIONS } from '@/components/layout/SectionTabs';
 import { ADMIN_NAV_PAGES } from '@/components/admin/AdminSideNav';
@@ -71,29 +75,51 @@ export function buildNav({ user, can, PERMISSIONS, canAccessPastPaperSolver, tut
   const adminHome = page('AdminDashboard', 'Admin', AdminPanelSettingsIcon, { match: ['AdminDashboard', ...ADMIN_NAV_PAGES, ...PARTNER_PAGES] });
   const home = page('Home', 'Home', HomeIcon);
   const explore = page('Explore', 'Explore', ExploreIcon);
+  const youthWork = page('YouthWork', 'Youth Work', WorkspacesIcon, { match: ['YouthWork', 'YouthWorkWorkbook'] });
+  const programmes = page('Programs', 'Programmes', FlagIcon);
 
-  // Top bar: at most five links, picked per role (wireframes M1, M6, L4, L5).
+  // Stage 1: the learner's chosen pathway decides which links come first. It never hides a page.
+  const pathways = getPathways(user);
+  const mainPathway = pathways[0] || 'learning';
+
+  // Top bar: at most five links, picked per role (wireframes M1, M6, L4, L5) and, for learners, per pathway.
   let primary;
   if (isAdmin) primary = [home, adminHome, explore, tutorHome, page('Library', 'Library', LocalLibraryIcon)];
   else if (isTutor) primary = [tutorHome, explore, page('TutorSessionsDashboard', 'My sessions', VideocamIcon), page('TutorBookingManager', 'Bookings', EventAvailableIcon)];
   else if (isCoordinator) primary = [home, coordHome, explore, myLearning, community];
+  else if (user && mainPathway === 'youth_work') primary = [home, youthWork, page('YouthWorkWorkbook', 'My workbooks', AssignmentIcon), liveSessions, community];
+  else if (user && mainPathway === 'leadership') primary = [home, programmes, page('Events', 'Events', EventIcon), community, page('MessageCenter', 'Messages', ChatIcon)];
   else if (user) primary = [home, explore, myLearning, liveSessions, community];
   else primary = [home, explore];
 
-  // Menu drawer: everything else, grouped, same on desktop and phone.
-  const groups = [
-    { name: 'Learning', items: [
+  // One menu group per pathway. Chosen pathways come first; the others follow, still open to everyone.
+  const pathwayGroups = {
+    learning: { name: 'Study (GCSE & A-Level)', items: [
       myLearning,
       page('Explore', 'Explore courses', ExploreIcon),
       page('CCEAPastPapers', 'CCEA past papers', DescriptionIcon),
       canAccessPastPaperSolver && page('PastPaperSolver', 'Past paper solver', PsychologyIcon),
       path('/laboratory', 'Virtual laboratory', ScienceIcon),
-      page('YouthWork', 'Youth Work (OCN)', WorkspacesIcon),
       isAdmin && page('Library', 'Library', LocalLibraryIcon),
     ] },
+    youth_work: { name: 'Youth Work (OCN)', items: [
+      page('YouthWork', 'Qualifications and courses', WorkspacesIcon),
+      page('YouthWorkWorkbook', 'My workbooks', AssignmentIcon),
+      page('YouthWorkLanding', 'About Youth Work', InfoOutlinedIcon),
+    ] },
+    leadership: { name: 'Leadership Programme', items: [
+      page('Programs', 'Programmes, rota and logbooks', FlagIcon),
+      page('LeadershipLanding', 'About the programme', InfoOutlinedIcon),
+    ] },
+  };
+  const pathwayOrder = [...pathways, ...['learning', 'youth_work', 'leadership'].filter(id => !pathways.includes(id))];
+
+  // Menu drawer: everything else, grouped, same on desktop and phone.
+  const groups = [
+    ...pathwayOrder.map(id => pathwayGroups[id]),
     { name: 'Live and community', items: [
       liveSessions, page('Tutors', 'Tutors', SchoolIcon), page('Events', 'Events', EventIcon),
-      community, page('MessageCenter', 'Messages', ChatIcon), page('Achievements', 'Achievements', EmojiEventsIcon),
+      community, page('MessageCenter', 'Messages', ChatIcon),
     ] },
     (isTutor || can?.(PERMISSIONS?.CREATE_LESSON)) && { name: 'Teaching', items: [
       tutorHome,
@@ -121,7 +147,7 @@ export function buildNav({ user, can, PERMISSIONS, canAccessPastPaperSolver, tut
     items: g.items.filter(Boolean).filter(it => !(isTutor && !isAdmin && it.page && tutorPages && !tutorPages.includes(it.page))),
   })).filter(g => g.items.length);
 
-  return { primary, groups, home: roleHome(user), isStudent, isTutor, isCoordinator, isAdmin };
+  return { primary, groups, home: roleHome(user), pathways, isStudent, isTutor, isCoordinator, isAdmin };
 }
 
 export const isActive = (item, currentPageName) => item.match?.includes(currentPageName);
