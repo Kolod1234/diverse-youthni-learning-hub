@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { savePathways, PENDING_KEY } from '@/components/pathways/pathways';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Container, Box, Typography } from '@mui/material';
@@ -15,6 +16,7 @@ import { createPageUrl } from '@/utils';
 export default function YouthWorkLanding() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -35,11 +37,13 @@ export default function YouthWorkLanding() {
 
   const handleJoinYouthWork = async () => {
     if (user) {
-      await base44.auth.updateMe({ interest_type: 'youth_work' });
-      navigate(createPageUrl('HomeYouthWork'));
+      // Stage 1: save the pathway and go straight to Youth Work (the old target looped back here).
+      await savePathways(['youth_work']);
+      await queryClient.invalidateQueries({ queryKey: ['auth-me'] });
+      navigate(createPageUrl('YouthWork'));
     } else {
-      localStorage.setItem('pending_interest', 'youth_work');
-      base44.auth.redirectToLogin(window.location.origin + createPageUrl('YouthWorkLanding'));
+      try { localStorage.setItem(PENDING_KEY, 'youth_work'); } catch { /* choose again after signing in */ }
+      base44.auth.redirectToLogin(window.location.origin + createPageUrl('Home'));
     }
   };
 
