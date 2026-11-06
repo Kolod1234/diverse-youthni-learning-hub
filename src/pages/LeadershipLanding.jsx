@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { savePathways, PENDING_KEY } from '@/components/pathways/pathways';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Container, Box, Typography } from '@mui/material';
@@ -11,6 +13,7 @@ import { createPageUrl } from '@/utils';
 export default function LeadershipLanding() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -26,11 +29,13 @@ export default function LeadershipLanding() {
 
   const handleJoinProgramme = async () => {
     if (user) {
-      await base44.auth.updateMe({ interest_type: 'leadership' });
-      navigate(createPageUrl('HomeLeadership'));
+      // Stage 1: save the pathway and go straight to the programme tools (the old target looped back here).
+      await savePathways(['leadership']);
+      await queryClient.invalidateQueries({ queryKey: ['auth-me'] });
+      navigate(createPageUrl('Programs'));
     } else {
-      localStorage.setItem('pending_interest', 'leadership');
-      base44.auth.redirectToLogin(window.location.origin + createPageUrl('LeadershipLanding'));
+      try { localStorage.setItem(PENDING_KEY, 'leadership'); } catch { /* choose again after signing in */ }
+      base44.auth.redirectToLogin(window.location.origin + createPageUrl('Home'));
     }
   };
 
