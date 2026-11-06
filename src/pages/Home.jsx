@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import { Button, IconButton, Card, CardContent, CardMedia, Typography, Chip, Box, Container, Avatar } from '@mui/material';
@@ -45,6 +45,9 @@ import PageSEO from '@/components/seo/PageSEO';
 import RedesignHero from '@/components/home/RedesignHero';
 import HomeQuickStart from '@/components/home/HomeQuickStart';
 import HomeCommunity from '@/components/home/HomeCommunity';
+import PathwayHub from '@/components/pathways/PathwayHub';
+import PathwayCards from '@/components/pathways/PathwayCards';
+import { PENDING_KEY } from '@/components/pathways/pathways';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 
@@ -96,7 +99,16 @@ function useInView(options = {}) {
 
 export default function Home() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const location = useLocation();
+  // Same query as the header, so a saved pathway shows everywhere at once.
+  const { data: user = null, isLoading: userLoading } = useQuery({
+    queryKey: ['auth-me'],
+    queryFn: () => base44.auth.me(),
+    staleTime: 30000,
+    retry: false,
+  });
+  // Staff (and anyone curious) can still see what visitors see with ?view=public.
+  const showPublic = new URLSearchParams(location.search).get('view') === 'public';
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
@@ -149,9 +161,11 @@ export default function Home() {
   const teamSection = allPageSections.filter(s => s.section_type === 'team').slice(0, 1);
   const faqSection = allPageSections.filter(s => s.section_type === 'faq').slice(0, 1);
 
-  useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => setUser(null));
-  }, []);
+  // A visitor picks a pathway, signs in, and lands back here; the hub then saves that choice.
+  const startPathway = (id) => {
+    try { localStorage.setItem(PENDING_KEY, id); } catch { /* private window: they can choose again after signing in */ }
+    base44.auth.redirectToLogin(window.location.origin + createPageUrl('Home'));
+  };
 
   const visibleCourses = courses.filter(c => c.is_published !== false);
   const featuredCourses = visibleCourses.filter(c => c.is_featured).slice(0, 3);
@@ -162,6 +176,17 @@ export default function Home() {
     return 0;
   }).filter(c => selectedCategory === 'all' || c.category === selectedCategory);
 
+  // Stage 1: signed-in people get their hub; visitors get the public homepage with the three pathways.
+  if (user && !showPublic) {
+    return (
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+        <PageSEO pageName="Learning Hub" />
+        <PathwayHub user={user} />
+        <HomeCommunity photos={carouselImages} reviews={realReviews} posts={blogPosts} />
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <PageSEO pageName="Learning Hub" />
@@ -169,6 +194,15 @@ export default function Home() {
           The old section components below are kept unused for now, so any of them can be restored. */}
       <RedesignHero images={heroImages.length > 0 ? heroImages : carouselImages} user={user} />
       <HomeQuickStart courses={visibleCourses} />
+      {/* Stage 1: the three pathways, so visitors see everything the Hub offers, not only courses. */}
+      <Container maxWidth="lg" component="section" aria-labelledby="pathways-heading" sx={{ mb: 6 }}>
+        <Typography id="pathways-heading" component="h2" sx={{ fontSize: '1.625rem', fontWeight: 700, mb: 1 }}>Three ways to take part</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2.5 }}>
+          Choose the pathway that fits you. You can change it later, and you can use every part of the Hub.
+        </Typography>
+        <PathwayCards onChoose={user ? () => navigate(createPageUrl('Home')) : startPathway}
+          actionLabel={user ? 'Go to my hub' : 'Sign in and start'} />
+      </Container>
       {/* Who we are and why the Hub exists, with live figures (wireframe M1 'about' band). */}
       <Suspense fallback={null}><AboutUsSection /></Suspense>
       <HomeCommunity photos={carouselImages} reviews={realReviews} posts={blogPosts} />
