@@ -11,7 +11,7 @@ export const PATHWAYS = [
     label: 'GCSE & A-Level',
     short: 'Study',
     description: 'Courses, lessons, quizzes, past papers and live sessions.',
-    start: 'Dashboard',
+    start: 'Explore',
     image: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/73bf1b641_PXL_20250405_120925148.jpg',
   },
   {
