@@ -27,6 +27,9 @@ import QuestionSourceImage from "@/components/solver/QuestionSourceImage";
 import GeneratedDiagram from "@/components/solver/GeneratedDiagram";
 import AnswerBlock from "@/components/solver/AnswerBlock";
 import SolverAccessGate from "@/components/solver/SolverAccessGate";
+import PaperQuestionSource from "@/components/solver/PaperQuestionSource";
+import { splitPdfIntoQuestions } from "@/components/solver/pdfQuestionSplitter";
+import { extractPaperQuestionsWithAI } from "@/components/solver/extractPaperQuestionsWithAI";
 
 const mathJaxConfig = {
   loader: { load: ["[tex]/ams", "input/tex", "output/chtml"] },
@@ -367,55 +370,14 @@ CRITICAL FORMATTING REMINDER:
 
     try {
       setFullPaperProgress("Reading every question and diagram…");
-      const extractPrompt = `You are an expert CCEA ${qualification} ${subject} examiner.
-
-The attached file is a CCEA ${qualification} ${subject} past paper.
-
-Extract EVERY question and sub-question from the document (e.g. 1, 1a, 1b, 2, 2a, 2(i), etc.).
-For each question include:
-- number: the question number/label as a string (e.g. "1a", "1b")
-- stem: if this is a sub-question (like 1b or 2(ii)), include the shared parent question introduction/stem and any key/data established in earlier parts (e.g. "The pictogram shows the number of litres of paint sold. Part (a) established that 30 litres of matt paint = 3 buckets, so 1 bucket = 10 litres."). Empty string if standalone.
-- text: the FULL question text exactly as written in the paper. If the question includes a table or pictogram, also include a clean Markdown table representation of it.
-- marks: the number of marks awarded (integer), or null if not shown
-- page_number: the 1-based page number of the PDF where this question and its diagram/table appear (1 if a single image)
-- has_diagram: true if the question relies on a diagram, pictogram, graph, chart, figure, or table on the paper
-- crop_box: [ymin, xmin, ymax, xmax] on a 0 to 1000 scale bounding the question AND its associated diagram/pictogram/table on that page (include the parent diagram if this sub-question uses it)
-- diagram_summary: exact description of the diagram, pictogram symbols, key, graph axes, or table values from the paper
-
-Return the result as a JSON object with a single key "questions" containing an array.`;
-
-      const extracted = await base44.integrations.Core.InvokeLLM({
-        prompt: extractPrompt,
-        file_urls: [uploadedFile.url],
-        model: "automatic",
-        response_json_schema: {
-          type: "object",
-          properties: {
-            questions: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  number: { type: "string" },
-                  stem: { type: "string" },
-                  text: { type: "string" },
-                  marks: { anyOf: [{ type: "number" }, { type: "null" }] },
-                  page_number: { type: "number" },
-                  has_diagram: { type: "boolean" },
-                  crop_box: {
-                    type: "array",
-                    items: { type: "number" },
-                  },
-                  diagram_summary: { type: "string" },
-                },
-                required: ["number", "text"],
-              },
-            },
-          },
-        },
-      });
-
-      const questions = extracted?.questions || [];
+      // Text-based PDFs are split straight from the paper itself; anything else falls back to AI reading.
+      let questions = [];
+      if (uploadedFile.type === "pdf" && uploadedFile.preview) {
+        questions = await splitPdfIntoQuestions(uploadedFile.preview).catch(() => []);
+      }
+      if (!questions.length) {
+        questions = await extractPaperQuestionsWithAI(uploadedFile.url, subject, qualification);
+      }
       if (!questions.length) {
         alert("Could not extract questions from the file. Try uploading a clearer image or PDF.");
         return;
@@ -424,13 +386,15 @@ Return the result as a JSON object with a single key "questions" containing an a
       const results = [];
       const batchSize = 3;
       const solveQuestion = async (q) => {
+        const pages = q.segments?.length ? [...new Set(q.segments.map((s) => s.page))].join(" and ") : "";
         const prompt = `You are a careful CCEA ${qualification} ${subject} examiner and tutor.
 
 Question ${q.number}${q.marks ? ` [${q.marks} marks]` : ""}:
-${q.stem ? `Shared Question Context / Stem:\n${q.stem}\n\n` : ""}Question Text:
+${q.stem ? `Shared Question Context / Stem:\n${q.stem}\n\n` : ""}Question Text${q.segments?.length ? " (copied from the paper's text layer; fractions, powers and table layout may be flattened)" : ""}:
 ${q.text}
 ${q.diagram_summary ? `\nDiagram / Visual Information from Paper:\n${q.diagram_summary}\n` : ""}
-The original paper is attached. Inspect it for every diagram, graph, table, source, extract or data item belonging to this question; do not answer from extracted text alone when visual evidence is required.
+The original paper is attached.${pages ? ` This question is printed on page ${pages} of the attached PDF.` : ""} Inspect it for every diagram, graph, table, source, extract or data item belonging to this question; do not answer from extracted text alone when visual evidence is required.
+Answer every part in the order printed on the paper, using the paper's own part labels as bold headings (e.g. **(a)**, **(b)(i)**), so the student can match each answer to its part.
 
 ${modeInstructions[mode]}
 
@@ -447,6 +411,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
           page_number: q.page_number || 1,
           has_diagram: Boolean(q.has_diagram),
           crop_box: q.crop_box || null,
+          segments: q.segments || null,
           diagram_summary: q.diagram_summary || "",
           answer: ans,
           answerKey: Date.now() + Math.random(),
@@ -710,31 +675,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                     <p className="text-white text-sm line-clamp-1 flex-1">{q.text}</p>
                   </div>
                   <div className="px-6 py-5 space-y-4">
-                    {/* Full Question & Paper Visual Section */}
-                    <div className="rounded-xl border border-indigo-100 bg-slate-50/80 p-4 space-y-3">
-                      <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">
-                        Question {q.number}{q.marks ? ` (${q.marks} mark${q.marks === 1 ? "" : "s"})` : ""}
-                      </span>
-                      <QuestionSourceImage
-                        file={uploadedFile}
-                        pageNumber={q.page_number}
-                        cropBox={q.crop_box}
-                        caption={q.diagram_summary}
-                        questionText={q.text}
-                        stemText={q.stem}
-                        nextQuestionText={paperSolutions[i + 1]?.text}
-                        questionLabel={q.number}
-                      />
-                      {q.stem && (
-                        <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5">
-                          <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-600 mb-1">
-                            Question Context / Stem
-                          </p>
-                          <AnswerBlock text={q.stem} blockKey={`${q.answerKey}-stem`} />
-                        </div>
-                      )}
-                      <AnswerBlock text={q.text} blockKey={`${q.answerKey}-qtext`} />
-                    </div>
+                    <PaperQuestionSource question={q} file={uploadedFile} nextQuestionText={paperSolutions[i + 1]?.text} />
 
                     {/* Confidence badge */}
                     <div className="flex items-center gap-2 flex-wrap pt-1">

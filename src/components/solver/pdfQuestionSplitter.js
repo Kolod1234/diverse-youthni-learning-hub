@@ -102,7 +102,7 @@ export async function splitPdfIntoQuestions(src) {
         text,
         marks: marks || null,
         page_number: segments[0]?.page || 1,
-        segments: segments.map(({ lastY, ...seg }) => seg),
+        segments: segments.map(({ page, top, bottom, left, right }) => ({ page, top, bottom, left, right })),
       };
     })
     .filter((q) => q.segments.length);

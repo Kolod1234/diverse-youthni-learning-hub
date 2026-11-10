@@ -11,6 +11,7 @@ export default function QuestionSourceImage({
   stemText = "",
   nextQuestionText = "",
   questionLabel = "",
+  region = null,
 }) {
   const src = file?.preview || file?.url;
   const isPdf = file?.type === "pdf";
@@ -25,14 +26,14 @@ export default function QuestionSourceImage({
     let cancelled = false;
     setLoading(true);
     setError("");
-    renderQuestionView({ src, requestedPage, questionText, stemText, nextQuestionText, questionLabel, hintPage: pageNumber, cropBox })
+    renderQuestionView({ src, requestedPage, region, questionText, stemText, nextQuestionText, questionLabel, hintPage: pageNumber, cropBox })
       .then((result) => !cancelled && setView(result))
       .catch((err) => !cancelled && setError(err?.message || "Could not display this page of the paper."))
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;
     };
-  }, [isPdf, src, requestedPage, questionText, stemText, nextQuestionText, questionLabel, pageNumber, JSON.stringify(cropBox)]);
+  }, [isPdf, src, requestedPage, questionText, stemText, nextQuestionText, questionLabel, pageNumber, JSON.stringify(cropBox), JSON.stringify(region)]);
 
   if (!file || !src) return null;
 
@@ -46,7 +47,7 @@ export default function QuestionSourceImage({
   }
 
   const goToPage = (page) => {
-    setShowCropped(false);
+    setShowCropped(true);
     setRequestedPage(page);
   };
   const displayedUrl = isPdf ? (showCropped && view.cropUrl ? view.cropUrl : view.fullUrl) : src;
