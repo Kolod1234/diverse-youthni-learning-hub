@@ -10,6 +10,7 @@ export default function QuestionSourceImage({
   questionText = "",
   stemText = "",
   nextQuestionText = "",
+  questionLabel = "",
 }) {
   const src = file?.preview || file?.url;
   const isPdf = file?.type === "pdf";
@@ -24,14 +25,14 @@ export default function QuestionSourceImage({
     let cancelled = false;
     setLoading(true);
     setError("");
-    renderQuestionView({ src, requestedPage, questionText, stemText, nextQuestionText, hintPage: pageNumber, cropBox })
+    renderQuestionView({ src, requestedPage, questionText, stemText, nextQuestionText, questionLabel, hintPage: pageNumber, cropBox })
       .then((result) => !cancelled && setView(result))
       .catch((err) => !cancelled && setError(err?.message || "Could not display this page of the paper."))
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;
     };
-  }, [isPdf, src, requestedPage, questionText, stemText, nextQuestionText, pageNumber, JSON.stringify(cropBox)]);
+  }, [isPdf, src, requestedPage, questionText, stemText, nextQuestionText, questionLabel, pageNumber, JSON.stringify(cropBox)]);
 
   if (!file || !src) return null;
 

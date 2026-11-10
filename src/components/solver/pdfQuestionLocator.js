@@ -65,8 +65,11 @@ function scorePage(words, qWords) {
   return distinctive.filter((w) => pageSet.has(w)).length / distinctive.length;
 }
 
+// Sub-parts such as "2b" or "11(c)(i)" usually rely on a diagram printed above them with the parent question.
+const isSubPart = (label) => /^\s*\d+\s*\(?[a-z]/i.test(String(label || ""));
+
 // Finds the page and vertical band holding the question (from its stem to the next question).
-function locateQuestion(pages, { questionText, stemText, nextQuestionText }) {
+function locateQuestion(pages, { questionText, stemText, nextQuestionText, questionLabel }) {
   const qWords = tokenize(questionText);
   if (qWords.length < 3) return null;
   let best = null;
@@ -86,7 +89,7 @@ function locateQuestion(pages, { questionText, stemText, nextQuestionText }) {
     const sPos = findSequence(words, stemWords);
     if (sPos >= 0 && words[sPos].top < top) top = words[sPos].top;
   }
-  top = Math.max(0, top - 0.025);
+  top = isSubPart(questionLabel) ? 0.04 : Math.max(0, top - 0.025);
 
   let bottom = 0.96;
   const nextWords = tokenize(nextQuestionText);
@@ -140,13 +143,13 @@ async function renderPage(pdf, pageNumber) {
 }
 
 // Renders the page containing the question and a crop focused on the question and its diagram.
-export async function renderQuestionView({ src, requestedPage, questionText, stemText, nextQuestionText, hintPage, cropBox }) {
+export async function renderQuestionView({ src, requestedPage, questionText, stemText, nextQuestionText, questionLabel, hintPage, cropBox }) {
   const { pdf, pages } = await loadPdfIndex(src);
   const numPages = pdf.numPages;
   const fallbackPage = Math.min(Math.max(1, Number(hintPage) || 1), numPages);
   const region = requestedPage
     ? null
-    : locateQuestion(pages, { questionText, stemText, nextQuestionText }) || regionFromCropBox(cropBox, fallbackPage);
+    : locateQuestion(pages, { questionText, stemText, nextQuestionText, questionLabel }) || regionFromCropBox(cropBox, fallbackPage);
   const page = requestedPage || region?.page || fallbackPage;
   const canvas = await renderPage(pdf, page);
   return {

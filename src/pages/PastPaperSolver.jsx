@@ -723,6 +723,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                         questionText={q.text}
                         stemText={q.stem}
                         nextQuestionText={paperSolutions[i + 1]?.text}
+                        questionLabel={q.number}
                       />
                       {q.stem && (
                         <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5">
