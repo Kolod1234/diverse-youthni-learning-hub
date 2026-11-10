@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { MathJax, MathJaxContext } from "better-react-mathjax";
+import { MathJaxContext } from "better-react-mathjax";
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import SendIcon from '@mui/icons-material/Send';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -712,33 +712,27 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                   <div className="px-6 py-5 space-y-4">
                     {/* Full Question & Paper Visual Section */}
                     <div className="rounded-xl border border-indigo-100 bg-slate-50/80 p-4 space-y-3">
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">
-                          Question {q.number}{q.marks ? ` (${q.marks} mark${q.marks === 1 ? "" : "s"})` : ""}
-                        </span>
-                        {q.page_number && (
-                          <span className="text-xs text-slate-500 font-medium">
-                            Paper Page {q.page_number}
-                          </span>
-                        )}
-                      </div>
+                      <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">
+                        Question {q.number}{q.marks ? ` (${q.marks} mark${q.marks === 1 ? "" : "s"})` : ""}
+                      </span>
+                      <QuestionSourceImage
+                        file={uploadedFile}
+                        pageNumber={q.page_number}
+                        cropBox={q.crop_box}
+                        caption={q.diagram_summary}
+                        questionText={q.text}
+                        stemText={q.stem}
+                        nextQuestionText={paperSolutions[i + 1]?.text}
+                      />
                       {q.stem && (
-                        <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5 text-sm text-slate-700">
+                        <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5">
                           <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-600 mb-1">
                             Question Context / Stem
                           </p>
                           <AnswerBlock text={q.stem} blockKey={`${q.answerKey}-stem`} />
                         </div>
                       )}
-                      <div className="text-sm font-medium text-slate-900">
-                        <AnswerBlock text={q.text} blockKey={`${q.answerKey}-qtext`} />
-                      </div>
-                      <QuestionSourceImage
-                        file={uploadedFile}
-                        pageNumber={q.page_number}
-                        cropBox={q.crop_box}
-                        caption={q.diagram_summary}
-                      />
+                      <AnswerBlock text={q.text} blockKey={`${q.answerKey}-qtext`} />
                     </div>
 
                     {/* Confidence badge */}
@@ -781,14 +775,17 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
               {/* Question recap */}
               {(solution.question || solution.uploadedFile) && (
                 <div className="px-6 pt-4 pb-4 bg-slate-50/90 border-b border-indigo-100 space-y-3">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <p className="text-xs font-bold text-indigo-700 uppercase tracking-wide">Question & Paper Visual</p>
-                    {solution.uploadedFile?.type === "pdf" && solution.page_number && (
-                      <span className="text-xs text-slate-500 font-medium">Page {solution.page_number}</span>
-                    )}
-                  </div>
+                  <p className="text-xs font-bold text-indigo-700 uppercase tracking-wide">Question</p>
+                  <QuestionSourceImage
+                    file={solution.uploadedFile}
+                    pageNumber={solution.page_number}
+                    cropBox={solution.crop_box}
+                    caption={solution.diagram_summary}
+                    questionText={solution.question}
+                    stemText={solution.stem}
+                  />
                   {solution.stem && (
-                    <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5 text-sm text-slate-700">
+                    <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5">
                       <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-600 mb-1">
                         Question Context / Stem
                       </p>
@@ -796,16 +793,8 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                     </div>
                   )}
                   {solution.question && (
-                    <div className="text-sm font-medium text-slate-900">
-                      <AnswerBlock text={solution.question} blockKey={`${solution.answerKey}-qtext`} />
-                    </div>
+                    <AnswerBlock text={solution.question} blockKey={`${solution.answerKey}-qtext`} />
                   )}
-                  <QuestionSourceImage
-                    file={solution.uploadedFile}
-                    pageNumber={solution.page_number}
-                    cropBox={solution.crop_box}
-                    caption={solution.diagram_summary}
-                  />
                   {!solution.uploadedFile && solution.has_diagram && (
                     <GeneratedDiagram solution={solution} autoGenerate={true} />
                   )}
