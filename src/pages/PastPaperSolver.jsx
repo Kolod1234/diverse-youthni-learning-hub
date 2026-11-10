@@ -19,12 +19,13 @@ const _w = (I) => ({ size, color, className, style, ...r }) => <I className={cla
 const Loader2 = _w(HourglassEmptyIcon), Send = _w(SendIcon), RotateCcw = _w(RestartAltIcon), BookOpen = _w(MenuBookIcon);
 const Lightbulb = _w(LightbulbIcon), CheckCircle = _w(CheckCircleIcon), ChevronDown = _w(ExpandMoreIcon), ChevronUp = _w(ExpandLessIcon);
 const FileText = _w(DescriptionIcon), X = _w(CloseIcon), Upload = _w(UploadIcon), Sparkles = _w(AutoAwesomeIcon), Brain = _w(PsychologyIcon);
-import ReactMarkdown from "react-markdown";
 import ConfidenceBadge from "@/components/solver/ConfidenceBadge";
 import AnswerFeedback from "@/components/solver/AnswerFeedback";
 import StudentExtensionPanel from "@/components/solver/StudentExtensionPanel";
 import SolutionExportButton from "@/components/solver/SolutionExportButton";
 import QuestionSourceImage from "@/components/solver/QuestionSourceImage";
+import GeneratedDiagram from "@/components/solver/GeneratedDiagram";
+import AnswerBlock from "@/components/solver/AnswerBlock";
 import SolverAccessGate from "@/components/solver/SolverAccessGate";
 
 const mathJaxConfig = {
@@ -58,11 +59,14 @@ const modeInstructions = {
   full: `You are a friendly, encouraging CCEA tutor helping a student understand this problem at their selected qualification level.
 
 IMPORTANT RULES FOR YOUR RESPONSE:
-1. Start with a short "What this question is asking" summary in 1–2 plain English sentences.
-2. Then show a COMPLETE step-by-step worked solution. Number EVERY step (Step 1, Step 2, etc.).
-3. After EACH step, write a short plain-English explanation in brackets like: *(This is because we need to convert km to m first)*
-4. State the FINAL ANSWER clearly on its own line, in bold, with the correct units.
-5. End with a "Key things to remember" section with 2–3 bullet points of tips.
+1. Start with a "**Question & Diagram Breakdown**" section:
+   - Restate the full question clearly (including any shared information or key established in earlier parts such as part (a)).
+   - If the question involves a pictogram, table, chart, graph, or diagram, reconstruct the visual information clearly (for example, as a clean Markdown table \`| Category | Symbols / Value |\` or a labelled bullet breakdown showing every symbol, key, angle, length, or reading from the diagram).
+2. Next, include a short "**What this question is asking**" summary in 1–2 plain English sentences.
+3. Then show a COMPLETE "**Step-by-Step Worked Solution**". Number EVERY step (**Step 1:**, **Step 2:**, etc.).
+4. After EACH step, write a short plain-English explanation in brackets like: *(This is because we need to convert km to m first)*
+5. State the **FINAL ANSWER** clearly on its own line, in bold, with the correct units.
+6. End with a "**Key things to remember**" section with 2–3 bullet points of tips.
 
 MATHS FORMATTING — THIS IS CRITICAL:
 - Use LaTeX for EVERY mathematical expression without exception.
@@ -105,17 +109,6 @@ For any maths expressions, use LaTeX: inline $...$ or display $$...$$.
 Avoid jargon. Be warm, clear and encouraging.`,
 };
 
-// Strip rogue code fences the model sometimes wraps around LaTeX
-function cleanMathText(text) {
-  if (!text) return "";
-  return text
-    .replace(/```(?:latex|math)?\n?([\s\S]*?)```/g, "$1")
-    .replace(/`([^`]+)`/g, (_, inner) => {
-      if (/[=+\-*/^\\{}]/.test(inner)) return `$${inner}$`;
-      return `\`${inner}\``;
-    });
-}
-
 const answerText = (response) => typeof response === "string" ? response : response?.text || JSON.stringify(response);
 const modeIsValid = (text, selectedMode) => {
   if (selectedMode === "hint") return text.split(/\s+/).length <= 120 && !/final answer|the answer is/i.test(text);
@@ -133,46 +126,44 @@ async function requestModeAnswer(prompt, fileUrls, selectedMode) {
   return text;
 }
 
-function AnswerBlock({ text, blockKey }) {
-  const cleaned = cleanMathText(text);
-  return (
-    <MathJax key={blockKey} dynamic>
-      <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed text-base">
-        <ReactMarkdown
-          components={{
-            p: ({ children }) => <p className="mb-4 leading-loose text-gray-800">{children}</p>,
-            strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
-            em: ({ children }) => <em className="italic text-gray-700">{children}</em>,
-            ul: ({ children }) => <ul className="list-disc ml-6 mb-4 space-y-2">{children}</ul>,
-            ol: ({ children }) => <ol className="list-decimal ml-6 mb-4 space-y-3">{children}</ol>,
-            li: ({ children }) => <li className="leading-loose text-gray-800">{children}</li>,
-            h2: ({ children }) => (
-              <h2 className="text-base font-bold mt-6 mb-2 text-indigo-800 border-b border-indigo-100 pb-1">{children}</h2>
-            ),
-            h3: ({ children }) => (
-              <h3 className="text-sm font-bold mt-4 mb-1 text-gray-800">{children}</h3>
-            ),
-            code: ({ inline, children }) =>
-              inline ? (
-                <code className="bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded text-sm font-mono text-amber-800">{children}</code>
-              ) : (
-                <pre className="bg-gray-50 border border-gray-200 rounded-xl p-4 overflow-x-auto text-sm font-mono my-3">
-                  <code>{children}</code>
-                </pre>
-              ),
-            blockquote: ({ children }) => (
-              <blockquote className="border-l-4 border-green-400 bg-green-50 pl-4 pr-3 py-2 rounded-r-xl text-gray-700 my-4 italic">
-                {children}
-              </blockquote>
-            ),
-            hr: () => <hr className="border-gray-200 my-4" />,
-          }}
-        >
-          {cleaned}
-        </ReactMarkdown>
-      </div>
-    </MathJax>
-  );
+// Extract question text, page number, and diagram crop box from an uploaded paper/image
+async function extractSingleQuestionVisualMeta(fileUrl, typedQuestion, subject, qualification) {
+  if (!fileUrl) return null;
+  try {
+    const res = await base44.integrations.Core.InvokeLLM({
+      prompt: `You are inspecting an uploaded ${qualification} ${subject} past paper file.
+${typedQuestion ? `The student asked about: "${typedQuestion}"` : "Extract the question shown in the uploaded file."}
+
+Identify:
+- full_question_text: the complete verbatim question text (including any shared parent stem, table, or sub-questions)
+- stem: any shared introductory stem or data from the main question
+- marks: number of marks if shown, otherwise null
+- page_number: 1-based page number where this question and its diagram appear (1 for single images)
+- has_diagram: true if there is a diagram, pictogram, chart, graph, table, or figure for this question
+- crop_box: [ymin, xmin, ymax, xmax] on a 0 to 1000 scale bounding the question AND its associated diagram/table/pictogram on that page
+- diagram_summary: concise description of the diagram, key, labels, or table values`,
+      file_urls: [fileUrl],
+      model: "automatic",
+      response_json_schema: {
+        type: "object",
+        properties: {
+          full_question_text: { type: "string" },
+          stem: { type: "string" },
+          marks: { anyOf: [{ type: "number" }, { type: "null" }] },
+          page_number: { type: "number" },
+          has_diagram: { type: "boolean" },
+          crop_box: {
+            type: "array",
+            items: { type: "number" },
+          },
+          diagram_summary: { type: "string" },
+        },
+      },
+    });
+    return res || null;
+  } catch {
+    return null;
+  }
 }
 
 // Ask AI for a confidence score (0–100) for a given answer
@@ -257,11 +248,12 @@ export default function PastPaperSolver() {
     if (!file) return;
     const ext = file.name.split(".").pop().toLowerCase();
     const type = ext === "pdf" ? "pdf" : ["doc", "docx"].includes(ext) ? "doc" : "other";
+    const localPreview = type === "pdf" ? URL.createObjectURL(file) : null;
     setUploading(true);
     setUploadProgress("Uploading file…");
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setUploadedFile({ name: file.name, url: file_url, type, preview: null });
+      setUploadedFile({ name: file.name, url: file_url, type, preview: localPreview });
     } catch {
       alert("File upload failed. Please try again.");
     } finally {
@@ -319,16 +311,30 @@ CRITICAL FORMATTING REMINDER:
       const selectedMode = mode;
       const prompt = buildPrompt(questionText, !!uploadedFile, null, selectedMode);
       const fileUrls = uploadedFile ? [uploadedFile.url] : undefined;
-      const generatedAnswer = await requestModeAnswer(prompt, fileUrls, selectedMode);
+      const [generatedAnswer, visualMeta] = await Promise.all([
+        requestModeAnswer(prompt, fileUrls, selectedMode),
+        uploadedFile ? extractSingleQuestionVisualMeta(uploadedFile.url, questionText, subject, qualification) : Promise.resolve(null),
+      ]);
       const newKey = Date.now();
+      const resolvedQuestion = questionText.trim() || visualMeta?.full_question_text || "";
+      const hasDiagramHint =
+        Boolean(visualMeta?.has_diagram) ||
+        /\b(diagram|pictogram|graph|chart|triangle|circle|circuit|figure|table|axes|plot|sketch|ray|lens|force)\b/i.test(
+          `${resolvedQuestion} ${generatedAnswer}`
+        );
 
       // Fetch confidence score concurrently (non-blocking — updates state when done)
       const sol = {
-        question: questionText,
+        question: resolvedQuestion,
+        stem: visualMeta?.stem || "",
+        page_number: visualMeta?.page_number || 1,
+        has_diagram: hasDiagramHint,
+        crop_box: visualMeta?.crop_box || null,
+        diagram_summary: visualMeta?.diagram_summary || "",
         uploadedFile,
         subject,
         qualification,
-        marks,
+        marks: marks || (visualMeta?.marks != null ? String(visualMeta.marks) : ""),
         mode: selectedMode,
         answer: generatedAnswer,
         answerKey: newKey,
@@ -340,7 +346,7 @@ CRITICAL FORMATTING REMINDER:
       setHistory((prev) => [sol, ...prev.slice(0, 9)]);
 
       // Fetch confidence in background
-      fetchConfidenceScore(questionText, generatedAnswer, subject, qualification).then((score) => {
+      fetchConfidenceScore(resolvedQuestion, generatedAnswer, subject, qualification).then((score) => {
         setSolution((prev) => prev ? { ...prev, confidenceScore: score } : prev);
       });
 
@@ -367,9 +373,14 @@ The attached file is a CCEA ${qualification} ${subject} past paper.
 
 Extract EVERY question and sub-question from the document (e.g. 1, 1a, 1b, 2, 2a, 2(i), etc.).
 For each question include:
-- number: the question number/label as a string
-- text: the full question text exactly as written
+- number: the question number/label as a string (e.g. "1a", "1b")
+- stem: if this is a sub-question (like 1b or 2(ii)), include the shared parent question introduction/stem and any key/data established in earlier parts (e.g. "The pictogram shows the number of litres of paint sold. Part (a) established that 30 litres of matt paint = 3 buckets, so 1 bucket = 10 litres."). Empty string if standalone.
+- text: the FULL question text exactly as written in the paper. If the question includes a table or pictogram, also include a clean Markdown table representation of it.
 - marks: the number of marks awarded (integer), or null if not shown
+- page_number: the 1-based page number of the PDF where this question and its diagram/table appear (1 if a single image)
+- has_diagram: true if the question relies on a diagram, pictogram, graph, chart, figure, or table on the paper
+- crop_box: [ymin, xmin, ymax, xmax] on a 0 to 1000 scale bounding the question AND its associated diagram/pictogram/table on that page (include the parent diagram if this sub-question uses it)
+- diagram_summary: exact description of the diagram, pictogram symbols, key, graph axes, or table values from the paper
 
 Return the result as a JSON object with a single key "questions" containing an array.`;
 
@@ -386,8 +397,16 @@ Return the result as a JSON object with a single key "questions" containing an a
                 type: "object",
                 properties: {
                   number: { type: "string" },
+                  stem: { type: "string" },
                   text: { type: "string" },
                   marks: { anyOf: [{ type: "number" }, { type: "null" }] },
+                  page_number: { type: "number" },
+                  has_diagram: { type: "boolean" },
+                  crop_box: {
+                    type: "array",
+                    items: { type: "number" },
+                  },
+                  diagram_summary: { type: "string" },
                 },
                 required: ["number", "text"],
               },
@@ -408,8 +427,9 @@ Return the result as a JSON object with a single key "questions" containing an a
         const prompt = `You are a careful CCEA ${qualification} ${subject} examiner and tutor.
 
 Question ${q.number}${q.marks ? ` [${q.marks} marks]` : ""}:
+${q.stem ? `Shared Question Context / Stem:\n${q.stem}\n\n` : ""}Question Text:
 ${q.text}
-
+${q.diagram_summary ? `\nDiagram / Visual Information from Paper:\n${q.diagram_summary}\n` : ""}
 The original paper is attached. Inspect it for every diagram, graph, table, source, extract or data item belonging to this question; do not answer from extracted text alone when visual evidence is required.
 
 ${modeInstructions[mode]}
@@ -420,8 +440,14 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
         const ans = await requestModeAnswer(prompt, [uploadedFile.url], mode);
         return {
           number: q.number,
+          stem: q.stem || "",
           text: q.text,
+          question: q.stem ? `${q.stem}\n\n${q.text}` : q.text,
           marks: q.marks,
+          page_number: q.page_number || 1,
+          has_diagram: Boolean(q.has_diagram),
+          crop_box: q.crop_box || null,
+          diagram_summary: q.diagram_summary || "",
           answer: ans,
           answerKey: Date.now() + Math.random(),
           confidenceScore: null,
@@ -684,15 +710,45 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                     <p className="text-white text-sm line-clamp-1 flex-1">{q.text}</p>
                   </div>
                   <div className="px-6 py-5 space-y-4">
+                    {/* Full Question & Paper Visual Section */}
+                    <div className="rounded-xl border border-indigo-100 bg-slate-50/80 p-4 space-y-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">
+                          Question {q.number}{q.marks ? ` (${q.marks} mark${q.marks === 1 ? "" : "s"})` : ""}
+                        </span>
+                        {q.page_number && (
+                          <span className="text-xs text-slate-500 font-medium">
+                            Paper Page {q.page_number}
+                          </span>
+                        )}
+                      </div>
+                      {q.stem && (
+                        <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5 text-sm text-slate-700">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-600 mb-1">
+                            Question Context / Stem
+                          </p>
+                          <AnswerBlock text={q.stem} blockKey={`${q.answerKey}-stem`} />
+                        </div>
+                      )}
+                      <div className="text-sm font-medium text-slate-900">
+                        <AnswerBlock text={q.text} blockKey={`${q.answerKey}-qtext`} />
+                      </div>
+                      <QuestionSourceImage
+                        file={uploadedFile}
+                        pageNumber={q.page_number}
+                        cropBox={q.crop_box}
+                        caption={q.diagram_summary}
+                      />
+                    </div>
+
                     {/* Confidence badge */}
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap pt-1">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Solution</p>
                       {q.confidenceScore != null
                         ? <ConfidenceBadge score={q.confidenceScore} />
                         : <span className="text-xs text-gray-400 italic">Scoring confidence…</span>
                       }
                     </div>
-                    <QuestionSourceImage file={uploadedFile} />
                     <AnswerBlock text={q.answer} blockKey={q.answerKey} />
                     <StudentExtensionPanel key={q.answerKey} solution={{ ...q, uploadedFile }} />
                     {/* Feedback */}
@@ -724,15 +780,35 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
               {/* Question recap */}
               {(solution.question || solution.uploadedFile) && (
-                <div className="px-6 pt-4 pb-3 bg-gray-50 border-b border-gray-100">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Question</p>
-                  <QuestionSourceImage file={solution.uploadedFile} />
-                  {solution.uploadedFile && solution.uploadedFile.type !== "image" && (
-                    <div className="flex items-center gap-2 mb-2 text-sm text-gray-600">
-                      <FileText className="w-4 h-4 text-red-500" /> {solution.uploadedFile.name}
+                <div className="px-6 pt-4 pb-4 bg-slate-50/90 border-b border-indigo-100 space-y-3">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <p className="text-xs font-bold text-indigo-700 uppercase tracking-wide">Question & Paper Visual</p>
+                    {solution.uploadedFile?.type === "pdf" && solution.page_number && (
+                      <span className="text-xs text-slate-500 font-medium">Page {solution.page_number}</span>
+                    )}
+                  </div>
+                  {solution.stem && (
+                    <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5 text-sm text-slate-700">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-600 mb-1">
+                        Question Context / Stem
+                      </p>
+                      <AnswerBlock text={solution.stem} blockKey={`${solution.answerKey}-stem`} />
                     </div>
                   )}
-                  {solution.question && <p className="text-sm text-gray-700">{solution.question}</p>}
+                  {solution.question && (
+                    <div className="text-sm font-medium text-slate-900">
+                      <AnswerBlock text={solution.question} blockKey={`${solution.answerKey}-qtext`} />
+                    </div>
+                  )}
+                  <QuestionSourceImage
+                    file={solution.uploadedFile}
+                    pageNumber={solution.page_number}
+                    cropBox={solution.crop_box}
+                    caption={solution.diagram_summary}
+                  />
+                  {!solution.uploadedFile && solution.has_diagram && (
+                    <GeneratedDiagram solution={solution} autoGenerate={true} />
+                  )}
                 </div>
               )}
 
