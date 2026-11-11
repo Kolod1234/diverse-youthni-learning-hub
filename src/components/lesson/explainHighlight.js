@@ -1,10 +1,16 @@
 import { base44 } from '@/api/base44Client';
 
 export const LEVELS = [
-  { label: 'Very simple English', instruction: 'Explain in extremely simple English that anyone can follow: only short everyday words, very short sentences, one idea at a time, and a comparison to normal daily life (like cooking, games, journeys or money). If you must use a harder word, immediately explain it in simple brackets. Never assume any school knowledge.' },
-  { label: 'Simpler still', instruction: 'Explain as you would to a young child: tiny everyday words only, playful everyday comparisons, and no technical words at all.' },
-  { label: 'Assume nothing', instruction: 'Assume the learner has no prior knowledge at all. Start from the very first idea and build up slowly, defining every single word that is not everyday English.' }
+  { label: 'Very simple English', instruction: 'Explain it so a 10-year-old could understand: short everyday words, very short sentences, one idea at a time. Explain the real thing directly in plain words. If you must use a subject word, explain it straight away in simple brackets. Never assume any school knowledge.' },
+  { label: 'Simpler still', instruction: 'The learner found the last explanation too hard. Explain it again for a 10-year-old using even smaller steps and the simplest words possible. Use a subject word only if it is needed, and explain it in brackets straight away.' },
+  { label: 'Assume nothing', instruction: 'Assume the learner has no prior knowledge at all. Start from the very first idea and build up slowly in words a 10-year-old knows, defining every single word that is not everyday English.' }
 ];
+
+// Shared by the explanation and the follow-up chat: simple words first, analogies only when they truly fit.
+const PLAIN_LANGUAGE_RULES = `- Simple must still be correct: keep the real meaning of the subject, just say it in easy words.
+- Explain the actual thing directly. Do NOT use analogies or "think of it like…" / "imagine…" comparisons by default — most explanations need none.
+- Only use a comparison if it matches how the real thing works step for step and genuinely makes it clearer. Never use one that is only loosely related, made-up or could give the wrong idea.
+- When an example helps, prefer a real one from the topic itself (for example real numbers, a real object or a real situation from the lesson) instead of an analogy.`;
 
 const EXPLANATION_SCHEMA = {
   type: 'object',
@@ -73,6 +79,7 @@ ${LEVELS[level].instruction}
 
 Rules:
 - British English spelling throughout.
+${PLAIN_LANGUAGE_RULES}
 - Explain the ENTIRE highlighted text, even if it is long — do not stop after the first sentence or idea. Use up to eight steps if the highlight needs them.
 - The highlighted text may contain LaTeX maths written between single dollar signs, such as $8-(-3)$. Keep all maths in that same $...$ LaTeX form in your steps, summary and key terms. Never write maths as plain text like "x^2" or "1/2" when a proper LaTeX form exists.
 - Your reply is JSON: inside every JSON string, write each LaTeX backslash as a double backslash (for example \\\\frac, \\\\times, \\\\theta) so the commands survive.
@@ -142,7 +149,8 @@ The learner's new message:
 How to reply:
 - ${LEVELS[level]?.instruction || LEVELS[0].instruction}
 - British English spelling throughout.
-- Answer exactly what they asked and link it back to the highlighted lesson text. If they are still confused, explain it a different way from before (a new everyday comparison or smaller steps) rather than repeating the same words.
+${PLAIN_LANGUAGE_RULES}
+- Answer exactly what they asked and link it back to the highlighted lesson text. If they are still confused, explain it a different way from before (smaller steps, simpler words, or a worked example with real values from the lesson) rather than repeating the same words.
 - Put each step of reasoning on its own line, numbered when there is more than one step. State the reason before each calculation and show every intermediate line.
 - Write all maths in LaTeX between single dollar signs, for example $T = \\frac{1}{f}$. Never write maths as plain text such as 1/f or x^2.
 - If they give their own answer or reasoning, tell them clearly whether it is right and why.
