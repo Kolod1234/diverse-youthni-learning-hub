@@ -31,6 +31,10 @@ import PaperQuestionSource from "@/components/solver/PaperQuestionSource";
 import { splitPdfIntoQuestions } from "@/components/solver/pdfQuestionSplitter";
 import { extractPaperQuestionsWithAI } from "@/components/solver/extractPaperQuestionsWithAI";
 import { requestVerifiedAnswer, SOLVER_MODEL } from "@/components/solver/verifiedAnswer";
+import HighlightAssistPopup from "@/components/lesson/HighlightAssistPopup";
+import SolutionAssistBar from "@/components/solver/SolutionAssistBar";
+import VisualiseView from "@/components/solver/VisualiseView";
+import useSolverHighlight from "@/components/solver/useSolverHighlight";
 
 const mathJaxConfig = {
   loader: { load: ["[tex]/ams", "input/tex", "output/chtml"] },
@@ -214,8 +218,13 @@ export default function PastPaperSolver() {
   const [fullPaperProgress, setFullPaperProgress] = useState("");
   const [paperSolutions, setPaperSolutions] = useState(null);
 
+  const [openVisualKeys, setOpenVisualKeys] = useState({});
   const imageInputRef = useRef();
   const fileInputRef = useRef();
+  const solutionsContainerRef = useRef(null);
+  const { selection: highlightSelection, openManualSelection, clearSelection } = useSolverHighlight(solutionsContainerRef);
+
+  const toggleVisual = (key) => setOpenVisualKeys((prev) => ({ ...prev, [key]: !prev[key] }));
 
   // ── Upload handlers ────────────────────────────────────────────────────────
 
@@ -297,6 +306,8 @@ CRITICAL FORMATTING REMINDER:
     setSolving(true);
     setSolution(null);
     setPaperSolutions(null);
+    setOpenVisualKeys({});
+    clearSelection();
     try {
       const selectedMode = mode;
       const prompt = buildPrompt(questionText, !!uploadedFile, null, selectedMode);
@@ -356,6 +367,8 @@ CRITICAL FORMATTING REMINDER:
     setFullPaperSolving(true);
     setPaperSolutions(null);
     setSolution(null);
+    setOpenVisualKeys({});
+    clearSelection();
 
     try {
       setFullPaperProgress("Reading every question and diagram…");
@@ -473,7 +486,16 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
     setPaperSolutions(null);
     setFollowUp("");
     setMarks("");
+    setOpenVisualKeys({});
+    clearSelection();
   };
+
+  const activeHighlightSol = highlightSelection?.solutionKey?.startsWith("paper-")
+    ? paperSolutions?.[Number(highlightSelection.solutionKey.slice(6))]
+    : solution;
+  const activeHighlightTitle = activeHighlightSol
+    ? `${activeHighlightSol.qualification || qualification} ${activeHighlightSol.subject || subject}: ${(activeHighlightSol.question || activeHighlightSol.text || "Past paper question").slice(0, 120)}`
+    : `${qualification} ${subject} Past Paper`;
 
   const hasInput = questionText.trim() || uploadedFile;
 
@@ -649,6 +671,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
             </div>
           </div>
 
+          <div ref={solutionsContainerRef} className="space-y-6">
           {/* ── Full Paper Solutions ── */}
           {paperSolutions && (
             <div className="space-y-4">
@@ -661,8 +684,10 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                 </div>
               </div>
               <p className="px-1 text-xs text-gray-500">AI-generated worked solutions with CCEA-style checks; compare final answers with the official CCEA mark scheme.</p>
-              {paperSolutions.map((q, i) => (
-                <div key={i} className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
+              {paperSolutions.map((q, i) => {
+                const solKey = `paper-${i}`;
+                return (
+                <div key={i} data-solution-key={solKey} className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
                   <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3 flex items-center gap-3">
                     <span className="bg-white/20 text-white text-sm font-bold px-2.5 py-0.5 rounded-full">Q{q.number}</span>
                     {q.marks && <span className="text-purple-100 text-xs">{q.marks} marks</span>}
@@ -679,7 +704,24 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                         : <span className="text-xs text-gray-400 italic">Scoring confidence…</span>
                       }
                     </div>
-                    <AnswerBlock text={q.answer} blockKey={q.answerKey} />
+                    <SolutionAssistBar
+                      onExplain={(e) => openManualSelection(q.answer, e, solKey, "explain")}
+                      onVisualise={() => toggleVisual(solKey)}
+                      visualiseOpen={Boolean(openVisualKeys[solKey])}
+                    />
+                    {openVisualKeys[solKey] && (
+                      <VisualiseView
+                        text={q.answer}
+                        question={q.question || q.text}
+                        subject={q.subject || subject}
+                        qualification={q.qualification || qualification}
+                        imageUrl={uploadedFile?.type === "image" ? uploadedFile.url : ""}
+                        onClose={() => toggleVisual(solKey)}
+                      />
+                    )}
+                    <div data-explainable-solution>
+                      <AnswerBlock text={q.answer} blockKey={q.answerKey} />
+                    </div>
                     <StudentExtensionPanel key={q.answerKey} solution={{ ...q, uploadedFile }} />
                     {/* Feedback */}
                     <div className="border-t border-gray-100 pt-3">
@@ -687,13 +729,14 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
           {/* ── Single Solution Card ── */}
           {solution && (
-            <div className="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
+            <div data-solution-key="single" className="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
               <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3 text-white">
                   <CheckCircle className="w-5 h-5" />
@@ -721,7 +764,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                     stemText={solution.stem}
                   />
                   {solution.stem && (
-                    <div className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5">
+                    <div data-explainable-solution className="rounded-lg border border-indigo-100 bg-white px-3.5 py-2.5">
                       <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-600 mb-1">
                         Question Context / Stem
                       </p>
@@ -729,7 +772,9 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                     </div>
                   )}
                   {solution.question && (
-                    <AnswerBlock text={solution.question} blockKey={`${solution.answerKey}-qtext`} />
+                    <div data-explainable-solution>
+                      <AnswerBlock text={solution.question} blockKey={`${solution.answerKey}-qtext`} />
+                    </div>
                   )}
                   {!solution.uploadedFile && solution.has_diagram && (
                     <GeneratedDiagram solution={solution} autoGenerate={true} />
@@ -748,7 +793,24 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
               {/* Answer */}
               <div className="px-6 pt-3 pb-5 space-y-5">
-                <AnswerBlock text={solution.answer} blockKey={solution.answerKey} />
+                <SolutionAssistBar
+                  onExplain={(e) => openManualSelection(solution.answer, e, "single", "explain")}
+                  onVisualise={() => toggleVisual("single")}
+                  visualiseOpen={Boolean(openVisualKeys.single)}
+                />
+                {openVisualKeys.single && (
+                  <VisualiseView
+                    text={solution.answer}
+                    question={solution.question}
+                    subject={solution.subject}
+                    qualification={solution.qualification}
+                    imageUrl={solution.uploadedFile?.type === "image" ? solution.uploadedFile.url : ""}
+                    onClose={() => toggleVisual("single")}
+                  />
+                )}
+                <div data-explainable-solution>
+                  <AnswerBlock text={solution.answer} blockKey={solution.answerKey} />
+                </div>
                 <StudentExtensionPanel key={solution.answerKey} solution={solution} />
               </div>
 
@@ -761,7 +823,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                         <span className="text-xs bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 font-medium shrink-0 mt-0.5">You</span>
                         <p className="text-sm text-gray-700">{fu.question}</p>
                       </div>
-                      <div className="bg-indigo-50 rounded-xl px-5 py-4 border border-indigo-100">
+                      <div data-explainable-solution className="bg-indigo-50 rounded-xl px-5 py-4 border border-indigo-100">
                         <AnswerBlock text={fu.answer} blockKey={fu.answerKey} />
                       </div>
                     </div>
@@ -798,6 +860,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
               </div>
             </div>
           )}
+          </div>
 
           {/* ── History ── */}
           {history.length > 0 && (
@@ -837,6 +900,23 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
           )}
 
         </div>
+
+        {highlightSelection && (solution || paperSolutions) && (
+          <HighlightAssistPopup
+            selection={highlightSelection}
+            lessonTitle={activeHighlightTitle}
+            onClose={clearSelection}
+            enableVisualise={true}
+            questionContext={activeHighlightSol?.question || activeHighlightSol?.text || ""}
+            subject={activeHighlightSol?.subject || subject}
+            qualification={activeHighlightSol?.qualification || qualification}
+            imageUrl={
+              (activeHighlightSol?.uploadedFile || uploadedFile)?.type === "image"
+                ? (activeHighlightSol?.uploadedFile || uploadedFile)?.url || ""
+                : ""
+            }
+          />
+        )}
       </div>
     </MathJaxContext>
     </SolverAccessGate>

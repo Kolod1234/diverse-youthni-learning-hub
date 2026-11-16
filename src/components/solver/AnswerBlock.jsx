@@ -1,5 +1,23 @@
+import { useEffect, useRef, useCallback } from "react";
 import { MathJax } from "better-react-mathjax";
 import ReactMarkdown from "react-markdown";
+
+function annotateSolverMath(node) {
+  const mathJax = typeof window !== "undefined" ? window.MathJax : null;
+  if (!node || !mathJax) return;
+  const containers = Array.from(node.querySelectorAll("mjx-container"));
+  const items = mathJax.startup?.document?.getMathItemsWithin?.(node) || [];
+  containers.forEach((container, index) => {
+    const item = items[index];
+    const source = item?.math?.trim();
+    if (!source) return;
+    const notation = item.display ? `$$${source}$$` : `$${source}$`;
+    if (container.dataset.assistantMath !== notation) {
+      container.dataset.assistantMath = notation;
+      container.setAttribute("aria-label", `Mathematical notation: ${source}`);
+    }
+  });
+}
 
 // Strip rogue code fences the model sometimes wraps around LaTeX
 export function cleanMathText(text) {
@@ -95,12 +113,23 @@ const markdownComponents = {
 };
 
 export default function AnswerBlock({ text, blockKey }) {
+  const containerRef = useRef(null);
   const cleaned = cleanMathText(text);
   const segments = splitMarkdownTables(cleaned);
+  const handleTypeset = useCallback(() => annotateSolverMath(containerRef.current), []);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return undefined;
+    annotateSolverMath(node);
+    const observer = new MutationObserver(() => annotateSolverMath(node));
+    observer.observe(node, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [text, blockKey]);
 
   return (
-    <MathJax key={blockKey} dynamic>
-      <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed text-base">
+    <MathJax key={blockKey} dynamic onTypeset={handleTypeset}>
+      <div ref={containerRef} className="solver-selectable prose prose-sm max-w-none text-gray-800 leading-relaxed text-base">
         {segments.map((seg, idx) =>
           seg.type === "table" ? (
             <div key={idx} className="my-4 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">

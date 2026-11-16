@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Sparkles, X, StickyNote, ArrowDownWideNarrow, Image as ImageIcon, Maximize2, Minimize2 } from 'lucide-react';
+import { Loader2, Sparkles, Eye, X, StickyNote, ArrowDownWideNarrow, Image as ImageIcon, Maximize2, Minimize2 } from 'lucide-react';
 import { toast } from 'sonner';
 import AssistantCheckQuestion from '@/components/lesson/AssistantCheckQuestion';
 import MathText from '@/components/lesson/MathText';
@@ -8,6 +8,7 @@ import ExplainVisualChart from '@/components/lesson/ExplainVisualChart';
 import ExplainMathsBreakdown from '@/components/lesson/ExplainMathsBreakdown';
 import ExplainFollowUpChat from '@/components/lesson/ExplainFollowUpChat';
 import ExplainAskButton from '@/components/lesson/ExplainAskButton';
+import VisualiseView from '@/components/solver/VisualiseView';
 import { LEVELS, requestExplanation } from '@/components/lesson/explainHighlight';
 
 /**
@@ -17,10 +18,21 @@ import { LEVELS, requestExplanation } from '@/components/lesson/explainHighlight
  * expanded to a larger reading view, and lets the learner discuss any part
  * of the highlight with the tutor.
  */
-export default function HighlightAssistPopup({ selection, lessonTitle, onClose, onSaveToNotes }) {
+export default function HighlightAssistPopup({
+  selection,
+  lessonTitle,
+  onClose,
+  onSaveToNotes,
+  enableVisualise = false,
+  questionContext = '',
+  subject = '',
+  qualification = '',
+  imageUrl = '',
+}) {
+  const [activeMode, setActiveMode] = useState(selection.initialMode || 'explain');
   const [level, setLevel] = useState(0);
   const [explanation, setExplanation] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState((selection.initialMode || 'explain') === 'explain');
   const [image, setImage] = useState(null);
   const [imageLoading, setImageLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -28,12 +40,20 @@ export default function HighlightAssistPopup({ selection, lessonTitle, onClose, 
   const requestRef = useRef(0);
 
   useEffect(() => {
+    const startMode = selection.initialMode || 'explain';
+    setActiveMode(startMode);
     setExplanation(null);
     setImage(null);
     setFocus(null);
-    explain(0);
+    if (startMode === 'explain') explain(0);
+    else setLoading(false);
     return () => { requestRef.current += 1; };
-  }, [selection.text, lessonTitle]);
+  }, [selection.text, selection.initialMode, lessonTitle]);
+
+  const switchMode = (nextMode) => {
+    setActiveMode(nextMode);
+    if (nextMode === 'explain' && !explanation && !loading) explain(0);
+  };
 
   const explain = async (nextLevel) => {
     const requestId = ++requestRef.current;
@@ -102,7 +122,11 @@ export default function HighlightAssistPopup({ selection, lessonTitle, onClose, 
       >
         <div className="mb-3 flex items-start justify-between gap-2">
           <p className={`flex items-center gap-2 font-bold text-[#0b1b32] ${expanded ? 'text-base' : 'text-sm'}`}>
-            <Sparkles className="h-4 w-4 text-orange-500" /> Explain this
+            {activeMode === 'visualise' ? (
+              <><Eye className="h-4 w-4 text-indigo-600" /> Visualise this</>
+            ) : (
+              <><Sparkles className="h-4 w-4 text-orange-500" /> Explain this</>
+            )}
           </p>
           <div className="flex items-center gap-1">
             <button
@@ -120,11 +144,45 @@ export default function HighlightAssistPopup({ selection, lessonTitle, onClose, 
           </div>
         </div>
 
+        {enableVisualise && (
+          <div className="mb-3 grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1">
+            <button
+              type="button"
+              onClick={() => switchMode('explain')}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition ${
+                activeMode === 'explain' ? 'bg-white text-[#0b1b32] shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Sparkles className="h-3.5 w-3.5 text-orange-500" /> Explain this
+            </button>
+            <button
+              type="button"
+              onClick={() => switchMode('visualise')}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition ${
+                activeMode === 'visualise' ? 'bg-white text-indigo-950 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Eye className="h-3.5 w-3.5 text-indigo-600" /> Visualise this
+            </button>
+          </div>
+        )}
+
         <MathText
           className={`mb-3 rounded-lg bg-slate-50 p-2 italic text-slate-600 ${expanded ? 'text-sm leading-6' : 'line-clamp-4 text-xs leading-5'}`}
           text={`“${selection.text}”`}
         />
 
+        {activeMode === 'visualise' ? (
+          <VisualiseView
+            compact
+            text={selection.text}
+            question={questionContext}
+            subject={subject}
+            qualification={qualification}
+            imageUrl={imageUrl}
+          />
+        ) : (
+        <>
         {!explanation && !loading && (
           <button
             type="button"
@@ -206,6 +264,15 @@ export default function HighlightAssistPopup({ selection, lessonTitle, onClose, 
                   <ArrowDownWideNarrow className="h-4 w-4" /> Still confused — simplify
                 </button>
               )}
+              {enableVisualise && (
+                <button
+                  type="button"
+                  onClick={() => switchMode('visualise')}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-indigo-300 bg-indigo-50 px-3 text-xs font-semibold text-indigo-800 hover:bg-indigo-100"
+                >
+                  <Eye className="h-4 w-4" /> Visualise this
+                </button>
+              )}
               <AssistantCheckQuestion
                 selectedText={selection.text}
                 lessonTitle={lessonTitle}
@@ -237,6 +304,8 @@ export default function HighlightAssistPopup({ selection, lessonTitle, onClose, 
               onFocusChange={setFocus}
             />
           </div>
+        )}
+        </>
         )}
       </div>
     </>

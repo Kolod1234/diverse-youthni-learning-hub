@@ -68,10 +68,12 @@ body {
   user-select: text;
 }
 
-/* Learners must be able to highlight lesson prose so the learning assistant
-   can explain the exact wording they are stuck on. */
+/* Learners must be able to highlight lesson prose and past-paper solutions so
+   the learning assistant can explain or visualise the exact wording they pick. */
 .lesson-rich-content,
-.lesson-rich-content * {
+.lesson-rich-content *,
+.solver-selectable,
+.solver-selectable * {
   -webkit-user-select: text;
   user-select: text;
 }
