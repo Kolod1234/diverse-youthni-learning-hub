@@ -12,7 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@base44/sdk": "^0.8.60",
+    "@base44/sdk": "^0.8.62",
     "@base44/vite-plugin": "^1.0.52",
     "@code-by-dwayne/react-scorm-provider": "^1.0.0",
     "@cyntler/react-doc-viewer": "^1.16.2",
