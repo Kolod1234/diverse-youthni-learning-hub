@@ -9,7 +9,7 @@ import ExplainMathsBreakdown from '@/components/lesson/ExplainMathsBreakdown';
 import ExplainFollowUpChat from '@/components/lesson/ExplainFollowUpChat';
 import ExplainAskButton from '@/components/lesson/ExplainAskButton';
 import VisualiseView from '@/components/solver/VisualiseView';
-import { LEVELS, requestExplanation } from '@/components/lesson/explainHighlight';
+import { LEVELS, MATHS_SOLVER_LEVELS, requestExplanation } from '@/components/lesson/explainHighlight';
 
 /**
  * Popup shown when a learner highlights lesson text. It explains the highlight
@@ -24,11 +24,14 @@ export default function HighlightAssistPopup({
   onClose,
   onSaveToNotes,
   enableVisualise = false,
+  conciseMaths = false,
   questionContext = '',
   subject = '',
   qualification = '',
   imageUrl = '',
 }) {
+  const isConciseMaths = conciseMaths || (enableVisualise && /math/i.test(subject));
+  const activeLevels = isConciseMaths ? MATHS_SOLVER_LEVELS : LEVELS;
   const [activeMode, setActiveMode] = useState(selection.initialMode || 'explain');
   const [level, setLevel] = useState(0);
   const [explanation, setExplanation] = useState(null);
@@ -60,7 +63,13 @@ export default function HighlightAssistPopup({
     setLoading(true);
     setLevel(nextLevel);
     try {
-      const result = await requestExplanation({ text: selection.text, lessonTitle, level: nextLevel });
+      const result = await requestExplanation({
+        text: selection.text,
+        lessonTitle,
+        level: nextLevel,
+        conciseMaths: isConciseMaths,
+        questionContext,
+      });
       if (requestId === requestRef.current) setExplanation(result);
     } catch {
       if (requestId === requestRef.current) toast.error('The explanation could not be created. Please try again.');
@@ -201,7 +210,20 @@ export default function HighlightAssistPopup({
 
         {explanation && !loading && (
           <div className="space-y-3">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">{LEVELS[level].label}</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">{activeLevels[level]?.label || activeLevels[0].label}</p>
+
+            {(explanation.formula_to_use || (isConciseMaths && explanation.maths_breakdown?.equation)) && (
+              <div className="rounded-lg border border-indigo-200 bg-indigo-50/70 p-3">
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.14em] text-indigo-800">Formula to use</p>
+                <div className={`overflow-x-auto rounded-md bg-white px-3 py-2 font-medium text-slate-900 ${expanded ? 'text-base' : 'text-sm'}`}>
+                  <MathText text={explanation.formula_to_use || explanation.maths_breakdown?.equation} />
+                </div>
+              </div>
+            )}
+
+            {isConciseMaths && (
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Steps</p>
+            )}
             <ol className={`list-decimal space-y-2 pl-5 ${expanded ? 'text-base leading-7' : 'text-sm leading-6'}`}>
               {explanation.steps.map((step, index) => (
                 <li key={index}>
@@ -211,11 +233,11 @@ export default function HighlightAssistPopup({
               ))}
             </ol>
 
-            {explanation.maths_breakdown && (
+            {!isConciseMaths && explanation.maths_breakdown && (
               <ExplainMathsBreakdown breakdown={explanation.maths_breakdown} onAsk={setFocus} />
             )}
 
-            {(hasChart || wantsDiagram) && (
+            {(hasChart || (!isConciseMaths && wantsDiagram)) && (
               <div className="rounded-lg border border-slate-200 bg-white p-2">
                 <p className="mb-1 text-xs font-bold text-slate-700">{visual.title || 'Picture to help you see it'}</p>
                 {hasChart ? (
@@ -244,9 +266,9 @@ export default function HighlightAssistPopup({
             )}
 
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs leading-6 text-emerald-900">
-              <span className="font-semibold">In short: </span><MathText inline text={explanation.summary} />
+              <span className="font-semibold">{isConciseMaths ? 'Result: ' : 'In short: '}</span><MathText inline text={explanation.summary} />
             </div>
-            {explanation.key_terms?.length > 0 && (
+            {!isConciseMaths && explanation.key_terms?.length > 0 && (
               <ul className="space-y-1 text-xs leading-6 text-slate-600">
                 {explanation.key_terms.map(term => (
                   <li key={term.term}><span className="font-semibold text-slate-800">{term.term}: </span><MathText inline text={term.meaning} /></li>
@@ -255,13 +277,13 @@ export default function HighlightAssistPopup({
             )}
 
             <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-3">
-              {level < LEVELS.length - 1 && (
+              {level < activeLevels.length - 1 && (
                 <button
                   type="button"
                   onClick={() => explain(level + 1)}
                   className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-orange-300 bg-orange-50 px-3 text-xs font-semibold text-orange-800 hover:bg-orange-100"
                 >
-                  <ArrowDownWideNarrow className="h-4 w-4" /> Still confused — simplify
+                  <ArrowDownWideNarrow className="h-4 w-4" /> {isConciseMaths ? 'Smaller steps' : 'Still confused — simplify'}
                 </button>
               )}
               {enableVisualise && (
@@ -302,6 +324,7 @@ export default function HighlightAssistPopup({
               level={level}
               focus={focus}
               onFocusChange={setFocus}
+              conciseMaths={isConciseMaths}
             />
           </div>
         )}

@@ -11,7 +11,7 @@ const answerText = (response) => typeof response === "string" ? response : respo
 const modeIsValid = (text, mode) => {
   if (mode === "hint") return text.split(/\s+/).length <= 120 && !/final answer|the answer is/i.test(text);
   if (mode === "mark_scheme") return /(^|\n)\s*[-*]\s/.test(text) && /\*\*Total:\s*\d+\s+marks?\*\*/i.test(text);
-  if (mode === "explain") return /The BIG idea here is/i.test(text) && /Top tip:/i.test(text);
+  if (mode === "explain") return (/The BIG idea here is/i.test(text) && /Top tip:/i.test(text)) || /Formula to use/i.test(text);
   return true;
 };
 

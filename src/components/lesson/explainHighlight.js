@@ -6,6 +6,12 @@ export const LEVELS = [
   { label: 'Assume nothing', instruction: 'Assume the learner has no prior knowledge at all. Start from the very first idea and build up slowly in words a 10-year-old knows, defining every single word that is not everyday English.' }
 ];
 
+export const MATHS_SOLVER_LEVELS = [
+  { label: 'Step-by-step maths', instruction: 'Break the maths logic down into small, simple steps — one single algebraic or numerical operation per step, with no unnecessary words.' },
+  { label: 'Smaller steps', instruction: 'Break every calculation and rearrangement into even smaller, simpler mathematical steps — show each arithmetic move, sign change, expansion and cancellation on its own step, with no unnecessary words.' },
+  { label: 'Smallest micro-steps', instruction: 'Show the smallest possible mathematical micro-steps from the formula to the result — one tiny arithmetic or algebraic action per step, naming only the operation and showing the resulting expression.' }
+];
+
 // Shared by the explanation and the follow-up chat: simple words first, analogies only when they truly fit.
 const PLAIN_LANGUAGE_RULES = `- Simple must still be correct: keep the real meaning of the subject, just say it in easy words.
 - Explain the actual thing directly. Do NOT use analogies or "think of it like…" / "imagine…" comparisons by default — most explanations need none.
@@ -15,6 +21,7 @@ const PLAIN_LANGUAGE_RULES = `- Simple must still be correct: keep the real mean
 const EXPLANATION_SCHEMA = {
   type: 'object',
   properties: {
+    formula_to_use: { type: 'string' },
     steps: { type: 'array', items: { type: 'string' } },
     summary: { type: 'string' },
     key_terms: {
@@ -68,7 +75,34 @@ const EXPLANATION_SCHEMA = {
   required: ['steps', 'summary']
 };
 
-export function requestExplanation({ text, lessonTitle, level }) {
+export function requestExplanation({ text, lessonTitle, level, conciseMaths = false, questionContext = '' }) {
+  if (conciseMaths) {
+    const mathsLevel = MATHS_SOLVER_LEVELS[level] || MATHS_SOLVER_LEVELS[0];
+    return base44.integrations.Core.InvokeLLM({
+      prompt: `You are explaining a Mathematics past paper solution step or full solution for "${lessonTitle}".
+
+${questionContext ? `Original question:\n"""${questionContext.slice(0, 1200)}"""\n\n` : ''}Highlighted maths to explain:
+"""${text}"""
+
+${mathsLevel.instruction}
+
+Rules — FOLLOW STRICTLY:
+- This is pure mathematics logic: NO unnecessary explanation, NO wordy prose, NO analogies, NO stories, NO filler sentences.
+- British English spelling throughout.
+- Write EVERY mathematical symbol, number, variable, fraction, formula and equation in LaTeX wrapped in single dollar signs ($...$). Never write raw plain-text maths like "x^2" or "a/b" — use $x^2$ and $\\frac{a}{b}$.
+- Inside JSON strings, escape every LaTeX backslash as a double backslash (for example \\\\frac, \\\\times, \\\\sqrt, \\\\pi, \\\\theta).
+- formula_to_use (REQUIRED — MUST ALWAYS BE STATED): State the exact mathematical formula, identity, theorem or algebraic rule used (for example, "Quadratic formula: $x = \\\\frac{-b \\\\pm \\\\sqrt{b^2 - 4ac}}{2a}$", "Area of a trapezium: $A = \\\\frac{1}{2}(a + b)h$", "Index law: $a^m \\\\div a^n = a^{m-n}$", or "Linear equation balance rule: perform the same inverse operation on both sides"). Never leave formula_to_use blank.
+- steps: Break the working into small, simple steps in logical order (up to 10 steps as needed).
+  - ONE single operation per step (identify given values, substitute into the formula, evaluate one power/bracket, rearrange one term, simplify, state result).
+  - Never combine two algebraic or arithmetic moves into a single step.
+  - Format each step concisely as: "<2–6 word action>: $<mathematical line>$" — for example: "Substitute $u = 4$, $a = 3$, $t = 5$: $v = 4 + 3 \\\\times 5$", then "Multiply $3 \\\\times 5$: $v = 4 + 15$", then "Add $4 + 15$: $v = 19$".
+- summary: State ONLY the final mathematical result concisely in $...$ LaTeX (with units or rounding if relevant), with no extra chatty words.
+- Leave key_terms empty ([]) and omit maths_breakdown (since formula_to_use and steps already carry the full mathematical working).
+- Set visual.kind to "graph" ONLY if plotting a coordinate function/curve directly represents the equation; otherwise set visual.kind to "none".`,
+      response_json_schema: EXPLANATION_SCHEMA
+    });
+  }
+
   return base44.integrations.Core.InvokeLLM({
     prompt: `You are a patient tutor helping a learner with the lesson "${lessonTitle}".
 
@@ -116,6 +150,7 @@ function describeExplanation(explanation) {
   if (!explanation) return '(not shown yet)';
   const maths = explanation.maths_breakdown;
   return [
+    explanation.formula_to_use && `Formula to use: ${explanation.formula_to_use}`,
     ...(explanation.steps || []).map((step, index) => `Step ${index + 1}: ${step}`),
     maths?.equation && `Equation: ${maths.equation}`,
     ...(maths?.symbol_meanings || []).map(item => `${item.symbol} means ${item.meaning}`),
@@ -125,16 +160,37 @@ function describeExplanation(explanation) {
 }
 
 // One tutor reply in the follow-up discussion. Plain text (not JSON), so LaTeX backslashes stay intact.
-export async function requestFollowUp({ selectionText, lessonTitle, explanation, level, focus, history, question }) {
+export async function requestFollowUp({ selectionText, lessonTitle, explanation, level, focus, history, question, conciseMaths = false }) {
   const conversation = history
     .slice(-10)
     .map(m => `${m.role === 'user' ? 'Learner' : 'Tutor'}${m.about ? ` (about ${m.about})` : ''}: ${m.text}`)
     .join('\n\n');
 
-  const reply = await base44.integrations.Core.InvokeLLM({
-    prompt: `You are a patient, friendly tutor continuing a conversation with a learner about the lesson "${lessonTitle}".
+  const replyInstruction = conciseMaths
+    ? `How to reply (Mathematics past paper logic — concise and direct):
+- State the Formula / Rule to use first if a formula or algebraic rule applies.
+- Break the mathematical working into small, simple numbered steps (1., 2., 3., ...), one single operation per step, showing every intermediate line.
+- NO unnecessary prose, NO analogies, NO chatty filler — keep wording to short action labels plus the maths.
+- Write all maths in LaTeX between single dollar signs, e.g. $x = \\frac{8}{2} = 4$. Never write plain-text maths like x^2 or 1/2.
+- If the learner suggests a working or answer, state directly whether it is correct and show the exact step where any slip occurred.
+- Plain text only: no Markdown headings, no bold markers, no code blocks.`
+    : `How to reply:
+- ${LEVELS[level]?.instruction || LEVELS[0].instruction}
+- British English spelling throughout.
+${PLAIN_LANGUAGE_RULES}
+- Answer exactly what they asked and link it back to the highlighted lesson text. If they are still confused, explain it a different way from before (smaller steps, simpler words, or a worked example with real values from the lesson) rather than repeating the same words.
+- Put each step of reasoning on its own line, numbered when there is more than one step. State the reason before each calculation and show every intermediate line.
+- Write all maths in LaTeX between single dollar signs, for example $T = \\frac{1}{f}$. Never write maths as plain text such as 1/f or x^2.
+- If they give their own answer or reasoning, tell them clearly whether it is right and why.
+- If the question has nothing to do with this lesson, say so kindly in one sentence and steer back to the highlighted topic.
+- Keep it under 180 words unless a calculation genuinely needs more.
+- Finish with one short question that checks they followed, unless they have said they understand.
+- Plain text only: no Markdown headings, no bold markers, no code blocks.`;
 
-The learner highlighted this part of the lesson:
+  const reply = await base44.integrations.Core.InvokeLLM({
+    prompt: `You are a patient, clear tutor continuing a conversation with a learner about "${lessonTitle}".
+
+The learner highlighted this part:
 """${selectionText}"""
 
 You already explained it like this:
@@ -146,18 +202,7 @@ ${conversation || '(this is their first follow-up question)'}
 The learner's new message:
 """${question}"""
 
-How to reply:
-- ${LEVELS[level]?.instruction || LEVELS[0].instruction}
-- British English spelling throughout.
-${PLAIN_LANGUAGE_RULES}
-- Answer exactly what they asked and link it back to the highlighted lesson text. If they are still confused, explain it a different way from before (smaller steps, simpler words, or a worked example with real values from the lesson) rather than repeating the same words.
-- Put each step of reasoning on its own line, numbered when there is more than one step. State the reason before each calculation and show every intermediate line.
-- Write all maths in LaTeX between single dollar signs, for example $T = \\frac{1}{f}$. Never write maths as plain text such as 1/f or x^2.
-- If they give their own answer or reasoning, tell them clearly whether it is right and why.
-- If the question has nothing to do with this lesson, say so kindly in one sentence and steer back to the highlighted topic.
-- Keep it under 180 words unless a calculation genuinely needs more.
-- Finish with one short question that checks they followed, unless they have said they understand.
-- Plain text only: no Markdown headings, no bold markers, no code blocks.`
+${replyInstruction}`
   });
 
   return String(reply ?? '')

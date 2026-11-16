@@ -7,7 +7,7 @@ import { requestFollowUp, splitIntoParts } from '@/components/lesson/explainHigh
  * Follow-up discussion under an explanation: the learner can ask anything about the
  * highlight, or pick one sentence / step to talk about, and keep the conversation going.
  */
-export default function ExplainFollowUpChat({ selectionText, lessonTitle, explanation, level, focus, onFocusChange }) {
+export default function ExplainFollowUpChat({ selectionText, lessonTitle, explanation, level, focus, onFocusChange, conciseMaths = false }) {
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
@@ -36,7 +36,7 @@ export default function ExplainFollowUpChat({ selectionText, lessonTitle, explan
     setError('');
     setSending(true);
     try {
-      const reply = await requestFollowUp({ selectionText, lessonTitle, explanation, level, focus, history, question });
+      const reply = await requestFollowUp({ selectionText, lessonTitle, explanation, level, focus, history, question, conciseMaths });
       setMessages(current => [...current, { role: 'tutor', text: reply }]);
     } catch {
       setMessages(history);

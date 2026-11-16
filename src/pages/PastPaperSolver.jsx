@@ -63,6 +63,56 @@ const SOLUTION_MODES = [
   { id: "explain", label: "Explain Concept", desc: "Plain English explanation", emoji: "🎓" },
 ];
 
+const MATHS_LATEX_RULES = `MATHS FORMATTING — THIS IS CRITICAL:
+- Use LaTeX for EVERY mathematical expression without exception.
+- Inline expressions: $expression$ — e.g. $x = 5$, $v = 30 \\text{ m/s}$
+- Display (standalone) equations: $$expression$$ on their own line
+- Write fractions as \\frac{numerator}{denominator} — e.g. $$\\frac{120}{1.5} = 80$$
+- Powers/indices: x^{2}, x^{3}, 10^{-3}; square roots: \\sqrt{x}
+- Multiplication: \\times; division: \\div or \\frac{}{}
+- Units always inside \\text{}: $30 \\text{ m/s}$, $5 \\text{ kg}$, $100 \\text{ cm}^2$
+- Subscripts: $v_1$, $T_1$; Greek letters: \\alpha, \\beta, \\theta, \\pi, \\Delta, \\lambda
+- Do NOT write maths as plain text. Never write "x^2" without dollar signs.`;
+
+const isMathsSubject = (subj) => /math/i.test(String(subj || ""));
+
+const mathsModeInstructions = {
+  full: `You are a precise CCEA Mathematics tutor solving this question at the selected qualification level.
+
+IMPORTANT RULES — PURE MATHS LOGIC, NO UNNECESSARY PROSE:
+1. If the question has a table, graph, or diagram, list the extracted values concisely at the start (no wordy summary).
+2. State **Formula to use:** explicitly before the working — write the exact formula, theorem, identity, or algebraic rule in LaTeX (e.g. $$A = \\pi r^2$$, $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$, $$m = \\frac{y_2 - y_1}{x_2 - x_1}$$, or state the exact algebraic/index/angle rule used). For multi-part questions, state **Formula to use:** at the start of each part.
+3. Show **Steps:** broken down into small, simple numbered steps (**Step 1:**, **Step 2:**, etc.):
+   - Perform ONE single mathematical operation per step (identify given values, substitute into the formula, expand one bracket, collect like terms, rearrange one term, simplify, evaluate).
+   - Show EVERY intermediate line — never skip or merge two operations into one step.
+   - NO unnecessary explanation, NO chatty commentary, NO bracketed prose after steps, NO analogies, and NO "Key things to remember" filler — keep wording to a brief 2–6 word action label before the maths (e.g. **Step 1:** Substitute $r = 5$: $$A = \\pi \\times 5^2$$).
+4. State **Final Answer:** clearly on its own line in bold, with units or required rounding where applicable.
+
+${MATHS_LATEX_RULES}`,
+
+  hint: `You are a precise CCEA Mathematics tutor at the selected qualification level.
+1. State **Formula to use:** in LaTeX.
+2. Give ONLY **Step 1:** showing how to substitute or start, in one short line with no unnecessary explanation. Do NOT solve to the final answer.
+
+${MATHS_LATEX_RULES}`,
+
+  mark_scheme: `You are writing a CCEA-style Mathematics mark scheme at the selected qualification level. Do not present it as an official CCEA mark scheme.
+- Start by stating **Formula to use:** in LaTeX.
+- Use concise bullet points, one per mark point, ending each with [1] (include "accept" alternatives where relevant).
+- Show each mathematical step cleanly in LaTeX ($...$ or $$...$$) with no wordy prose.
+- End with **Total: X marks**`,
+
+  explain: `You are a precise CCEA Mathematics tutor explaining how to solve this question at the selected qualification level.
+
+IMPORTANT RULES — CONCISE MATHS LOGIC:
+1. Start with **Formula to use:** — state the exact formula, theorem, identity, or mathematical rule in LaTeX (briefly defining symbols only if needed).
+2. Show **Steps:** — break the mathematical logic into small, simple numbered steps (**Step 1:**, **Step 2:**, etc.), one single operation per step, showing every intermediate line.
+3. Include NO unnecessary explanation, NO stories, NO real-life analogies, and NO filler tips.
+4. End with **Final Answer:** on its own line.
+
+${MATHS_LATEX_RULES}`,
+};
+
 const modeInstructions = {
   full: `You are a friendly, encouraging CCEA tutor helping a student understand this problem at their selected qualification level.
 
@@ -76,19 +126,7 @@ IMPORTANT RULES FOR YOUR RESPONSE:
 5. State the **FINAL ANSWER** clearly on its own line, in bold, with the correct units.
 6. End with a "**Key things to remember**" section with 2–3 bullet points of tips.
 
-MATHS FORMATTING — THIS IS CRITICAL:
-- Use LaTeX for EVERY mathematical expression without exception.
-- Inline expressions: $expression$ — e.g. $x = 5$, $v = 30 \\text{ m/s}$
-- Display (standalone) equations: $$expression$$ on their own line
-- Write fractions as \\frac{numerator}{denominator} — e.g. $$\\frac{120}{1.5} = 80$$
-- Powers/indices: x^{2}, x^{3}, 10^{-3}
-- Square roots: \\sqrt{x}
-- Multiplication dot: \\times
-- Division: \\div or \\frac{}{}
-- Units always inside \\text{}: $30 \\text{ m/s}$, $5 \\text{ kg}$, $100 \\text{ cm}^2$
-- Subscripts: $v_1$, $T_1$, $H_2O$
-- Greek letters: \\alpha, \\beta, \\theta, \\pi, \\Delta, \\lambda
-- Do NOT write maths as plain text. Never write "x^2" without dollar signs.`,
+${MATHS_LATEX_RULES}`,
 
   hint: `You are a friendly CCEA tutor working at the selected qualification level. Give ONLY a helpful hint (2–3 sentences) pointing the student in the right direction WITHOUT solving it. Use simple, encouraging language suitable for a 14–16 year old. Do NOT give the full answer.
 
@@ -116,6 +154,9 @@ IMPORTANT RULES:
 For any maths expressions, use LaTeX: inline $...$ or display $$...$$.
 Avoid jargon. Be warm, clear and encouraging.`,
 };
+
+const getModeInstructions = (selectedMode, subj) =>
+  (isMathsSubject(subj) ? mathsModeInstructions : modeInstructions)[selectedMode] || modeInstructions.full;
 
 const studentAge = (qualification) => qualification === "GCSE" ? "aged 14–16" : "aged 16–18";
 
@@ -269,6 +310,17 @@ export default function PastPaperSolver() {
     const marksLine = marks ? `\nThis question is worth ${marks} mark${marks !== "1" ? "s" : ""} — calibrate the depth of your answer accordingly.` : "";
 
     if (followUpQ) {
+      if (isMathsSubject(subject)) {
+        return `A ${qualification} ${subject} student ${studentAge(qualification)} is asking a follow-up question.
+
+Follow-up question: ${followUpQ}
+
+Context — the original question was:
+${question}
+${fileAttached ? "[An image/file of the question was also provided]" : ""}
+
+State **Formula to use:** if a formula or rule applies, then break the maths logic into small, simple numbered steps (**Step 1:**, **Step 2:**, etc.), one operation per step, in LaTeX ($...$ inline, $$...$$ display). Include NO unnecessary explanation or chatty prose.`;
+      }
       return `A ${qualification} ${subject} student ${studentAge(qualification)} is asking a follow-up question. Answer clearly and simply, and make sure every fact, step and number you give is correct.
 
 Follow-up question: ${followUpQ}
@@ -280,17 +332,17 @@ ${fileAttached ? "[An image/file of the question was also provided]" : ""}
 Be encouraging, clear, and use LaTeX for any maths ($...$ inline, $$...$$ for display equations). Explain WHY as well as HOW.`;
     }
 
-    return `You are an expert, friendly ${qualification} ${subject} tutor helping a student ${studentAge(qualification)}.
+    return `You are an expert ${qualification} ${subject} tutor helping a student ${studentAge(qualification)}.
 
 Subject: ${subject}
 Qualification: ${qualification}${marksLine}
 
 STUDENT QUESTION:
 ${question}
-${fileAttached ? "[See the attached file/image for diagrams, graphs or the paper itself. Inspect all labels, scales, arrows, spatial relationships, tables and visual evidence before answering. State what visual information you used.]" : ""}
+${fileAttached ? "[See the attached file/image for diagrams, graphs or the paper itself. Inspect all labels, scales, arrows, spatial relationships, tables and visual evidence before answering.]" : ""}
 
 RESPONSE MODE: ${SOLUTION_MODES.find((item) => item.id === selectedMode)?.label}. Follow ONLY this response mode; do not fall back to a full solution.
-${modeInstructions[selectedMode]}
+${getModeInstructions(selectedMode, subject)}
 
 CRITICAL FORMATTING REMINDER:
 - EVERY number, variable, formula, equation, unit MUST be in LaTeX.
@@ -398,9 +450,9 @@ ${q.diagram_summary ? `\nDiagram / Visual Information from Paper:\n${q.diagram_s
 The original paper is attached.${pages ? ` This question is printed on page ${pages} of the attached PDF.` : ""} Inspect it for every diagram, graph, table, source, extract or data item belonging to this question; do not answer from extracted text alone when visual evidence is required.
 Answer every part in the order printed on the paper, using the paper's own part labels as bold headings (e.g. **(a)**, **(b)(i)**), so the student can match each answer to its part.
 
-${modeInstructions[mode]}
+${getModeInstructions(mode, subject)}
 
-Before finalising, independently check the command word, mark allocation, factual accuracy, calculations, units, significant figures and whether every subpart is answered. Do not call this an official mark scheme. Include a short **Answer check** explaining how the result was verified.
+Before finalising, independently check the command word, mark allocation, factual accuracy, calculations, units, significant figures and whether every subpart is answered. Do not call this an official mark scheme.${isMathsSubject(subject) ? " Keep the entire response strictly to Formula to use, small simple mathematical steps, and Final Answer — no unnecessary prose." : " Include a short **Answer check** explaining how the result was verified."}
 
 CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
         const questionContext = `Subject: ${subject} (${qualification})\nQuestion ${q.number}${q.marks ? ` [${q.marks} marks]` : ""}${pages ? ` (page ${pages} of the attached paper)` : ""}:\n${q.stem ? `${q.stem}\n\n` : ""}${q.text}${q.diagram_summary ? `\nDiagram information: ${q.diagram_summary}` : ""}`;
