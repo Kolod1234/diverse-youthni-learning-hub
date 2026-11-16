@@ -30,6 +30,7 @@ import SolverAccessGate from "@/components/solver/SolverAccessGate";
 import PaperQuestionSource from "@/components/solver/PaperQuestionSource";
 import { splitPdfIntoQuestions } from "@/components/solver/pdfQuestionSplitter";
 import { extractPaperQuestionsWithAI } from "@/components/solver/extractPaperQuestionsWithAI";
+import { requestVerifiedAnswer, SOLVER_MODEL } from "@/components/solver/verifiedAnswer";
 
 const mathJaxConfig = {
   loader: { load: ["[tex]/ams", "input/tex", "output/chtml"] },
@@ -112,22 +113,7 @@ For any maths expressions, use LaTeX: inline $...$ or display $$...$$.
 Avoid jargon. Be warm, clear and encouraging.`,
 };
 
-const answerText = (response) => typeof response === "string" ? response : response?.text || JSON.stringify(response);
-const modeIsValid = (text, selectedMode) => {
-  if (selectedMode === "hint") return text.split(/\s+/).length <= 120 && !/final answer|the answer is/i.test(text);
-  if (selectedMode === "mark_scheme") return /(^|\n)\s*[-*]\s/.test(text) && /\*\*Total:\s*\d+\s+marks?\*\*/i.test(text);
-  if (selectedMode === "explain") return /The BIG idea here is/i.test(text) && /Top tip:/i.test(text);
-  return true;
-};
-
-async function requestModeAnswer(prompt, fileUrls, selectedMode) {
-  const invoke = (requestPrompt) => base44.integrations.Core.InvokeLLM({ prompt: requestPrompt, file_urls: fileUrls, model: "automatic" });
-  let text = answerText(await invoke(prompt));
-  if (!modeIsValid(text, selectedMode)) {
-    text = answerText(await invoke(`${prompt}\n\nYour previous draft did not follow the selected ${selectedMode} response format. Rewrite it now and obey the response-mode rules exactly.\n\nDRAFT TO REWRITE:\n${text}`));
-  }
-  return text;
-}
+const studentAge = (qualification) => qualification === "GCSE" ? "aged 14–16" : "aged 16–18";
 
 // Extract question text, page number, and diagram crop box from an uploaded paper/image
 async function extractSingleQuestionVisualMeta(fileUrl, typedQuestion, subject, qualification) {
@@ -178,9 +164,9 @@ Given this student question and AI-generated answer, rate your confidence that t
 
 Subject: ${subject} (${qualification})
 
-Question: ${question?.slice(0, 600) || "(from uploaded file)"}
+Question: ${question?.slice(0, 2000) || "(from uploaded file)"}
 
-Answer (first 800 chars): ${answer?.slice(0, 800)}
+Answer: ${answer?.slice(0, 6000)}
 
 Respond ONLY with a JSON object like: {"confidence": 87}
 
@@ -211,6 +197,7 @@ export default function PastPaperSolver() {
   const [mode, setMode] = useState("full");
   const [marks, setMarks] = useState("");
   const [solving, setSolving] = useState(false);
+  const [solveStage, setSolveStage] = useState("");
   const [solution, setSolution] = useState(null);
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
@@ -273,7 +260,7 @@ export default function PastPaperSolver() {
     const marksLine = marks ? `\nThis question is worth ${marks} mark${marks !== "1" ? "s" : ""} — calibrate the depth of your answer accordingly.` : "";
 
     if (followUpQ) {
-      return `A GCSE student is asking a follow-up question. Answer clearly and simply for a 14–16 year old.
+      return `A ${qualification} ${subject} student ${studentAge(qualification)} is asking a follow-up question. Answer clearly and simply, and make sure every fact, step and number you give is correct.
 
 Follow-up question: ${followUpQ}
 
@@ -284,7 +271,7 @@ ${fileAttached ? "[An image/file of the question was also provided]" : ""}
 Be encouraging, clear, and use LaTeX for any maths ($...$ inline, $$...$$ for display equations). Explain WHY as well as HOW.`;
     }
 
-    return `You are an expert, friendly ${qualification} ${subject} tutor helping a student aged 14–16.
+    return `You are an expert, friendly ${qualification} ${subject} tutor helping a student ${studentAge(qualification)}.
 
 Subject: ${subject}
 Qualification: ${qualification}${marksLine}
@@ -314,8 +301,9 @@ CRITICAL FORMATTING REMINDER:
       const selectedMode = mode;
       const prompt = buildPrompt(questionText, !!uploadedFile, null, selectedMode);
       const fileUrls = uploadedFile ? [uploadedFile.url] : undefined;
+      const questionContext = `Subject: ${subject} (${qualification})${marks ? `\nMarks: ${marks}` : ""}\nQuestion: ${questionText.trim() || "(the question is in the attached file)"}`;
       const [generatedAnswer, visualMeta] = await Promise.all([
-        requestModeAnswer(prompt, fileUrls, selectedMode),
+        requestVerifiedAnswer({ prompt, questionContext, fileUrls, mode: selectedMode, onStage: setSolveStage }),
         uploadedFile ? extractSingleQuestionVisualMeta(uploadedFile.url, questionText, subject, qualification) : Promise.resolve(null),
       ]);
       const newKey = Date.now();
@@ -357,6 +345,7 @@ CRITICAL FORMATTING REMINDER:
       alert("Failed to solve. Please try again.");
     } finally {
       setSolving(false);
+      setSolveStage("");
     }
   };
 
@@ -401,7 +390,8 @@ ${modeInstructions[mode]}
 Before finalising, independently check the command word, mark allocation, factual accuracy, calculations, units, significant figures and whether every subpart is answered. Do not call this an official mark scheme. Include a short **Answer check** explaining how the result was verified.
 
 CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
-        const ans = await requestModeAnswer(prompt, [uploadedFile.url], mode);
+        const questionContext = `Subject: ${subject} (${qualification})\nQuestion ${q.number}${q.marks ? ` [${q.marks} marks]` : ""}${pages ? ` (page ${pages} of the attached paper)` : ""}:\n${q.stem ? `${q.stem}\n\n` : ""}${q.text}${q.diagram_summary ? `\nDiagram information: ${q.diagram_summary}` : ""}`;
+        const ans = await requestVerifiedAnswer({ prompt, questionContext, fileUrls: [uploadedFile.url], mode });
         return {
           number: q.number,
           stem: q.stem || "",
@@ -457,7 +447,11 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
     setFollowUpSolving(true);
     try {
       const prompt = buildPrompt(solution.question, !!solution.uploadedFile, followUp);
-      const response = await base44.integrations.Core.InvokeLLM({ prompt, model: "automatic" });
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        file_urls: solution.uploadedFile ? [solution.uploadedFile.url] : undefined,
+        model: SOLVER_MODEL,
+      });
       const answer = typeof response === "string" ? response : response?.text || JSON.stringify(response);
       const fuKey = Date.now();
       setSolution((prev) => ({
@@ -629,7 +623,7 @@ CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
                 className="flex-1 min-w-[160px] bg-gradient-to-r from-blue-700 to-indigo-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
               >
                 {solving
-                  ? <><Loader2 className="w-5 h-5 animate-spin" />Solving…</>
+                  ? <><Loader2 className="w-5 h-5 animate-spin" />{solveStage || "Solving…"}</>
                   : <><Lightbulb className="w-5 h-5" />Solve Question</>}
               </button>
 
